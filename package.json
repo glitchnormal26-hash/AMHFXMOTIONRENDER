@@ -1,0 +1,19 @@
+{
+  "name": "amhfxmotionrender",
+  "private": true,
+  "version": "3.8.0",
+  "type": "module",
+  "scripts": {
+    "serve": "python scripts/serve.py",
+    "snap": "node scripts/snap.mjs",
+    "export:frames": "node scripts/export-frames.mjs",
+    "export:mp4": "node scripts/export-mp4.mjs",
+    "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
+    "check": "node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js",
+    "build:skill": "node scripts/build-skill.mjs"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  },
+  "description": "Motion Designer v3.8 full-runtime browser motion renderer with deterministic MP4 export."
+}

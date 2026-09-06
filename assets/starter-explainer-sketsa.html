@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<!--
+Motion Designer v3.8 explainer scaffold.
+Replace all placeholder visuals/copy before delivery.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Explainer — Vintage Sketch</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=EB+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+:root{--bg:#ede0c8;--ink:#34261a;--accent:#983d24}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080808}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:"Playfair Display",Georgia,serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
+.paper{position:absolute;inset:-1600px;background:#ede0c8;background-image:radial-gradient(circle at 20% 30%,rgba(120,70,35,.10),transparent 42%),radial-gradient(circle at 80% 70%,rgba(90,50,25,.08),transparent 45%);}
+.cut{position:absolute;width:620px;height:520px;display:grid;place-items:center;opacity:0;border-radius:30px;
+  background:color-mix(in srgb,var(--bg) 78%,var(--ink));color:var(--ink);box-shadow:0 35px 80px rgba(0,0,0,.18);
+  font-size:34px;text-align:center;will-change:transform,filter}
+.line{position:absolute;left:120px;top:825px;width:1600px;font-size:94px;line-height:.98;font-weight:800;letter-spacing:-.025em;opacity:0}
+.note{position:absolute;font-size:42px;font-weight:700;color:var(--accent);opacity:0}
+.ghost{position:absolute;left:690px;top:90px;font-size:320px;font-weight:900;opacity:.08}
+.cut{background:#dfceb0;border:4px double #6a5039;border-radius:46%}.note{font-family:"EB Garamond",serif;font-style:italic;font-size:54px}
+#dbg{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:10;gap:10px;
+  align-items:center;padding:10px 14px;border-radius:12px;background:rgba(8,10,14,.88);color:#fff;font:13px system-ui}
+#dbg.on{display:flex}#dbg input{width:360px}#clock{min-width:6ch;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div class="paper"></div>
+    <div class="ghost">2026</div>
+    <div class="cut" id="a" style="left:220px;top:170px">ENGRAVING A<br>replace with real asset</div>
+    <div class="cut" id="b" style="left:1080px;top:270px">ENGRAVING B<br>replace with real asset</div>
+    <div class="line" id="line1">One visual claim. One readable landing.</div>
+    <div class="note" id="note" style="left:1180px;top:820px">annotation</div>
+
+    <div class="cut" id="c" style="left:2460px;top:220px">ENGRAVING C<br>scene 2</div>
+    <div class="line" id="line2" style="left:2440px;top:840px">Camera travels into the next idea.</div>
+  </div>
+</div>
+<div id="dbg"><button id="play">Pause</button><input id="scrub" type="range" min="0" max="1000"><span id="clock">0.00s</span></div>
+<script>
+const W=1920,H=1080,DURATION=18;
+const $=s=>document.querySelector(s),stage=$("#stage"),rig=$("#world");
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};addEventListener("resize",fit);fit();
+
+const C={x:960,y:540,z:1};
+function applyCam(){rig.style.transform=`translate(${960-C.x*C.z}px,${540-C.y*C.z}px) scale(${C.z})`;}
+const tl=gsap.timeline({paused:true});
+const look=(at,x,y,z,d=1.3)=>tl.to(C,{x,y,z,duration:d,ease:"sine.inOut",onUpdate:applyCam},at);
+const home=(at,x=960,y=540,d=1.1)=>tl.to(C,{x,y,z:1,duration:d,ease:"power2.inOut",onUpdate:applyCam},at);
+const fly=(sel,at,fromX=0,fromY=300)=>tl.fromTo(sel,
+  {opacity:0,x:fromX,y:fromY,rotation:fromX<0?-7:7,filter:"blur(14px)"},
+  {opacity:1,x:0,y:0,rotation:0,filter:"blur(0px)",duration:.8,ease:"power4.out"},at);
+
+tl.set(C,{x:530,y:470,z:1.75,onUpdate:applyCam},0);
+fly("#a",.25,-260,120);
+look(2.0,1390,520,1.6,1.35);
+fly("#b",2.25,320,0);
+home(4.0);
+tl.fromTo("#line1",{opacity:0,y:45,filter:"blur(8px)"},{opacity:1,y:0,filter:"blur(0px)",duration:.65,ease:"power3.out"},5.2);
+tl.fromTo("#note",{opacity:0,y:18},{opacity:1,y:0,duration:.4},6.25);
+tl.to(["#line1","#note"],{opacity:0,y:-40,duration:.35,ease:"power2.in"},9.8);
+tl.to(C,{x:2600,y:540,z:1.65,duration:.85,ease:"power2.in",onUpdate:applyCam},10.1);
+fly("#c",10.3,0,300);
+home(12.0,2800,540,1.15);
+tl.fromTo("#line2",{opacity:0,y:45,filter:"blur(8px)"},{opacity:1,y:0,filter:"blur(0px)",duration:.65,ease:"power3.out"},13.3);
+tl.to({},{duration:.01},DURATION);
+
+const q=new URLSearchParams(location.search),dbg=$("#dbg"),scrub=$("#scrub"),clock=$("#clock");
+if(q.has("debug"))dbg.classList.add("on");
+let drag=false;
+gsap.ticker.add(()=>{const t=tl.time();clock.textContent=t.toFixed(2)+"s";if(!drag)scrub.value=String(t/DURATION*1000);});
+scrub.onpointerdown=()=>{drag=true;tl.pause()};addEventListener("pointerup",()=>drag=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+$("#play").onclick=()=>tl.paused()?tl.play():tl.pause();
+tl.eventCallback("onComplete",()=>tl.play(0));
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(t,false);applyCam();},play(){tl.play();}};
+document.fonts.ready.then(()=>{applyCam();window.OPENER.ready=true;if(!q.has("clean"))tl.play(0);});
+</script>
+</body>
+</html>

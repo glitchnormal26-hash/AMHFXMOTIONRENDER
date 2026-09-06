@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<!--
+Continuous-action explainer scaffold.
+Motion Designer v3.8 implementation layer.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Explainer — Continuous Action</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+:root{--sky:#cfe0f3;--far:#a6bdd8;--mid:#81aa78;--ground:#d4df9e;--ink:#1c2a47;--accent:#d52b31}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07101c}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--sky);font-family:"Plus Jakarta Sans",sans-serif}
+svg{width:1920px;height:1080px;display:block}
+#hud{position:absolute;inset:0;pointer-events:none;color:var(--ink)}
+#fact{position:absolute;left:110px;top:90px;opacity:0}
+#fact strong{font-family:"Unbounded",sans-serif;font-size:170px;letter-spacing:-.04em;color:var(--accent)}
+#fact span{font-size:50px;font-weight:800}
+#dbg{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:10;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;background:rgba(8,10,14,.88);color:#fff;font:13px system-ui}
+#dbg.on{display:flex}#dbg input{width:360px}#clock{min-width:6ch;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="stage">
+<svg viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="var(--sky)"/>
+  <g id="cam">
+    <g id="far"></g>
+    <g id="mid"></g>
+    <g id="near"></g>
+    <g id="worldObjects"></g>
+    <g id="hero" transform="translate(1380 710)">
+      <rect x="-760" y="-95" width="820" height="90" rx="38" fill="#fff" stroke="var(--ink)" stroke-width="6"/>
+      <rect x="-760" y="-44" width="820" height="12" fill="var(--accent)"/>
+      <circle cx="-610" cy="5" r="23" fill="#d8dde6" stroke="var(--ink)" stroke-width="6"/>
+      <circle cx="-180" cy="5" r="23" fill="#d8dde6" stroke="var(--ink)" stroke-width="6"/>
+    </g>
+  </g>
+</svg>
+<div id="hud"><div id="fact"><strong id="num">0</strong><br><span>replace with a meaningful fact</span></div></div>
+</div>
+<div id="dbg"><button id="play">Pause</button><input id="scrub" type="range" min="0" max="1000"><span id="clock">0.00s</span></div>
+<script>
+const W=1920,H=1080,DURATION=20,$=s=>document.querySelector(s);
+const stage=$("#stage"),NS="http://www.w3.org/2000/svg";
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`};addEventListener("resize",fit);fit();
+const S=(tag,a,p)=>{const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+const strips=[];
+function strip(parent,f,color,y,h,period=1700){
+  const g=S("g",{},parent);
+  for(let copy=0;copy<2;copy++){
+    const x0=copy*period;
+    S("rect",{x:x0,y,width:period,height:h,fill:color},g);
+    for(let i=0;i<10;i++)S("circle",{cx:x0+100+i*170,cy:y-35-(i%3)*22,r:70+(i%2)*25,fill:color},g);
+  }
+  strips.push({g,f,period});
+}
+strip($("#far"),.18,"var(--far)",570,230);
+strip($("#mid"),.42,"var(--mid)",700,240);
+strip($("#near"),.70,"var(--ground)",810,330);
+
+const tl=gsap.timeline({paused:true});
+const speed={v:560};
+tl.to(speed,{v:900,duration:2.5,ease:"power2.inOut"},0);
+tl.to(speed,{v:720,duration:4,ease:"sine.inOut"},7);
+tl.to(speed,{v:0,duration:2.5,ease:"power2.out"},16);
+tl.fromTo("#fact",{opacity:0,y:30},{opacity:1,y:0,duration:.5},5.2);
+tl.to("#fact",{opacity:0,y:-30,duration:.35},9.0);
+tl.to({},{duration:.01},DURATION);
+
+const DT=1/120,dist=[0];
+for(let i=1;i<=Math.ceil((DURATION+1)/DT);i++){
+  const t=i*DT;
+  // deterministic authored speed proxy independent of realtime dt
+  const v=t<2.5?560+(900-560)*(t/2.5):
+          t<7?900:
+          t<11?900+(720-900)*((t-7)/4):
+          t<16?720:
+          t<18.5?720*(1-(t-16)/2.5):0;
+  dist[i]=dist[i-1]+v*DT;
+}
+const D=t=>{const f=Math.max(0,Math.min(dist.length-2,t/DT)),i=Math.floor(f),u=f-i;return dist[i]+(dist[i+1]-dist[i])*u};
+const mod=(a,n)=>((a%n)+n)%n;
+
+function render(t){
+  const d=D(t);
+  for(const s of strips)s.g.setAttribute("transform",`translate(${-mod(d*s.f,s.period)} 0)`);
+  $("#hero").setAttribute("transform",`translate(1380 ${710+Math.sin(t*7)*3}) rotate(${Math.sin(t*2.4)*.3})`);
+  $("#cam").setAttribute("transform",`translate(960 540) scale(${1+Math.sin(t*.5)*.012}) translate(-960 -540)`);
+  $("#num").textContent=String(Math.round(Math.min(350,Math.max(0,(t-5)*145))));
+}
+gsap.ticker.add(()=>render(tl.time()));
+
+const q=new URLSearchParams(location.search),dbg=$("#dbg"),scrub=$("#scrub"),clock=$("#clock");
+if(q.has("debug"))dbg.classList.add("on");let drag=false;
+gsap.ticker.add(()=>{const t=tl.time();clock.textContent=t.toFixed(2)+"s";if(!drag)scrub.value=String(t/DURATION*1000)});
+scrub.onpointerdown=()=>{drag=true;tl.pause()};addEventListener("pointerup",()=>drag=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+$("#play").onclick=()=>tl.paused()?tl.play():tl.pause();
+tl.eventCallback("onComplete",()=>tl.play(0));
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(t,false);render(t);},play(){tl.play()}};
+document.fonts.ready.then(()=>{window.OPENER.ready=true;if(!q.has("clean"))tl.play(0)});
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+node_modules/
+output/
+frames/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+*.aac
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example

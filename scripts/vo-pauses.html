@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<!--
+Browser-only VO pause detector for Motion Designer + Motion Runtime.
+No upload: audio stays in the browser.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VO Pause Detector</title>
+<style>
+body{max-width:900px;margin:40px auto;padding:0 20px;background:#101216;color:#eef2f7;font:16px/1.5 system-ui}
+h1{font-size:32px}label{display:block;margin:14px 0}input[type=number]{width:90px}
+pre{white-space:pre-wrap;background:#191d24;padding:18px;border-radius:12px;min-height:180px}
+small{color:#aeb7c5}
+</style>
+</head>
+<body>
+<h1>VO pause detector</h1>
+<p>Select an audio file. Processing happens locally in your browser.</p>
+<input id="file" type="file" accept="audio/*">
+<label>Silence threshold relative to peak (dB):
+  <input id="db" type="number" value="-30" step="1">
+</label>
+<label>Segment pause minimum (seconds):
+  <input id="segPause" type="number" value="0.45" step="0.05">
+</label>
+<label>Paragraph pause minimum (seconds):
+  <input id="paraPause" type="number" value="0.80" step="0.05">
+</label>
+<small>Output: DUR = duration, SEG = speech segment starts, PARA = starts after longer pauses.</small>
+<pre id="out">Choose a file…</pre>
+<script>
+const $=s=>document.querySelector(s);
+$("#file").onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  $("#out").textContent="Decoding…";
+  const ac=new (window.AudioContext||window.webkitAudioContext)();
+  const buf=await ac.decodeAudioData(await file.arrayBuffer());
+  const sr=buf.sampleRate,n=buf.length,channels=buf.numberOfChannels;
+  const mono=new Float32Array(n);
+  for(let c=0;c<channels;c++){const d=buf.getChannelData(c);for(let i=0;i<n;i++)mono[i]+=d[i]/channels}
+  let peak=0;for(let i=0;i<n;i++)peak=Math.max(peak,Math.abs(mono[i]));
+  const db=Number($("#db").value||-30);
+  const threshold=peak*Math.pow(10,db/20);
+  const win=Math.max(1,Math.round(sr*.02)); // 20 ms envelope
+  const speech=[];
+  for(let i=0;i<n;i+=win){
+    let sum=0,end=Math.min(n,i+win);
+    for(let j=i;j<end;j++)sum+=mono[j]*mono[j];
+    const rms=Math.sqrt(sum/(end-i));
+    speech.push(rms>=threshold);
+  }
+  // Merge tiny silent gaps below 120ms so consonant gaps do not split words.
+  const bridge=Math.round(.12/.02);
+  for(let i=0;i<speech.length;){
+    if(speech[i]){i++;continue}
+    let j=i;while(j<speech.length&&!speech[j])j++;
+    if(i>0&&j<speech.length&&j-i<=bridge)for(let k=i;k<j;k++)speech[k]=true;
+    i=j;
+  }
+  const segPause=Number($("#segPause").value||.45),paraPause=Number($("#paraPause").value||.8);
+  const starts=[0],paras=[0];
+  let inSpeech=false,silStart=null,hadSpeech=false;
+  for(let i=0;i<speech.length;i++){
+    const t=i*.02;
+    if(speech[i]){
+      if(!inSpeech){
+        if(hadSpeech&&silStart!=null){
+          const gap=t-silStart;
+          if(gap>=segPause)starts.push(t);
+          if(gap>=paraPause)paras.push(t);
+        }
+        inSpeech=true;hadSpeech=true;silStart=null;
+      }
+    }else if(inSpeech){inSpeech=false;silStart=t}
+  }
+  const uniq=a=>[...new Set(a.map(x=>Math.max(0,Math.min(buf.duration,x)).toFixed(3)))].map(Number);
+  const result=[
+    `FILE ${file.name}`,
+    `DUR ${buf.duration.toFixed(3)}`,
+    `PEAK ${peak.toFixed(6)}`,
+    `THRESHOLD_DB ${db}`,
+    `SEG ${JSON.stringify(uniq(starts))}`,
+    `PARA ${JSON.stringify(uniq(paras))}`
+  ].join("\n");
+  $("#out").textContent=result;
+  await ac.close();
+};
+</script>
+</body>
+</html>

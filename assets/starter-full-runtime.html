@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motion Designer v3.8 — Full Runtime Starter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+:root{
+  --accent:#8A8F98;
+  --accent-lit:#C4C8CF;
+  --ink:#F2F3F7;
+  --ink-dark:#0B1B33;
+  --base:#111318;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:"Sora",system-ui,sans-serif}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(1);overflow:hidden;background:var(--base)}
+#world{position:absolute;inset:0;will-change:transform;transform-origin:50% 50%}
+#gl{position:absolute;inset:0;width:1920px;height:1080px}
+.bgfx{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(70% 42% at 50% 108%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 70%)}
+#dom{position:absolute;inset:0}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden}
+.hero-wrap{perspective:1400px}
+.hero{opacity:0;color:#fff;font-size:118px;font-weight:500;letter-spacing:-.02em;line-height:1.02;text-align:center;max-width:1500px;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.wd{display:inline-block;white-space:nowrap}.ch{display:inline-block;opacity:0;will-change:transform,opacity,filter}
+.txt2{display:inline-block;opacity:0}
+.hl{position:relative;display:inline-block}.hl i{position:absolute;left:0;right:0;bottom:-.05em;height:.14em;background:var(--accent);border-radius:.08em;transform:scaleX(0);transform-origin:0 50%}.hl-t{position:relative;opacity:0}
+.card{position:absolute;width:520px;padding:34px 38px;border-radius:36px;background:rgba(245,248,255,.96);color:#0b1525;box-shadow:0 30px 100px rgba(0,0,0,.28);opacity:0}
+.card strong{font-size:64px;display:block;letter-spacing:-.04em}.card span{font-size:28px;opacity:.7}
+svg.route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.route path{fill:none;stroke:var(--accent-lit);stroke-width:7;stroke-linecap:round}
+.paper{position:absolute;inset:0;opacity:0;visibility:hidden;background:linear-gradient(180deg,#F7FAFF,#E8F0FF)}
+.pocket{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(60% 46% at 50% 50%,rgba(0,0,0,.58),transparent 72%)}
+.leak{position:absolute;left:50%;top:50%;width:2400px;height:2400px;margin:-1200px 0 0 -1200px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent-lit) 82%,white),color-mix(in srgb,var(--accent) 52%,transparent) 34%,transparent 74%);filter:blur(64px);mix-blend-mode:screen;opacity:0;pointer-events:none;z-index:40}
+.vignette{position:absolute;inset:0;pointer-events:none;z-index:45;background:radial-gradient(ellipse 78% 68% at 50% 52%,transparent 40%,rgba(0,0,0,.54) 88%,rgba(0,0,0,.86) 100%)}
+#ui{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;background:rgba(8,10,14,.9);color:#fff;font:13px system-ui}
+#ui.on{display:flex}#ui input{width:360px}#clock{min-width:6ch;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="gl"></canvas>
+    <div class="bgfx"></div>
+    <div id="dom">
+      <div class="paper" id="paper"></div>
+      <div class="pocket" id="pocket"></div>
+
+      <section class="scene" id="s1">
+        <div class="hero-wrap">
+          <h1 class="hero" id="headline">
+            <span class="txt">Satu dunia visual yang</span>
+            <span class="hl" id="hl"><i></i><span class="hl-t">bergerak</span></span><span class="txt2">.</span>
+          </h1>
+        </div>
+      </section>
+
+      <section class="scene" id="s2">
+        <svg class="route" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+          <path id="route" d="M 260 760 C 560 300, 980 880, 1580 360"/>
+        </svg>
+        <div class="card" id="card" style="left:700px;top:385px">
+          <strong>42%</strong><span>Replace with real evidence.</span>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="leak" id="leak"></div>
+  <div class="vignette"></div>
+</div>
+
+<div id="ui">
+  <button id="play">Pause</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="clock">0.00s</span>
+</div>
+
+<script type="module">
+import {
+  $, splitChars, fitFixedStage, createTextMotion, markHighlight, popPunctuation,
+  createWorldCamera, createExplainerHelpers, createThreeScene
+} from "../runtime/index.js";
+
+const W=1920,H=1080,DURATION=10;
+const stage=$("#stage"), world=$("#world");
+fitFixedStage(stage,W,H);
+
+const three=createThreeScene($("#gl"),{width:W,height:H});
+const S=three.state;
+const tl=gsap.timeline({paused:true});
+const camera=createWorldCamera(tl,world);
+const ex=createExplainerHelpers(tl,camera);
+
+const textSpan=$("#headline .txt");
+const chars=splitChars(textSpan);
+const textMotion=createTextMotion(tl);
+
+tl.set("#s1",{autoAlpha:1},0);
+tl.set(S,{dust:.35,nebula:.7,grid:.12,stars:.1,bloom:.7,camZ:16,heroO:0},0);
+textMotion.inUp(chars,$("#headline"),.35,{dur:.78,st:.024});
+markHighlight(tl,$("#hl"),1.15);
+popPunctuation(tl,$("#headline .txt2"),1.42);
+
+tl.to(S,{heroO:1,heroS:1.15,heroZ:4.6,heroRotY:1.1,duration:.9,ease:"power3.out"},1.55);
+tl.to(S,{flow:90,duration:2.2,ease:"power1.inOut"},1.7);
+
+camera.into(3.9,{push:1.95,inDur:.5,origin:"50% 50%"});
+tl.to("#leak",{opacity:.42,duration:.18,yoyo:true,repeat:1,ease:"power2.out"},3.75);
+tl.set("#s1",{autoAlpha:0},3.9);
+tl.set("#s2",{autoAlpha:1},3.9);
+camera.settle(3.9,{from:1.42,outDur:.9});
+
+tl.to(S,{grid:.5,dust:.15,nebula:.18,stars:.3,tunnel:.28,flow:230,duration:1.1,ease:"power2.out"},3.9);
+ex.draw($("#route"),4.25,{duration:1.25});
+ex.say($("#card"),4.85,{duration:.68,y:40});
+camera.look(5.2,-60,30,1.16,.75,{origin:"50% 50%"});
+camera.home(6.35,.8);
+
+ex.unsay($("#card"),8.1);
+tl.to("#route",{opacity:0,duration:.35},8.05);
+tl.to(S,{tunnel:0,stars:0,dust:.25,nebula:.5,bloom:.55,duration:.7},8.05);
+tl.to({},{duration:.01},DURATION);
+
+function render(t){
+  three.render(t);
+}
+gsap.ticker.add(()=>render(tl.time()));
+
+const q=new URLSearchParams(location.search);
+const ui=$("#ui"), scrub=$("#scrub"), clock=$("#clock"), play=$("#play");
+if(q.has("debug"))ui.classList.add("on");
+let dragging=false;
+gsap.ticker.add(()=>{
+  const t=tl.time();
+  clock.textContent=t.toFixed(2)+"s";
+  if(!dragging)scrub.value=String(t/DURATION*1000);
+});
+scrub.onpointerdown=()=>{dragging=true;tl.pause()};
+addEventListener("pointerup",()=>dragging=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+play.onclick=()=>tl.paused()?tl.play():tl.pause();
+addEventListener("keydown",e=>{
+  if(e.code==="Space"){e.preventDefault();tl.paused()?tl.play():tl.pause()}
+  if(e.key==="r"||e.key==="R")tl.play(0);
+});
+tl.eventCallback("onComplete",()=>tl.play(0));
+
+window.OPENER={
+  W,H,DURATION,tl,state:S,three,ready:false,
+  seek(t){
+    const x=Math.max(0,Math.min(DURATION,t));
+    tl.pause();
+    tl.time(x,false);
+    render(x);
+  },
+  play(){tl.play()}
+};
+
+await document.fonts.ready;
+window.OPENER.ready=true;
+render(0);
+if(!q.has("clean"))tl.play(0);
+</script>
+</body>
+</html>

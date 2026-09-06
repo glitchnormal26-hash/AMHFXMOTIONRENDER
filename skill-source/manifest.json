@@ -1,0 +1,80 @@
+{
+  "source": "Motion Designer v3.8 Full Runtime",
+  "parts": [
+    {
+      "path": "skill-source/part-01.md",
+      "lines": 605,
+      "bytes": 28254,
+      "sha256": "9eec16442dd9bf53b97fd0d09cb66b36d3f524ad661d42adb7c2201986bda5ed"
+    },
+    {
+      "path": "skill-source/part-02.md",
+      "lines": 605,
+      "bytes": 16444,
+      "sha256": "417728b6e39089f0231959e648745c81231c1e33b2111bbfa5159d88c6438dea"
+    },
+    {
+      "path": "skill-source/part-03.md",
+      "lines": 605,
+      "bytes": 20547,
+      "sha256": "f340ca726f631bea5c39a91d4e54913f16ecf3c10c2e3dcff5e9344a02ab9b9b"
+    },
+    {
+      "path": "skill-source/part-04.md",
+      "lines": 605,
+      "bytes": 17459,
+      "sha256": "3d30ea5883d4c09d3da79b3b8af75cd4bfdae87facfcbffeda39be3f84bfd303"
+    },
+    {
+      "path": "skill-source/part-05.md",
+      "lines": 605,
+      "bytes": 23415,
+      "sha256": "550988383f0b0ec618d37dcd19dbf3c849246b4d6834cdd1278d3961da96726c"
+    },
+    {
+      "path": "skill-source/part-06.md",
+      "lines": 605,
+      "bytes": 19110,
+      "sha256": "5b3ed7b81c6957ee95d583a700cc56b7f92f78763e5a05cc78f7b12adff45639"
+    },
+    {
+      "path": "skill-source/part-07.md",
+      "lines": 605,
+      "bytes": 19794,
+      "sha256": "d6d26b310aaa559e5fa180c499e2315faeb095f062a69a2e1e1da06204f8d9e1"
+    },
+    {
+      "path": "skill-source/part-08.md",
+      "lines": 605,
+      "bytes": 19992,
+      "sha256": "550eacbfad3041fc8436ab2d8c9ba1130ac36c2231e723e3ad927472d96bee9e"
+    },
+    {
+      "path": "skill-source/part-09.md",
+      "lines": 605,
+      "bytes": 21106,
+      "sha256": "c0dcf55b92909f77e1840fe7a2ba949b5d946051977364b6730f4e89d4d29687"
+    },
+    {
+      "path": "skill-source/part-10.md",
+      "lines": 605,
+      "bytes": 27484,
+      "sha256": "69cad666f65a5566f384335f426053f9753456562379331e83fecd33d0cb4626"
+    },
+    {
+      "path": "skill-source/part-11.md",
+      "lines": 605,
+      "bytes": 24155,
+      "sha256": "d74583e72fd0fb2c17f99c130070c19f47b5c1632ecc2a41e0591db8c332354f"
+    },
+    {
+      "path": "skill-source/part-12.md",
+      "lines": 599,
+      "bytes": 17685,
+      "sha256": "7e41823411a525054c3a93ee0847c0afbb0439d07f338c036f8112f0432d07d2"
+    }
+  ],
+  "reassembled_sha256": "934c629b2d47d5f151e75671c99af25fd9a13aec4decf461a89ced909d1b267a",
+  "reassembled_bytes": 255445,
+  "reassembled_lines": 7254
+}
