@@ -1,303 +1,346 @@
+- pre-SFX cues
+- SFX sentence stages where relevant
+- impact construction
+- material-to-sound mapping
+- spatial treatment
+- silence / negative-space points
+- tail bridges
+- sync offsets
+- event clustering
+- reuse / sonic motif strategy
+- VO masking notes
 
-For capture / export workflows:
+## If asked for implementation
 
-- use a master timeline
-- make scene state seekable
-- avoid random values that change on every playback unless seeded
-- avoid physics whose result depends on realtime frame duration unless converted to deterministic evaluation
-- verify that `timeline.seek()` or equivalent reproduces the same composition
+Provide:
 
-### Three.js Determinism
+- concise motion rationale
+- complete code or procedural steps
+- key tunable values
+- VO / marker setup
+- SFX sync guidance
+- render / preview instructions
+- verification checklist
+- layout / collision strategy when text or UI is programmatically generated
+- master-timeline / scene-ownership strategy for GSAP or similar tools
+- representative frame-inspection points
+- cinematic intensity level when 3D / cinematic direction is requested
+- camera vocabulary and start / landing poses
+- lens / FOV rationale
+- 2D ↔ 3D bridge strategy when both systems are used
+- deterministic render strategy for HTML / Three.js / GSAP output
+- performance budget assumptions for realtime WebGL
 
-For final render:
+## If asked for critique
 
-- derive camera, object, shader, and particle states from explicit time when possible
-- for authored camera shots, evaluate position / rig position, orientation or target, and lens state from the same authoritative time instead of relying on a static mount pose
-- confirm the evaluated state is applied to the active render camera on every captured frame where the shot is moving
-- seed procedural randomness
-- avoid unbounded per-frame accumulation that changes when frames are skipped
-- update mixers, simulations, and uniforms using controlled time values
+Lead with the most important problems and exact fixes.
 
-If a simulation cannot be made deterministic, bake or cache the result before final capture when practical.
+## If asked to “make it better”
 
-### Font & Layout Readiness
+First diagnose what “better” means in context:
 
-Before frame capture:
+- clearer
+- faster
+- more premium
+- more energetic
+- more emotional
+- more readable
+- more polished
+- more brand-consistent
+- more curious
+- more retention-driven
+- more tactile
+- more edgy
+- more synchronized with VO
+- more memorable sonically
 
-- wait for fonts to load
-- wait for critical assets and textures
-- allow layout to settle
-- measure text after the correct font is active
-- verify line wrapping at target resolution
-
-For browser work, use `document.fonts.ready` or equivalent when available.
-
-### Resolution Authority
-
-Set the final output dimensions explicitly.
-
-For example, a 9:16 1080p deliverable should render at 1080 × 1920 rather than relying on a scaled browser viewport.
-
-Control:
-
-- CSS viewport
-- canvas backing resolution
-- device pixel ratio
-- camera aspect ratio
-- DOM scaling
-
-Do not let an unexpected DPR silently change framing or performance.
-
-### Frame Stepping
-
-For high-confidence final video:
-
-1. set timeline to exact frame time
-2. update GSAP / DOM state
-3. update Three.js state
-4. render frame
-5. capture frame
-6. advance exactly one frame
-
-Prefer frame stepping or an equivalent deterministic capture path over realtime screen recording.
-
-### Capture Validation
-
-Before rendering the full sequence, capture representative frames at:
-
-- first frame
-- scene landings
-- transition midpoints
-- maximum camera travel
-- maximum DOF or blur
-- densest typography state
-- final frame
-
-Compare them against intended composition.
+Then change the system accordingly rather than adding random effects.
 
 ---
 
-## Performance Budget for Three.js / Web Motion
+# 26. Final Quality Gate
 
-Performance is part of motion quality.
+Before final delivery, ask internally:
 
-Dropped frames change timing, easing, and perceived weight.
+## Purpose
 
-Establish a performance budget appropriate to the target device and render path.
+- Does every important motion serve communication, hierarchy, curiosity, emotion, or continuity?
 
-### Geometry
+## Retention
 
-Avoid unnecessary polygon density.
+- Is there a reason to watch the next moment?
+- Does the sequence repeatedly create and resolve visual questions?
+- Is the frame ever fully resolved for too long?
 
-Use enough geometry for silhouette and material behavior, not invisible complexity.
+## Hierarchy
 
-Prefer instancing for repeated objects when appropriate.
+- Is there a clear hero action?
+- Are secondary elements actually secondary?
+- Is interruption intentional?
 
-### Draw Calls
+## Timing
 
-Reduce avoidable draw calls by:
+- Are there meaningful contrasts in pace?
+- Are holds long enough?
+- Is anything waiting unnecessarily?
 
-- instancing
-- material reuse
-- batching where practical
-- removing invisible objects
+## Easing
 
-Do not combine everything if it makes authored animation harder to control.
+- Does velocity communicate the intended weight?
+- Is overshoot justified?
 
-### Textures
+## Composition
 
-Use texture resolution appropriate to on-screen size.
+- Do key frames work as still images?
+- Are crops and safe areas correct?
+- Is perspective helping attention rather than showing off technique?
 
-Avoid loading large textures that never appear large enough to justify them.
+## Illustration
 
-### Shadows
+- Does illustration behave rather than merely slide?
+- Are transformations conceptually readable?
 
-Real-time shadows are expensive.
+## Typography
 
-Use them where they materially support depth or hierarchy.
+- Can the viewer read the message comfortably during normal-speed playback at the expected display size?
+- Does type animation support language rather than obscure it?
+- Does font mixing create intentional visual interest while preserving word recognition and hierarchy?
+- Do experimental transformations provide enough time in readable states to understand the message?
+- Were layout and optical alignment re-checked after font swaps or variable-font changes?
+- Does the typography participate in the evolving visual world instead of repeatedly behaving like a title card?
+- When camera movement is used, does it reveal, prioritize, connect, transform, or carry typographic information?
+- Are must-read words given a readable state before becoming crops, occluders, portals, planes, or abstract transition material?
+- Do camera direction and reading direction support each other?
+- If typography occupies depth, is hero ownership clear across foreground, hero, support, and background planes?
+- Can outgoing typography, its negative space, motion vector, or geometry meaningfully cause the next scene?
 
-Prefer a small number of important shadow casters rather than enabling expensive shadows everywhere.
+## VO
 
-### Post Processing
+- Are hero words visually prioritized?
+- Is animation following meaning and phrasing instead of every syllable?
+- Are pauses used intentionally?
 
-Budget expensive passes deliberately.
+## SFX
 
-Bloom, DOF, SSAO, motion blur, volumetrics, and multiple full-screen passes can quickly dominate GPU cost.
+- Is the piece still following the no-BGM default?
+- Does each sound have a role?
+- Are hero sounds actually distinct from motion, support, and texture sounds?
+- Are major events shaped as intentional sonic sentences rather than stacks of random layers?
+- Is material identity consistent?
+- Are small events clustered instead of individually sonified?
+- Do tails bridge scenes where continuity benefits?
+- Is spatial treatment consistent with visual direction and depth?
+- Is VO intelligibility protected from high-mid masking and long tails?
+- Is there enough silence?
+- Does the sound improve tactility without becoming noisy?
 
-Do not stack them by default.
+## Consistency
 
-### Device Pixel Ratio
+- Does the piece use a coherent motion vocabulary?
+- Does it use a coherent sound vocabulary?
 
-Cap DPR for interactive preview when necessary.
+## Restraint
 
-For final deterministic render, use the explicit target backing resolution rather than uncontrolled device DPR.
+- Can any motion be removed without losing meaning?
+- Can any SFX be removed without losing impact?
+- If yes, consider removing it.
 
-### Ambient Systems
+## Collision Safety
 
-Particles, shader noise, background loops, and procedural effects should be evaluated for both attention cost and compute cost.
+- Were actual rendered text / UI bounds checked where tools allow it?
+- Do unrelated primary information blocks remain collision-free?
+- During transitions, is attention ownership obvious?
+- Are outgoing elements actually removed, hidden, masked, or visually subordinated before incoming hero content competes?
+- Were safe areas verified at both settled frames and transition frames?
 
-If an ambient effect is expensive and narratively unnecessary, remove it.
+## Motion Density & Anti-Presentation
 
-### Performance QA
+- Does the piece contain meaningful changes in hierarchy, framing, spatial relationship, or information state?
+- Would the sequence still make sense if several scenes were swapped? If yes, is scene causality too weak?
+- Does each scene evolve the same visual world, or does it feel like a new artboard?
+- Is the dominant grammar more authored than repeated fade + small translate?
+- Are SaaS UI elements behaving as product states / spatial objects instead of centered screenshots?
+- When kinetic typography appears before SaaS, does the product feel like the payoff / visualization of the claim rather than a separate slide?
+- Does any major speed ramp transfer hierarchy and momentum into a readable landing instead of repeating a generic fast-slow pattern?
+- Are SaaS sounds chosen by function first, with technical character used as material rather than as a generic “tech SFX” category?
+- Are decorative eyebrow labels, scene numbers, fake timecodes, pseudo-HUD strings, and filler microcopy absent unless they carry real information or are explicitly required?
+- Is negative space being allowed to stay empty instead of being filled with ornamental metadata?
+- Does each substantial scene have a clear hero gesture or a deliberate reason to remain still?
+- Does outgoing motion, geometry, light, or sound cause the incoming scene where practical?
+- Are velocity, scale, direction, and holds varied intentionally?
+- Does ambient motion support the hero instead of pretending to be the hero?
+- Does the final brand resolution grow from prior visual language rather than arriving as a detached end slide?
+- Do typographic scenes evolve through framing, crop, persistence, depth, or role transfer rather than resetting to centered headline layouts?
+- If camera and typography interact, does their relationship change meaning or spatial understanding instead of simulating a decorative presentation zoom?
 
-Verify:
+## Physical-Digital Hybrid & Object Relay
 
-- no obvious frame drops in target preview environment
-- final render uses intended frame timing
-- camera motion remains smooth and is visibly non-static whenever the shot declares `MOVING`, `TRACKING`, or `REFRAME`
-- shader compilation or texture loading does not create visible first-play hitches
-- memory use does not grow continuously during loops or replay
+- Does each physical prop communicate process, material, interaction, or transition rather than merely decorate the frame?
+- Is there a readable hero-object relay when the sequence crosses several environments?
+- At every relay, is the transfer cause visible and is at least one useful property inherited?
+- Are material transformations semantically related to what the source object does or means?
+- If objects scatter or collide, does one destination or surviving hero become clear afterward?
+- When digital elements become tangible, is their identity preserved through silhouette, position, vector, material, or function?
+- Does camera tracking eventually release the hero when context or product comprehension needs to take ownership?
+- Does any large scale escalation create a new role or reveal rather than simply making the object bigger?
+- Can product UI emerge from prior cards, lines, fragments, or objects instead of appearing as an unrelated screenshot?
+- Are flash, blur, DOF, and exposure changes helping a specific handoff rather than hiding weak continuity?
+- After dense motion, is there a deliberate breath state where the viewer can understand the result?
+- If typography and objects interlock, is the must-read word still recognizable at normal speed?
+- Does the ending simplify toward a product, word, or brand state when simplification would increase impact?
+- Are the extracted principles authored for this brief rather than copied from the reference's surface styling?
 
-Do not call a piece polished if preview performance materially changes the intended timing.
+## Programmatic Motion
+
+- Is the master clock deterministic?
+- Do pause, replay, seeking, and reduced-motion states affect all relevant motion systems coherently?
+- Are DOM and WebGL layers synchronized when both are used?
+- Are key transition labels or timecodes available for QA?
+- Can the layout survive the longest expected copy without accidental overlap?
+
+## Shader Gradient / Bloom / R3F
+
+- Is an animated gradient doing a narrative or hierarchy job rather than filling empty space?
+- If ShaderGradient is used, are only the parameters needed for the current state being animated?
+- Does gradient motion calm down when typography or UI needs a readable hold?
+- Is bloom attached to genuinely bright / emissive ownership rather than applied uniformly?
+- Is ShaderGradient being treated as the gradient source and post-processing as the optical bloom stage?
+- Does bloom peak at a meaningful event and decay afterward?
+- Is React Three Fiber being used as scene/runtime structure without replacing authored timing logic?
+- Are continuous `useFrame` systems synchronized with the master clock when deterministic playback matters?
+- Do gradient, R3F scene, DOM/UI, camera, post-processing, pause, replay, and seeking remain coherent?
+- Was React / R3F / ShaderGradient version compatibility checked for the chosen stack?
+
+## Cinematic 3D
+
+- Was the cinematic intensity level chosen intentionally?
+- Does every major camera move reveal, connect, emphasize, anticipate, or transition?
+- Do camera start and landing frames work as compositions?
+- Is FOV / lens behavior intentional and stable?
+- Does the hero object have readable poses instead of perpetual rotation?
+- Are foreground, midground, and background assignments supporting attention?
+- Is lighting reinforcing hierarchy or state change?
+- Are bloom, DOF, fog, blur, grain, and chromatic effects restrained?
+- Does 3D improve the idea compared with a simpler 2D / 2.5D solution?
+
+## Editing & 2D / 3D Continuity
+
+- Does each scene transition have a clear edit logic?
+- Is movement direction preserved or intentionally broken?
+- When switching between DOM / 2D and 3D, is there a readable visual bridge?
+- Are screen-space focal points aligned at transition moments?
+
+## Deterministic Render
+
+- Is final playback driven by an authoritative timeline or frame time?
+- Are procedural random systems seeded when reproducibility matters?
+- Are fonts, textures, and critical assets loaded before capture?
+- Is target resolution explicit and independent of accidental device DPR?
+- Can representative frames be reproduced by seeking to the same time?
+- When frame accuracy matters, is the final capture path deterministic rather than uncontrolled realtime screen recording?
+
+## Performance
+
+- Does preview performance preserve intended timing and easing?
+- Are geometry, shadows, textures, particles, and post-processing appropriate to the target?
+- Are expensive effects justified by visible narrative value?
+- Does replay / looping avoid memory growth or accumulating objects?
+
+## Technical
+
+- Is the result editable, performant, and correctly formatted?
+
+## Verification
+
+- Was the output actually previewed or rendered when tools made that possible?
+- Was it reviewed with sound and without sound?
+- Were representative frames captured or inspected around every major transition?
+- Were text overlap, z-order, clipping, and safe-area failures explicitly checked?
+- If the piece uses code, was playback behavior validated rather than assuming successful execution means successful motion design?
+
+The goal is not maximum animation.
+
+The goal is not maximum sound.
+
+The goal is:
+
+**maximum clarity, curiosity, character, and impact with the minimum motion and sound necessary.**
 
 ---
 
-## Blender / 3D
-
-Use Blender or 3D only when the concept specifically benefits from:
-
-- true dimensional transformation
-- physical camera parallax unavailable in 2D
-- lighting as narrative information
-- object rotation requiring real geometry
-- material behavior
-
-Do not use 3D merely to make the piece feel “premium.”
-
-If the same idea works more clearly in 2D / 2.5D, prefer the simpler system.
-
-## Other Tools
-
-For Cavalry, Cinema 4D, Rive, GSAP, Framer Motion, CSS, SVG, or other systems:
-
-- preserve the same art-direction principles
-- translate timing, easing, hierarchy, choreography, VO sync, and sound logic into the tool's native strengths
-- do not force an After Effects mental model onto every tool
-
 ---
 
-# 21. Accessibility and Comfort
+# 24. v3.8 Unified Browser Motion, Anti-PPT & Explainer Rules
 
-When motion appears in an interface or long-running experience:
+These rules are part of the main Motion Designer skill. They are not a secondary
+resource layer. Apply them together with the rest of this file and choose the
+context-appropriate branch when two defaults appear to pull in different
+directions.
 
-- respect reduced-motion preferences
-- avoid unnecessary large camera movement
-- avoid repeated aggressive zooms
-- avoid rapid flashing
-- keep essential information available without requiring motion perception
-- provide simpler transitions when motion is disabled
-- favor opacity or instant state changes when spatial movement is not essential
+## 24.1 Structural Anti-Presentation Laws
 
-For audio:
+1. **One evolving world is the default.** Do not build a sequence as a stack of
+   full-screen cards that merely fade, slide, or `autoAlpha` on and off.
+2. **A scene change needs a cause.** The next state should be caused by camera,
+   object, typography, material, light, UI state, sound, crop, occlusion, or an
+   intentional hard cut.
+3. **Repeated scene shells are a failure pattern.** Three or more scenes using the
+   same `kicker → title → body → badges` hierarchy should trigger redesign.
+4. **One shot = one dominant statement.** Supporting information may exist, but it
+   must not compete with the primary visual action.
+5. **Hierarchy should arrive in order.** Primary statement / hero → main object or
+   proof → supporting detail. Do not let decorative status elements arrive before
+   the reason to look.
+6. **Motion should change meaning or expectation.** If removing a transition does
+   not change hierarchy, continuity, anticipation, or understanding, it may be
+   decorative.
+7. **Do not solve transitions with opacity alone.** Fades are allowed, but repeated
+   fade + small translate is not an authored transition vocabulary.
+8. **Do not expose the edge of the world accidentally.** Camera-equivalent pans,
+   whips, or translations must not reveal an empty stage boundary.
+9. **Do not use editor-preset shock as cinematic language.** Repeated zoom-spin,
+   yaw-whip, blur-hit, or generic light-leak cuts quickly read as a template.
+10. **Use expensive or spectacular effects selectively.** One or two standout
+    moments are stronger than the same signature effect on every cut.
+11. **A beautiful still frame can still be a slide.** Anti-PPT is evaluated across
+    time: continuity, causality, hierarchy, and choreography matter more than polish.
+12. **Metadata is content only when it means something.** Do not invent scene
+    numbers, fake timecodes, category slugs, pseudo-HUD labels, or technical
+    microcopy merely to make the frame feel designed.
+13. **Mockup density is a visual exception.** A real interface may contain many
+    words because it is read as an image/product state; do not copy that density
+    into explanatory overlay text.
+14. **Reference layouts are not recipes.** Extract timing, continuity, hierarchy,
+    transition causality, and camera logic; do not inherit the reference's branded
+    skin or exact composition.
 
-- do not make SFX essential for understanding
-- preserve comprehension without sound
-- keep VO clear
-- avoid excessively sharp or fatiguing repeated transients
+## 24.2 Unified Text-Density Rules
 
-Reduced motion does not mean remove all design.
+Use text density according to format rather than one universal word limit.
 
-Preserve hierarchy and feedback with lower-motion alternatives.
+### High-retention social / kinetic passage
 
----
+- default to 1–4 dominant words per beat;
+- keep most frames below roughly 6 visible words unless the landing needs more;
+- VO carries explanation, type carries impact;
+- reset crop, scale, position, depth, or wording on meaningful beats;
+- do not animate every word identically.
 
-# 22. Deliver → Verify → Refine
+### Promo / opener / bumper
 
-For any task that produces an actual visual artifact, use an inspection loop whenever tools allow it.
+- prefer one short claim, name, number, or hero phrase;
+- secondary copy should be rare and genuinely useful;
+- a long sentence is usually a signal to split the beat or visualize the idea.
 
-## Step 1 — Build
+### Explainer
 
-Create the first working version.
+- a scene may contain a short sentence plus one key number, label, or annotation;
+- charts, maps, timelines, and UI may be information-dense because they are read as
+  visual instruments;
+- avoid paragraph overlays when VO or visual structure can carry the explanation.
 
-## Step 2 — Inspect key moments
+### Accessibility / platform captions
 
-Review representative frames:
-
-- opening frame
-- first curiosity hook
-- anticipation
-- peak action
-- transition midpoint
-- hero word
-- reveal
-- settle
-- final frame
-
-## Step 2.4 — Mandatory Transition Frame Inspection
-
-For every major scene transition, inspect multiple frames around the handoff rather than only the exact cut.
-
-Recommended starting sample at 30 fps:
-
-- T − 6 frames
-- T − 3 frames
-- T
-- T + 3 frames
-- T + 6 frames
-
-Also inspect the peak of the outgoing hero and the settle of the incoming hero.
-
-At each sampled frame, check:
-
-- text collisions
-- hero-vs-hero competition
-- accidental stacking
-- clipping
-- safe-area violations
-- unexpected z-order
-- unreadable transitional copy
-- whether the visual vector actually leads into the next scene
-
-If tools allow screenshots or rendered frames, use them.
-
-Do not approve a transition based only on timeline logic or source code.
-
-## Step 2.5 — Cinematic 3D Inspection
-
-When the piece uses 3D, camera movement, lens changes, lighting choreography, or post-processing, inspect representative states for:
-
-- camera start and landing composition
-- FOV / lens distortion
-- hero silhouette
-- foreground occlusion
-- depth readability
-- lighting hierarchy
-- material readability
-- DOF focus target
-- bloom / fog / blur intensity
-- 2D / 3D alignment
-- camera-direction continuity into the next shot
-
-Capture or inspect the midpoint of every major camera move.
-
-Do not approve a camera move only from its start and end frames; the path may create collisions, clipping, or weak composition in between.
-
-## Step 2.5.1 — Camera Motion Existence Gate
-
-Before judging whether a camera move is beautiful or smooth, verify that it actually exists in the rendered implementation.
-
-For every shot whose camera mode is `MOVING`, `TRACKING`, or `REFRAME`, sample camera state at approximately:
-
-- shot start
-- 25%
-- 50%
-- 75%
-- shot end / landing
-
-Compare as relevant:
-
-- camera or rig position delta
-- orientation / quaternion delta
-- look-target delta
-- FOV / zoom delta
-- active camera identity
-- projected screen-space position / scale of the hero
-- foreground-to-background parallax
-
-Use tolerances appropriate to scene scale and lens. Do not rely on one universal world-unit epsilon.
-
-If position, orientation / target, and lens remain effectively unchanged across the interval, classify the camera as **STATIC**.
-
-If the declared mode is not `LOCKED_INTENTIONAL`, a static result is a **hard failure**:
-
-**FAIL → locate the missing camera binding, timeline evaluation, active-camera ownership, or overwritten transform → implement the authored move → render again.**
+- captions are **off by default for authored motion composition**, but add them when
+  the user requests them, the delivery platform requires them, or accessibility is
+  a stated objective;

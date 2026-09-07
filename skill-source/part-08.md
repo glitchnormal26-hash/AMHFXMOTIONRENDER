@@ -1,303 +1,346 @@
 
-Use transformation only when the relationship is readable.
+### Extraction Failure Modes
+
+Avoid:
+
+- introducing a new object that only resembles the source instead of transforming the visible source
+- losing object identity because every visual property changes at once
+- scaling a UI element to 1000% without adding any hierarchy or spatial logic
+- using 3D depth when a flat transition would be clearer
+- camera tracking that fights the object's motion rather than clarifying it
+- hiding the object before the viewer understands that it became the transition
+
+
+## 12.5.6 Parallax Environment Handoff Transitions
+
+An environment itself may become the transition device.
+
+Do not assume every transition requires one isolated hero object.
+
+When the scene already contains meaningful foreground, midground, and background layers, the camera may travel through those layers so spatial separation carries the viewer into the next environment.
+
+Use the handoff model:
+
+**SOURCE DEPTH SYSTEM → DESTINATION SEED → CAMERA TRAVEL → LAYER SEPARATION → THRESHOLD → DEPTH REASSIGNMENT → DESTINATION SYSTEM**
+
+### Depth Reassignment
+
+Layers may change narrative role across the transition.
+
+Examples:
+
+- current background → next midground hero
+- current midground card → next foreground threshold
+- current foreground frame edge → next environment architecture
+- distant node cluster → next full spatial network
+- current horizon → persistent horizon in the destination
+- small background UI plane → next full-screen product state
+
+This role transfer should be readable through position, scale, motion vector, material, or light continuity.
+
+### Environmental Carry-Over
+
+For a parallax-driven scene change, preserve at least one environmental property across the handoff:
+
+- horizon or vanishing direction
+- camera travel vector
+- foreground travel direction
+- depth-axis logic
+- structural motif
+- light direction
+- atmospheric density
+- repeated material
+- tracked element
+- destination landmark
+- sound texture or tail
+
+Prefer preserving two or more when the environments differ substantially.
+
+### Environment-to-Environment Examples
+
+**UI DASHBOARD → cards separate in depth → camera follows a node between panels → distant network enlarges → foreground cards whip past → camera enters network environment**
+
+**3D PRODUCT TABLE → camera trucks behind a large device → device creates near-field occlusion → same camera vector continues → backside reveals a wider automation environment**
+
+**FLAT GRID → perspective increases → grid lines become floor / rails → camera moves through foreground intersections → distant UI plane becomes the next workspace**
+
+**NODE NETWORK → camera accelerates toward one illuminated gap → surrounding nodes produce deep parallax → gap resolves into circular product motif → motif becomes architecture of the next scene**
+
+### No Teleport Rule
+
+If the transition is presented as camera travel, the destination must respect the travel.
+
+Do not:
+
+**push forward → hide frame → place camera at an unrelated angle, depth, or direction in a new world**
+
+unless the discontinuity is explicitly motivated as a deliberate impossible-space effect.
+
+Prefer:
+
+**travel vector survives → depth relationships evolve → destination becomes legible → camera lands inside a new but connected environment**
+- arriving at a scene whose composition has no relationship to the extracted object's final position or vector
+- repeatedly extracting an element from every scene until the technique becomes predictable
 
 ---
 
-# 12.5 Shot-to-Shot Editing & 2D ↔ 3D Continuity
 
-A cinematic motion piece is edited, not merely sequenced.
+## 12.5.7 Hero-Object Relay & Semantic Material Transformation
 
-Treat each transition as an edit decision.
+A strong multi-scene sequence does not need the same object to survive forever.
 
-## 12.5.1 Editing Grammar
+It needs a **readable relay of attention**.
 
-Choose the transition based on narrative logic.
+Use this grammar:
 
-### Hard Cut
+**OBJECT A OWNS → A ACTIVATES / REVEALS B → B INHERITS VECTOR OR POSITION → CAMERA ACQUIRES B → B TRANSFORMS / TRAVELS → B REVEALS C → SETTLE**
 
-Use when:
+The relay may pass between:
 
-- contrast is the point
-- a punchline needs immediacy
-- anticipation has already prepared the eye
-- sound can carry continuity
+- physical prop
+- UI element
+- cursor / pointer
+- notification or message card
+- tool such as pen, marker, brush, scissors, or device
+- line / stroke / ribbon
+- card / folder / thumbnail
+- typographic word or glyph
+- product module
+- brand mark
 
-### Match Cut
+### Relay-Cause Rule
 
-Use when shape, position, direction, scale, or meaning can connect two scenes.
+Object B should not become hero merely because the edit needs something new.
 
-### Movement Continuation
+A visible cause should transfer ownership, for example:
 
-Let motion exiting one shot provide the vector entering the next.
+- A points toward B
+- A contacts B
+- A draws or generates B
+- A opens to expose B
+- A passes behind B and B inherits the foreground position
+- A breaks into fragments that become B
+- A's motion trail becomes B
+- A's screen position is matched by B after an occlusion or cut
+- the camera follows A toward B, then releases A after B becomes more important
 
-### Occlusion Cut
+### Semantic Material Transformation
 
-Let a foreground object cover the frame, then reveal the next scene behind it.
-
-### Audio-Led Cut
-
-Allow SFX or VO to create expectation slightly before the visual edit.
-
-### Lighting-Led Cut
-
-Use brightness, blackout, emissive pulse, or shadow transition when lighting itself is part of the story.
-
-Do not default to cross-dissolve unless softness or temporal blending is conceptually useful.
-
-## 12.5.2 2D → 3D Bridge
-
-When moving from graphic / DOM space into 3D, use a readable bridge.
+Prefer transformations where the new form is related to the source object's action, function, or meaning.
 
 Examples:
 
-- UI card becomes a 3D plane
-- circle icon gains depth and becomes a node
-- DOM grid aligns with a 3D network before camera entry
-- flat line extends into spatial path
-- typography mask becomes a portal into the next scene
+- drawn stroke → route → connector → workflow path
+- cursor / pointer → physical directional object → product interaction target
+- folder → content cards → thumbnail strip → product library
+- paper edge → frame edge → interface panel
+- underline → rail → progress path
+- sticky-note cluster → grouped tasks / modules
+- ring / canopy / circular prop → framing aperture → radial reveal
 
-Avoid cutting from unrelated flat UI to unrelated 3D spectacle.
+The transformation does not need literal realism.
 
-## 12.5.3 3D → 2D Bridge
+It needs **conceptual legibility**.
 
-When returning to typography or UI:
+Avoid arbitrary morph chains where shape changes are impressive but the viewer cannot explain why one thing became another.
 
-- project a 3D node into screen-space position, then replace it with a DOM dot
-- flatten a 3D plane into a full-screen UI surface
-- let a camera-facing panel become the next 2D composition
-- use a shadow, line, or highlight from 3D as the next graphic element
+### Identity-Invariant Rule
 
-The viewer should understand that the worlds are connected.
+During a relay or transformation, preserve at least two useful invariants whenever possible:
 
-## 12.5.4 Coordinate Continuity
-
-For hybrid scenes, plan how world-space objects map into screen-space layout.
-
-When practical:
-
-- project the hero 3D focal point to screen coordinates
-- anchor DOM typography relative to that projected point
-- verify mapping at start, midpoint, and landing camera poses
-
-Do not assume a DOM composition remains safe after a camera move.
-
-
-## 12.5.5 Element Extraction & Role-Transfer Transitions
-
-A visible element may become the transition itself.
-
-Prefer using an object the viewer has already seen when that object can logically carry the story into the next scene.
-
-The preferred grammar is:
-
-**SOURCE ELEMENT → EXTRACT → PROMOTE → TRANSFORM / TRAVEL → HANDOFF → NEW ROLE**
-
-The source may begin as a small supporting element and end as the hero, transition surface, spatial object, mask, portal, foreground occluder, camera target, or structural component of the next scene.
-
-### Source Ownership
-
-The transition object should have a readable origin.
-
-Good sources include:
-
-- button
-- icon
-- avatar
-- cursor
-- chart mark
-- card
-- notification
-- text fragment or glyph
-- line or connector
-- node
-- image thumbnail
-- illustration part
-- 3D product component
-- light / emissive path tied to a visible system state
-
-Prefer:
-
-**the existing Send button compresses and detaches from the prompt bar**
-
-instead of:
-
-**a new rounded rectangle appears and flies toward camera**
-
-The viewer should understand what object is being promoted.
-
-### Extraction Moment
-
-Define the exact moment the element stops behaving as a child of the existing layout and becomes an independent transition hero.
-
-Possible extraction cues:
-
-- surrounding UI recedes while the element remains
-- parent container clips open or releases the element
-- shadow / depth appears as the element separates
-- connected lines stretch and break or reroute
-- element crosses its parent's boundary
-- local perspective changes while the rest of the UI stays planar
-- the camera begins to respond specifically to that element
-
-Do not detach every UI object simply by moving it forward.
-
-Make the release readable.
-
-### Identity Preservation
-
-During extraction and transformation, preserve enough identity for the viewer to track the object.
-
-Prefer maintaining at least two or three of these properties through the handoff:
-
-- silhouette
-- color / value
-- screen position
 - motion vector
-- label, icon, or recognizable internal mark
-- aspect ratio
-- material cue
+- screen-space position
+- silhouette family
 - scale direction
-- light behavior
-- semantic function
-- sound identity
+- material cue
+- edge / stroke character
+- color-value relationship
+- semantic role
+- camera travel direction
+- sound identity / tail
 
-Do not change shape, color, position, material, and motion direction simultaneously unless the transformation is deliberately staged so identity remains readable.
+If shape, color, material, position, scale, and direction all change at once, stage the transformation into intermediate poses.
 
-### Hero Promotion
+### Controlled Scatter / Collision Burst
 
-A small source element may become the dominant transition subject.
+A temporary burst of objects can create scale, energy, and surprise when it has a destination.
 
-Promote hierarchy by changing the relationship around it, not only its scale.
+Useful grammar:
 
-Useful promotion methods:
+**stable cluster → trigger → related objects separate at different depths → one hero remains trackable → near-field passes amplify speed → clutter clears → destination object or environment becomes dominant**
 
-- reduce surrounding contrast
-- let the parent UI fall away
-- increase negative space around the source
-- isolate the element through crop or lighting
-- let support elements react after the source moves
-- shift camera framing toward the extracted element
-- allow the element to cross foreground and temporarily dominate the viewport
+Use the scatter to:
 
-The viewer should feel the transfer from:
+- expose a hidden destination
+- promote one object from support to hero
+- create a foreground wipe
+- show many inputs becoming one output
+- convert a static composition into spatial travel
 
-**support element → hero element**
+Do not use an explosion of objects merely as spectacle.
 
-### 2D → 2D Role Transfer
+After the burst, the viewer should be able to identify what survived, what changed, and what now matters.
 
-The extracted object may remain flat.
+### Physical ↔ Digital Bridge
 
-Examples:
+When a sequence mixes tactile real-world objects and product/UI graphics, do not treat them as unrelated aesthetic layers.
 
-- chart bar leaves a chart → stretches into a full-frame wipe → becomes a timeline rail
-- notification bubble detaches → enlarges → its container edge becomes the next scene frame
-- text underline extends → becomes a path → guides the next composition
-- icon crosses foreground → becomes a mask revealing the next product state
+Build a bridge through:
 
-Do not add 3D when shape, crop, scale, or occlusion can communicate the transition more clearly.
+- matching scale trajectory
+- contact or pointing
+- screen-space alignment
+- shared shape
+- object extraction
+- a line or path crossing both worlds
+- camera continuation
+- shadow / material transfer
+- depth change
+- interaction feedback
 
-### 2D → 3D Role Transfer
+A digital element may temporarily behave like a physical object, and a physical object may become a graphic or UI structure, but the change must be staged enough to preserve identity.
 
-A flat element may gain spatial depth when dimensionality creates a meaningful bridge.
+---
 
-Possible progression:
+# 13. Kinetic Typography
 
-**flat UI element → extraction → perspective response → thickness / depth cue → spatial hero → tracked 3D travel → next scene structure**
+Typography is both language and image.
 
-Examples:
+Use expressive typography, font mixing, and experimentation as sources of visual attraction while keeping the message readable.
 
-- button detaches → gains thickness → becomes a processing module
-- circle icon gains depth → becomes a network node
-- UI card becomes a physical plane → camera tracks around it → the reverse side contains the next state
-- flat connector line extends in Z → becomes a spatial route the camera follows
+Prioritize:
 
-Introduce depth progressively enough that the viewer understands it is the same object.
+1. comprehension
+2. hierarchy
+3. rhythm
+4. character
+5. spectacle
 
-### 3D → 2D Role Transfer
+## 13.1 Font Selection & Mix and Match
 
-A spatial object may return to graphic space.
+Choose fonts for their character, word shapes, and fit with the concept. Check that they support the actual language and glyphs in the copy.
 
-Possible progression:
+Mix serif, sans-serif, monospace, display, or handwritten fonts when their contrast strengthens the composition. Combinations may appear across scenes, within one headline, or within a word when the word remains easy to recognize.
 
-**3D hero → camera-facing pose → perspective compression → screen-space alignment → flat replacement → 2D scene continues**
+Use font contrast to create:
 
-Examples:
+- a visual hook or distinctive personality
+- emphasis on a word or phrase
+- emotional contrast or a change of voice
+- rhythm, surprise, or a narrative shift
 
-- 3D node aligns to a known screen coordinate → becomes a DOM icon
-- spatial panel rotates camera-facing → fills viewport → becomes the next UI surface
-- 3D edge highlight becomes a 2D divider line
-- projected shadow becomes the shape mask of the next composition
+Let the composition determine the number of fonts. Do not impose a universal two- or three-font limit. Judge the result by readability, hierarchy, and the relationship between the letterforms.
 
-### Transition Handoff Property
+Establish visual connections through spacing, alignment, scale, color, repeated forms, or motion behavior. Coherence can come from these relationships even when the fonts are visibly different.
 
-For every element-driven transition, explicitly identify what survives the scene boundary.
+Use expressive faces wherever the copy remains readable; give dense supporting text enough size, spacing, and reading time. Respect font requirements explicitly provided in the brief.
 
-Possible handoff properties:
+## 13.2 Typography Style Direction
 
-- position
-- shape
-- scale
-- velocity
-- direction
-- depth
-- orientation
-- crop boundary
-- material
-- light
-- sound tail
-- semantic meaning
+Choose or combine typographic styles according to the concept: editorial, Swiss / modernist, brutalist, retro, playful, technical, or expressive.
 
-The handoff does not need to preserve everything.
+Explore contrast in:
 
-It must preserve enough for the viewer to perceive causality.
+- serif / sans-serif / monospace / handwritten forms
+- condensed / extended proportions
+- light / heavy weight and upright / italic forms
+- solid / outline treatment
+- scale, case, tracking, baseline, and line breaks
 
-### Element + Camera Coupling
+Treat these as creative options, not fixed presets. A style may change between words or scenes when the contrast supports the visual idea and the reading order stays clear.
 
-When the extracted element becomes a 3D tracking target, object choreography and camera choreography should be designed together.
+## 13.3 Experimental Typography
 
-Define:
+Encourage bold experimentation when the message remains understandable at the intended viewing speed.
 
-1. source element and original parent
-2. extraction cue
-3. hero promotion moment
-4. tracking target
-5. screen-space framing rule
-6. camera response — locked / smooth / heavy / lead / lag / snap reframe
-7. object travel vector and depth behavior
-8. occlusion or transformation event
-9. inherited handoff property
-10. incoming scene role
-11. camera landing composition
-12. readable hold
+Useful approaches include:
 
-The camera should not merely follow the object after the transition has already been designed.
+- font swaps timed to a phrase, accent, or visual event
+- variable-font weight, width, slant, or other axes supported by the chosen font
+- mixed letterforms within a word while preserving recognizable word shape
+- solid-to-outline changes, unusual spacing, and baseline play
+- elastic letterforms, compression, expansion, and expressive distortion
+- type / object transformations and intentional crop or grid breaks
 
-The tracking move may be the mechanism that reveals the next scene.
+Choose the intensity from the concept and the copy. Avoid arbitrary font cycling; make changes contribute visual character, emphasis, or rhythm.
 
-### Scene-Carry Pattern
+During transformations, preserve a clear path to the next readable state and allow enough time to understand the message. Voiceover may reinforce the text, but it does not replace visual readability.
 
-A strong default pattern is:
+## 13.4 Animation Units & Techniques
 
-**visible element acts → element leaves its local container → camera recognizes it as the new hero → camera tracks / reframes → element changes scale or depth → element crosses or fills frame → scene state changes through the element → camera continues or reacquires → element lands with a new role**
+Choose the animation unit intentionally:
 
-Examples:
+- full block
+- line
+- word
+- syllable
+- character
+- glyph component
 
-**SEND BUTTON → COMPRESS → DETACH → 3D MODULE → CAMERA TRACK → FOREGROUND OCCLUSION → WORKFLOW PLANE → SETTLE**
+Do not default to letter-by-letter animation for ordinary typography. When the brief explicitly calls for **fast-paced kinetic typography, rapid type, type-by-type motion, punchy social typography, high-retention text animation, or an energetic verbal hook**, character-, cluster-, and word-level animation become preferred execution methods when they strengthen rhythm and hierarchy.
 
-**CHART DOT → LEAVE GRAPH → BECOME 3D NODE → CAMERA PULLS BACK WITH NODE ANCHORED → NETWORK REVEALED → NODE ACTIVATES NEXT CLUSTER**
+**Anti-karaoke does not mean anti word-by-word or anti character-by-character motion.** It means avoiding uniform treatment, equal emphasis, identical timing, and mechanical transcription of every spoken unit.
 
-**UI CARD → TILT → CAMERA TRUCKS → CARD EDGE FILLS FRAME → EDGE BECOMES DIVIDER IN NEXT 2D SCENE → CAMERA-FACING LANDING**
+Use character-level animation when it supports:
 
-### Do Not Reset the World
+- pronunciation
+- rhythm
+- personality
+- transformation
+- emphasis
+- a clear visual concept
 
-Avoid this pattern:
+Useful techniques:
 
-**element exits → empty frame → generic transition effect → unrelated new composition**
+- mask reveals
+- split text
+- tracking changes
+- baseline shifts
+- weight / width changes
+- scale emphasis
+- directional replacement
+- kinetic line breaks
+- word-to-object transformation
+- type as foreground wipe
+- oversized cropped type
 
-Prefer:
 
-**element causes the frame change → outgoing motion survives the handoff → the next scene is revealed by the same element, its descendant form, or the camera movement it initiated**
+### 13.4.1 FAST / EDGY Kinetic Type — Execution Only
 
-The viewer should feel that the next scene was reached, not summoned.
+When kinetic typography is requested:
 
-### Extraction Failure Modes
+`KINETIC_TYPE_MODE = FAST_EDGY`  
+`KINETIC_COPY_MODE = MINIMAL`  
+`TYPE_OWNS_FRAME = TRUE`
+
+**COPY**
+
+- default: **1–3 words per beat**
+- target: **≤6 visible words per frame**
+- no paragraph copy
+- no explanatory subtitle by default
+- no headline + body-copy layout
+- VO carries explanation; type extracts only the strongest words
+
+**MOVE**
+
+- word / cluster / character / glyph animation
+- hard crop
+- oversized invasion
+- 2–4f word replacement
+- 1–2f character offset
+- 2–5f snap / scale attack
+- 3–6f tracking / width hit
+- fracture → recompose
+- directional swap
+- glyph → mask / object / UI / transition
+
+**RHYTHM**
+
+**WORD → HIT → REPLACE → INTERRUPT → HERO WORD → HOLD → TRANSFORM**
+
+At 30 fps:
+
+- micro event: **1–4f**
+- hero attack: **3–7f**
+- readable lock: **4–12f**

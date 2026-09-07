@@ -1,302 +1,346 @@
-- suction before a panel leaves frame
-- filtered pressure rise before a macro pullback
-- short electrical charge before a node activates
+When the claim is better communicated through kinetic typography, let typography own the frame first. Then let SaaS enter as the visualization, proof, or mechanism of that claim.
 
-Pre-SFX should make the viewer feel that something is about to happen.
+A strong product-reveal relationship may be:
 
-It should not become a riser before every cut.
+**CLAIM FELT THROUGH TYPE → VISUAL PROPERTY SURVIVES → PRODUCT WORLD DISCOVERED → UI EXPLAINS THE CLAIM**
 
-## 15.5 Impact Construction by Function
+This creates contrast between expressive communication and precise product comprehension.
 
-For important hits, layer by function rather than stacking sounds because they seem “big.”
+The product reveal must still be causally connected. Preserve a shape, line, glyph, motion vector, crop, screen-space position, sound tail, or semantic motif across the handoff.
 
-Possible components:
+Avoid treating the kinetic section and the product section as two unrelated chapters. They may be separate in composition, but they should remain continuous in cause and effect.
 
-1. **transient** — defines exact timing
-2. **body** — communicates mass
-3. **material** — tells us whether the object feels glassy, metallic, soft, digital, paper-like, etc.
-4. **resonance** — gives identity or tonal character
-5. **tail** — defines space and decay
+## 18.5.4 Product UI Must Behave
 
-Not every hit needs every layer.
+Do not treat SaaS UI as a screenshot placed on a background.
 
-Prioritize transient clarity.
+Possible authored behaviors:
 
-If the impact feels muddy, remove layers before adding EQ tricks.
+- dashboard becomes a spatial hero plane
+- modules separate according to function
+- secondary cards orbit or offset in depth only when hierarchy benefits
+- a chart or node leaves the UI and becomes a transition device
+- one interface panel folds, expands, or flattens into another state
+- UI camera angle changes only to reveal structure
+- a product state grows from another product state rather than entering as a replacement screenshot
 
-## 15.6 Material-to-Sound Mapping
+Preserve usability and brand accuracy where the real UI must remain recognizable.
 
-Give recurring visual materials recurring sonic behavior.
+## 18.5.5 Hero + Reaction + Hold
+
+For most substantial moments, define:
+
+- **one hero gesture** that changes hierarchy or meaning
+- **one supporting reaction** caused by the hero
+- **one readable hold** where the result can be understood
+
+The support action should feel causally linked.
+
+Avoid several unrelated elements independently “doing animation.”
+
+## 18.5.6 Meaningful Change Interval
+
+For short-form retention-driven work, inspect whether the frame remains fully understood and visually unchanged for too long.
+
+As a diagnostic, if roughly 1–3 seconds pass with no meaningful change in:
+
+- hierarchy
+- framing
+- crop
+- scale relationship
+- depth relationship
+- information state
+- visual question
+- motion vector
+- SFX expectation
+
+ask whether a purposeful reset is needed.
+
+Do not force a reset when comprehension, suspense, or emotional hold is stronger.
+
+## 18.5.7 Velocity Contrast
+
+Avoid identical move lengths, durations, and easing across scenes.
+
+Use contrast such as:
+
+- 3–6 frame snap → 8–15 frame hold
+- 12–20 frame controlled travel → 2–4 frame interruption
+- fast hero entry → slower support settle
+- macro pullback → sudden lock
+- abrupt freeze → spatial reveal
+- nearly static VO phrase → strong transformation on the hero word
+
+The exact values depend on distance, scale, frame rate, and semantic importance.
+
+## 18.5.8 Spatial Continuity
+
+Let outgoing motion cause incoming composition whenever possible.
 
 Examples:
 
-### Glass / translucent UI plane
+- card exits right → next shot continues the same vector
+- node expands → becomes the circular frame of the next system
+- UI panel rotates toward camera → lands as the next full-screen plane
+- light flare crosses foreground → reveals the next state behind it
+- a group of cards folds inward → becomes a dimensional brand object
+- icon silhouette expands → resolves as the final logo mark
 
-- clean high transient
-- restrained airy movement
-- short resonant shimmer
-- minimal low body unless the panel is physically heavy
+Avoid resetting to centered neutral composition after every beat.
 
-### Dense product card / device
+## 18.5.9 Scene Permutation Test
 
-- compact low-mid body
-- short mechanical lock
-- controlled movement air
-- limited resonance
+Ask:
 
-### Light / energy node
+**Could scenes 2, 3, and 4 be swapped without the viewer noticing a structural problem?**
 
-- focused electrical tick
-- short tonal activation
-- narrow sparkling residue
+If yes, the edit may be too modular and presentation-like.
 
-### Soft / elastic illustration
+Strengthen cause-and-effect between scenes.
 
-- rounded pop
-- rubber-like micro transient
-- short pitch bend only when the visual elasticity supports it
+## 18.5.10 Screenshot Test
 
-### Data / technical system
+A strong scene should work as a still composition.
 
-- precise tick
-- relay
-- clean digital pulse
-- restrained filtered sweep
+But a strong sequence should **not** work merely as a slideshow of those stills.
 
-Do not assign a different sound personality to every object.
+If all storytelling exists only in the static keyframes, motion is decorative.
 
-Build a small material vocabulary.
-
-## 15.7 Spatial SFX Choreography
-
-When the visual moves through depth or across frame, sound may support its path.
-
-Consider:
-
-- left / right movement
-- near / far perception
-- foreground vs background placement
-- dry vs reverberant distance
-- high-frequency loss for receding objects
-- increasing body as an object approaches
-- tail direction across a transition
-
-Spatial treatment should reinforce visual geography.
-
-Avoid exaggerated stereo gimmicks that distract from VO.
-
-## 15.8 Frequency Hierarchy
-
-Assign spectral space according to attention role.
-
-Typical logic:
-
-- hero impact → may occupy low / low-mid body plus a clear transient
-- UI support → mostly mid / high-mid detail
-- air travel → broadband but controlled
-- ambience → stable, low-contrast bed
-- VO → protected center of intelligibility
-
-If VO exists, do not let dense high-mid SFX mask consonants.
-
-Reduce SFX complexity around important phrases before simply turning everything down.
-
-## 15.9 Silence and Negative Sonic Space
-
-Silence is active sound design.
-
-Use silence or near-silence to:
-
-- expose a hero word
-- make a reveal feel larger
-- reset the ear after a dense cluster
-- separate one sonic chapter from another
-- create tension before an impact
-- make the final logo / CTA feel intentional
-
-A useful pattern is:
-
-**texture → thinning → gap → hero event → tail**
-
-Do not fill every movement.
-
-## 15.10 Tail Bridges and Sonic Continuity
-
-Scene continuity can be carried by sound even when the picture cuts.
-
-Useful approaches:
-
-- let the outgoing impact tail survive into the next shot
-- begin a motion texture before the visual transition and resolve it after the handoff
-- preserve one quiet environmental texture across several shots
-- transform one sonic material into another as the visual object transforms
-
-This prevents every scene from sounding like an isolated button press.
-
-## 15.11 Event Clustering Instead of SFX Spam
-
-Do not sonify every micro-action independently.
-
-When several small visual events occur close together, group them into a sonic phrase.
-
-Example:
-
-Three satellite UI cards appear around a dashboard.
-
-Avoid:
-
-**click + click + click + whoosh + pop**
-
-Prefer:
-
-**one directional movement texture + two restrained ticks + one final lock**
-
-The ear should perceive hierarchy, not bookkeeping.
-
-## 15.12 SFX Motifs and Sonic Identity
-
-For branded or recurring content, establish a compact vocabulary such as:
-
-- one hero impact family
-- one short snap / lock family
-- one motion-air family
-- one tactile / mechanical family
-- one environmental texture
-- one branded tonal punctuation
-
-Reuse through pitch, filtering, duration, perspective, and intensity variation.
-
-Sonic identity comes from recurrence with variation.
-
-## 15.13 SFX Cue Sheet
-
-For substantial sound-design work, plan cues with enough detail to reproduce them.
-
-Recommended fields:
-
-| Time / frame | Visual event | SFX role | Source character | Start offset | Peak / contact | Tail | Spatial note | VO masking note |
-|---|---|---|---|---:|---:|---|---|---|
-|  |  | hero / motion / support / texture |  |  |  |  |  |  |
-
-Do not write cue sheets as “add whoosh here.”
-
-Describe the reason and sonic behavior.
-
-## 15.14 Avoid Generic SFX Language
-
-Avoid defaulting to vague directions such as:
-
-- cinematic whoosh
-- futuristic sound
-- tech sound
-- epic hit
-- cool transition sound
-
-Instead specify behavior:
-
-- short filtered air pass with a narrow transient at landing
-- soft relay click followed by a 120 ms electrical residue
-- low-mid body impact with a glass-like top transient and no long reverb
-- suction beginning 3 frames before the card collapse, ending exactly at occlusion
-
-Specific sonic behavior produces less generic work.
-
-
-## 15.15 Translating Dense Reference Rhythm Into SFX-Only Structure
-
-When a visual reference uses music or a dense soundtrack, extract its **event hierarchy**, not its music bed.
-
-Translate visual density into SFX-only chapters:
-
-- object burst / scatter → one shared travel texture plus selected impacts, not one cue per object
-- camera acceleration → directional motion layer that grows with perceived speed
-- material transformation → one changing texture that preserves identity through the morph
-- clean product landing → reduce motion sound, keep one compact lock / activation cue
-- breath section → thin ambience or near-silence
-- new trigger → pre-SFX 1–4 frames early when anticipation helps
-
-A useful macro sound rhythm is:
-
-**CLUSTER → TAIL → GAP → HERO CONTACT → QUIET READ → NEXT ANTICIPATION**
-
-If the visual reference feels energetic because of music, do not compensate by filling every frame with effects. Preserve the same contrast between dense and sparse moments using transient density, tail length, ambience, and silence.
+The transformation between states should carry narrative information.
 
 ---
 
-# 16. VO + SFX Relationship — No BGM Default
+# 18.6 Spatial SaaS Motion Grammar — Reference-Derived Principles
 
-Audio hierarchy is:
+For premium SaaS / AI product motion, a useful non-generic grammar is:
 
-1. **VO comprehension**
-2. **hero SFX / semantic punctuation**
-3. **motion and support SFX**
-4. **texture / ambience**
-5. **silence as contrast**
+**BRAND SEED → PRODUCT PLANE → SYSTEM REVEAL → FEATURE MOTIF → INTERACTION STATE → DIMENSIONAL TRANSFORMATION → BRAND RESOLUTION**
 
-Do not rely on a beat grid.
+This is a structural option, not a mandatory template.
 
-Build temporal rhythm from:
+Its value is that each stage grows from the previous stage.
 
-- sentence boundaries
-- stressed words
-- pauses and breaths
-- motion acceleration
-- impact transients
-- transformation phases
-- edit points
-- tails and silence windows
+## 18.6.1 Brand Seed
+
+Open with a minimal brand element embedded in a world, not a detached title card.
+
+Useful devices:
+
+- logo or mark with environmental light
+- curved horizon or depth cue
+- one animated energy source
+- partial object before full context
+
+The opening should imply a larger space beyond the frame.
+
+## 18.6.2 Product Plane
+
+Introduce the product as the primary object in the world.
 
 Prefer:
 
-- hero word → strongest visual emphasis, optionally supported by one focused SFX
-- major state change → hero SFX
-- spatial transition → movement SFX or tail bridge
-- secondary reaction → quieter support cue
-- pause → hold, ambience thinning, or silence
-- final brand landing → distinct but restrained sonic signature
-
-When VO exists:
-
-- protect speech intelligibility
-- do not hit every stressed word
-- simplify SFX during dense sentences
-- allow important sounds to land in phrase gaps when possible
-- use pre-SFX selectively to anticipate a spoken reveal
-- let post-SFX communicate consequence after the phrase
-
-The sequence should still feel rhythmic with no music because the rhythm is authored into motion, speech, sound events, and silence.
-
----
-
-# 17. Composition for Motion
-
-Design every important beat as a composition.
-
-Check:
-
-- focal point
-- scale hierarchy
-- alignment
-- negative space
-- edge tension
-- balance
-- contrast
-- depth
-- safe areas
-- crop behavior
-- reading order
-- next visual question
-
-Motion should move attention through the frame.
+- product UI arriving through perspective or depth
+- one hero dashboard with small satellite modules
+- controlled light that reveals hierarchy
+- camera-equivalent movement that exposes function
 
 Avoid:
 
-- objects drifting without purpose
-- camera moves revealing nothing
-- important elements crossing unsafe edges accidentally
-- scaling from arbitrary anchors
-- transitions destroying spatial continuity without intent
-- fully centered layouts in every shot
-- equal visual weight across the frame
+- screenshot fades in centered
+- title above screenshot
+- three bullets beside screenshot
+- fade out to next screenshot
 
-For multi-format delivery, design crop zones from the start.
+## 18.6.3 System Reveal
+
+After the product is understood, change scale to reveal a larger relationship.
+
+Useful strategies:
+
+- pull back from dashboard to system
+- isolate one UI motif and enlarge it
+- reveal connected nodes around a central feature
+- move from one data point to a workflow
+
+The camera move should answer a question created in the previous state.
+
+## 18.6.4 Feature Motif as Transition Object
+
+Choose one simple visual motif that can survive several states.
+
+Examples:
+
+- circle
+- node
+- ring
+- glow point
+- card corner
+- star / spark
+- line
+
+Let it:
+
+- originate in product UI
+- become a system diagram
+- become an interaction marker
+- become part of a dimensional object
+- resolve into brand geometry
+
+This creates memory and continuity.
+
+## 18.6.5 Interaction State
+
+When showing AI, chat, automation, or workflow behavior, avoid treating each message as a separate slide.
+
+Instead:
+
+- preserve the existing environment
+- let a prompt or node activate within it
+- reveal response depth progressively
+- use small satellites / agents only as supporting relationships
+- let the response state become the material for the next transition
+
+## 18.6.6 Dimensional Transformation
+
+A dimensional hero moment should feel earned by prior flat or UI states.
+
+Possible bridge:
+
+**flat card → gains depth → duplicates / folds → camera reframes → geometry forms a hero object**
+
+Use 3D to reveal new relationships, not simply to make the piece “premium.”
+
+## 18.6.7 Brand Resolution
+
+The final logo / CTA should preferably emerge from the sequence's existing geometry, motion vector, light, or sonic motif.
+
+Avoid a generic final end card that ignores the visual language before it.
+
+Possible resolutions:
+
+- hero shape collapses into logo mark
+- central node becomes logo spark
+- dimensional object flattens into brand geometry
+- environmental horizon remains while copy resolves
+- existing motion tail settles into final composition
+
+## 18.6.8 Light as Continuity
+
+A consistent environmental light field can hold different scenes together.
+
+Use light to:
+
+- reveal UI edges
+- separate depth planes
+- guide the eye during pullback
+- activate nodes
+- bridge a transform
+- preserve the same world during large layout changes
+
+Do not let bloom replace composition.
+
+## 18.6.9 Dark-Space Discipline
+
+Dark premium motion often fails by hiding everything in glow.
+
+Preserve:
+
+- readable silhouette
+- clean UI contrast
+- controlled black levels
+- distinct depth planes
+- limited bright accents
+
+The eye should know where to look even with all glow removed.
+
+## 18.6.10 Reference-Informed, Not Reference-Cloned
+
+When using this grammar from a supplied reference:
+
+- change composition
+- change product staging
+- change motif choice when appropriate
+- change transition specifics
+- match the new brand's material and timing personality
+- preserve only the underlying continuity and attention principles
+
+The goal is authored equivalence, not scene replication.
+
+---
+
+
+# 18.7 Physical-Digital Product World Choreography — Reference-Derived Principles
+
+Use this section when a product film benefits from tactile, cinematic, mixed-world storytelling rather than pure UI presentation.
+
+A useful grammar is:
+
+**CONTEXT OBJECT → DIGITAL MOTIF → EXTRACTION → CAMERA ACQUISITION → SCALE / DEPTH TRAVEL → MATERIAL TRANSFORMATION → PRODUCT WORLD → BREATH LANDING → NEXT RELAY**
+
+This is a principle library, not a scene template.
+
+## 18.7.1 Physical Context Must Explain Something
+
+Physical environments can create authorship, process, scale, or tactility.
+
+Useful context includes:
+
+- desk / workspace
+- paper sketches
+- tools
+- devices
+- notes
+- printed diagrams
+- folders / containers
+- objects associated with making, reviewing, organizing, or publishing
+
+Use a prop when it can:
+
+- become a transition source
+- explain where an idea comes from
+- visualize a workflow stage
+- establish material character
+- create a foreground threshold
+- transfer attention into the product
+
+Do not fill a scene with fashionable desk objects that never affect the choreography.
+
+## 18.7.2 Digital Elements May Become Tangible
+
+A cursor, notification, button, card, icon, or UI fragment may temporarily behave like a physical object.
+
+Possible changes:
+
+- gains thickness or shadow
+- crosses in front of physical objects
+- casts or receives light
+- moves with inertia rather than UI easing
+- approaches camera and creates near-field occlusion
+- contacts a device or surface
+- becomes a tool for the next interaction
+
+Introduce tangibility progressively. Preserve enough identity that the viewer understands it is the same digital element.
+
+## 18.7.3 Hero-Object Relay Across Scenes
+
+Do not reset hero ownership at each edit.
+
+Allow attention to transfer through a chain such as:
+
+**message / UI cue → pointer → product action → physical tool → drawn path → dimensional object → product module**
+
+The exact objects should fit the new brief.
+
+At each handoff define:
+
+1. current hero
+2. transfer cause
+3. inherited property
+4. incoming hero
+5. camera response
+6. readable landing
+
+The chain should become more informative, not merely more spectacular.
+
+## 18.7.4 Camera Follows Meaning, Then Releases
+

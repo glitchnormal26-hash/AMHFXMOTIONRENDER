@@ -1,303 +1,346 @@
-- Is lighting reinforcing hierarchy or state change?
-- Are bloom, DOF, fog, blur, grain, and chromatic effects restrained?
-- Does 3D improve the idea compared with a simpler 2D / 2.5D solution?
+7. Retime scene anchors to VO rather than rebuilding the entire animation system.
+8. Preserve authored transition durations where possible while remapping scene starts.
+9. Sync VO and SFX to the master timeline, including after seeks and pauses.
+10. Review with sound and without sound.
+11. Mux the final VO/SFX mix into exported video; frame capture alone does not carry audio.
+12. Do not claim final sync or final audio quality if the actual narration track was
+    not available for review.
 
-## Editing & 2D / 3D Continuity
 
-- Does each scene transition have a clear edit logic?
-- Is movement direction preserved or intentionally broken?
-- When switching between DOM / 2D and 3D, is there a readable visual bridge?
-- Are screen-space focal points aligned at transition moments?
+## 24.16.1 Engine Selection & Capability Contract
 
-## Deterministic Render
+Do not choose production engines by convenience alone.
 
-- Is final playback driven by an authoritative timeline or frame time?
-- Are procedural random systems seeded when reproducibility matters?
-- Are fonts, textures, and critical assets loaded before capture?
-- Is target resolution explicit and independent of accidental device DPR?
-- Can representative frames be reproduced by seeking to the same time?
-- When frame accuracy matters, is the final capture path deterministic rather than uncontrolled realtime screen recording?
+For every substantial motion/explainer job, resolve the runtime stack before
+final implementation.
 
-## Performance
+The required sequence is:
 
-- Does preview performance preserve intended timing and easing?
-- Are geometry, shadows, textures, particles, and post-processing appropriate to the target?
-- Are expensive effects justified by visible narrative value?
-- Does replay / looping avoid memory growth or accumulating objects?
+**CAPABILITY CHECK → ENGINE SELECTION → QUALITY GATE → PRODUCTION →
+VERIFY REAL OUTPUT → FALLBACK OR BLOCK FINALIZATION**
 
-## Technical
+### A. Capability check
 
-- Is the result editable, performant, and correctly formatted?
+Before claiming an engine/provider is being used, verify that the current
+environment actually has access to it.
 
-## Verification
+Check for:
 
-- Was the output actually previewed or rendered when tools made that possible?
-- Was it reviewed with sound and without sound?
-- Were representative frames captured or inspected around every major transition?
-- Were text overlap, z-order, clipping, and safe-area failures explicitly checked?
-- If the piece uses code, was playback behavior validated rather than assuming successful execution means successful motion design?
+- available tool / plugin / SDK / API;
+- valid account or credential access when required;
+- supported language / format / codec;
+- network or local-runtime requirements;
+- export compatibility;
+- commercial / licensing constraints when relevant.
 
-The goal is not maximum animation.
+Do not write “generated with ElevenLabs”, “rendered with Three.js”, or
+“exported with ffmpeg” unless that engine was actually used.
 
-The goal is not maximum sound.
-
-The goal is:
-
-**maximum clarity, curiosity, character, and impact with the minimum motion and sound necessary.**
+If the preferred engine is unavailable, move to the next approved engine.
+Never silently substitute an unapproved low-quality engine for final delivery.
 
 ---
 
+### B. Motion engine selection
+
+Use the simplest engine that can faithfully execute the authored motion.
+
+| Need | Preferred engine/runtime | Use when | Avoid when |
+|---|---|---|---|
+| DOM / typography / UI / 2D motion | **GSAP** | deterministic timeline, kinetic type, UI choreography, masks, transforms, CSS/SVG | simple CSS alone can fully solve a tiny interaction |
+| SVG illustration / diagrams | **SVG + GSAP** | draw-on, path morphing, route animation, labels, charts, vector explainers | raster imagery is the actual content |
+| 2.5D spatial composition | **DOM/SVG + GSAP world rig** | depth, parallax, camera-equivalent push/pull without true 3D | real geometry/material interaction is required |
+| true 3D | **Three.js or React Three Fiber** | geometry, lighting, spatial camera, occlusion, 3D product/system worlds | 2D/2.5D communicates more clearly |
+| declarative React 3D | **React Three Fiber** | reusable 3D components, React project integration, interaction | standalone HTML does not need React |
+| shader gradient / luminous field | **ShaderGradient / custom WebGL shader when available** | gradient is part of atmosphere, material, light, or state transition | a CSS gradient is visually sufficient |
+| bloom / depth / post FX | **Three/R3F post-processing** | optical glow, DOF, fog, motion hierarchy | effect does not improve hierarchy or meaning |
+
+Default selection:
+
+`2D / DOM / SVG → GSAP`
+
+Escalate to:
+
+`2.5D world rig → Three.js / R3F`
+
+only when the concept gains meaningful spatial value.
+
+Do not use R3F merely because it is available.
+
 ---
 
-# 24. v3.8 Unified Browser Motion, Anti-PPT & Explainer Rules
+### C. Image / visual asset engine selection
 
-These rules are part of the main Motion Designer skill. They are not a secondary
-resource layer. Apply them together with the rest of this file and choose the
-context-appropriate branch when two defaults appear to pull in different
-directions.
+For generated visual assets, prefer the highest-quality image-generation
+capability actually available in the host environment.
 
-## 24.1 Structural Anti-Presentation Laws
+Selection order:
 
-1. **One evolving world is the default.** Do not build a sequence as a stack of
-   full-screen cards that merely fade, slide, or `autoAlpha` on and off.
-2. **A scene change needs a cause.** The next state should be caused by camera,
-   object, typography, material, light, UI state, sound, crop, occlusion, or an
-   intentional hard cut.
-3. **Repeated scene shells are a failure pattern.** Three or more scenes using the
-   same `kicker → title → body → badges` hierarchy should trigger redesign.
-4. **One shot = one dominant statement.** Supporting information may exist, but it
-   must not compete with the primary visual action.
-5. **Hierarchy should arrive in order.** Primary statement / hero → main object or
-   proof → supporting detail. Do not let decorative status elements arrive before
-   the reason to look.
-6. **Motion should change meaning or expectation.** If removing a transition does
-   not change hierarchy, continuity, anticipation, or understanding, it may be
-   decorative.
-7. **Do not solve transitions with opacity alone.** Fades are allowed, but repeated
-   fade + small translate is not an authored transition vocabulary.
-8. **Do not expose the edge of the world accidentally.** Camera-equivalent pans,
-   whips, or translations must not reveal an empty stage boundary.
-9. **Do not use editor-preset shock as cinematic language.** Repeated zoom-spin,
-   yaw-whip, blur-hit, or generic light-leak cuts quickly read as a template.
-10. **Use expensive or spectacular effects selectively.** One or two standout
-    moments are stronger than the same signature effect on every cut.
-11. **A beautiful still frame can still be a slide.** Anti-PPT is evaluated across
-    time: continuity, causality, hierarchy, and choreography matter more than polish.
-12. **Metadata is content only when it means something.** Do not invent scene
-    numbers, fake timecodes, category slugs, pseudo-HUD labels, or technical
-    microcopy merely to make the frame feel designed.
-13. **Mockup density is a visual exception.** A real interface may contain many
-    words because it is read as an image/product state; do not copy that density
-    into explanatory overlay text.
-14. **Reference layouts are not recipes.** Extract timing, continuity, hierarchy,
-    transition causality, and camera logic; do not inherit the reference's branded
-    skin or exact composition.
+1. **user-supplied / official / licensed real asset** when authenticity matters;
+2. **native high-quality image-generation engine available to the agent**;
+3. **connected premium image-generation provider** that supports consistent style;
+4. **public-domain / properly licensed source imagery**;
+5. manual SVG/vector construction when it is more appropriate than raster generation.
 
-## 24.2 Unified Text-Density Rules
+For an explainer, generated assets must pass:
 
-Use text density according to format rather than one universal word limit.
+- subject accuracy;
+- style consistency across scenes;
+- clean silhouette;
+- appropriate aspect/crop;
+- no accidental text artifacts;
+- no invented brand/product facts;
+- enough resolution for the final frame;
+- transparent/clean background when cutout use requires it.
 
-### High-retention social / kinetic passage
+Do not switch image engines mid-project if it causes obvious style discontinuity
+unless the difference is intentional.
 
-- default to 1–4 dominant words per beat;
-- keep most frames below roughly 6 visible words unless the landing needs more;
-- VO carries explanation, type carries impact;
-- reset crop, scale, position, depth, or wording on meaningful beats;
-- do not animate every word identically.
+---
 
-### Promo / opener / bumper
+### D. Voiceover engine contract
 
-- prefer one short claim, name, number, or hero phrase;
-- secondary copy should be rare and genuinely useful;
-- a long sentence is usually a signal to split the beat or visualize the idea.
+For final explainer narration, use:
 
-### Explainer
+`HUMAN_NATIVE_RECORDING`
+→ `ELEVENLABS`
+→ `GOOGLE_GEMINI_TTS / CHIRP_3_HD`
+→ `AZURE_NEURAL_HD`
+→ `VO_PROVIDER_PENDING`
 
-- a scene may contain a short sentence plus one key number, label, or annotation;
-- charts, maps, timelines, and UI may be information-dense because they are read as
-  visual instruments;
-- avoid paragraph overlays when VO or visual structure can carry the explanation.
+For Bahasa Indonesia:
 
-### Accessibility / platform captions
+`VOICE_LOCALE = id-ID`
 
-- captions are **off by default for authored motion composition**, but add them when
-  the user requests them, the delivery platform requires them, or accessibility is
-  a stated objective;
-- when captions are required, treat them as a persistent layout system with safe
-  areas and collision rules, not as an afterthought.
+Final-quality rules:
 
-## 24.3 Camera, World and Stillness Reconciliation
+- audition 2–4 candidate voices;
+- use actual project vocabulary;
+- prefer native/region-matched pronunciation;
+- generate a real audio file;
+- verify the file is audible and non-corrupt;
+- measure actual duration;
+- retime visual anchors to the real narration;
+- do not use browser/system TTS as final VO.
 
-1. **Camera movement is expected when the shot direction calls for it.** A written
-   push, pull, truck, track, orbit, reframe, or parallax move must become an actual
-   time-varying render-camera or world-rig transform.
-2. **Camera movement is not mandatory in every shot.** `LOCKED_INTENTIONAL` remains
-   valid when stillness creates tension, clarity, contrast, or a stronger read.
-3. **A static result is a hard failure only when the authored direction specified
-   camera motion.** Do not silently replace planned travel with object motion.
-4. **Every camera move needs a visible consequence:** changed framing, parallax,
-   scale, occlusion, depth relationship, revealed information, or transition state.
-5. **Do not move camera merely to avoid a static frame.** If motion reveals nothing
-   and changes no relationship, remove it.
-6. **Camera-equivalent DOM transforms are valid 2D/2.5D tools.** A real 3D camera is
-   not required for every spatial idea.
-7. **When camera is locked, something else may carry continuity:** object relay,
-   typography replacement, semantic transform, sound bridge, hard match cut, or
-   controlled environmental state change.
-8. **Start and landing compositions must work as still frames.** Then author the
-   path between them.
-9. **Preserve or intentionally break direction.** Track left/right travel, depth
-   direction, subject screen position, and outgoing velocity across handoffs.
-10. **Tracking is authored framing, not automatic centering.** Use center lock,
-    thirds, edge bias, lead, lag, dead zones, and target transfer intentionally.
+Explicitly forbidden for final narration when an approved provider is
+available:
 
-## 24.4 2D / 2.5D / 3D Selection Rules
+`BROWSER_SPEECH_SYNTHESIS`
 
-1. Start at the lowest dimensional complexity that communicates the idea clearly.
-2. Use 2D / 2.5D by default when framing, perspective, scale, crop, occlusion,
-   masking, typography, illustration, and simulated depth are sufficient.
-3. Escalate to 3D when depth materially improves spatial relationships, reveal,
-   product metaphor, parallax, occlusion, lighting state, or a hero transformation.
-4. Three.js, React Three Fiber, shaders, post-processing, and 3D interaction are
-   runtimes/capabilities, not taste.
-5. A 3D object should perform through poses, anticipation, reaction, lag,
-   compression, fold, relay, collision, or follow-through when appropriate.
-6. Avoid perpetual turntable rotation unless the product itself requires inspection.
-7. If 3D complexity increases without increasing clarity, curiosity, or emotional
-   impact, step back to a simpler dimensional solution.
-8. When 3D is used, the same master-time, camera-contract, hierarchy, and QA rules
-   apply as in 2D.
+`OS_SYSTEM_TTS`
 
-## 24.5 Transition Causality Rules
+`GENERIC_ROBOTIC_TTS`
 
-For every major transition, state:
+These are:
 
-**CAUSE → ACTION → RESULT**
+`TEMP_VO_ONLY`
 
-At least one continuity property should survive whenever possible:
+If no approved final provider is accessible:
 
-- hero object;
-- shape;
-- screen-space anchor;
-- travel vector;
-- camera velocity;
-- depth direction;
-- light direction;
-- material behavior;
-- semantic role;
-- sound tail;
-- typographic fragment;
-- product state.
+`FINAL_STATUS = VO_PROVIDER_PENDING`
 
-Preferred transition families include:
+Do not silently downgrade.
 
-- element extraction;
-- object wipe / foreground occlusion;
-- typography as mask or transition surface;
-- semantic line/path transformation;
-- card fold / hinge / depth turn;
-- subject tracking with camera lag or lead;
-- parallax environment traversal;
-- motivated push-through;
-- match geometry / match motion hard cut;
-- shader/light-field state handoff;
-- product-world assembly from already-visible fragments.
+---
 
-Do not make every transition use the same family.
+### E. Hi-tech SFX engine contract
 
-## 24.6 Background and Surface Rules
+For explainers, the sonic architecture remains:
 
-1. Background language is selected from the brief, not inherited from a starter.
-2. Do not default every project to dark nebula, particles, horizontal lanes, or
-   luminous streaks.
-3. Use theme-responsive gradients only when atmosphere, state, energy, material,
-   or scene continuity benefits from them.
-4. Interactive gradients may react to type hits, object movement, pointer, scroll,
-   drag, proximity, click, or state change when interaction is part of the piece.
-5. A moving gradient must not compete with the hero or become generic wallpaper.
-6. Background surfaces may combine two or more authored layers such as base color,
-   mesh/gradient, paper, grain, grid, tint, light, haze, image, or depth geometry.
-7. A flat single-color surface remains valid when brutal/minimal art direction
-   deliberately calls for it.
-8. Bright background elements beneath important light text must be reduced or moved.
-9. Bloom/glow is a hierarchy tool. It should peak around meaningful activation and
-   decay rather than remain permanently on.
-10. Use actual post-processing bloom for optical glow in WebGL when needed; do not
-    fake universal glow on all typography.
+**VOICEOVER + HI-TECH SFX + CONTROLLED TECH AMBIENCE + SILENCE — NO BGM**
 
-## 24.7 Motion-Blur and Velocity Rules
+Preferred SFX source order:
 
-1. Blur direction should relate to motion direction when blur is used.
-2. Horizontal travel should bias horizontal blur; vertical travel should bias
-   vertical blur.
-3. Expand SVG/filter bounds so trails are not clipped.
-4. Remove expensive blur/filter states after the event when they are no longer needed.
-5. Speed ramps should transfer attention or momentum between semantic beats.
-6. Do not repeat the same fast-slow speed-ramp shape as a decorative signature.
-7. Entrance and exit timing may be asymmetric: designed arrival, faster departure,
-   unless the exit itself is the story event.
-8. Use holds after impacts so the eye can register the result.
+1. **premium text-to-SFX / sound-design engine available to the environment**;
+2. **curated licensed hi-tech SFX library**;
+3. **purpose-built procedural synthesis / edited source layers**;
+4. manually designed combinations of clicks, servo, signal, data, scanner,
+   relay, electromagnetic, synthetic impact, and machine-room textures.
 
-## 24.8 Deterministic Browser-Motion Architecture
+When a premium generative SFX provider is available, prefer one that can
+produce isolated non-musical sound effects rather than full music beds.
 
-For code-driven motion, one authoritative time/frame source owns playback.
+SFX provider selection must not override the sonic-function rule.
 
-Preferred pipeline:
+The question is always:
 
-**MASTER TIME / FRAME → AUTHORED TIMELINE STATE → DOM / CAMERA / WEBGL / R3F /
-AUDIO SYNC → RENDER → SEEK / REPLAY / CAPTURE**
+**What narrative function does this cue perform?**
 
-Hard rules:
+then:
 
-1. Do not let independent clocks drive important visual state when deterministic
-   seeking or capture matters.
-2. Avoid `Date.now()` and `performance.now()` as authored sequence time.
-3. Avoid uncontrolled `setInterval()` for sequence-critical typing or stepping.
-4. Avoid unseeded per-frame `Math.random()` in reproducible render paths.
-5. Avoid cumulative `position += velocity * dt` when the same timestamp must always
-   reproduce the same frame.
-6. Setup-time seeded randomness is allowed when stable after initialization.
-7. Procedural motion should be a deterministic function of master time/state.
-8. Expose a stable `seek(t)` or frame-seek API when programmatic QA/export is needed.
-9. Mark the project ready only after critical fonts and assets are loaded.
-10. Capture resolution and DPR must be explicit, not accidental browser state.
-11. Mixed DOM/WebGL/R3F projects must apply camera and render state after seeking.
-12. Pause, replay, seek, VO/SFX sync, and capture must all agree on the same timeline.
+**How should that function sound inside the selected hi-tech family?**
 
-## 24.9 Fixed Stage and Responsive Preview
+Do not use a music-generation engine to fake hi-tech SFX.
 
-For fixed-composition video work:
+Do not let tonal effects become a melodic loop or BGM.
 
-- author at a known stage size such as 1920×1080 or 1080×1920;
-- fit the entire stage to the browser window with scale;
-- do not reflow the composition merely because the preview window changes size;
-- treat responsive web experiences differently when the deliverable itself is
-  responsive rather than video-like.
+---
 
-The user/platform-specified aspect ratio always overrides defaults.
-If no aspect ratio is provided for a standard explainer, 16:9 is a safe default;
-for short-form/social, use the platform or requested ratio rather than assuming 9:16.
+### F. Audio assembly engine
 
-## 24.10 Development Files vs Final Delivery
+Use an audio-capable editor/mixer or deterministic command-line workflow that
+can produce a real final mix.
 
-There is no conflict between multi-file development and single-file delivery.
+Preferred deterministic final assembly when available:
 
-- During development, multi-file CSS/JS/assets are allowed and often preferable.
-- Use a no-cache local server when local ES modules or rapid iteration require it.
-- For a requested portable browser deliverable, consolidate to a direct-open
-  `index.html` when technically practical.
-- Inline CSS and project JS when `file://` portability is required.
-- CDN dependencies may remain online dependencies when the user accepts them.
-- Avoid local `fetch()`/XHR in direct-open deliverables because browser security may
-  block it under `file://`.
-- Do not imply that Node, Puppeteer, or Python is required merely to watch a final
-  single-file motion piece if it is not.
-- Export tooling is a production option, not a viewing dependency.
+**ffmpeg**
 
-## 24.11 Autoplay, Player and Audio Gesture Rules
+Expected pipeline:
 
-1. Visual-only or SFX-free browser pieces may autoplay and loop when appropriate.
-2. The visible player/debug scrub UI is off by default in the final deliverable.
-3. `?debug=1` or an equivalent mode may expose pause, scrub, frame/time readout, and
-   QA controls.
-4. Browser audio policies may require a user gesture before VO/SFX playback.
+`VOICEOVER`
++
+`HI-TECH SFX`
++
+`TECH AMBIENCE`
+→
+`FINAL AUDIO MIX`
+→
+`MUX WITH VIDEO`
+
+Do not assume browser playback audio is captured by screenshot/frame rendering.
+
+A frame sequence contains no sound.
+
+---
+
+### G. Snapshot / visual QA engine
+
+Preferred browser QA path:
+
+- Chromium/Chrome-compatible browser;
+- Puppeteer or equivalent deterministic browser automation when available;
+- `window.OPENER.seek(t)` / master-time seek;
+- screenshots at authored key moments;
+- contact-sheet review.
+
+`scripts/snap.mjs` is the bundled reference implementation.
+
+Do not substitute “code compiled successfully” for visual inspection.
+
+---
+
+### H. Final render/export engine
+
+For deterministic browser-motion video:
+
+1. authoritative timeline;
+2. frame-accurate browser seek;
+3. image-frame capture;
+4. encode video stream;
+5. mix/mux real audio;
+6. verify streams.
+
+Preferred direct export path when available:
+
+**`scripts/export-mp4.mjs` → Puppeteer + ffmpeg + ffprobe**
+
+Minimum final verification:
+
+- correct resolution;
+- correct FPS;
+- expected duration;
+- no dropped/missing frames;
+- audio stream exists when VO/SFX is required;
+- audio duration matches video;
+- VO intelligibility is preserved;
+- output opens successfully.
+
+If ffmpeg is unavailable, use another verified encoder/muxer capable of
+preserving frame timing and audio.
+
+Do not call a screen recording “deterministic export”.
+
+---
+
+### I. Engine lock states
+
+Record engine decisions internally using a compact state block when useful:
+
+```text
+MOTION_ENGINE = GSAP
+SPATIAL_ENGINE = NONE | DOM_2_5D | THREE_JS | R3F
+SHADER_ENGINE = NONE | CSS | SHADERGRADIENT | CUSTOM_WEBGL
+IMAGE_ENGINE = OFFICIAL_ASSET | HOST_IMAGE_GEN | CONNECTED_PROVIDER | LICENSED_SOURCE
+VO_ENGINE = HUMAN | ELEVENLABS | GOOGLE_TTS | AZURE_TTS | PENDING
+VO_LOCALE = id-ID
+SFX_ENGINE = PREMIUM_GENERATIVE_SFX | LICENSED_LIBRARY | PROCEDURAL | MANUAL_LAYERING
+AUDIO_MIX_ENGINE = FFMPEG | OTHER_VERIFIED
+QA_ENGINE = BROWSER_MANUAL | PUPPETEER
+EXPORT_ENGINE = FFMPEG | OTHER_VERIFIED
+```
+
+These states describe what is actually used, not what would ideally be used.
+
+---
+
+### J. Final-engine prohibition
+
+A project must not be presented as final when:
+
+- the specified premium VO provider was unavailable and system TTS was used instead;
+- required VO is still placeholder audio;
+- SFX are missing but the brief requires them;
+- the final exported video is silent despite required VO/SFX;
+- image placeholders remain;
+- a camera direction was authored but no active camera/world transform executes;
+- export was never inspected;
+- the claimed engine/provider was not actually accessible or executed.
+
+Use an explicit production status instead:
+
+`DRAFT`
+
+`TEMP_VO`
+
+`VO_PROVIDER_PENDING`
+
+`SFX_PENDING`
+
+`EXPORT_PENDING`
+
+`FINAL_VERIFIED`
+
+Only use:
+
+`FINAL_VERIFIED`
+
+after the actual deliverable has passed the relevant output checks.
+
+
+
+## 24.16.2 Full Runtime Selection Contract
+
+The package contains both a lightweight starter and a full modular runtime.
+
+Do not load the heaviest engine merely because it exists.
+
+### Runtime levels
+
+**LITE_RUNTIME**
+
+Use when the project can be expressed clearly with:
+- DOM;
+- SVG;
+- CSS;
+- GSAP;
+- simple 2D/2.5D world transforms.
+
+Primary starter:
+
+`assets/starter.html`
+
+**FULL_RUNTIME**
+
+Use when the project materially benefits from:
+- state-driven Three.js;
+- true 3D camera/light/geometry;
+- selective bloom/post-processing;
+- deterministic dust/stars/grid/tunnel fields;
+- reusable directional motion blur;
+- continuous-world camera helpers;
+- explainer draw/say/unsay/extract choreography;
+- synchronized VO/SFX runtime;
+- richer browser-motion QA/export behavior.
+
+Primary starter:

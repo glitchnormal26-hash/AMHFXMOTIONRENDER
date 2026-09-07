@@ -1,133 +1,4 @@
 
-These are not rigid values.
-
-Allow elements to cross between perceived layers.
-
-## Planar Perspective
-
-Distort flat graphics intentionally using:
-
-- skew
-- corner pin
-- perspective warp
-- non-uniform scale
-- angled masks
-- diagonal trajectories
-
-The goal is spatial energy, not photorealism.
-
-## Foreground Wipes
-
-Let an object temporarily cover much of the frame.
-
-Examples:
-
-- hand
-- phone
-- paper
-- text
-- icon
-- illustration component
-- graphic shape
-
-Use the obstruction to transition.
-
-Prefer:
-
-**object crosses → frame is obscured → next scene appears behind it**
-
-instead of automatic fade transitions.
-
-## Push / Pull
-
-Create implied camera movement by coordinating:
-
-- foreground scale
-- background scale
-- position
-- crop
-- blur
-- spacing
-
-No 3D camera is required.
-
-## Perspective Shift as Attention Reset
-
-Change perspective when:
-
-- the viewer has already understood the frame
-- a new subject becomes important
-- VO changes topic
-- a reveal needs stronger impact
-- a transition needs spatial logic
-
-Do not wobble perspective continuously.
-
----
-
-# 9.5 Cinematic 3D & Camera Direction
-
-Cinematic motion is primarily **attention direction through framing, blocking, lens behavior, depth, timing, and light**.
-
-Do not define cinematic quality by the amount of camera movement.
-
-A camera move must have a narrative or compositional reason.
-
-## 9.5.1 Camera Motivation
-
-Use camera movement to do at least one of these:
-
-- reveal information
-- change hierarchy
-- establish scale
-- connect spatial layers
-- follow an action
-- create anticipation
-- resolve a visual question
-- expose hidden geometry
-- transition from abstract system to concrete product state
-- move attention from one subject to another
-
-Do not move the camera merely because the scene would otherwise be static.
-
-Do not interpret this rule as a preference for static cameras. In a brief that calls for cinematic, spatial, 3D, tracking, parallax, or camera-driven motion, authored camera movement is expected unless the shot is explicitly blocked as `LOCKED_INTENTIONAL`. A static camera must be a deliberate composition decision, not the accidental result of missing animation implementation.
-
-If the camera move reveals nothing, changes no relationship, and creates no emotional effect, remove it or replace it with a better motivated move. Do not silently fall back to a static camera when the shot direction specifies camera travel.
-
-## 9.5.2 Camera Vocabulary
-
-Choose a small camera vocabulary for the piece.
-
-### Dolly / Push In
-
-Use to:
-
-- increase importance
-- reduce emotional distance
-- enter a system or interface
-- create anticipation before a reveal
-
-Avoid continuous slow push-ins on every shot.
-
-### Pull Out / Reveal
-
-Use to:
-
-- reveal context
-- show that one element belongs to a larger system
-- transform an abstract detail into a product overview
-
-A pull-out should reveal something meaningful.
-
-### Truck / Lateral Move
-
-Use to:
-
-- connect adjacent subjects
-- maintain directional continuity
-- reveal information hidden behind foreground layers
-- create parallax without excessive rotation
-
 ### Pedestal / Vertical Move
 
 Use when vertical hierarchy or stacked information is conceptually relevant.
@@ -301,3 +172,175 @@ Possible framing intentions:
 
 - center lock — useful for direct inspection or symmetrical hero moments
 - left / right third — useful when preserving look-ahead space
+- edge-biased framing — useful for tension, reveal, or imminent occlusion
+- vertical bias — useful when the scene contains stacked systems or directional ascent / descent
+- intentionally drifting anchor — useful when the subject itself should create compositional tension before the camera responds
+
+Do not automatically center every tracked object.
+
+### Dead Zone & Response
+
+Allow the subject to move inside a controlled screen-space region before the camera reacts when a looser, more authored follow is desired.
+
+A dead zone may create:
+
+- perceived mass
+- delayed pursuit
+- stronger foreground parallax
+- anticipation before a camera correction
+- less robotic motion than one-to-one target locking
+
+For precise technical motion, a tighter lock may be appropriate.
+
+Choose the response intentionally:
+
+- **locked** — camera follows almost immediately
+- **smooth** — camera follows with controlled damping
+- **heavy** — camera starts later and settles more slowly
+- **lead** — camera gives additional space in the subject's travel direction
+- **lag** — subject pulls camera behind it before the frame catches up
+- **snap reframe** — camera waits, then rapidly establishes a new framing pose
+
+Do not use springy tracking merely because interpolation makes it easy.
+
+### Velocity Look-Ahead
+
+When useful, bias framing toward the subject's movement vector.
+
+The camera may reveal space before the subject reaches it so the viewer anticipates where the action is going.
+
+Reduce look-ahead before a stop, reversal, or impact so the landing composition does not feel accidentally off-center.
+
+### Depth Tracking
+
+Tracking may include Z-depth, not only X/Y follow.
+
+Use push / pull behavior when:
+
+- a 2D element gains depth and becomes a 3D object
+- a foreground element approaches camera to create occlusion
+- a small UI state expands into a larger spatial system
+- the viewer should move from detail into context or context into detail
+
+Do not mechanically match the subject's Z movement if doing so destroys scale perception.
+
+Sometimes the stronger choice is to let the subject approach while the camera resists, increasing apparent scale and parallax.
+
+### Orientation & Horizon Behavior
+
+Decide whether the camera tracks subject rotation.
+
+Options include:
+
+- stable horizon while the subject rotates
+- partial rotational follow
+- full orientation follow for intentional POV-like movement
+- orbit around the subject while preserving its screen-space anchor
+
+Preserve readability of UI, typography, and recognizable surfaces.
+
+Avoid accidental horizon roll.
+
+### Target Transfer
+
+When attention moves from object A to object B, define the transfer cause.
+
+Useful transfer cues:
+
+- A physically contacts or activates B
+- A passes behind B and B becomes the new foreground hero
+- A transforms into B
+- a line, light path, or motion vector connects A to B
+- A exits through occlusion and B inherits its screen position or velocity
+- sound anticipates B before the visual tracking target switches
+
+Do not switch camera targets invisibly while both subjects remain equally plausible.
+
+### Occlusion & Reacquisition
+
+An extracted hero may temporarily leave sight behind foreground geometry or fill the frame completely.
+
+Use occlusion as a handoff opportunity.
+
+Possible pattern:
+
+**track target → target approaches foreground → frame becomes obscured → scene state changes behind occlusion → target or descendant form is reacquired → camera settles**
+
+If the tracked element disappears permanently during occlusion, preserve at least one continuity property such as:
+
+- motion vector
+- screen position
+- shape
+- scale direction
+- light behavior
+- material cue
+- sound tail
+- semantic role
+
+### Tracking-to-Transition Handoff
+
+Camera motion itself may become part of the transition.
+
+Whenever possible, preserve one or more of:
+
+- outgoing camera velocity
+- subject velocity
+- screen-space anchor
+- depth direction
+- parallax direction
+- lens character
+- foreground travel direction
+
+The next scene should feel discovered by the camera rather than loaded after the camera move.
+
+Example:
+
+**UI node detaches → gains depth → camera trucks with slight lag → node moves toward foreground → node occludes frame → camera continues the same vector through the occlusion → node resolves as a larger system component in the next scene → camera eases into a readable landing**
+
+Avoid:
+
+**track object → stop camera → hide everything → load unrelated scene → begin a new camera move**
+
+That breaks spatial causality.
+
+### Tracking Failure Modes
+
+Avoid:
+
+- perfect center-lock on every moving subject
+- camera and subject starting and stopping on identical frames without reason
+- constant catch-up oscillation
+- excessive rotational tracking that makes UI unreadable
+- target switching without a visible cause
+- following an object that is no longer narratively important
+- camera movement that cancels all useful object motion
+
+
+## 9.5.6 Parallax Environment Traversal & World-to-World Camera Travel
+
+Parallax is not merely a depth effect.
+
+Use parallax as a transition mechanism when foreground, midground, and background relationships can physically guide the viewer from one environment into another.
+
+The preferred grammar is:
+
+**CURRENT ENVIRONMENT → DEPTH CUE → CAMERA COMMIT → PARALLAX SEPARATION → THRESHOLD / OCCLUSION → ENVIRONMENT REVEAL → NEW DEPTH SYSTEM → LANDING**
+
+The next environment should feel reached through space, not loaded after a camera move.
+
+### Depth-Layer Roles
+
+Assign each depth layer a transition role.
+
+Possible roles:
+
+- **foreground** — frame invasion, wipe, tunnel edge, portal edge, passing structure, occlusion, velocity amplifier
+- **midground** — hero subject, bridge object, structural corridor, UI plane, node cluster, product module
+- **background** — destination clue, horizon, future environment, large system, light field, architectural context
+
+Do not move every layer at arbitrary speeds merely to demonstrate parallax.
+
+Each layer should help explain where the camera is going.
+
+### Destination Seeding
+

@@ -1,175 +1,3 @@
-- edge-biased framing — useful for tension, reveal, or imminent occlusion
-- vertical bias — useful when the scene contains stacked systems or directional ascent / descent
-- intentionally drifting anchor — useful when the subject itself should create compositional tension before the camera responds
-
-Do not automatically center every tracked object.
-
-### Dead Zone & Response
-
-Allow the subject to move inside a controlled screen-space region before the camera reacts when a looser, more authored follow is desired.
-
-A dead zone may create:
-
-- perceived mass
-- delayed pursuit
-- stronger foreground parallax
-- anticipation before a camera correction
-- less robotic motion than one-to-one target locking
-
-For precise technical motion, a tighter lock may be appropriate.
-
-Choose the response intentionally:
-
-- **locked** — camera follows almost immediately
-- **smooth** — camera follows with controlled damping
-- **heavy** — camera starts later and settles more slowly
-- **lead** — camera gives additional space in the subject's travel direction
-- **lag** — subject pulls camera behind it before the frame catches up
-- **snap reframe** — camera waits, then rapidly establishes a new framing pose
-
-Do not use springy tracking merely because interpolation makes it easy.
-
-### Velocity Look-Ahead
-
-When useful, bias framing toward the subject's movement vector.
-
-The camera may reveal space before the subject reaches it so the viewer anticipates where the action is going.
-
-Reduce look-ahead before a stop, reversal, or impact so the landing composition does not feel accidentally off-center.
-
-### Depth Tracking
-
-Tracking may include Z-depth, not only X/Y follow.
-
-Use push / pull behavior when:
-
-- a 2D element gains depth and becomes a 3D object
-- a foreground element approaches camera to create occlusion
-- a small UI state expands into a larger spatial system
-- the viewer should move from detail into context or context into detail
-
-Do not mechanically match the subject's Z movement if doing so destroys scale perception.
-
-Sometimes the stronger choice is to let the subject approach while the camera resists, increasing apparent scale and parallax.
-
-### Orientation & Horizon Behavior
-
-Decide whether the camera tracks subject rotation.
-
-Options include:
-
-- stable horizon while the subject rotates
-- partial rotational follow
-- full orientation follow for intentional POV-like movement
-- orbit around the subject while preserving its screen-space anchor
-
-Preserve readability of UI, typography, and recognizable surfaces.
-
-Avoid accidental horizon roll.
-
-### Target Transfer
-
-When attention moves from object A to object B, define the transfer cause.
-
-Useful transfer cues:
-
-- A physically contacts or activates B
-- A passes behind B and B becomes the new foreground hero
-- A transforms into B
-- a line, light path, or motion vector connects A to B
-- A exits through occlusion and B inherits its screen position or velocity
-- sound anticipates B before the visual tracking target switches
-
-Do not switch camera targets invisibly while both subjects remain equally plausible.
-
-### Occlusion & Reacquisition
-
-An extracted hero may temporarily leave sight behind foreground geometry or fill the frame completely.
-
-Use occlusion as a handoff opportunity.
-
-Possible pattern:
-
-**track target → target approaches foreground → frame becomes obscured → scene state changes behind occlusion → target or descendant form is reacquired → camera settles**
-
-If the tracked element disappears permanently during occlusion, preserve at least one continuity property such as:
-
-- motion vector
-- screen position
-- shape
-- scale direction
-- light behavior
-- material cue
-- sound tail
-- semantic role
-
-### Tracking-to-Transition Handoff
-
-Camera motion itself may become part of the transition.
-
-Whenever possible, preserve one or more of:
-
-- outgoing camera velocity
-- subject velocity
-- screen-space anchor
-- depth direction
-- parallax direction
-- lens character
-- foreground travel direction
-
-The next scene should feel discovered by the camera rather than loaded after the camera move.
-
-Example:
-
-**UI node detaches → gains depth → camera trucks with slight lag → node moves toward foreground → node occludes frame → camera continues the same vector through the occlusion → node resolves as a larger system component in the next scene → camera eases into a readable landing**
-
-Avoid:
-
-**track object → stop camera → hide everything → load unrelated scene → begin a new camera move**
-
-That breaks spatial causality.
-
-### Tracking Failure Modes
-
-Avoid:
-
-- perfect center-lock on every moving subject
-- camera and subject starting and stopping on identical frames without reason
-- constant catch-up oscillation
-- excessive rotational tracking that makes UI unreadable
-- target switching without a visible cause
-- following an object that is no longer narratively important
-- camera movement that cancels all useful object motion
-
-
-## 9.5.6 Parallax Environment Traversal & World-to-World Camera Travel
-
-Parallax is not merely a depth effect.
-
-Use parallax as a transition mechanism when foreground, midground, and background relationships can physically guide the viewer from one environment into another.
-
-The preferred grammar is:
-
-**CURRENT ENVIRONMENT → DEPTH CUE → CAMERA COMMIT → PARALLAX SEPARATION → THRESHOLD / OCCLUSION → ENVIRONMENT REVEAL → NEW DEPTH SYSTEM → LANDING**
-
-The next environment should feel reached through space, not loaded after a camera move.
-
-### Depth-Layer Roles
-
-Assign each depth layer a transition role.
-
-Possible roles:
-
-- **foreground** — frame invasion, wipe, tunnel edge, portal edge, passing structure, occlusion, velocity amplifier
-- **midground** — hero subject, bridge object, structural corridor, UI plane, node cluster, product module
-- **background** — destination clue, horizon, future environment, large system, light field, architectural context
-
-Do not move every layer at arbitrary speeds merely to demonstrate parallax.
-
-Each layer should help explain where the camera is going.
-
-### Destination Seeding
-
 Whenever possible, show evidence of the next environment before fully entering it.
 
 Possible seeds:
@@ -301,3 +129,218 @@ Example:
 This creates continuity without requiring a foreground object to fill the frame.
 
 ### Travel-to-Landing Rule
+
+The new environment needs a deliberate landing composition.
+
+After high-parallax travel:
+
+- reduce relative layer velocity
+- establish the new hero
+- restore readable depth hierarchy
+- stabilize horizon unless continued instability is intentional
+- let typography / UI become readable before the next major move
+- provide a short hold when the viewer needs to re-orient
+
+Do not continue high-speed parallax indefinitely after the destination has been reached.
+
+### Parallax Environment Failure Modes
+
+Avoid:
+
+- using parallax only as decorative layer drift
+- every layer moving continuously even when the camera is stationary
+- entering a destination that was never spatially hinted at
+- foreground objects crossing only to create random visual noise
+- changing all environment properties during occlusion with no surviving continuity cue
+- camera speed so high that scale and destination cannot be read
+- tracking a hero so tightly that all environmental depth movement disappears
+- replacing the old environment with an unrelated new one while hiding behind a wipe
+- repeated tunnel / portal transitions becoming a template
+- entering the next scene with no inherited vector, position, shape, depth, or semantic relationship
+
+---
+
+# 9.6 Lens & FOV Language
+
+For perspective cameras, lens behavior changes how motion feels.
+
+Do not choose FOV arbitrarily.
+
+Think in perceptual categories rather than treating exact values as universal rules.
+
+## Wide / Energetic Perspective
+
+Useful for:
+
+- dramatic foreground scale
+- strong parallax
+- fast spatial movement
+- exaggerated entry into a system
+
+Risks:
+
+- distorted UI
+- cheap-looking edge stretch
+- excessive speed
+- text readability loss
+
+## Normal / Natural Perspective
+
+Useful for:
+
+- product hero shots
+- balanced SaaS spatial scenes
+- readable 3D UI cards
+- premium but controlled camera movement
+
+Use this as the default when no stronger lens statement is required.
+
+## Tele-like / Compressed Perspective
+
+Useful for:
+
+- premium restrained shots
+- compressed layers
+- slower, heavier motion
+- graphic flattening of 3D space
+
+Risks:
+
+- reduced sense of depth
+- weak parallax
+
+## FOV Change Rules
+
+Changing FOV is not the same as moving the camera.
+
+Use FOV animation only when it has a clear perceptual purpose such as:
+
+- controlled perspective exaggeration
+- a stylized push-pull effect
+- a transition from immersive to graphic space
+
+Avoid casual FOV pumping.
+
+If a camera move can achieve the idea more naturally, prefer physical translation over animated FOV.
+
+When combining camera translation and FOV changes, verify that the result does not resemble accidental digital zoom.
+
+---
+
+# 9.7 3D Staging & Blocking
+
+Treat 3D subjects like performers.
+
+A hero object should have designed poses and actions rather than continuous rotation.
+
+## 9.7.1 Hero Pose
+
+Before animation, define a resting hero pose that communicates:
+
+- silhouette
+- orientation
+- scale
+- focal face / surface
+- relationship to typography
+- available negative space
+
+The object should still feel intentional when paused.
+
+## 9.7.2 Pose Sequence
+
+For a major 3D event, think in:
+
+**POSE A → ANTICIPATION → ACTION → POSE B → SETTLE**
+
+Examples:
+
+- node compresses → launches → connects → system settles
+- card tilts away → camera follows → card becomes spatial doorway
+- object rotates just enough to reveal hidden face → light catches it → copy appears
+
+Avoid:
+
+- endless 360° rotation
+- random oscillation
+- identical amplitude on every axis
+- motion with no readable pose
+
+
+## 9.7.2.5 Expressive 3D Object Performance
+
+3D objects should not always feel rigid, corporate, or mechanically neutral.
+
+When the brief benefits from personality, tension, tactility, or emotional lift, give the object an authored performance rather than only a transform.
+
+Useful expressive behaviors include:
+
+- anticipation tilt before motion
+- slight compress / release before launch or impact
+- hinge, fold, fan, peel, or open behaviors
+- magnetic pull, convergence, or repulsion between object parts
+- drag, lag, or follow-through on attached elements
+- controlled wobble or recoil after impact
+- soft collision response
+- rotation with a readable lead-in and landing, not perpetual spin
+- object reaction to typography, cursor, data pulse, or environmental change
+- one object handing attention to another through contact, occlusion, or transformation
+
+Possible object personalities:
+
+- **precise-rigid** — clean, mechanical, restrained; good for technical or premium systems
+- **elastic-reactive** — quick compression, release, and rebound; good for playful or energetic scenes
+- **magnetic-modular** — pieces attract, separate, and snap into systems; good for product assembly
+- **soft-digital** — float, bend, and reform with subtle fluid character; good for AI / abstract environments
+- **paper-like hybrid** — fold, hinge, peel, and layer; good for editorial or physical-digital staging
+
+Do not force cartoon squash-and-stretch onto every object. The goal is not silliness. The goal is to avoid dead, showroom-like 3D behavior when more expressive motion would improve attention and character.
+
+A useful test:
+
+**If the 3D object could be replaced by a static product render plus a slow turntable and the scene would feel almost the same, the object performance is probably too stiff.**
+
+## 9.7.3 Depth Staging
+
+Assign layers deliberately:
+
+- foreground — interruption / wipe / scale / framing
+- midground — hero subject
+- background — context / environment / support
+
+Do not fill every depth layer merely because 3D allows it.
+
+At the hero moment, the viewer should be able to identify the primary subject immediately.
+
+## 9.7.4 Silhouette & Occlusion
+
+Check important 3D states in screen space.
+
+Avoid:
+
+- hero geometry merging with background values
+- text crossing high-detail geometry
+- important surfaces hiding during the exact moment they are described
+- foreground occlusion lasting so long that comprehension drops
+
+Use occlusion to create anticipation, then reward it with a readable reveal.
+
+---
+
+# 9.8 Lighting, Material & Post-FX Choreography
+
+Lighting is part of hierarchy.
+
+Do not light every object equally.
+
+## 9.8.1 Lighting Roles
+
+### Key Light
+
+Use to define the hero surface and primary form.
+
+### Fill
+
+Use only enough to preserve necessary information.
+
+### Rim / Edge Light
+

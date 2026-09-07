@@ -1,303 +1,346 @@
+- when captions are required, treat them as a persistent layout system with safe
+  areas and collision rules, not as an afterthought.
 
-Do not “pass” the shot because objects, particles, shaders, or UI are moving while the camera direction itself was never implemented.
+## 24.3 Camera, World and Stillness Reconciliation
 
-### Visible Movement Gate
+1. **Camera movement is expected when the shot direction calls for it.** A written
+   push, pull, truck, track, orbit, reframe, or parallax move must become an actual
+   time-varying render-camera or world-rig transform.
+2. **Camera movement is not mandatory in every shot.** `LOCKED_INTENTIONAL` remains
+   valid when stillness creates tension, clarity, contrast, or a stronger read.
+3. **A static result is a hard failure only when the authored direction specified
+   camera motion.** Do not silently replace planned travel with object motion.
+4. **Every camera move needs a visible consequence:** changed framing, parallax,
+   scale, occlusion, depth relationship, revealed information, or transition state.
+5. **Do not move camera merely to avoid a static frame.** If motion reveals nothing
+   and changes no relationship, remove it.
+6. **Camera-equivalent DOM transforms are valid 2D/2.5D tools.** A real 3D camera is
+   not required for every spatial idea.
+7. **When camera is locked, something else may carry continuity:** object relay,
+   typography replacement, semantic transform, sound bridge, hard match cut, or
+   controlled environmental state change.
+8. **Start and landing compositions must work as still frames.** Then author the
+   path between them.
+9. **Preserve or intentionally break direction.** Track left/right travel, depth
+   direction, subject screen position, and outgoing velocity across handoffs.
+10. **Tracking is authored framing, not automatic centering.** Use center lock,
+    thirds, edge bias, lead, lag, dead zones, and target transfer intentionally.
 
-After numerical motion is confirmed, verify perceptual movement. The camera move should create a visible consequence such as:
+## 24.4 2D / 2.5D / 3D Selection Rules
 
-- measurable hero framing / scale change
-- parallax separation
-- perspective change
-- information reveal
-- occlusion change
-- screen-space travel
-- depth relationship change
+1. Start at the lowest dimensional complexity that communicates the idea clearly.
+2. Use 2D / 2.5D by default when framing, perspective, scale, crop, occlusion,
+   masking, typography, illustration, and simulated depth are sufficient.
+3. Escalate to 3D when depth materially improves spatial relationships, reveal,
+   product metaphor, parallax, occlusion, lighting state, or a hero transformation.
+4. Three.js, React Three Fiber, shaders, post-processing, and 3D interaction are
+   runtimes/capabilities, not taste.
+5. A 3D object should perform through poses, anticipation, reaction, lag,
+   compression, fold, relay, collision, or follow-through when appropriate.
+6. Avoid perpetual turntable rotation unless the product itself requires inspection.
+7. If 3D complexity increases without increasing clarity, curiosity, or emotional
+   impact, step back to a simpler dimensional solution.
+8. When 3D is used, the same master-time, camera-contract, hierarchy, and QA rules
+   apply as in 2D.
 
-If camera values change but representative rendered frames appear effectively identical, treat the move as perceptually static unless stabilization is explicitly intended. Increase travel, change depth relationships, revise the lens / target relationship, or redesign the move rather than claiming motion exists because numbers changed.
+## 24.5 Transition Causality Rules
 
-For `LOCKED_INTENTIONAL`, record the reason for stillness in the shot plan so QA can distinguish authored stillness from missing implementation.
+For every major transition, state:
 
-## Step 2.5.5 — Element Extraction & Camera Tracking Inspection
+**CAUSE → ACTION → RESULT**
 
-When a visible 2D or 3D element becomes the transition or camera-tracking target, inspect the complete role transfer.
+At least one continuity property should survive whenever possible:
 
-Check:
+- hero object;
+- shape;
+- screen-space anchor;
+- travel vector;
+- camera velocity;
+- depth direction;
+- light direction;
+- material behavior;
+- semantic role;
+- sound tail;
+- typographic fragment;
+- product state.
 
-- the source element is clearly identifiable before extraction
-- the extraction moment is readable
-- at least two continuity properties survive long enough to preserve identity
-- hero ownership visibly transfers from the parent scene to the extracted element
-- camera target ownership is unambiguous
-- tracking framing preserves useful negative space and readability
-- dead zone, lead, lag, or damping feels intentional rather than accidental
-- subject and camera do not cancel each other's motion unless stabilization is the point
-- foreground occlusion occurs only after the transition object is understood
-- the outgoing object or camera vector genuinely enters the incoming composition
-- target reacquisition after occlusion, transform, or cut is readable
-- the incoming role is visibly related to the outgoing element
-- the camera landing frame is composed as a deliberate still
-- the final hold gives enough time to understand the new state
+Preferred transition families include:
 
-For tracked transitions, inspect at minimum:
+- element extraction;
+- object wipe / foreground occlusion;
+- typography as mask or transition surface;
+- semantic line/path transformation;
+- card fold / hinge / depth turn;
+- subject tracking with camera lag or lead;
+- parallax environment traversal;
+- motivated push-through;
+- match geometry / match motion hard cut;
+- shader/light-field state handoff;
+- product-world assembly from already-visible fragments.
 
-- pre-extraction
-- extraction frame
-- tracking start
-- tracking midpoint
-- maximum foreground / depth event
-- occlusion or transformation midpoint
-- incoming reacquisition
-- camera landing
+Do not make every transition use the same family.
 
-Do not approve an element-driven transition only because the first and last frames match. The quality lives in whether identity, vector, depth, and attention survive between them.
+## 24.6 Background and Surface Rules
 
+1. Background language is selected from the brief, not inherited from a starter.
+2. Do not default every project to dark nebula, particles, horizontal lanes, or
+   luminous streaks.
+3. Use theme-responsive gradients only when atmosphere, state, energy, material,
+   or scene continuity benefits from them.
+4. Interactive gradients may react to type hits, object movement, pointer, scroll,
+   drag, proximity, click, or state change when interaction is part of the piece.
+5. A moving gradient must not compete with the hero or become generic wallpaper.
+6. Background surfaces may combine two or more authored layers such as base color,
+   mesh/gradient, paper, grain, grid, tint, light, haze, image, or depth geometry.
+7. A flat single-color surface remains valid when brutal/minimal art direction
+   deliberately calls for it.
+8. Bright background elements beneath important light text must be reduced or moved.
+9. Bloom/glow is a hierarchy tool. It should peak around meaningful activation and
+   decay rather than remain permanently on.
+10. Use actual post-processing bloom for optical glow in WebGL when needed; do not
+    fake universal glow on all typography.
 
-## Step 2.5.6 — Parallax Environment Traversal Inspection
+## 24.7 Motion-Blur and Velocity Rules
 
-When camera parallax carries the viewer from one environment into another, inspect the full travel path rather than only the source and destination scenes.
+1. Blur direction should relate to motion direction when blur is used.
+2. Horizontal travel should bias horizontal blur; vertical travel should bias
+   vertical blur.
+3. Expand SVG/filter bounds so trails are not clipped.
+4. Remove expensive blur/filter states after the event when they are no longer needed.
+5. Speed ramps should transfer attention or momentum between semantic beats.
+6. Do not repeat the same fast-slow speed-ramp shape as a decorative signature.
+7. Entrance and exit timing may be asymmetric: designed arrival, faster departure,
+   unless the exit itself is the story event.
+8. Use holds after impacts so the eye can register the result.
 
-Check:
+## 24.8 Deterministic Browser-Motion Architecture
 
-- foreground, midground, and background have distinct and intentional depth roles
-- the destination is seeded early enough to feel spatially connected when appropriate
-- the camera commitment point is readable
-- near-field motion strengthens depth without becoming visual noise
-- the travel vector remains understandable through the handoff
-- threshold geometry or occlusion does not create accidental clipping
-- environmental replacement preserves at least one continuity property
-- any tracked subject remains readable or is intentionally released
-- background-to-hero promotion remains visually traceable
-- horizon / vanishing direction does not jump accidentally
-- lens behavior remains coherent through the crossing
-- UI and typography are not exposed at unreadable perspective during the fastest travel
-- motion blur does not erase important threshold information
-- the destination environment gains a stable hero and depth hierarchy on landing
+For code-driven motion, one authoritative time/frame source owns playback.
 
-Inspect at minimum:
+Preferred pipeline:
 
-- source environment hold
-- destination seed first visibility
-- camera commitment
-- early parallax separation
-- maximum foreground velocity
-- threshold approach
-- occlusion / crossing midpoint
-- first clear destination frame
-- environment reacquisition
-- final camera landing
+**MASTER TIME / FRAME → AUTHORED TIMELINE STATE → DOM / CAMERA / WEBGL / R3F /
+AUDIO SYNC → RENDER → SEEK / REPLAY / CAPTURE**
 
-If the destination could be replaced by any unrelated environment without changing the transition logic, the spatial handoff is probably too generic.
+Hard rules:
 
-## Step 2.6 — Programmatic Layout QA
+1. Do not let independent clocks drive important visual state when deterministic
+   seeking or capture matters.
+2. Avoid `Date.now()` and `performance.now()` as authored sequence time.
+3. Avoid uncontrolled `setInterval()` for sequence-critical typing or stepping.
+4. Avoid unseeded per-frame `Math.random()` in reproducible render paths.
+5. Avoid cumulative `position += velocity * dt` when the same timestamp must always
+   reproduce the same frame.
+6. Setup-time seeded randomness is allowed when stable after initialization.
+7. Procedural motion should be a deterministic function of master time/state.
+8. Expose a stable `seek(t)` or frame-seek API when programmatic QA/export is needed.
+9. Mark the project ready only after critical fonts and assets are loaded.
+10. Capture resolution and DPR must be explicit, not accidental browser state.
+11. Mixed DOM/WebGL/R3F projects must apply camera and render state after seeking.
+12. Pause, replay, seek, VO/SFX sync, and capture must all agree on the same timeline.
 
-When implementation tools allow it, add automated or semi-automated checks before final approval.
+## 24.9 Fixed Stage and Responsive Preview
 
-Useful checks include:
+For fixed-composition video work:
 
-- DOM bounding-box intersection tests
-- safe-area boundary tests
-- text overflow tests
-- active-scene / hero ownership assertions
-- screenshot capture at labeled timeline moments
-- detection of elements remaining visible after their scene exit
-- WebGL / DOM synchronization checks during pause, replay, and seeking
+- author at a known stage size such as 1920×1080 or 1080×1920;
+- fit the entire stage to the browser window with scale;
+- do not reflow the composition merely because the preview window changes size;
+- treat responsive web experiences differently when the deliverable itself is
+  responsive rather than video-like.
 
-A collision detector is a guardrail, not an art director.
+The user/platform-specified aspect ratio always overrides defaults.
+If no aspect ratio is provided for a standard explainer, 16:9 is a safe default;
+for short-form/social, use the platform or requested ratio rather than assuming 9:16.
 
-It should catch obvious failures; human visual inspection still decides whether intentional overlap, edge tension, and hierarchy work aesthetically.
+## 24.10 Development Files vs Final Delivery
 
-## Step 3 — Review playback
+There is no conflict between multi-file development and single-file delivery.
 
-Check:
+- During development, multi-file CSS/JS/assets are allowed and often preferable.
+- Use a no-cache local server when local ES modules or rapid iteration require it.
+- For a requested portable browser deliverable, consolidate to a direct-open
+  `index.html` when technically practical.
+- Inline CSS and project JS when `file://` portability is required.
+- CDN dependencies may remain online dependencies when the user accepts them.
+- Avoid local `fetch()`/XHR in direct-open deliverables because browser security may
+  block it under `file://`.
+- Do not imply that Node, Puppeteer, or Python is required merely to watch a final
+  single-file motion piece if it is not.
+- Export tooling is a production option, not a viewing dependency.
 
-- timing
-- rhythm
-- readability
-- easing
-- overlaps
-- awkward pauses
-- visual hierarchy
-- retention rhythm
-- clipping
-- safe area
-- continuity
-- VO sync
-- SFX sync
-- sound density
-- loop seams
+## 24.11 Autoplay, Player and Audio Gesture Rules
 
-## Step 4 — Listen Without Picture
+1. Visual-only or SFX-free browser pieces may autoplay and loop when appropriate.
+2. The visible player/debug scrub UI is off by default in the final deliverable.
+3. `?debug=1` or an equivalent mode may expose pause, scrub, frame/time readout, and
+   QA controls.
+4. Browser audio policies may require a user gesture before VO/SFX playback.
+5. When audio requires permission, a minimal **Start / Enable Audio** interaction is
+   allowed even though the final piece otherwise has no visible player.
+6. Do not fight browser autoplay policy with unreliable hacks.
+7. After activation, audio position must still follow the authoritative sequence time.
 
-Check:
+## 24.12 Unified Audio Policy
 
-- VO clarity
-- SFX hierarchy
-- unnecessary noise
-- repeated whoosh patterns
-- impact consistency
-- continuous ambience masking VO or important SFX
+This skill remains **NO-BGM by default**.
 
-## Step 5 — Watch Without Sound
+**Important terminology:** “SFX-only” describes the absence of background music.
+It does **not** exclude voiceover. When narration is part of the format, VO sits
+above the SFX hierarchy.
 
-Check whether:
+- Do not add or propose background music unless the user explicitly requests or
+  overrides the no-music direction.
+- When older motion references imply “music carries the emotion,” translate that
+  principle into VO cadence, SFX rhythm, ambience, impacts, tails, tonal texture,
+  and silence unless music has been authorized.
+- Choose SFX by narrative function first: hero event, movement, support/UI,
+  environment/texture, transition, impact, state change.
+- For non-explainer work, “tech” is a material/character description rather than a complete SFX function.
+- Do not compensate for weak visual rhythm with a constant tonal or musical bed.
+- Silence is an authored beat.
 
-- hierarchy still works
-- message is understandable
-- motion remains intentional
-- the sequence does not depend entirely on SFX
+## 24.12.1 Explainer Voiceover + Hi-Tech SFX Contract
 
-## Step 6 — Refine
+For **all explainer work**, default to:
 
-Fix the cause, not only the symptom.
+**VOICEOVER + HI-TECH SFX + CONTROLLED TECH AMBIENCE + SILENCE — NO BGM**
+
+Voiceover is **required by default** for explainers unless the user explicitly
+requests `NO_VO`, `TEXT_ONLY`, `SILENT`, or another narration-free format.
+
+The hi-tech SFX material rule remains hard unless the user explicitly requests a
+different sonic material.
+
+### Core rule
+
+Every explainer SFX should belong to a coherent **digital / technological /
+electronic / interface / signal / data / precision-mechanical** sound world.
+
+Choose the cue by **narrative function first**, then realize that function using
+hi-tech sonic material.
+
+Use this mapping:
+
+| Narrative function | Preferred hi-tech material |
+|---|---|
+| hero reveal / major fact | focused digital impact, synthetic lock, compact sub-electronic hit, data-confirmation pulse |
+| movement / travel | filtered digital air, servo sweep, electromagnetic pass, modulated signal movement |
+| UI / support | tactile interface click, relay tick, soft key pulse, micro-servo, confirmation chirp without melody |
+| transition | data sweep, signal tunnel, synthetic suction, spectral pass, digital riser that does not become music |
+| scan / analysis | scanner pulse, radar-like tick, spectral scan, narrow-band sweep, data readout texture |
+| connection / network | node ping, relay contact, electrical handshake, packet pulse, synchronized digital ticks |
+| transformation | granular digital morph, synthetic material shift, bit-crush residue, spectral reshape |
+| loading / processing | restrained compute texture, clocked pulse cluster, filtered machine chatter, data-stream texture |
+| warning / error | short synthetic alert, gated low pulse, distorted data tick, controlled electronic fault cue |
+| success / completion | compact confirmation lock, clean synthetic chime-like transient with no melodic sequence |
+| ambience / texture | low-level server-room hum, electrical room tone, filtered broadband digital bed, sparse data noise |
+| final landing | restrained branded digital signature, precision lock, short synthetic tail |
+
+### Allowed hi-tech vocabulary
+
+Prefer combinations of:
+
+- digital clicks;
+- relay ticks;
+- servo movement;
+- electromagnetic sweeps;
+- scanner pulses;
+- data pings;
+- packet / node ticks;
+- synthetic impacts;
+- filtered noise bursts;
+- spectral sweeps;
+- granular digital textures;
+- bit / glitch residue used sparingly;
+- modem/data-like micro-textures without nostalgia unless appropriate;
+- robotic mechanical locks;
+- UI confirmation transients;
+- electronic suction / reverse pulses;
+- short sub-electronic contacts;
+- signal tails;
+- machine-room / server-room ambience;
+- precision mechanical-electronic hybrids.
+
+### Disallowed default explainer vocabulary
+
+Do **not** use these as the default sonic material in explainers:
+
+- natural Foley such as paper, wood, cloth, footsteps, doors, water, wind, or household-object sounds;
+- cinematic trailer booms;
+- orchestral hits;
+- generic Hollywood whooshes;
+- organic percussion;
+- cartoon boings / pops / whistles;
+- acoustic impacts;
+- musical arpeggios;
+- melodic synth beds;
+- chord progressions;
+- tonal loops that behave like background music;
+- “epic” risers;
+- random glitch spam.
+
+If a visual object is physical, translate its action into the hi-tech vocabulary
+instead of automatically using literal Foley.
 
 Examples:
 
-- “feels robotic” → inspect spacing and easing
-- “feels slow” → shorten dead time before shortening every animation
-- “feels cheap” → simplify effects, improve hierarchy, easing, and sound selection
-- “too busy” → reduce concurrent motion and SFX
-- “no impact” → strengthen anticipation → action → hold contrast
-- “hard to read” → fix size, contrast, spacing, reading time, or competing motion; simplify only the typographic choices that obstruct understanding
-- “boring” → introduce unresolved visual information or meaningful frame change
-- “SFX feels generic” → reduce layers and choose more distinctive material character
-- “VO sync feels karaoke” → animate phrases and hero words, not every word
-- “text overlaps during transitions” → fix scene ownership, bounds, exit timing, or layout before reducing font size blindly
-- “motion feels like slides” → run the presentation-motion, scene-permutation, and continuous-world tests; redesign scene causality, product behavior, camera/framing logic, and object carry-over before adding more effects
-- “3D is moving but scene feels static” → change hierarchy/framing or make the 3D motion cause a narrative event rather than rotate ambiently
+- paper card lands → **precision digital contact + tiny servo settle**
+- map route draws → **signal trace + node ticks**
+- chart rises → **filtered data sweep + compact confirmation pulse**
+- photo locks into frame → **electromagnetic snap + short digital tail**
+- historical date appears → **scanner acquisition tick**, not a typewriter key
+- vehicle moves through a route → **modulated signal/servo travel**, not engine Foley, unless the user explicitly asks for realistic vehicle sound.
 
-## Step 7 — Verify Delivery
+### Hi-tech does not mean noisy or futuristic cliché
 
-Confirm:
+Avoid filling every beat with bleeps.
 
-- dimensions
-- aspect ratio
-- frame rate
-- duration
-- codec / format
-- alpha requirements
-- audio
-- loudness target if specified
-- loop behavior
-- file naming
+The hierarchy remains:
 
-Do not call a motion piece finished solely because the code runs.
+**VO comprehension → hero hi-tech SFX → motion/support hi-tech SFX →
+low-level technological texture → silence**
 
----
+Use silence aggressively. Prefer one coherent cue cluster over many isolated
+micro-sounds.
 
-# 23. Critique Mode
+### Non-musical requirement
 
-When asked to review motion, do not respond with vague taste statements.
+Explainer hi-tech SFX may contain pitch, resonance, or tonal color, but must not
+accidentally form a musical bed.
 
-Diagnose in this order:
+Avoid:
 
-1. communication goal
-2. retention / curiosity
-3. visual hierarchy
-4. composition
-5. timing
-6. easing / velocity
-7. choreography
-8. perspective / framing
-9. typography
-10. illustration behavior
-11. VO sync
-12. SFX hierarchy
-13. continuity
-14. brand fit
-15. technical quality
-16. accessibility
+- repeating notes on a grid;
+- recognizable chord movement;
+- looping tonal ostinatos;
+- arpeggiated UI sequences;
+- long pads that function as background music.
 
-For every issue:
+A tonal confirmation cue should behave as an **event**, not a song fragment.
 
-- identify the symptom
-- explain the likely cause
-- propose a specific fix
-- give approximate timing / frame / easing guidance when useful
-- specify VO or SFX adjustment when relevant
+### VO masking rule
 
-Example:
+When VO exists:
 
-**Issue:** The reveal feels weak.  
-**Cause:** The object is already fully understandable before the transition.  
-**Fix:** Crop 25–35% of the object before the hero phrase, begin the reveal 3 frames before the stressed word, land on the word, then hold 8 frames with one short impact SFX.
+- hi-tech ambience must sit behind speech;
+- high-frequency clicks must not compete with consonants;
+- reduce scanner/data textures during dense sentences;
+- place stronger digital impacts in phrase gaps or immediately after semantic landings;
+- use pre-SFX 1–4 frames before a reveal only when anticipation helps;
+- let short digital tails bridge scene continuity without masking the next phrase.
 
-Prioritize the 3–5 changes with the greatest visual impact.
+### Consistency rule
 
----
+Choose one compact hi-tech family for the whole explainer, for example:
 
-# 24. Common Failure Modes
+**PRECISION DIGITAL**
+- dry relay ticks;
+- narrow filtered sweeps;
+- clean confirmation locks;
+- restrained server-room texture.
 
-Avoid these unless intentionally justified:
-
-- everything animates at once
-- every element uses the same duration
-- linear spatial movement
-- default fade + slide for every entrance
-- bounce on every object
-- excessive overshoot
-- arbitrary rotation
-- constant camera drift
-- 3D used without conceptual need
-- excessive motion blur hiding weak animation
-- glow used as a substitute for hierarchy
-- particles without narrative purpose
-- long stagger chains
-- random beat sync
-- karaoke word-by-word VO animation
-- unreadably fast typography
-- animating before composition is solved
-- adding effects instead of improving timing
-- using many transition styles in one short piece
-- overcomplicating simple feedback
-- treating “cinematic” as slow zoom + blur + grain
-- treating “edgy” as random glitch
-- putting whoosh on every movement
-- placing SFX on every word
-- using risers before every transition
-- keeping the frame fully resolved for too long
-- changing scenes without visual continuity when a transformation is available
-- claiming a result is polished without visual and audio inspection
-- relying on hard-coded text coordinates without checking rendered bounds
-- allowing outgoing and incoming hero headlines to compete at readable opacity
-- using opacity fades to hide layout collisions instead of fixing layout or timing
-- leaving prior-scene DOM visible underneath the next scene accidentally
-- repeating fade + small translate as the primary grammar across most scenes
-- keeping Three.js ambient motion active at full intensity while dense typography needs attention
-- letting pause / replay control GSAP while WebGL or ambient loops continue independently
-- approving transitions without inspecting frames before, during, and after the handoff
-- using generic camera orbit or slow drift to make a shot feel cinematic
-- describing a push / pull / truck / track / orbit / parallax move while leaving the active render camera transform static
-- evaluating camera key poses in planning code without binding them to the active render camera over time
-- tiny numerical camera changes that technically animate but produce no visible framing, parallax, perspective, occlusion, or reveal change
-- changing FOV repeatedly without a narrative reason
-- using DOF, bloom, fog, motion blur, and chromatic effects simultaneously by default
-- allowing post-processing to reduce product or typography clarity
-- using a background gradient as generic wallpaper instead of a theme- or state-driven visual field
-- keeping the gradient equally active during copy holds, reducing readability and hierarchy
-- making glow permanently active with no event, ownership, or decay
-- making gradient interaction loop independently of typography, object state, or user input
-- using interactive glow or gradient responses that overpower the kinetic type
-- treating 3D objects as overly rigid showroom assets when the concept would benefit from expressive performance
-- treating 3D objects as perpetual spinners rather than staged performers
-- cutting between 2D UI and unrelated 3D scenes without a visual bridge
-- rendering final web motion from uncontrolled realtime browser timing when frame accuracy matters
-- relying on unseeded procedural randomness for final frame capture
-- allowing device pixel ratio to silently alter target render framing or performance
-- enabling expensive shadows / post effects everywhere without a performance budget
-- calling motion polished when dropped frames materially alter timing or camera smoothness
-- using long descriptive on-screen copy when a short kinetic phrase can carry the message
-- transcribing VO into long on-screen sentences instead of extracting kinetic anchor words
-- adding subtitle/body copy beside kinetic type merely to make the layout feel complete
-- letting explanatory typography stay static while only background / camera / 3D moves
-- building every SaaS scene as headline + subtitle + centered card
-- resetting the environment at every feature change
-- using a transition only to hide one finished layout being replaced by another
-- treating product screenshots as presentation objects instead of choreographed states
-- adding background music to compensate for weak visual rhythm or weak SFX structure
-- turning tonal SFX into an accidental musical bed when the direction is SFX-only
-- giving every motion event an independent sound instead of clustering cues by hierarchy
-- letting long reverb tails blur important VO or the next transient
-- adding decorative eyebrow/kicker labels, fake chapter numbers, pseudo-timecodes, slashes, dots, or technical metadata that communicate nothing and merely fill negative space
-- filling physical scenes with attractive props that never influence the story, camera, transition, or product reveal
-- jumping between physical and digital worlds without a visible relay, contact, shared vector, shape, position, or material cue
-- using object explosions / scatter only as spectacle with no surviving hero or readable destination
+**SOFT AI / DATA**
+- granular data textures;
+- soft synthetic pulses;
+- spectral morphs;

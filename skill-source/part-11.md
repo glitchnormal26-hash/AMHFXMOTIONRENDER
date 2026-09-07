@@ -1,303 +1,346 @@
-Do not move both camera and typography aggressively unless the relative motion remains readable.
+- impact / contact
+- material definition
+- transformation
+- interface feedback
+- reaction
+- tension
+- release
+- scene continuity
+- brand punctuation
+- environmental depth
 
-### Selective Orbit / Arc Around Type
+## 15.1 No-BGM Default
 
-Use only when dimensional type or a typographic plane has meaningful geometry, layering, or a reverse side to reveal.
+Default audio architecture:
 
-Do not orbit a word merely because it is 3D.
+**VO + SFX + controlled ambience + silence**
 
-## 13.9 Typographic Camera Tracking
+Do not add a musical bed merely because the sequence feels empty.
 
-Typography may become a camera tracking target when a word, glyph, punctuation mark, or typographic object physically leads the viewer toward another state.
+If energy is missing, first inspect:
 
-Use the same target logic as other 3D tracking:
+- visual pacing
+- event timing
+- SFX contrast
+- transient placement
+- sound tails
+- ambient depth
+- silence placement
+- VO phrasing
 
-**TYPE TARGET → SCREEN-SPACE ANCHOR → CAMERA RESPONSE → DEPTH / VECTOR CHANGE → HANDOFF → REACQUISITION / LANDING**
+Tonal SFX are allowed when they behave like effects or brand cues.
 
-Possible targets:
+Do not quietly turn tonal SFX into a continuous melody, beat, pad, or score unless the user explicitly requests music.
 
-- a hero word that leaves its line and becomes an object
-- punctuation that detaches and travels into depth
-- a letterform that expands into a portal
-- a text block that becomes a spatial plane
-- one word that slides past camera and becomes the transition occluder
-- a typographic fragment that aligns with UI or 3D geometry in the next scene
+## 15.2 SFX Hierarchy
 
-For tracking, define:
+Use four functional layers.
 
-1. **semantic owner** — which word or glyph matters and why
-2. **screen-space anchor** — center, third, edge-biased, or intentionally drifting
-3. **camera response** — locked, smooth, heavy, lead, lag, or snap reframe
-4. **readable state** — when the word must be fully understood before stronger travel begins
-5. **depth behavior** — approach, recede, cross foreground, flatten, or gain thickness
-6. **handoff property** — shape, position, vector, crop, negative space, material, or meaning
-7. **landing role** — readable type, graphic motif, UI element, environment surface, or descendant object
+### HERO SFX
 
-The camera should not begin following a word before the viewer has enough information to recognize what is being followed, unless deliberate partial recognition is the hook.
-
-## 13.10 Typography → Scene Handoff
-
-Typography may directly cause the next scene.
-
-Prefer transitions such as:
-
-- **word → foreground crop → frame coverage → next environment**
-- **glyph counter → portal → camera traversal → next scene**
-- **underline → spatial path → camera follows path → new environment**
-- **letterform edge → architectural edge → next spatial system**
-- **word block → 3D plane → camera moves around / through plane → product state on reverse side**
-- **punctuation → node → tracked 3D element → network environment**
-- **headline baseline → horizon → camera pullback reveals environment built from the same line**
-- **oversized word → scale continues past readability → abstract shape match → next hero object**
-
-A strong handoff preserves at least one recognizable continuity property:
-
-- shape
-- location
-- scale trajectory
-- movement vector
-- negative space
-- value / color relationship
-- depth direction
-- semantic meaning
-
-Avoid:
-
-**headline exits → empty frame → generic camera move → unrelated next scene**
-
-Prefer:
-
-**headline changes role → camera responds → typographic geometry creates the transition condition → next scene is discovered through that condition**
-
-### 13.10.1 Speed-Ramp Handoff — Kinetic → Product
-
-Use speed ramps as **energy transfer**, not as a decorative fast-slow loop.
-
-A strong kinetic-to-SaaS ramp often follows:
-
-**FAST KINETIC → MICRO HOLD → ACCELERATION → OCCLUSION / THRESHOLD → CONTROLLED DECELERATION → PRODUCT READ → FAST RESET**
-
-The acceleration should have a clear cause, such as:
-
-- a hero word or glyph escaping its typographic layout
-- a bar or underline extending beyond the frame
-- a camera commitment toward a typographic opening
-- a word crossing foreground and becoming an occluder
-- a semantic phrase such as faster, scale, instant, automate, or accelerate receiving a physically faster gesture
-
-The deceleration should have a clear result:
-
-- dashboard reaches a readable hero pose
-- workflow structure becomes understandable
-- extracted element locks into its SaaS role
-- camera settles after entering the product environment
-- important UI labels receive enough time to read
-
-Do not repeat:
-
-**fast → slow → fast → slow → fast**
-
-at a predictable cadence. Repeated ramps flatten hierarchy because every movement begins to feel equally important.
-
-Prefer one pronounced ramp for a hero handoff, then use snaps, normal easing, hard holds, or quieter motion for surrounding events.
-
-During the fastest phase, motion blur, distortion, or full-frame occlusion may support perceived velocity, but they must not hide weak spacing or destroy the identity of the transition object. Preserve at least one trackable property through the ramp.
-
-For VO-driven work, place the peak acceleration around the semantic turn or transition phrase, then let the product landing breathe. A short hold after a high-energy ramp is part of the ramp design, not dead time.
-
-## 13.11 Typography + Parallax Environment Traversal
-
-Typography may participate in the parallax environment system introduced earlier.
+For major state changes and hero visual events.
 
 Examples:
 
-- foreground word passes close to camera while a distant phrase becomes the next hero
-- camera advances through multiple typographic depth planes until the final plane resolves into UI
-- a large background word becomes increasingly legible as camera approaches, then its internal negative space exposes the next environment
-- support copy remains on a shallow screen-space layer while the product environment travels in deeper parallax
-- one large word acts as a threshold plane; crossing it changes the world behind it
+- deep impact
+- dimensional suction
+- signature snap
+- broad but short whoosh
+- resonant activation
+- branded tonal strike
+- heavy material lock
 
-When type is used as environment, do not require every layer to be read as copy.
+Hero SFX should be rare enough to remain meaningful.
 
-Explicitly distinguish:
+### MOTION SFX
 
-- **must-read language**
-- **recognizable motif**
-- **spatial texture / architecture**
+For travel, acceleration, rotation, expansion, folding, or perspective movement.
 
-Do not sacrifice message comprehension for depth spectacle.
+Examples:
 
-## 13.12 Camera-Driven Reading Order
+- short air pass
+- filtered sweep
+- mechanical glide
+- servo movement
+- friction pass
+- spatial swish
+- low pressure movement
 
-The camera may control **when** information becomes available.
+Do not place a whoosh on every transform.
 
-Use this carefully.
+Choose motion sounds only when the movement benefits from perceived mass, direction, or speed.
 
-Possible sequence:
+### SUPPORT / UI SFX
 
-1. show a readable anchor word
-2. imply additional language beyond the crop
-3. move or reframe toward that unresolved region
-4. reveal the second phrase
-5. allow a readable hold
-6. let the second phrase cause the next framing event
+For secondary interaction and confirmation.
 
-This creates:
+Examples:
 
-**partial information → camera question → reveal → readable meaning → new spatial question**
+- click
+- tick
+- soft lock
+- digital blip
+- restrained pop
+- small mechanical response
+- short data pulse
 
-Do not hide ordinary text simply to manufacture difficulty.
+Keep these quieter and spectrally smaller than hero sounds.
 
-The withheld information should create useful anticipation.
+### TEXTURE / AMBIENCE SFX
 
-## 13.13 VO + Camera + Typography Choreography
+For environmental and material depth.
 
-For VO-driven typography, camera events should follow phrase hierarchy rather than every spoken word.
+Examples:
 
-A useful hierarchy:
+- low room tone
+- quiet system hum
+- electrical texture
+- air movement
+- paper friction
+- subtle servo noise
+- soft digital residue
+- restrained environmental resonance
 
-- **establish phrase** → stable or slowly resolving framing
-- **hero word** → strongest scale, crop, camera, or depth event
-- **support phrase** → secondary reveal or reaction
-- **semantic turn / contrast** → reframe, direction change, interruption, or perspective reset
-- **transition phrase** → typography may become the object or spatial route that carries camera forward
+Texture should be felt more than noticed.
+
+Ambience is not BGM.
+
+It should not establish a song-like groove or melodic progression.
+
+### 15.2.1 UI-SFX vs “Tech” SFX — Function Before Aesthetic Label
+
+Do not choose between **UI-SFX** and **tech SFX** as if they are two mutually exclusive sound categories.
+
+Choose the **functional role first**, then choose a sonic material or character that fits the visual world.
+
+For kinetic typography → speed-ramp → SaaS reveal, a useful mapping is:
+
+- **kinetic typography** → primarily HERO + MOTION SFX; dry snaps, compact body, short filtered air, suction, friction, or sharp movement texture
+- **speed-ramp / spatial handoff** → primarily MOTION SFX with a technical material character; filtered sweep, low-pressure movement, relay-like anticipation, electrical residue, servo or mechanical glide when visually justified
+- **SaaS interaction / confirmation** → primarily SUPPORT / UI SFX; clean click, tick, soft lock, digital blip, restrained pop, short data pulse
+- **AI processing / automation / system depth** → primarily TEXTURE / AMBIENCE; quiet system hum, restrained electrical texture, soft digital residue, subtle servo noise
+- **major product state reveal** → HERO SFX may punctuate the landing, but it should remain rarer and larger than UI feedback
+
+Treat **tech** as a descriptor of material, timbre, or system character — precise, electrical, relay-like, digital, mechanical, filtered, data-like — not as permission to add generic futuristic sounds everywhere.
+
+The transition from kinetic type to product should often sound like a role transfer:
+
+**pre-suction / pressure cue → accelerated movement texture → compact contact or cut → short digital residue → restrained UI ticks / locks**
+
+Do not make every kinetic word sound like a UI button. Do not make every SaaS motion sound like a cinematic sci-fi transition. The change in sonic scale should help the viewer feel:
+
+**verbal energy → spatial travel → product precision**
+
+When several UI events happen close together, cluster them under one motion phrase with only a few confirmation details rather than assigning an independent click to every micro-action.
+
+## 15.3 SFX Sentence — Anticipation → Travel → Contact → Settle → Tail
+
+Think of a major motion event as a sonic sentence.
+
+Possible stages:
+
+1. **anticipation** — inhale, suction, pre-click, pressure rise
+2. **travel** — directional movement or material motion
+3. **contact** — transient that defines exact landing
+4. **settle** — short mechanical, elastic, or resonant response
+5. **tail** — controlled decay that provides space or continuity
+
+Do not use all five stages automatically.
+
+A premium event may be stronger as:
+
+**pre-suction → impact → short tail**
+
+A UI micro-event may need only:
+
+**clean click**
+
+A fast transition may be:
+
+**air pass → cut**, with no impact.
+
+Design the minimum sonic sentence that makes the motion believable.
+
+## 15.4 Pre-SFX and Audio-Led Motion
+
+Sound may arrive before the visual to create expectation.
+
+Starting offsets at 30 fps:
+
+- micro anticipation: 1–2 frames early
+- readable anticipation: 2–4 frames early
+- major reveal tension: 4–8 frames early when the buildup is justified
+
+Examples:
+
+- tiny relay click before a UI module locks into place
+- suction before a panel leaves frame
+- filtered pressure rise before a macro pullback
+- short electrical charge before a node activates
+
+Pre-SFX should make the viewer feel that something is about to happen.
+
+It should not become a riser before every cut.
+
+## 15.5 Impact Construction by Function
+
+For important hits, layer by function rather than stacking sounds because they seem “big.”
+
+Possible components:
+
+1. **transient** — defines exact timing
+2. **body** — communicates mass
+3. **material** — tells us whether the object feels glassy, metallic, soft, digital, paper-like, etc.
+4. **resonance** — gives identity or tonal character
+5. **tail** — defines space and decay
+
+Not every hit needs every layer.
+
+Prioritize transient clarity.
+
+If the impact feels muddy, remove layers before adding EQ tricks.
+
+## 15.6 Material-to-Sound Mapping
+
+Give recurring visual materials recurring sonic behavior.
+
+Examples:
+
+### Glass / translucent UI plane
+
+- clean high transient
+- restrained airy movement
+- short resonant shimmer
+- minimal low body unless the panel is physically heavy
+
+### Dense product card / device
+
+- compact low-mid body
+- short mechanical lock
+- controlled movement air
+- limited resonance
+
+### Light / energy node
+
+- focused electrical tick
+- short tonal activation
+- narrow sparkling residue
+
+### Soft / elastic illustration
+
+- rounded pop
+- rubber-like micro transient
+- short pitch bend only when the visual elasticity supports it
+
+### Data / technical system
+
+- precise tick
+- relay
+- clean digital pulse
+- restrained filtered sweep
+
+Do not assign a different sound personality to every object.
+
+Build a small material vocabulary.
+
+## 15.7 Spatial SFX Choreography
+
+When the visual moves through depth or across frame, sound may support its path.
+
+Consider:
+
+- left / right movement
+- near / far perception
+- foreground vs background placement
+- dry vs reverberant distance
+- high-frequency loss for receding objects
+- increasing body as an object approaches
+- tail direction across a transition
+
+Spatial treatment should reinforce visual geography.
+
+Avoid exaggerated stereo gimmicks that distract from VO.
+
+## 15.8 Frequency Hierarchy
+
+Assign spectral space according to attention role.
+
+Typical logic:
+
+- hero impact → may occupy low / low-mid body plus a clear transient
+- UI support → mostly mid / high-mid detail
+- air travel → broadband but controlled
+- ambience → stable, low-contrast bed
+- VO → protected center of intelligibility
+
+If VO exists, do not let dense high-mid SFX mask consonants.
+
+Reduce SFX complexity around important phrases before simply turning everything down.
+
+## 15.9 Silence and Negative Sonic Space
+
+Silence is active sound design.
+
+Use silence or near-silence to:
+
+- expose a hero word
+- make a reveal feel larger
+- reset the ear after a dense cluster
+- separate one sonic chapter from another
+- create tension before an impact
+- make the final logo / CTA feel intentional
+
+A useful pattern is:
+
+**texture → thinning → gap → hero event → tail**
+
+Do not fill every movement.
+
+## 15.10 Tail Bridges and Sonic Continuity
+
+Scene continuity can be carried by sound even when the picture cuts.
+
+Useful approaches:
+
+- let the outgoing impact tail survive into the next shot
+- begin a motion texture before the visual transition and resolve it after the handoff
+- preserve one quiet environmental texture across several shots
+- transform one sonic material into another as the visual object transforms
+
+This prevents every scene from sounding like an isolated button press.
+
+## 15.11 Event Clustering Instead of SFX Spam
+
+Do not sonify every micro-action independently.
+
+When several small visual events occur close together, group them into a sonic phrase.
 
 Example:
 
-VO: “Your workflow / does not need / another dashboard.”
+Three satellite UI cards appear around a dashboard.
 
-Possible choreography:
+Avoid:
 
-- “Your workflow” → camera is already traveling across a cropped WORKFLOW field
-- “does not need” → camera locks; support words compress toward the hero plane
-- “another dashboard” → DASHBOARD appears far behind the current type; camera pushes through the foreground letters toward it; the word flattens into the actual dashboard UI
+**click + click + click + whoosh + pop**
 
-Do not create a camera hit for every syllable.
+Prefer:
 
-## 13.14 Anti-PPT Typographic Failure Modes
+**one directional movement texture + two restrained ticks + one final lock**
 
-Avoid repeated patterns such as:
+The ear should perceive hierarchy, not bookkeeping.
 
-- centered headline fades in
-- subtitle rises 20 px
-- everything holds in a balanced card-like layout
-- text fades out completely before the next shot
-- each sentence receives a fresh empty background
-- every hero word scales from 90% to 100%
-- camera slowly pushes on every title regardless of meaning
-- all text remains parallel to screen with no relationship to depth even when the world is spatial
-- type, camera, and background begin and end motion on the same frames repeatedly
-- typography is replaced rather than transformed, carried, cropped, or spatially related
-- a 3D camera is used but typography behaves like a 2D overlay pasted above the scene
+## 15.12 SFX Motifs and Sonic Identity
 
-Instead, favor continuity, asymmetry, start-in-progress states, persistent type, camera-led discovery, role transfer, occlusion, and meaningful depth changes.
+For branded or recurring content, establish a compact vocabulary such as:
 
-## 13.15 Kinetic Typography Camera QA
+- one hero impact family
+- one short snap / lock family
+- one motion-air family
+- one tactile / mechanical family
+- one environmental texture
+- one branded tonal punctuation
 
-For substantial camera-driven typography, inspect at least:
+Reuse through pitch, filtering, duration, perspective, and intensity variation.
 
-- initial crop / hook
-- first fully readable state
-- camera commitment
-- midpoint of the largest camera move
-- maximum typography crop or foreground proximity
-- handoff / threshold frame
-- first readable state in the next composition
-- camera landing
+Sonic identity comes from recurrence with variation.
 
-Check:
-
-- can must-read words still be recognized at normal playback speed?
-- does camera movement reveal information or merely create activity?
-- does the reading direction agree with camera direction?
-- is a hero word readable before it becomes abstract transition material?
-- do foreground glyphs create useful occlusion without hiding essential copy too long?
-- do parallax layers maintain clear hero ownership?
-- does typography remain spatially related to the environment instead of looking like a HUD pasted over it?
-- if type becomes 3D, does added depth improve the idea?
-- does the next scene grow from the outgoing type, vector, crop, depth, or negative space?
-- are start, midpoint, and landing compositions all intentional?
-
-Do not approve a typographic camera move from start and end frames only.
-
-The path between them determines readability, crop quality, parallax, hierarchy, and whether the sequence feels cinematic or merely animated.
-
----
-
-# 14. VO Sync Skill
-
-Voiceover is not merely audio underneath animation.
-
-Treat VO as a **semantic timing map**.
-
-The animation should react to what is being said, how it is being said, and what the viewer needs to understand next.
-
-## 14.1 Analyze the VO
-
-Before animating, mark:
-
-- sentence boundaries
-- phrase boundaries
-- stressed words
-- nouns
-- verbs
-- contrast words
-- emotional shifts
-- pauses
-- breath points
-- punchlines
-- reveals
-- CTA
-
-Do not sync every word.
-
-Create hierarchy inside the spoken sentence.
-
-## 14.2 VO Priority Levels
-
-### Level A — Hero Words
-
-Words carrying the main idea.
-
-Examples:
-
-- key noun
-- surprising number
-- contradiction
-- claim
-- reveal
-- CTA
-
-Give these the strongest visual event.
-
-### Level B — Action Words
-
-Verbs or directional language.
-
-Use motion that reflects the meaning when appropriate.
-
-Examples:
-
-- “drop” → downward displacement
-- “expand” → scale / width growth
-- “split” → separation
-- “connect” → joining forms
-- “stop” → abrupt freeze
-
-Avoid literal animation when it becomes cheesy.
-
-### Level C — Support Words
-
-Do not animate every support word independently.
-
-Use them to maintain context and readability.
-
-## 14.3 Sync Windows
-
-Visual events may happen:
-
-### Before the word
-
-Use for anticipation.
-
-Typical offset:

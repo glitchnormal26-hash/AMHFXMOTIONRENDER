@@ -1,89 +1,3 @@
-After the reveal, create another expectation.
-
-Do not let the composition remain fully resolved for too long unless a hold is emotionally useful.
-
-A strong sequence repeatedly alternates between:
-
-**uncertainty → clarity → new uncertainty**
-
----
-
-# 5. Retention Rhythm
-
-Do not interpret retention as constant fast movement.
-
-Use contrast:
-
-- fast vs slow
-- dense vs sparse
-- large vs small
-- smooth vs abrupt
-- movement vs stillness
-- full information vs partial information
-- visual action vs audio action
-
-A useful rhythm pattern is:
-
-**motion → impact → hold → interruption → reveal**
-
-Use stillness as tension.
-
-A 6–15 frame hold can create more impact than another transition.
-
-Avoid predictable cadence where every shot changes at the same interval.
-
-When a section feels boring, first inspect:
-
-1. Is the frame already fully understood?
-2. Is there anything unresolved?
-3. Is hierarchy obvious?
-4. Did the visual change meaningfully?
-5. Is the timing too even?
-6. Did the sound create expectation?
-
-## 5.1 Burst → Breath → Burst Architecture
-
-High-energy motion is stronger when it has somewhere to land.
-
-For physical-digital or product films, a useful macro rhythm is:
-
-**BURST → ORIENT → PAYOFF → BREATH → NEW TRIGGER → BURST**
-
-A **burst** may contain:
-
-- rapid camera travel
-- several related objects separating or converging
-- foreground passes
-- a short scale escalation
-- a controlled collision / scatter
-- a fast material transformation
-- a speed-ramped handoff
-
-A **breath** may contain:
-
-- one hero object in a clean frame
-- a readable product state
-- a stable camera pose
-- a simple typographic statement
-- reduced depth motion
-- near-silence or low-contrast texture
-
-Do not confuse a breath with dead time. The viewer should understand what the previous burst produced and anticipate the next trigger.
-
-As a starting point for short-form work, let dense motion clusters last only as long as the spatial idea remains trackable. Then reduce simultaneous motion for several frames or a short phrase so the eye can re-orient.
-
-Avoid:
-
-**burst → burst → burst → burst**
-
-when every section has equal density. Constant intensity flattens perceived impact and makes product information feel incidental.
-
-Prefer escalation by chapter: later bursts may travel farther, transform more meaningfully, or involve a larger scale shift, while the intervening breath states become progressively clearer.
-
----
-
-# 6. Motion Hierarchy — Controlled Disruption
-
 Hierarchy should not feel polite.
 
 The viewer should immediately feel **what dominates, what interrupts, what supports, and what disappears.**
@@ -301,3 +215,132 @@ Starting reference:
 - foreground: 120–180%
 - midground: 80–120%
 - background: 40–80%
+
+These are not rigid values.
+
+Allow elements to cross between perceived layers.
+
+## Planar Perspective
+
+Distort flat graphics intentionally using:
+
+- skew
+- corner pin
+- perspective warp
+- non-uniform scale
+- angled masks
+- diagonal trajectories
+
+The goal is spatial energy, not photorealism.
+
+## Foreground Wipes
+
+Let an object temporarily cover much of the frame.
+
+Examples:
+
+- hand
+- phone
+- paper
+- text
+- icon
+- illustration component
+- graphic shape
+
+Use the obstruction to transition.
+
+Prefer:
+
+**object crosses → frame is obscured → next scene appears behind it**
+
+instead of automatic fade transitions.
+
+## Push / Pull
+
+Create implied camera movement by coordinating:
+
+- foreground scale
+- background scale
+- position
+- crop
+- blur
+- spacing
+
+No 3D camera is required.
+
+## Perspective Shift as Attention Reset
+
+Change perspective when:
+
+- the viewer has already understood the frame
+- a new subject becomes important
+- VO changes topic
+- a reveal needs stronger impact
+- a transition needs spatial logic
+
+Do not wobble perspective continuously.
+
+---
+
+# 9.5 Cinematic 3D & Camera Direction
+
+Cinematic motion is primarily **attention direction through framing, blocking, lens behavior, depth, timing, and light**.
+
+Do not define cinematic quality by the amount of camera movement.
+
+A camera move must have a narrative or compositional reason.
+
+## 9.5.1 Camera Motivation
+
+Use camera movement to do at least one of these:
+
+- reveal information
+- change hierarchy
+- establish scale
+- connect spatial layers
+- follow an action
+- create anticipation
+- resolve a visual question
+- expose hidden geometry
+- transition from abstract system to concrete product state
+- move attention from one subject to another
+
+Do not move the camera merely because the scene would otherwise be static.
+
+Do not interpret this rule as a preference for static cameras. In a brief that calls for cinematic, spatial, 3D, tracking, parallax, or camera-driven motion, authored camera movement is expected unless the shot is explicitly blocked as `LOCKED_INTENTIONAL`. A static camera must be a deliberate composition decision, not the accidental result of missing animation implementation.
+
+If the camera move reveals nothing, changes no relationship, and creates no emotional effect, remove it or replace it with a better motivated move. Do not silently fall back to a static camera when the shot direction specifies camera travel.
+
+## 9.5.2 Camera Vocabulary
+
+Choose a small camera vocabulary for the piece.
+
+### Dolly / Push In
+
+Use to:
+
+- increase importance
+- reduce emotional distance
+- enter a system or interface
+- create anticipation before a reveal
+
+Avoid continuous slow push-ins on every shot.
+
+### Pull Out / Reveal
+
+Use to:
+
+- reveal context
+- show that one element belongs to a larger system
+- transform an abstract detail into a product overview
+
+A pull-out should reveal something meaningful.
+
+### Truck / Lateral Move
+
+Use to:
+
+- connect adjacent subjects
+- maintain directional continuity
+- reveal information hidden behind foreground layers
+- create parallax without excessive rotation

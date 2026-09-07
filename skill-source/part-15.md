@@ -1,303 +1,346 @@
-## 18.5.9 Scene Permutation Test
 
-Ask:
+Avoid final rendering that depends on variable `requestAnimationFrame()` timing alone.
 
-**Could scenes 2, 3, and 4 be swapped without the viewer noticing a structural problem?**
+### GSAP Determinism
 
-If yes, the edit may be too modular and presentation-like.
+For capture / export workflows:
 
-Strengthen cause-and-effect between scenes.
+- use a master timeline
+- make scene state seekable
+- avoid random values that change on every playback unless seeded
+- avoid physics whose result depends on realtime frame duration unless converted to deterministic evaluation
+- verify that `timeline.seek()` or equivalent reproduces the same composition
 
-## 18.5.10 Screenshot Test
+### Three.js Determinism
 
-A strong scene should work as a still composition.
+For final render:
 
-But a strong sequence should **not** work merely as a slideshow of those stills.
+- derive camera, object, shader, and particle states from explicit time when possible
+- for authored camera shots, evaluate position / rig position, orientation or target, and lens state from the same authoritative time instead of relying on a static mount pose
+- confirm the evaluated state is applied to the active render camera on every captured frame where the shot is moving
+- seed procedural randomness
+- avoid unbounded per-frame accumulation that changes when frames are skipped
+- update mixers, simulations, and uniforms using controlled time values
 
-If all storytelling exists only in the static keyframes, motion is decorative.
+If a simulation cannot be made deterministic, bake or cache the result before final capture when practical.
 
-The transformation between states should carry narrative information.
+### Font & Layout Readiness
+
+Before frame capture:
+
+- wait for fonts to load
+- wait for critical assets and textures
+- allow layout to settle
+- measure text after the correct font is active
+- verify line wrapping at target resolution
+
+For browser work, use `document.fonts.ready` or equivalent when available.
+
+### Resolution Authority
+
+Set the final output dimensions explicitly.
+
+For example, a 9:16 1080p deliverable should render at 1080 × 1920 rather than relying on a scaled browser viewport.
+
+Control:
+
+- CSS viewport
+- canvas backing resolution
+- device pixel ratio
+- camera aspect ratio
+- DOM scaling
+
+Do not let an unexpected DPR silently change framing or performance.
+
+### Frame Stepping
+
+For high-confidence final video:
+
+1. set timeline to exact frame time
+2. update GSAP / DOM state
+3. update Three.js state
+4. render frame
+5. capture frame
+6. advance exactly one frame
+
+Prefer frame stepping or an equivalent deterministic capture path over realtime screen recording.
+
+### Capture Validation
+
+Before rendering the full sequence, capture representative frames at:
+
+- first frame
+- scene landings
+- transition midpoints
+- maximum camera travel
+- maximum DOF or blur
+- densest typography state
+- final frame
+
+Compare them against intended composition.
 
 ---
 
-# 18.6 Spatial SaaS Motion Grammar — Reference-Derived Principles
+## Performance Budget for Three.js / Web Motion
 
-For premium SaaS / AI product motion, a useful non-generic grammar is:
+Performance is part of motion quality.
 
-**BRAND SEED → PRODUCT PLANE → SYSTEM REVEAL → FEATURE MOTIF → INTERACTION STATE → DIMENSIONAL TRANSFORMATION → BRAND RESOLUTION**
+Dropped frames change timing, easing, and perceived weight.
 
-This is a structural option, not a mandatory template.
+Establish a performance budget appropriate to the target device and render path.
 
-Its value is that each stage grows from the previous stage.
+### Geometry
 
-## 18.6.1 Brand Seed
+Avoid unnecessary polygon density.
 
-Open with a minimal brand element embedded in a world, not a detached title card.
+Use enough geometry for silhouette and material behavior, not invisible complexity.
 
-Useful devices:
+Prefer instancing for repeated objects when appropriate.
 
-- logo or mark with environmental light
-- curved horizon or depth cue
-- one animated energy source
-- partial object before full context
+### Draw Calls
 
-The opening should imply a larger space beyond the frame.
+Reduce avoidable draw calls by:
 
-## 18.6.2 Product Plane
+- instancing
+- material reuse
+- batching where practical
+- removing invisible objects
 
-Introduce the product as the primary object in the world.
+Do not combine everything if it makes authored animation harder to control.
 
-Prefer:
+### Textures
 
-- product UI arriving through perspective or depth
-- one hero dashboard with small satellite modules
-- controlled light that reveals hierarchy
-- camera-equivalent movement that exposes function
+Use texture resolution appropriate to on-screen size.
 
-Avoid:
+Avoid loading large textures that never appear large enough to justify them.
 
-- screenshot fades in centered
-- title above screenshot
-- three bullets beside screenshot
-- fade out to next screenshot
+### Shadows
 
-## 18.6.3 System Reveal
+Real-time shadows are expensive.
 
-After the product is understood, change scale to reveal a larger relationship.
+Use them where they materially support depth or hierarchy.
 
-Useful strategies:
+Prefer a small number of important shadow casters rather than enabling expensive shadows everywhere.
 
-- pull back from dashboard to system
-- isolate one UI motif and enlarge it
-- reveal connected nodes around a central feature
-- move from one data point to a workflow
+### Post Processing
 
-The camera move should answer a question created in the previous state.
+Budget expensive passes deliberately.
 
-## 18.6.4 Feature Motif as Transition Object
+Bloom, DOF, SSAO, motion blur, volumetrics, and multiple full-screen passes can quickly dominate GPU cost.
 
-Choose one simple visual motif that can survive several states.
+Do not stack them by default.
 
-Examples:
+### Device Pixel Ratio
 
-- circle
-- node
-- ring
-- glow point
-- card corner
-- star / spark
-- line
+Cap DPR for interactive preview when necessary.
 
-Let it:
+For final deterministic render, use the explicit target backing resolution rather than uncontrolled device DPR.
 
-- originate in product UI
-- become a system diagram
-- become an interaction marker
-- become part of a dimensional object
-- resolve into brand geometry
+### Ambient Systems
 
-This creates memory and continuity.
+Particles, shader noise, background loops, and procedural effects should be evaluated for both attention cost and compute cost.
 
-## 18.6.5 Interaction State
+If an ambient effect is expensive and narratively unnecessary, remove it.
 
-When showing AI, chat, automation, or workflow behavior, avoid treating each message as a separate slide.
+### Performance QA
 
-Instead:
+Verify:
 
-- preserve the existing environment
-- let a prompt or node activate within it
-- reveal response depth progressively
-- use small satellites / agents only as supporting relationships
-- let the response state become the material for the next transition
+- no obvious frame drops in target preview environment
+- final render uses intended frame timing
+- camera motion remains smooth and is visibly non-static whenever the shot declares `MOVING`, `TRACKING`, or `REFRAME`
+- shader compilation or texture loading does not create visible first-play hitches
+- memory use does not grow continuously during loops or replay
 
-## 18.6.6 Dimensional Transformation
-
-A dimensional hero moment should feel earned by prior flat or UI states.
-
-Possible bridge:
-
-**flat card → gains depth → duplicates / folds → camera reframes → geometry forms a hero object**
-
-Use 3D to reveal new relationships, not simply to make the piece “premium.”
-
-## 18.6.7 Brand Resolution
-
-The final logo / CTA should preferably emerge from the sequence's existing geometry, motion vector, light, or sonic motif.
-
-Avoid a generic final end card that ignores the visual language before it.
-
-Possible resolutions:
-
-- hero shape collapses into logo mark
-- central node becomes logo spark
-- dimensional object flattens into brand geometry
-- environmental horizon remains while copy resolves
-- existing motion tail settles into final composition
-
-## 18.6.8 Light as Continuity
-
-A consistent environmental light field can hold different scenes together.
-
-Use light to:
-
-- reveal UI edges
-- separate depth planes
-- guide the eye during pullback
-- activate nodes
-- bridge a transform
-- preserve the same world during large layout changes
-
-Do not let bloom replace composition.
-
-## 18.6.9 Dark-Space Discipline
-
-Dark premium motion often fails by hiding everything in glow.
-
-Preserve:
-
-- readable silhouette
-- clean UI contrast
-- controlled black levels
-- distinct depth planes
-- limited bright accents
-
-The eye should know where to look even with all glow removed.
-
-## 18.6.10 Reference-Informed, Not Reference-Cloned
-
-When using this grammar from a supplied reference:
-
-- change composition
-- change product staging
-- change motif choice when appropriate
-- change transition specifics
-- match the new brand's material and timing personality
-- preserve only the underlying continuity and attention principles
-
-The goal is authored equivalence, not scene replication.
+Do not call a piece polished if preview performance materially changes the intended timing.
 
 ---
 
+## Blender / 3D
 
-# 18.7 Physical-Digital Product World Choreography — Reference-Derived Principles
+Use Blender or 3D only when the concept specifically benefits from:
 
-Use this section when a product film benefits from tactile, cinematic, mixed-world storytelling rather than pure UI presentation.
+- true dimensional transformation
+- physical camera parallax unavailable in 2D
+- lighting as narrative information
+- object rotation requiring real geometry
+- material behavior
 
-A useful grammar is:
+Do not use 3D merely to make the piece feel “premium.”
 
-**CONTEXT OBJECT → DIGITAL MOTIF → EXTRACTION → CAMERA ACQUISITION → SCALE / DEPTH TRAVEL → MATERIAL TRANSFORMATION → PRODUCT WORLD → BREATH LANDING → NEXT RELAY**
+If the same idea works more clearly in 2D / 2.5D, prefer the simpler system.
 
-This is a principle library, not a scene template.
+## Other Tools
 
-## 18.7.1 Physical Context Must Explain Something
+For Cavalry, Cinema 4D, Rive, GSAP, Framer Motion, CSS, SVG, or other systems:
 
-Physical environments can create authorship, process, scale, or tactility.
+- preserve the same art-direction principles
+- translate timing, easing, hierarchy, choreography, VO sync, and sound logic into the tool's native strengths
+- do not force an After Effects mental model onto every tool
 
-Useful context includes:
+---
 
-- desk / workspace
-- paper sketches
-- tools
-- devices
-- notes
-- printed diagrams
-- folders / containers
-- objects associated with making, reviewing, organizing, or publishing
+# 21. Accessibility and Comfort
 
-Use a prop when it can:
+When motion appears in an interface or long-running experience:
 
-- become a transition source
-- explain where an idea comes from
-- visualize a workflow stage
-- establish material character
-- create a foreground threshold
-- transfer attention into the product
+- respect reduced-motion preferences
+- avoid unnecessary large camera movement
+- avoid repeated aggressive zooms
+- avoid rapid flashing
+- keep essential information available without requiring motion perception
+- provide simpler transitions when motion is disabled
+- favor opacity or instant state changes when spatial movement is not essential
 
-Do not fill a scene with fashionable desk objects that never affect the choreography.
+For audio:
 
-## 18.7.2 Digital Elements May Become Tangible
+- do not make SFX essential for understanding
+- preserve comprehension without sound
+- keep VO clear
+- avoid excessively sharp or fatiguing repeated transients
 
-A cursor, notification, button, card, icon, or UI fragment may temporarily behave like a physical object.
+Reduced motion does not mean remove all design.
 
-Possible changes:
+Preserve hierarchy and feedback with lower-motion alternatives.
 
-- gains thickness or shadow
-- crosses in front of physical objects
-- casts or receives light
-- moves with inertia rather than UI easing
-- approaches camera and creates near-field occlusion
-- contacts a device or surface
-- becomes a tool for the next interaction
+---
 
-Introduce tangibility progressively. Preserve enough identity that the viewer understands it is the same digital element.
+# 22. Deliver → Verify → Refine
 
-## 18.7.3 Hero-Object Relay Across Scenes
+For any task that produces an actual visual artifact, use an inspection loop whenever tools allow it.
 
-Do not reset hero ownership at each edit.
+## Step 1 — Build
 
-Allow attention to transfer through a chain such as:
+Create the first working version.
 
-**message / UI cue → pointer → product action → physical tool → drawn path → dimensional object → product module**
+## Step 2 — Inspect key moments
 
-The exact objects should fit the new brief.
+Review representative frames:
 
-At each handoff define:
+- opening frame
+- first curiosity hook
+- anticipation
+- peak action
+- transition midpoint
+- hero word
+- reveal
+- settle
+- final frame
 
-1. current hero
-2. transfer cause
-3. inherited property
-4. incoming hero
-5. camera response
-6. readable landing
+## Step 2.4 — Mandatory Transition Frame Inspection
 
-The chain should become more informative, not merely more spectacular.
+For every major scene transition, inspect multiple frames around the handoff rather than only the exact cut.
 
-## 18.7.4 Camera Follows Meaning, Then Releases
+Recommended starting sample at 30 fps:
 
-During a hero relay, the camera may track the object tightly for a short period, then release it to reveal context.
+- T − 6 frames
+- T − 3 frames
+- T
+- T + 3 frames
+- T + 6 frames
 
-Useful pattern:
+Also inspect the peak of the outgoing hero and the settle of the incoming hero.
 
-**hero accelerates → camera follows with slight lag → foreground passes amplify speed → hero approaches destination → camera resists or pulls wider → environment becomes legible → hero stops being the only important object**
+At each sampled frame, check:
 
-This preserves object identity while allowing the world to become the next subject.
+- text collisions
+- hero-vs-hero competition
+- accidental stacking
+- clipping
+- safe-area violations
+- unexpected z-order
+- unreadable transitional copy
+- whether the visual vector actually leads into the next scene
 
-Avoid perfect center-lock for the entire sequence.
+If tools allow screenshots or rendered frames, use them.
 
-## 18.7.5 Scale Escalation & Miniature-to-Macro
+Do not approve a transition based only on timeline logic or source code.
 
-A small interface element can become large enough to behave like a physical object, and a large object can later resolve into a small product component.
+## Step 2.5 — Cinematic 3D Inspection
 
-Use scale escalation to change meaning:
+When the piece uses 3D, camera movement, lens changes, lighting choreography, or post-processing, inspect representative states for:
 
-- tiny UI control → hero interaction object
-- small card → full-frame plane
-- tool tip / stroke → environment-scale path
-- prop → transition threshold
-- word → cropped spatial field
+- camera start and landing composition
+- FOV / lens distortion
+- hero silhouette
+- foreground occlusion
+- depth readability
+- lighting hierarchy
+- material readability
+- DOF focus target
+- bloom / fog / blur intensity
+- 2D / 3D alignment
+- camera-direction continuity into the next shot
 
-The scale change should reveal a new role. Do not enlarge elements only because the camera can.
+Capture or inspect the midpoint of every major camera move.
 
-## 18.7.6 Material Trail as Scene-Carrying Structure
+Do not approve a camera move only from its start and end frames; the path may create collisions, clipping, or weak composition in between.
 
-A stroke, ribbon, cable, path, light line, or paper edge can carry the viewer through multiple shots.
+## Step 2.5.1 — Camera Motion Existence Gate
 
-A strong trail can:
+Before judging whether a camera move is beautiful or smooth, verify that it actually exists in the rendered implementation.
 
-- preserve travel direction
-- link physical and digital worlds
-- wrap around or reveal objects
-- become a divider or frame
-- guide the camera
-- create a wipe
-- resolve into product geometry
+For every shot whose camera mode is `MOVING`, `TRACKING`, or `REFRAME`, sample camera state at approximately:
 
-Let the trail react to depth and perspective. Avoid a flat overlay that ignores the world it is supposed to connect.
+- shot start
+- 25%
+- 50%
+- 75%
+- shot end / landing
 
-## 18.7.7 Product World Assembly
+Compare as relevant:
 
-Instead of cutting from abstract motion to a complete product screenshot, let earlier objects become the product's structure.
+- camera or rig position delta
+- orientation / quaternion delta
+- look-target delta
+- FOV / zoom delta
+- active camera identity
+- projected screen-space position / scale of the hero
+- foreground-to-background parallax
 
-Examples:
+Use tolerances appropriate to scene scale and lens. Do not rely on one universal world-unit epsilon.
 
-- folder separates into cards → cards align into a content strip → the wider interface is revealed around them
+If position, orientation / target, and lens remain effectively unchanged across the interval, classify the camera as **STATIC**.
+
+If the declared mode is not `LOCKED_INTENTIONAL`, a static result is a **hard failure**:
+
+**FAIL → locate the missing camera binding, timeline evaluation, active-camera ownership, or overwritten transform → implement the authored move → render again.**
+
+Do not “pass” the shot because objects, particles, shaders, or UI are moving while the camera direction itself was never implemented.
+
+### Visible Movement Gate
+
+After numerical motion is confirmed, verify perceptual movement. The camera move should create a visible consequence such as:
+
+- measurable hero framing / scale change
+- parallax separation
+- perspective change
+- information reveal
+- occlusion change
+- screen-space travel
+- depth relationship change
+
+If camera values change but representative rendered frames appear effectively identical, treat the move as perceptually static unless stabilization is explicitly intended. Increase travel, change depth relationships, revise the lens / target relationship, or redesign the move rather than claiming motion exists because numbers changed.
+
+For `LOCKED_INTENTIONAL`, record the reason for stillness in the shot plan so QA can distinguish authored stillness from missing implementation.
+
+## Step 2.5.5 — Element Extraction & Camera Tracking Inspection
+
+When a visible 2D or 3D element becomes the transition or camera-tracking target, inspect the complete role transfer.
+
+Check:
+
+- the source element is clearly identifiable before extraction
+- the extraction moment is readable
+- at least two continuity properties survive long enough to preserve identity
+- hero ownership visibly transfers from the parent scene to the extracted element
+- camera target ownership is unambiguous
+- tracking framing preserves useful negative space and readability
+- dead zone, lead, lag, or damping feels intentional rather than accidental
+- subject and camera do not cancel each other's motion unless stabilization is the point
+- foreground occlusion occurs only after the transition object is understood
+- the outgoing object or camera vector genuinely enters the incoming composition
+- target reacquisition after occlusion, transform, or cut is readable
+- the incoming role is visibly related to the outgoing element
+- the camera landing frame is composed as a deliberate still
+- the final hold gives enough time to understand the new state

@@ -1,302 +1,346 @@
-## 17.4 No Decorative Editorial Metadata
+During a hero relay, the camera may track the object tightly for a short period, then release it to reveal context.
 
-By default, **do not add small labels whose main purpose is to make the frame look designed, editorial, technical, cinematic, or like a concept-film deck**.
+Useful pattern:
 
-Remove elements such as:
+**hero accelerates → camera follows with slight lag → foreground passes amplify speed → hero approaches destination → camera resists or pulls wider → environment becomes legible → hero stops being the only important object**
 
-- eyebrow / kicker text with no necessary information
-- invented category labels such as `CONCEPT FILM`, `PROCESS`, `SYSTEM`, or similar framing copy when the viewer does not need that category
-- decorative scene, chapter, shot, or sequence numbers shown in the final composition
-- fake timecodes, timestamps, coordinates, version strings, percentages, IDs, or status readouts
-- decorative bullets, dots, slashes, brackets, crosshairs, corner marks, or separators attached to otherwise unnecessary microcopy
-- pseudo-HUD or pseudo-terminal text added only to create a “tech” aesthetic
-- tiny secondary copy that exists only to fill negative space
+This preserves object identity while allowing the world to become the next subject.
 
-Use the **meaning-removal test**:
+Avoid perfect center-lock for the entire sequence.
 
-> If removing the label does not reduce comprehension, navigation, product accuracy, brand meaning, legal clarity, or narrative causality, remove it.
+## 18.7.5 Scale Escalation & Miniature-to-Macro
 
-Do not fill empty space merely because it is available. **Negative space is allowed to remain empty.**
+A small interface element can become large enough to behave like a physical object, and a large object can later resolve into a small product component.
 
-Small metadata-like text is allowed when it is genuinely required, for example:
+Use scale escalation to change meaning:
 
-- it is part of the real product UI and product accuracy matters
-- it communicates a real state, status, navigation cue, measurement, or data value
-- the brief explicitly requires chaptering, timestamps, technical readouts, or documentary labeling
-- it is required brand, legal, accessibility, or platform information
+- tiny UI control → hero interaction object
+- small card → full-frame plane
+- tool tip / stroke → environment-scale path
+- prop → transition threshold
+- word → cropped spatial field
 
-Even when allowed, keep it subordinate to the hero and remove decorative punctuation that does not improve reading.
+The scale change should reveal a new role. Do not enlarge elements only because the camera can.
 
-This rule applies to the **final visual output**. Internal timeline labels, debug timecodes, QA overlays, scene IDs, and production annotations remain useful but must be disabled or removed from final delivery.
+## 18.7.6 Material Trail as Scene-Carrying Structure
 
----
+A stroke, ribbon, cable, path, light line, or paper edge can carry the viewer through multiple shots.
 
-# 17.5 Layout Safety & Collision System
+A strong trail can:
 
-Readable composition must be enforced, not merely intended.
+- preserve travel direction
+- link physical and digital worlds
+- wrap around or reveal objects
+- become a divider or frame
+- guide the camera
+- create a wipe
+- resolve into product geometry
 
-For any programmatic, template-driven, responsive, or code-generated motion piece, establish a **layout safety system before animation**.
+Let the trail react to depth and perspective. Avoid a flat overlay that ignores the world it is supposed to connect.
 
-## 17.5.1 Measure Before Motion
+## 18.7.7 Product World Assembly
 
-Before animating text, UI cards, labels, captions, or genuinely required persistent HUD elements:
-
-- measure their screen-space bounds
-- identify safe-area limits
-- identify elements allowed to overlap intentionally
-- identify primary, secondary, and persistent regions
-- confirm the longest expected copy fits the designed region
-
-For HTML / DOM, prefer actual layout measurement such as `getBoundingClientRect()` after fonts are ready.
-
-For Canvas / WebGL / Three.js overlays, calculate or project representative screen-space bounds rather than assuming world-space spacing guarantees readability.
-
-For generated text, do not rely only on hard-coded Y coordinates.
-
-## 17.5.2 Collision Rules
-
-By default, fail the layout if:
-
-- two primary text blocks intersect
-- a primary text block intersects a UI card containing different information
-- incoming and outgoing hero headlines occupy the same reading region at readable opacity
-- captions collide with CTA, controls, platform-safe regions, or persistent HUD
-- text becomes clipped because scale or tracking changed during motion
-- a transition temporarily creates unreadable stacking that was not explicitly designed
-
-Intentional overlap is allowed only when it is the visual concept and comprehension remains clear.
-
-Do not use opacity alone to excuse collisions. Two text blocks at 40–60% opacity can still compete visually.
-
-## 17.5.3 Transition Ownership
-
-During scene changes, explicitly define which scene **owns attention**.
-
-Recommended default:
-
-1. outgoing hero resolves or begins a clear exit
-2. outgoing support elements reduce visual priority
-3. transition object / wipe / transformation takes ownership
-4. incoming hero enters
-5. incoming support follows after the eye finds the hero
-
-Avoid two unrelated hero headlines peaking at the same time.
-
-As a practical default, do not let two unrelated hero blocks remain above roughly 25–35% readable opacity in the same screen region for more than a few frames.
-
-If overlap is the transition device, make the hierarchy obvious through scale, crop, masking, occlusion, or directional continuity.
-
-## 17.5.4 Safe-Area Discipline
-
-For 1080 × 1920 vertical work, establish project-specific safe areas before animation.
-
-A reasonable starting guide when platform UI is unknown is:
-
-- horizontal design margin: about 6–8% of width
-- top protected region: about 5–8% of height
-- bottom protected region: about 7–12% of height
-
-These are starting references, not universal platform specifications.
-
-Do not place essential copy at the exact viewport edge merely because the design frame allows it.
-
-## 17.5.5 Debug Layout Mode
-
-For code-generated motion, provide a temporary debug mode when practical that can show:
-
-- text bounding boxes
-- safe-area guides
-- scene ownership
-- current timeline label / timecode
-- active hero element
-- collision warnings
-
-Remove or disable debug overlays in final delivery.
-
----
-
-# 18. Transition Design
-
-A transition should do at least one of these:
-
-- continue motion
-- transform an existing object
-- change hierarchy
-- create a reveal
-- match shape or direction
-- use occlusion
-- follow VO logic
-- punctuate a narrative shift
-
-Preferred transition families:
-
-- foreground wipe
-- match shape
-- scale bridge
-- object transformation
-- typography replacement
-- crop jump
-- perspective shift
-- directional continuation
-- hard cut after anticipation
-
-Avoid using multiple unrelated transition styles in a short piece.
-
----
-
-# 18.5 Motion Density & Anti-Presentation Choreography
-
-A piece can be technically animated, visually polished, and still feel like a slide presentation.
-
-Do not judge motion quality by the number of keyframes.
-
-Judge it by **meaningful changes in attention, framing, spatial relationship, state, and causality**.
-
-## 18.5.1 Presentation-Motion Test
-
-Assume the sequence is drifting into presentation motion when several of these are true:
-
-- every scene begins from a clean neutral layout
-- headline appears, support copy appears, UI card appears, then everything exits
-- elements enter primarily through fade + small translate
-- every scene has a centered title-card composition
-- each shot can be rearranged in any order without breaking visual logic
-- the background resets while foreground content changes
-- transitions exist only to hide scene replacement
-- cards behave like PowerPoint objects instead of parts of one world
-- camera movement is a generic slow push rather than a reveal
-- the same entrance timing repeats scene after scene
-- the next scene is unrelated to the previous scene's final action
-- product screenshots are displayed rather than choreographed
-- decorative eyebrow labels, fake scene numbers, pseudo-timecodes, or technical microcopy are added to make each frame feel like a designed concept-film card
-
-If most scenes could be exported as individual presentation slides with no loss of logic, redesign the sequence.
-
-## 18.5.2 Continuous-World Rule
-
-Prefer one evolving stage over many disconnected layouts.
-
-Maintain continuity through at least one of:
-
-- persistent environment
-- recurring horizon / light field / structural motif
-- shared depth system
-- camera-direction continuity
-- object carry-over
-- match position
-- match scale
-- match shape
-- shared motion vector
-- sound tail
-- repeated material behavior
-
-A scene change should feel like the world **changed state**, not like a new artboard became visible.
-
-## 18.5.3 Start-In-Progress Rule
-
-Do not begin every scene from rest.
-
-Useful starts:
-
-- camera is already completing a pullback
-- a foreground object is crossing frame
-- one UI module is already reacting
-- a light node is already traveling
-- a previous object is transforming into the new hero
-- the frame begins macro and context is not yet visible
-
-Starting in progress creates immediate continuity and removes the “next slide” feeling.
-
-### 18.5.3.1 Product Does Not Need to Share Every Frame with the Claim
-
-Do not force headline, kinetic typography, and SaaS UI to remain side-by-side throughout the sequence.
-
-When the claim is better communicated through kinetic typography, let typography own the frame first. Then let SaaS enter as the visualization, proof, or mechanism of that claim.
-
-A strong product-reveal relationship may be:
-
-**CLAIM FELT THROUGH TYPE → VISUAL PROPERTY SURVIVES → PRODUCT WORLD DISCOVERED → UI EXPLAINS THE CLAIM**
-
-This creates contrast between expressive communication and precise product comprehension.
-
-The product reveal must still be causally connected. Preserve a shape, line, glyph, motion vector, crop, screen-space position, sound tail, or semantic motif across the handoff.
-
-Avoid treating the kinetic section and the product section as two unrelated chapters. They may be separate in composition, but they should remain continuous in cause and effect.
-
-## 18.5.4 Product UI Must Behave
-
-Do not treat SaaS UI as a screenshot placed on a background.
-
-Possible authored behaviors:
-
-- dashboard becomes a spatial hero plane
-- modules separate according to function
-- secondary cards orbit or offset in depth only when hierarchy benefits
-- a chart or node leaves the UI and becomes a transition device
-- one interface panel folds, expands, or flattens into another state
-- UI camera angle changes only to reveal structure
-- a product state grows from another product state rather than entering as a replacement screenshot
-
-Preserve usability and brand accuracy where the real UI must remain recognizable.
-
-## 18.5.5 Hero + Reaction + Hold
-
-For most substantial moments, define:
-
-- **one hero gesture** that changes hierarchy or meaning
-- **one supporting reaction** caused by the hero
-- **one readable hold** where the result can be understood
-
-The support action should feel causally linked.
-
-Avoid several unrelated elements independently “doing animation.”
-
-## 18.5.6 Meaningful Change Interval
-
-For short-form retention-driven work, inspect whether the frame remains fully understood and visually unchanged for too long.
-
-As a diagnostic, if roughly 1–3 seconds pass with no meaningful change in:
-
-- hierarchy
-- framing
-- crop
-- scale relationship
-- depth relationship
-- information state
-- visual question
-- motion vector
-- SFX expectation
-
-ask whether a purposeful reset is needed.
-
-Do not force a reset when comprehension, suspense, or emotional hold is stronger.
-
-## 18.5.7 Velocity Contrast
-
-Avoid identical move lengths, durations, and easing across scenes.
-
-Use contrast such as:
-
-- 3–6 frame snap → 8–15 frame hold
-- 12–20 frame controlled travel → 2–4 frame interruption
-- fast hero entry → slower support settle
-- macro pullback → sudden lock
-- abrupt freeze → spatial reveal
-- nearly static VO phrase → strong transformation on the hero word
-
-The exact values depend on distance, scale, frame rate, and semantic importance.
-
-## 18.5.8 Spatial Continuity
-
-Let outgoing motion cause incoming composition whenever possible.
+Instead of cutting from abstract motion to a complete product screenshot, let earlier objects become the product's structure.
 
 Examples:
 
-- card exits right → next shot continues the same vector
-- node expands → becomes the circular frame of the next system
-- UI panel rotates toward camera → lands as the next full-screen plane
-- light flare crosses foreground → reveals the next state behind it
-- a group of cards folds inward → becomes a dimensional brand object
-- icon silhouette expands → resolves as the final logo mark
+- folder separates into cards → cards align into a content strip → the wider interface is revealed around them
+- physical notes group by role → flatten into modules → modules become a workflow view
+- extracted UI fragments travel in depth → settle into their actual product positions → camera reveals the full application
+- image tiles or cards already visible in the world become the first readable part of the product page
 
-Avoid resetting to centered neutral composition after every beat.
+The product should feel like the destination of the choreography.
+
+Once the real product is visible, reduce spectacle enough for comprehension.
+
+## 18.7.8 Flash, Blur & Depth as Handoff Tools
+
+Fast movement may temporarily use:
+
+- motion blur
+- shallow depth of field
+- exposure lift / bright wash
+- radial streaking
+- foreground smear
+- brief frame domination by one material
+
+Use these as **transition coverage**, velocity amplification, or hierarchy control.
+
+Do not use them to hide weak spatial logic.
+
+A flash or blur should preserve at least one continuity cue before and after it: vector, object, silhouette, position, color-value, trail, camera direction, or sound tail.
+
+## 18.7.9 Typography Can Be a Destination, Not Only a Caption
+
+After a dense physical-digital sequence, typography may become the clean landing.
+
+Useful contrast:
+
+**complex spatial world → simple hero word → oversized crop / scale event → compact brand resolution**
+
+This works when the type summarizes or reframes what the viewer just saw.
+
+Avoid adding small ornamental metadata around the landing. Let the word, object, or product own the negative space.
+
+## 18.7.10 Terminal Simplification
+
+The end of a dense film often benefits from fewer moving parts.
+
+A useful resolution is:
+
+**many objects → one object / word → one brand mark → stillness**
+
+Let the final seconds reduce motion density, depth complexity, and sound density unless the brief explicitly requires a hard energetic ending.
+
+The simplification should feel earned by the prior sequence, not like an unrelated end card.
+
+## 18.7.11 Reference-Abstraction Rule
+
+When learning from a supplied film, preserve principles such as:
+
+- hero-object relay
+- physical-digital continuity
+- semantic transformations
+- camera-object coupling
+- scale escalation
+- burst / breath contrast
+- product-world assembly
+- object-integrated typography
+
+Do **not** copy the reference's exact:
+
+- branded assets
+- logo
+- palette
+- prop selection
+- room / desk composition
+- course/product content
+- transition order
+- hero object sequence
+- scene-for-scene timing
+
+Build a new causal chain for the new message.
+
+---
+
+# 19. Brand Motion
+
+When brand work is involved, define a motion grammar:
+
+- signature easing
+- fast / standard / slow durations
+- entrance behavior
+- exit behavior
+- transition behavior
+- overshoot tolerance
+- crop behavior
+- perspective behavior
+- illustration behavior
+- typography behavior
+- texture intensity
+- sound vocabulary
+- VO treatment
+
+Do not use every trend in one project.
+
+The motion language should feel like the same brand even when scenes differ.
+
+Never distort a logo casually.
+
+Preserve logo geometry unless the brief explicitly allows morphing.
+
+---
+
+# 20. Tool-Specific Behavior
+
+Remain tool-agnostic at the art-direction level, then adapt implementation to the target tool.
+
+## After Effects
+
+When working in After Effects:
+
+- think in compositions, layers, properties, keyframes, expressions, effects, precomps, mattes, cameras, and render settings
+- use the Graph Editor intentionally
+- preserve editable structure
+- name important comps and layers clearly
+- prefer transforms, masks, shape layers, parenting, and expressions before heavy effects
+- use 2.5D only when it materially improves the idea
+- separate reusable controls into a clear control layer
+- keep audio markers organized for VO and SFX sync
+
+When generating scripts:
+
+- explain where the script should run
+- avoid destructive assumptions
+- preserve project structure where possible
+- use predictable naming
+- expose designer-tunable parameters
+
+## Remotion
+
+When working in Remotion:
+
+- make timing deterministic and frame-based
+- derive animation from `useCurrentFrame()` and composition timing
+- use interpolation and springs intentionally
+- keep reusable animation behavior componentized
+- synchronize VO and SFX frame-accurately
+- separate content data from visual behavior
+- render representative frames and inspect them before calling the piece complete
+
+## Lottie / Web / UI
+
+When producing motion for web or Lottie:
+
+- prioritize transforms and opacity for performance when appropriate
+- keep exported complexity under control
+- verify unsupported effects
+- provide reduced-motion behavior
+- keep interaction motion responsive and interruptible
+- do not sacrifice usability for spectacle
+
+## GSAP + HTML / DOM
+
+When producing timeline-driven HTML motion with GSAP:
+
+- use one master timeline with explicit scene labels
+- build scene timelines as named units rather than one long unstructured chain
+- set deterministic initial states before playback
+- measure DOM layout after fonts are loaded
+- prefer transforms and opacity for animation performance, but do not use transform-only assumptions for layout safety
+- use `autoAlpha` / visibility logic when outgoing DOM should no longer compete visually
+- ensure replay returns every scene to the same deterministic starting state
+- ensure pause actually pauses hero, secondary, ambient, and WebGL motion together when they are part of one experience
+- avoid orphaned tweens continuing after a scene has lost ownership
+- use timeline labels for key QA frames and transitions
+- avoid arbitrary independent delays that become difficult to retime globally
+
+For text-heavy scenes:
+
+- measure actual rendered copy
+- allow responsive line breaks intentionally
+- do not animate typography before layout settles
+- re-check bounds after scale, width, tracking, or variable-font animation
+
+For scene exits, do not leave old DOM at readable opacity underneath the next scene unless it is intentionally part of the composition.
+
+## React Three Fiber + ShaderGradient Runtime
+
+For React-based 3D motion, use `@react-three/fiber` as the preferred declarative Three.js runtime when it improves implementation clarity, reuse, interaction, or scene orchestration.
+
+React Three Fiber is a renderer for Three.js, not an art direction or a complete authored-animation system.
+
+Use it for:
+
+- `<Canvas>` scene ownership
+- declarative meshes, lights, cameras, materials, and reusable components
+- pointer / interaction state
+- per-frame updates through `useFrame` when continuous evaluation is actually needed
+- composition of Three.js with the React ecosystem
+- hosting ShaderGradient and post-processing inside the same scene world
+
+### Animation Authority
+
+Choose the animation authority according to the motion type.
+
+**Use `useFrame` primarily for:**
+
+- continuous procedural motion
+- shader uniform evaluation
+- subtle environment response
+- interaction-following behavior
+- camera/object systems that genuinely need every-frame calculation
+
+**Use a master timeline / explicit time source primarily for:**
+
+- VO-synced choreography
+- kinetic typography handoffs
+- camera pose-to-pose transitions
+- product reveal timing
+- speed ramps
+- deterministic final video capture
+- scene replay / seeking / exact QA frames
+
+Do not let `useFrame` accumulate authored hero motion indefinitely when the final sequence needs exact reproducibility.
+
+For deterministic capture, derive R3F object, camera, shader, and post-processing states from the same authoritative time used by DOM / GSAP / audio whenever practical.
+
+### ShaderGradient Integration
+
+A preferred stack for luminous gradient scenes is:
+
+**React → React Three Fiber Canvas → ShaderGradient field / Three.js objects → optional post-processing → DOM/UI/typography overlay when required**
+
+Use `ShaderGradientCanvas` when the gradient owns its own canvas.
+
+When deeper scene integration is required, preserve one coherent render/time authority and verify that gradient, camera, product object, typography, and post-processing stay synchronized.
+
+### Bloom Integration
+
+When bloom is required in R3F, use an actual bloom effect such as the Bloom component from `@react-three/postprocessing` rather than describing ShaderGradient itself as a bloom engine.
+
+Tune bloom by perceptual hierarchy:
+
+- threshold / luminance ownership
+- intensity
+- smoothing / radius character
+- timing of the peak
+- duration of the tail
+- interaction with text/UI contrast
+
+The brightest object should normally be the object that owns attention.
+
+### Version Compatibility
+
+Check React / R3F major-version compatibility before implementation. The React Three Fiber repository currently documents R3F 8 for React 18 and R3F 9 for React 19. ShaderGradient v2 also documents compatibility requirements for its React/R3F combinations.
+
+Do not copy an old starter setup blindly.
+
+### Implementation References
+
+- ShaderGradient: https://github.com/ruucm/shadergradient
+- React Three Fiber: https://github.com/pmndrs/react-three-fiber
+- React Three post-processing: https://github.com/pmndrs/react-postprocessing
+
+## Three.js + DOM Hybrid Motion
+
+When Three.js and HTML typography / UI are combined:
+
+- decide whether WebGL or DOM owns the hero at each beat
+- do not let ambient 3D motion steal attention from primary copy
+- project important 3D focal points into screen space and compose DOM around the projected result
+- treat camera motion as a layout change because it can invalidate previous screen-space spacing
+- re-check collision and readability at representative camera states
+- synchronize Three.js animation to the same master clock or GSAP timeline when practical
+- pausing, seeking, replaying, or reduced-motion behavior should affect both systems coherently
+- do not fake depth with constant rotation when a clearer 2D / 2.5D transformation would communicate better
+
+For WebGL hero objects:
+
+- define a resting pose that works as a still composition
+- define the reason for rotation, orbit, dolly, or parallax
+- define camera start pose, landing pose, and readable hold
+- choose a lens / FOV behavior intentionally rather than using arbitrary defaults
+- stage foreground, midground, and background according to attention priority
+- coordinate lighting changes with state changes or reveals
+- stop or reduce ambient movement during dense typography moments
+- avoid perpetual spinning as a substitute for choreography
+- avoid combining orbit + FOV pumping + bloom + DOF merely to signal “cinematic”
+
+## Deterministic Web Render Pipeline
+
+When HTML, Canvas, Three.js, GSAP, Web Animations, or similar systems will be rendered as video, deterministic playback is a production requirement.
+
+Do not assume realtime browser playback is frame-accurate enough for final rendering.
+
+### Fixed Timeline Authority
+
+Use one authoritative time source for final render.
+
+Prefer a timeline that can be evaluated from an explicit time or frame index.
+
+For frame `f` at frame rate `fps`:
+
+`time = f / fps`
+
+All render-relevant systems should derive their state from that timeline when practical.

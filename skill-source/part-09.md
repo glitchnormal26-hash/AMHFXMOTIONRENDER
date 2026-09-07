@@ -1,303 +1,346 @@
+- major hero landing: **8–15f+**
+
+**ATTENTION**
+
+- start unresolved
+- hide part of the word
+- delay the hero word
+- interrupt expected phrasing
+- change scale / crop aggressively
+- create a new visual question after each payoff
+
+**FAIL IMMEDIATELY IF**
+
+- complete headline enters and then stays
+- scene contains descriptive paragraph copy
+- subtitle explains what the kinetic type already says
+- typography looks like a presentation title
+- camera / gradient / 3D is more active than the type
+- all words use the same animation
+- the frame still works almost identically as a static poster
+
+**DEFAULT EXAMPLE**
+
+`STOP` → `BUILDING` → `MORE` → **DASHBOARDS** → glyph becomes UI plane
+
+Not:
+
+`Stop building more dashboards` + subtitle + explanatory paragraph.
+
+## 13.5 Readability in Motion
+
+Keep text readable long enough to understand it.
+
+Check readability during normal-speed playback at the target resolution, aspect ratio, and expected display size. A readable still frame alone does not establish that moving text is readable.
+
+Check word recognition, reading order, contrast, spacing, and hold duration, especially when several fonts or treatments share a headline.
+
+Load every font used before measuring layout. After font swaps, variable-font changes, or spacing changes, re-check rendered bounds, optical alignment, wrapping, clipping, and collisions.
+
+When readability suffers, correct the cause: size, contrast, spacing, competing motion, excessive distortion, or insufficient reading time. Preserve useful font contrast where possible; reduce only the choices that obstruct understanding.
+
+For VO-driven work, timing follows spoken phrasing more than arbitrary beat markers.
+
+
+## 13.5.5 Type-First Gradient + 3D Integration
+
+Priority:
+
+**TYPE > 3D > GRADIENT** during kinetic passages.
+
+- gradient = atmosphere / energy / response
+- glow = accent / impact / response
+- 3D = reaction / handoff / payoff
+- type = attention owner
+
+Gradient may pulse, compress, redirect, or locally brighten with a type hit, then calm on the reading hold.
+
+Glow may peak on a hero hit, edge sweep, or activation, then decay quickly so the word remains readable.
+
+3D may tilt, compress, recoil, fold, assemble, or inherit the outgoing type vector.
+
+If interactivity exists, gradient and glow may react to hover, cursor, scroll, drag, click, or proximity, but the response must stay subordinate to the typographic hierarchy.
+
+Preferred handoff:
+
+**HERO WORD → GLOW / EDGE HIT → GLYPH / EDGE SURVIVES → GRADIENT / 3D ACQUIRES RESPONSE → PRODUCT LANDING**
+
+Never place explanatory body copy beside the kinetic passage just to fill the frame.
+
+## 13.5.7 Kinetic Copy Gate
+
+For kinetic-first social motion:
+
+**DESCRIPTIVE TEXT = OFF BY DEFAULT**
+
+Allowed on-screen text:
+
+- hero word
+- short phrase
+- essential product label
+- CTA / brand landing
 
 Avoid:
 
-- introducing a new object that only resembles the source instead of transforming the visible source
-- losing object identity because every visual property changes at once
-- scaling a UI element to 1000% without adding any hierarchy or spatial logic
-- using 3D depth when a flat transition would be clearer
-- camera tracking that fights the object's motion rather than clarifying it
-- hiding the object before the viewer understands that it became the transition
+- explanatory sentences
+- paragraphs
+- duplicate VO transcription
+- multiple support lines
+- decorative microcopy
 
+If the message needs explanation, keep the explanation in VO and animate only the semantic anchors.
 
-## 12.5.6 Parallax Environment Handoff Transitions
+## 13.6 Anti-Presentation Kinetic Typography Rule
 
-An environment itself may become the transition device.
+Typography should not default to **headline enters → support line enters → hold → everything exits → next title card**.
 
-Do not assume every transition requires one isolated hero object.
+That structure may be clean, but repeated use creates presentation motion.
 
-When the scene already contains meaningful foreground, midground, and background layers, the camera may travel through those layers so spatial separation carries the viewer into the next environment.
+Prefer typography that participates in an evolving visual world.
 
-Use the handoff model:
+A substantial typographic passage should use one or more of these behaviors when they support the idea:
 
-**SOURCE DEPTH SYSTEM → DESTINATION SEED → CAMERA TRAVEL → LAYER SEPARATION → THRESHOLD → DEPTH REASSIGNMENT → DESTINATION SYSTEM**
+- the camera or framing discovers text that already exists beyond the initial crop
+- a word remains present while the environment changes around it
+- typography crosses foreground and temporarily occludes the frame
+- a cropped glyph becomes the visual material of the next composition
+- one phrase exists at a different depth from another and parallax changes their relationship
+- the camera moves from a macro letterform detail to a readable phrase
+- a hero word pulls the camera toward a new subject or environment
+- typography becomes a plane, portal, mask, path, wall, frame edge, or transition surface
+- a word survives the scene handoff and acquires a new semantic or spatial role
+- the viewer's reading order changes because framing changes, not because every line individually enters and exits
 
-### Depth Reassignment
+Do not add camera movement merely to avoid a static title card.
 
-Layers may change narrative role across the transition.
+The camera or camera-equivalent framing must reveal, hide, connect, prioritize, transform, or carry information.
 
-Examples:
+### 13.6.1 Kinetic-First → SaaS Payoff
 
-- current background → next midground hero
-- current midground card → next foreground threshold
-- current foreground frame edge → next environment architecture
-- distant node cluster → next full spatial network
-- current horizon → persistent horizon in the destination
-- small background UI plane → next full-screen product state
+Kinetic typography does **not** need to stay visually adjacent to SaaS UI.
 
-This role transfer should be readable through position, scale, motion vector, material, or light continuity.
+When the spoken idea benefits from emotional emphasis, compression, urgency, contradiction, or a strong verbal hook, typography may temporarily own the entire frame before the product appears.
 
-### Environmental Carry-Over
+A useful grammar is:
 
-For a parallax-driven scene change, preserve at least one environmental property across the handoff:
+**IDEA / CLAIM → KINETIC OWNERSHIP → ANTICIPATION → HANDOFF → SaaS VISUALIZATION / PROOF**
 
-- horizon or vanishing direction
-- camera travel vector
-- foreground travel direction
-- depth-axis logic
-- structural motif
-- light direction
-- atmospheric density
-- repeated material
-- tracked element
-- destination landmark
-- sound texture or tail
+Use this when typography communicates the idea faster or more emotionally than showing the interface immediately. Let the product arrive after the viewer understands the claim, so SaaS becomes the concrete visualization, evidence, mechanism, or payoff.
 
-Prefer preserving two or more when the environments differ substantially.
+Possible behaviors:
 
-### Environment-to-Environment Examples
-
-**UI DASHBOARD → cards separate in depth → camera follows a node between panels → distant network enlarges → foreground cards whip past → camera enters network environment**
-
-**3D PRODUCT TABLE → camera trucks behind a large device → device creates near-field occlusion → same camera vector continues → backside reveals a wider automation environment**
-
-**FLAT GRID → perspective increases → grid lines become floor / rails → camera moves through foreground intersections → distant UI plane becomes the next workspace**
-
-**NODE NETWORK → camera accelerates toward one illuminated gap → surrounding nodes produce deep parallax → gap resolves into circular product motif → motif becomes architecture of the next scene**
-
-### No Teleport Rule
-
-If the transition is presented as camera travel, the destination must respect the travel.
-
-Do not:
-
-**push forward → hide frame → place camera at an unrelated angle, depth, or direction in a new world**
-
-unless the discontinuity is explicitly motivated as a deliberate impossible-space effect.
+- a hero word fills the frame before any dashboard is visible
+- several fast typographic beats build semantic pressure, then one surviving glyph becomes the transition object
+- an underline, bar, counter, crop edge, or word block continues its motion and resolves as a UI row, panel, graph, workflow path, or product plane
+- typography becomes abstract only after the must-read phrase has landed
+- the camera or framing follows the outgoing typographic vector and discovers the SaaS environment instead of cutting to it
+- SaaS receives a short readable landing after the kinetic passage so product comprehension is not sacrificed to pace
 
 Prefer:
 
-**travel vector survives → depth relationships evolve → destination becomes legible → camera lands inside a new but connected environment**
-- arriving at a scene whose composition has no relationship to the extracted object's final position or vector
-- repeatedly extracting an element from every scene until the technique becomes predictable
+**kinetic statement → surviving visual property → product reveal**
 
----
+over:
 
+**kinetic statement exits completely → empty frame → unrelated SaaS screenshot appears**
 
-## 12.5.7 Hero-Object Relay & Semantic Material Transformation
+The kinetic passage and SaaS passage may therefore be visually separate in time while still belonging to one continuous world. Preserve continuity through at least one property such as shape, position, vector, crop, scale trajectory, depth direction, light behavior, semantic role, or sound tail.
 
-A strong multi-scene sequence does not need the same object to survive forever.
 
-It needs a **readable relay of attention**.
+### 13.6.2 Object-Integrated Typography
 
-Use this grammar:
+Typography may interact with a physical or dimensional hero instead of remaining on a separate text plane.
 
-**OBJECT A OWNS → A ACTIVATES / REVEALS B → B INHERITS VECTOR OR POSITION → CAMERA ACQUIRES B → B TRANSFORMS / TRAVELS → B REVEALS C → SETTLE**
+Useful behaviors:
 
-The relay may pass between:
+- a recognizable object temporarily replaces part of a word when readability survives
+- an object passes in front of or behind a hero word to create depth and emphasis
+- type appears only after an object reaches the correct screen-space position
+- a prop, cursor, card, or shape creates the mask that reveals the word
+- one small label expands into oversized cropped typography for an attention reset
+- typography compresses around an object rather than forcing the object to sit beside a conventional headline
+- the object exits while one typographic edge, stroke, or motion vector survives into the next scene
 
-- physical prop
-- UI element
-- cursor / pointer
-- notification or message card
-- tool such as pen, marker, brush, scissors, or device
-- line / stroke / ribbon
-- card / folder / thumbnail
-- typographic word or glyph
-- product module
-- brand mark
+Object + type should create one hierarchy.
 
-### Relay-Cause Rule
+Do not treat the object as decoration placed over already-complete typography.
 
-Object B should not become hero merely because the edit needs something new.
+If an object substitutes for a glyph or obscures letters, verify the word at normal playback speed. Give the viewer a readable pose before or after the most experimental state.
 
-A visible cause should transfer ownership, for example:
+For oversized typography, let scale create a spatial event: the word may exceed the frame, cross the camera, or become a wipe, but it should land on a clear semantic beat rather than behave like a random zoom.
 
-- A points toward B
-- A contacts B
-- A draws or generates B
-- A opens to expose B
-- A passes behind B and B inherits the foreground position
-- A breaks into fragments that become B
-- A's motion trail becomes B
-- A's screen position is matched by B after an occlusion or cut
-- the camera follows A toward B, then releases A after B becomes more important
+## 13.7 Typography as Spatial Environment
 
-### Semantic Material Transformation
+Treat large typography as potential **space**, not only as flat copy.
 
-Prefer transformations where the new form is related to the source object's action, function, or meaning.
+Assign typographic depth deliberately when useful:
 
-Examples:
+- **foreground type** — crop, interruption, occlusion, frame edge, transition cover
+- **hero plane** — primary readable word or phrase
+- **support plane** — context, secondary language, repeated motif
+- **background type** — destination cue, large-scale texture, future phrase, environmental structure
 
-- drawn stroke → route → connector → workflow path
-- cursor / pointer → physical directional object → product interaction target
-- folder → content cards → thumbnail strip → product library
-- paper edge → frame edge → interface panel
-- underline → rail → progress path
-- sticky-note cluster → grouped tasks / modules
-- ring / canopy / circular prop → framing aperture → radial reveal
+The viewer should still know what must be read and what is functioning primarily as image or space.
 
-The transformation does not need literal realism.
+A letterform may become architecture through:
 
-It needs **conceptual legibility**.
+- counters / holes as portals or framing windows
+- stems as vertical walls or wipe surfaces
+- crossbars as horizon lines or paths
+- word blocks as planes in depth
+- extruded or simulated-thickness type when dimensionality adds meaning
+- oversized crops that create navigable negative space
 
-Avoid arbitrary morph chains where shape changes are impressive but the viewer cannot explain why one thing became another.
+Do not turn every word into 3D geometry.
 
-### Identity-Invariant Rule
+Use true 3D only when depth, parallax, occlusion, camera travel, or lighting materially improves the typographic idea. Otherwise simulate the same hierarchy with 2D / 2.5D scale, crop, blur, perspective, and layer motion.
 
-During a relay or transformation, preserve at least two useful invariants whenever possible:
+## 13.8 Camera + Typography Vocabulary
 
-- motion vector
-- screen-space position
-- silhouette family
-- scale direction
-- material cue
-- edge / stroke character
-- color-value relationship
-- semantic role
-- camera travel direction
-- sound identity / tail
+Choose a small vocabulary for the sequence rather than applying a different camera trick to every phrase.
 
-If shape, color, material, position, scale, and direction all change at once, stage the transformation into intermediate poses.
+### Macro Glyph → Phrase Reveal
 
-### Controlled Scatter / Collision Burst
+Begin extremely close to a letterform, punctuation mark, or word fragment.
 
-A temporary burst of objects can create scale, energy, and surprise when it has a destination.
+Then pull back or reframe until the viewer understands the complete phrase.
 
-Useful grammar:
+Use when the reveal changes meaning or scale perception.
 
-**stable cluster → trigger → related objects separate at different depths → one hero remains trackable → near-field passes amplify speed → clutter clears → destination object or environment becomes dominant**
+Avoid macro shots that are visually impressive but delay comprehension without reward.
 
-Use the scatter to:
+### Phrase Truck / Reading Traverse
 
-- expose a hidden destination
-- promote one object from support to hero
-- create a foreground wipe
-- show many inputs becoming one output
-- convert a static composition into spatial travel
+Move laterally or vertically across a larger typographic field.
 
-Do not use an explosion of objects merely as spectacle.
+Use when:
 
-After the burst, the viewer should be able to identify what survived, what changed, and what now matters.
+- language is intentionally distributed across space
+- one phrase leads to another
+- movement direction supports reading order
+- the next subject exists beyond the current crop
 
-### Physical ↔ Digital Bridge
+Do not make the viewer chase normal body copy with the camera.
 
-When a sequence mixes tactile real-world objects and product/UI graphics, do not treat them as unrelated aesthetic layers.
+### Push Through Negative Space
 
-Build a bridge through:
+Move toward or through a readable opening in a glyph, word, mask, or spacing gap.
 
-- matching scale trajectory
-- contact or pointing
-- screen-space alignment
-- shared shape
-- object extraction
-- a line or path crossing both worlds
-- camera continuation
-- shadow / material transfer
-- depth change
-- interaction feedback
+Possible grammar:
 
-A digital element may temporarily behave like a physical object, and a physical object may become a graphic or UI structure, but the change must be staged enough to preserve identity.
+**hero word becomes oversized → camera commits toward counter / gap → near edges create parallax → frame is briefly dominated by the glyph → next environment becomes visible through or behind the opening → camera exits into the new scene**
 
----
+The opening should be visually legible before the camera enters it.
 
-# 13. Kinetic Typography
+### Pullback Expansion
 
-Typography is both language and image.
+Start with one readable hero word, then pull back to reveal that it belongs to a larger phrase, system, grid, product interface, or environment.
 
-Use expressive typography, font mixing, and experimentation as sources of visual attraction while keeping the message readable.
+The pullback must reveal new information rather than merely make the text smaller.
 
-Prioritize:
+### Depth-Stack Traversal
 
-1. comprehension
-2. hierarchy
-3. rhythm
-4. character
-5. spectacle
+Place related words or phrases on different depth planes and let the camera travel through them.
 
-## 13.1 Font Selection & Mix and Match
+Use depth to express hierarchy, sequence, contradiction, progression, or cause-and-effect.
 
-Choose fonts for their character, word shapes, and fit with the concept. Check that they support the actual language and glyphs in the copy.
+Example:
 
-Mix serif, sans-serif, monospace, display, or handwritten fonts when their contrast strengthens the composition. Combinations may appear across scenes, within one headline, or within a word when the word remains easy to recognize.
+**NOW in foreground → camera passes it → AUTOMATE in hero plane → distant workflow label becomes destination → workflow environment takes over**
 
-Use font contrast to create:
+Maintain enough separation and hold time for each required phrase to read.
 
-- a visual hook or distinctive personality
-- emphasis on a word or phrase
-- emotional contrast or a change of voice
-- rhythm, surprise, or a narrative shift
+### Type-Locked Camera
 
-Let the composition determine the number of fonts. Do not impose a universal two- or three-font limit. Judge the result by readability, hierarchy, and the relationship between the letterforms.
+Keep a hero word relatively stable in screen space while the environment, support type, or 3D scene moves behind it.
 
-Establish visual connections through spacing, alignment, scale, color, repeated forms, or motion behavior. Coherence can come from these relationships even when the fonts are visibly different.
+Use when the word is the semantic anchor and the world is changing because of it.
 
-Use expressive faces wherever the copy remains readable; give dense supporting text enough size, spacing, and reading time. Respect font requirements explicitly provided in the brief.
+### Camera-Locked Type / World Pass
 
-## 13.2 Typography Style Direction
+Let typography travel through a mostly stable frame when the motion of the type itself communicates direction or force better than camera motion.
 
-Choose or combine typographic styles according to the concept: editorial, Swiss / modernist, brutalist, retro, playful, technical, or expressive.
+Do not move both camera and typography aggressively unless the relative motion remains readable.
 
-Explore contrast in:
+### Selective Orbit / Arc Around Type
 
-- serif / sans-serif / monospace / handwritten forms
-- condensed / extended proportions
-- light / heavy weight and upright / italic forms
-- solid / outline treatment
-- scale, case, tracking, baseline, and line breaks
+Use only when dimensional type or a typographic plane has meaningful geometry, layering, or a reverse side to reveal.
 
-Treat these as creative options, not fixed presets. A style may change between words or scenes when the contrast supports the visual idea and the reading order stays clear.
+Do not orbit a word merely because it is 3D.
 
-## 13.3 Experimental Typography
+## 13.9 Typographic Camera Tracking
 
-Encourage bold experimentation when the message remains understandable at the intended viewing speed.
+Typography may become a camera tracking target when a word, glyph, punctuation mark, or typographic object physically leads the viewer toward another state.
 
-Useful approaches include:
+Use the same target logic as other 3D tracking:
 
-- font swaps timed to a phrase, accent, or visual event
-- variable-font weight, width, slant, or other axes supported by the chosen font
-- mixed letterforms within a word while preserving recognizable word shape
-- solid-to-outline changes, unusual spacing, and baseline play
-- elastic letterforms, compression, expansion, and expressive distortion
-- type / object transformations and intentional crop or grid breaks
+**TYPE TARGET → SCREEN-SPACE ANCHOR → CAMERA RESPONSE → DEPTH / VECTOR CHANGE → HANDOFF → REACQUISITION / LANDING**
 
-Choose the intensity from the concept and the copy. Avoid arbitrary font cycling; make changes contribute visual character, emphasis, or rhythm.
+Possible targets:
 
-During transformations, preserve a clear path to the next readable state and allow enough time to understand the message. Voiceover may reinforce the text, but it does not replace visual readability.
+- a hero word that leaves its line and becomes an object
+- punctuation that detaches and travels into depth
+- a letterform that expands into a portal
+- a text block that becomes a spatial plane
+- one word that slides past camera and becomes the transition occluder
+- a typographic fragment that aligns with UI or 3D geometry in the next scene
 
-## 13.4 Animation Units & Techniques
+For tracking, define:
 
-Choose the animation unit intentionally:
+1. **semantic owner** — which word or glyph matters and why
+2. **screen-space anchor** — center, third, edge-biased, or intentionally drifting
+3. **camera response** — locked, smooth, heavy, lead, lag, or snap reframe
+4. **readable state** — when the word must be fully understood before stronger travel begins
+5. **depth behavior** — approach, recede, cross foreground, flatten, or gain thickness
+6. **handoff property** — shape, position, vector, crop, negative space, material, or meaning
+7. **landing role** — readable type, graphic motif, UI element, environment surface, or descendant object
 
-- full block
-- line
-- word
-- syllable
-- character
-- glyph component
+The camera should not begin following a word before the viewer has enough information to recognize what is being followed, unless deliberate partial recognition is the hook.
 
-Do not default to letter-by-letter animation for ordinary typography. When the brief explicitly calls for **fast-paced kinetic typography, rapid type, type-by-type motion, punchy social typography, high-retention text animation, or an energetic verbal hook**, character-, cluster-, and word-level animation become preferred execution methods when they strengthen rhythm and hierarchy.
+## 13.10 Typography → Scene Handoff
 
-**Anti-karaoke does not mean anti word-by-word or anti character-by-character motion.** It means avoiding uniform treatment, equal emphasis, identical timing, and mechanical transcription of every spoken unit.
+Typography may directly cause the next scene.
 
-Use character-level animation when it supports:
+Prefer transitions such as:
 
-- pronunciation
-- rhythm
-- personality
-- transformation
-- emphasis
-- a clear visual concept
+- **word → foreground crop → frame coverage → next environment**
+- **glyph counter → portal → camera traversal → next scene**
+- **underline → spatial path → camera follows path → new environment**
+- **letterform edge → architectural edge → next spatial system**
+- **word block → 3D plane → camera moves around / through plane → product state on reverse side**
+- **punctuation → node → tracked 3D element → network environment**
+- **headline baseline → horizon → camera pullback reveals environment built from the same line**
+- **oversized word → scale continues past readability → abstract shape match → next hero object**
 
-Useful techniques:
+A strong handoff preserves at least one recognizable continuity property:
 
-- mask reveals
-- split text
-- tracking changes
-- baseline shifts
-- weight / width changes
-- scale emphasis
-- directional replacement
-- kinetic line breaks
-- word-to-object transformation
-- type as foreground wipe
-- oversized cropped type
+- shape
+- location
+- scale trajectory
+- movement vector
+- negative space
+- value / color relationship
+- depth direction
+- semantic meaning
+
+Avoid:
+
+**headline exits → empty frame → generic camera move → unrelated next scene**
+
+Prefer:
+
+**headline changes role → camera responds → typographic geometry creates the transition condition → next scene is discovered through that condition**
+
+### 13.10.1 Speed-Ramp Handoff — Kinetic → Product
+
+Use speed ramps as **energy transfer**, not as a decorative fast-slow loop.
+
+A strong kinetic-to-SaaS ramp often follows:
+
+**FAST KINETIC → MICRO HOLD → ACCELERATION → OCCLUSION / THRESHOLD → CONTROLLED DECELERATION → PRODUCT READ → FAST RESET**
+
+The acceleration should have a clear cause, such as:
+
+- a hero word or glyph escaping its typographic layout
+- a bar or underline extending beyond the frame
+- a camera commitment toward a typographic opening

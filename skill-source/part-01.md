@@ -301,3 +301,46 @@ Choose one dominant character:
 - conversational
 
 Mix personalities only when the concept requires contrast.
+
+## Signature easing
+
+Choose one dominant easing behavior for most of the project.
+
+## Duration scale
+
+Use a small family of durations rather than arbitrary values.
+
+Suggested starting bands:
+
+| Motion type | Typical duration |
+|---|---:|
+| micro feedback | 80–160 ms |
+| snap / punch | 100–220 ms |
+| quick transition | 160–280 ms |
+| standard element motion | 280–450 ms |
+| major transition | 450–700 ms |
+| dramatic reveal | 700–1400+ ms |
+
+These are starting points, not laws.
+
+Duration should scale with:
+
+- travel distance
+- visual weight
+- information complexity
+- importance
+- emotional tone
+- VO pacing
+- sound transient
+
+## Entrance grammar
+
+Choose a small set of entrance behaviors.
+
+Examples:
+
+- rise + settle
+- mask reveal
+- crop reveal
+- foreground wipe
+- scale from focal point

@@ -1,46 +1,3 @@
-
-## Signature easing
-
-Choose one dominant easing behavior for most of the project.
-
-## Duration scale
-
-Use a small family of durations rather than arbitrary values.
-
-Suggested starting bands:
-
-| Motion type | Typical duration |
-|---|---:|
-| micro feedback | 80–160 ms |
-| snap / punch | 100–220 ms |
-| quick transition | 160–280 ms |
-| standard element motion | 280–450 ms |
-| major transition | 450–700 ms |
-| dramatic reveal | 700–1400+ ms |
-
-These are starting points, not laws.
-
-Duration should scale with:
-
-- travel distance
-- visual weight
-- information complexity
-- importance
-- emotional tone
-- VO pacing
-- sound transient
-
-## Entrance grammar
-
-Choose a small set of entrance behaviors.
-
-Examples:
-
-- rise + settle
-- mask reveal
-- crop reveal
-- foreground wipe
-- scale from focal point
 - directional replacement
 - tracking expansion
 - illustration assembly
@@ -300,3 +257,90 @@ Reveal through:
 The reveal should feel earned, not random.
 
 ## Reset
+
+After the reveal, create another expectation.
+
+Do not let the composition remain fully resolved for too long unless a hold is emotionally useful.
+
+A strong sequence repeatedly alternates between:
+
+**uncertainty → clarity → new uncertainty**
+
+---
+
+# 5. Retention Rhythm
+
+Do not interpret retention as constant fast movement.
+
+Use contrast:
+
+- fast vs slow
+- dense vs sparse
+- large vs small
+- smooth vs abrupt
+- movement vs stillness
+- full information vs partial information
+- visual action vs audio action
+
+A useful rhythm pattern is:
+
+**motion → impact → hold → interruption → reveal**
+
+Use stillness as tension.
+
+A 6–15 frame hold can create more impact than another transition.
+
+Avoid predictable cadence where every shot changes at the same interval.
+
+When a section feels boring, first inspect:
+
+1. Is the frame already fully understood?
+2. Is there anything unresolved?
+3. Is hierarchy obvious?
+4. Did the visual change meaningfully?
+5. Is the timing too even?
+6. Did the sound create expectation?
+
+## 5.1 Burst → Breath → Burst Architecture
+
+High-energy motion is stronger when it has somewhere to land.
+
+For physical-digital or product films, a useful macro rhythm is:
+
+**BURST → ORIENT → PAYOFF → BREATH → NEW TRIGGER → BURST**
+
+A **burst** may contain:
+
+- rapid camera travel
+- several related objects separating or converging
+- foreground passes
+- a short scale escalation
+- a controlled collision / scatter
+- a fast material transformation
+- a speed-ramped handoff
+
+A **breath** may contain:
+
+- one hero object in a clean frame
+- a readable product state
+- a stable camera pose
+- a simple typographic statement
+- reduced depth motion
+- near-silence or low-contrast texture
+
+Do not confuse a breath with dead time. The viewer should understand what the previous burst produced and anticipate the next trigger.
+
+As a starting point for short-form work, let dense motion clusters last only as long as the spatial idea remains trackable. Then reduce simultaneous motion for several frames or a short phrase so the eye can re-orient.
+
+Avoid:
+
+**burst → burst → burst → burst**
+
+when every section has equal density. Constant intensity flattens perceived impact and makes product information feel incidental.
+
+Prefer escalation by chapter: later bursts may travel farther, transform more meaningfully, or involve a larger scale shift, while the intervening breath states become progressively clearer.
+
+---
+
+# 6. Motion Hierarchy — Controlled Disruption
+

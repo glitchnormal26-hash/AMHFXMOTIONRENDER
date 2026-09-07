@@ -1,11 +1,11 @@
 ---
 name: motion-designer
-version: 3.8
+description: Plan, implement, review, and render authored browser motion, kinetic typography, and narrated explainers with Motion Designer v3.8. Use for motion design, animation, deterministic browser capture, and MP4 export tasks.
 ---
 
 # Motion Designer v3.8 — Full Runtime Router
 
-This repository stores the complete v3.8 skill source losslessly in `skill-source/part-01.md` through `skill-source/part-12.md`.
+This repository stores the complete v3.8 skill source losslessly in `skill-source/part-01.md` through `skill-source/part-21.md`.
 
 ## Mandatory loading rule
 
@@ -47,6 +47,15 @@ Read in order:
 10. `skill-source/part-10.md`
 11. `skill-source/part-11.md`
 12. `skill-source/part-12.md`
+13. `skill-source/part-13.md`
+14. `skill-source/part-14.md`
+15. `skill-source/part-15.md`
+16. `skill-source/part-16.md`
+17. `skill-source/part-17.md`
+18. `skill-source/part-18.md`
+19. `skill-source/part-19.md`
+20. `skill-source/part-20.md`
+21. `skill-source/part-21.md`
 
 To reconstruct the original single-file skill locally:
 

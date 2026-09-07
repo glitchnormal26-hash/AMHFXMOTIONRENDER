@@ -24,6 +24,20 @@ Production-oriented motion rendering runtime built around **Motion Designer v3.8
 - `scripts/serve.py` — local no-cache server
 - `references/` — detailed production guidance
 
+## Skill connection and integrity
+
+GitHub repository: [glitchnormal26-hash/AMHFXMOTIONRENDER](https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER).
+
+`AGENTS.md` routes repository motion work to `SKILL.md`, which loads all 21 source parts in order. Rebuild the complete original rulebook with:
+
+```bash
+npm run build:skill
+```
+
+The output is `dist/SKILL.md`. The build verifies every part and the complete source against `skill-source/manifest.json`. `npm run check` includes this integrity gate and runs in GitHub Actions.
+
+The source is preserved byte-for-byte from the supplied Motion Designer v3.8 Full Runtime document. Repository integration does not install a personal ChatGPT skill or configure voice-provider credentials.
+
 ## Setup
 
 ```bash
