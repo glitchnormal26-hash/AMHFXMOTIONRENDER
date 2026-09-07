@@ -70,12 +70,10 @@ body{font-family:Arial,Helvetica,sans-serif}
   position:absolute;left:0;right:0;top:246px;height:132px;
   background:linear-gradient(180deg,var(--gold-hi),var(--gold) 56%,var(--gold-dark));
 }
-.ribbonV:after,.ribbonH:after{
-  content:"";position:absolute;inset:0;background:rgba(255,255,255,.12)
-}
+.ribbonV:after,.ribbonH:after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.12)}
 #bodyShine{
   position:absolute;left:-355px;top:-30px;width:105px;height:420px;
-  border-radius:999px;background:rgba(255,255,255,.15);rotate:12deg
+  border-radius:999px;background:rgba(255,255,255,.15);transform:rotate(12deg)
 }
 
 /* Lid and bow stay as one hero object until the reveal. */
@@ -101,7 +99,7 @@ body{font-family:Arial,Helvetica,sans-serif}
 #lid .ribbonH{top:48px;height:92px}
 #lidShine{
   position:absolute;left:-390px;top:15px;width:190px;height:26px;
-  background:rgba(255,255,255,.22);border-radius:99px;rotate:-2deg
+  background:rgba(255,255,255,.22);border-radius:99px;transform:rotate(-2deg)
 }
 #bow{position:absolute;left:0;top:-178px;width:0;height:0;will-change:transform}
 .bowLoop{
@@ -112,8 +110,8 @@ body{font-family:Arial,Helvetica,sans-serif}
   box-shadow:inset 0 0 0 14px var(--gold-hi);
   will-change:transform;
 }
-#bowLeft{left:-320px;transform-origin:100% 62%;rotate:-19deg}
-#bowRight{left:0;transform-origin:0 62%;rotate:19deg;scale:-1 1}
+#bowLeft{left:-320px;transform-origin:100% 62%;transform:rotate(-19deg)}
+#bowRight{left:0;transform-origin:0 62%;transform:rotate(19deg)}
 #knot{
   position:absolute;left:-92px;top:-42px;width:184px;height:164px;
   border-radius:50%;
@@ -127,20 +125,23 @@ body{font-family:Arial,Helvetica,sans-serif}
   clip-path:polygon(0 0,100% 8%,80% 100%,49% 83%,18% 100%);
   transform-origin:50% 0;
 }
-#tailLeft{left:-126px;rotate:14deg}
-#tailRight{left:8px;rotate:-14deg}
+#tailLeft{left:-126px;transform:rotate(14deg)}
+#tailRight{left:8px;transform:rotate(-14deg)}
 
 /* Reveal energy — opaque graphic shapes keep chroma edges crisp. */
 #insideGlow{
   position:absolute;left:-410px;top:-360px;width:820px;height:820px;
   border-radius:50%;
   background:radial-gradient(circle,var(--white) 0 6%,var(--gold-hi) 7% 18%,var(--gold) 19% 37%,rgba(255,201,40,.45) 38% 56%,rgba(255,201,40,0) 57% 100%);
-  opacity:0;scale:.15;will-change:transform,opacity;pointer-events:none
+  opacity:0;transform:scale(.15);will-change:transform,opacity;pointer-events:none
 }
 #burstRoot{position:absolute;left:0;top:-250px;width:0;height:0;pointer-events:none}
 .particle{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity}
 .particle.dot{width:58px;height:58px;border-radius:50%;background:var(--white);border:8px solid #ffb500}
-.particle.diamond{width:72px;height:72px;background:var(--blue);rotate:45deg;border:8px solid var(--white)}
+.particle.diamond{
+  width:82px;height:82px;background:var(--blue);border:8px solid var(--white);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)
+}
 .particle.star{
   width:110px;height:110px;background:var(--gold-hi);
   clip-path:polygon(50% 0,61% 35%,98% 35%,68% 56%,79% 94%,50% 72%,21% 94%,32% 56%,2% 35%,39% 35%);
@@ -151,7 +152,7 @@ body{font-family:Arial,Helvetica,sans-serif}
 .particle.confetti.pink{background:#ff9bd0}
 #impactRing,#closeRing,#poofRing{
   position:absolute;left:-520px;top:440px;width:1040px;height:180px;
-  border:32px solid var(--white);border-radius:50%;opacity:0;scale:.25;
+  border:32px solid var(--white);border-radius:50%;opacity:0;transform:scale(.25);
   will-change:transform,opacity;pointer-events:none
 }
 #closeRing{border-color:var(--gold-hi)}
@@ -160,7 +161,7 @@ body{font-family:Arial,Helvetica,sans-serif}
   position:absolute;width:38px;height:210px;background:var(--white);border-radius:99px;
   left:-19px;top:-330px;opacity:0;transform-origin:50% 430px
 }
-#sparkB{rotate:90deg} #sparkC{rotate:45deg} #sparkD{rotate:-45deg}
+#sparkB{transform:rotate(90deg)} #sparkC{transform:rotate(45deg)} #sparkD{transform:rotate(-45deg)}
 
 #debug{
   display:none;position:fixed;left:50%;bottom:26px;translate:-50% 0;z-index:20;
@@ -239,7 +240,9 @@ const particleData=[
 ];
 const burst=$("#burstRoot");
 particleData.forEach(([cls])=>{
-  const el=document.createElement("div");el.className=`particle ${cls}`;burst.appendChild(el);
+  const el=document.createElement("div");
+  el.className=`particle ${cls}`;
+  burst.appendChild(el);
 });
 const particles=[...document.querySelectorAll(".particle")];
 
@@ -267,7 +270,7 @@ tl.to("#bow",{scaleX:1,scaleY:1,duration:.30,ease:"power2.out"},1.10);
 
 // QUESTION: bow pulls outward and lid trembles before we know what is inside.
 tl.to("#bowLeft",{rotation:-34,scaleX:1.14,scaleY:.91,duration:.24,ease:"power3.out"},1.82);
-tl.to("#bowRight",{rotation:34,scaleX:-1.14,scaleY:.91,duration:.24,ease:"power3.out"},1.82);
+tl.to("#bowRight",{rotation:34,scaleX:1.14,scaleY:.91,duration:.24,ease:"power3.out"},1.82);
 tl.to("#knot",{scale:1.13,y:-18,duration:.20,ease:"back.out(2)"},1.86);
 tl.to("#tailLeft",{rotation:24,duration:.28,ease:"power2.out"},1.90);
 tl.to("#tailRight",{rotation:-24,duration:.28,ease:"power2.out"},1.90);
@@ -299,7 +302,7 @@ particles.forEach((el,i)=>{
 tl.to("#lid",{y:-560,x:130,rotation:12,duration:.45,ease:"power2.inOut"},3.70);
 tl.to("#lid",{y:-520,x:105,rotation:7,duration:.65,ease:"power2.inOut"},4.15);
 tl.to("#bowLeft",{rotation:-25,scaleX:1.04,scaleY:1,duration:.50,ease:"power2.out"},3.78);
-tl.to("#bowRight",{rotation:25,scaleX:-1.04,scaleY:1,duration:.50,ease:"power2.out"},3.78);
+tl.to("#bowRight",{rotation:25,scaleX:1.04,scaleY:1,duration:.50,ease:"power2.out"},3.78);
 tl.to("#knot",{scale:1,y:0,duration:.45,ease:"power2.out"},3.80);
 tl.to("#insideGlow",{opacity:0,scale:1.65,duration:1.05,ease:"power2.out"},4.15);
 
