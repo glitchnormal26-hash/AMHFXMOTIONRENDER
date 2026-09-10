@@ -2,6 +2,21 @@
 
 Production-oriented motion rendering runtime built around **Motion Designer v3.8 Full Runtime**.
 
+## Motra Studio bridge
+
+Prompt-to-motion web studio: https://motra-studio-d13ehp.v2.appdeploy.ai/
+
+Motra Studio generates standalone HTML/SVG/CSS/JavaScript scenes and hands them to this repository for deterministic MP4 rendering without replacing the repository's existing root scene.
+
+```bash
+# Save the HTML downloaded from Motra Studio as:
+# motra-output/index.html
+npm install
+npm run render:motra
+```
+
+`render:motra` defaults to final quality and passes `motra-output/index.html` to the existing exporter through its `INDEX` input. Override either value when needed, for example `QUALITY=fast npm run render:motra` or `INDEX=/absolute/path/custom.html npm run render:motra`.
+
 ## Capabilities
 
 - deterministic GSAP timeline motion;
@@ -20,6 +35,7 @@ Production-oriented motion rendering runtime built around **Motion Designer v3.8
 - `assets/starter-full-runtime.html` — full runtime starter
 - `runtime/` — reusable motion, camera, Three.js, explainer and audio modules
 - `scripts/export-mp4.mjs` — one-command direct MP4 exporter
+- `scripts/render-motra.mjs` — Motra Studio HTML bridge
 - `scripts/snap.mjs` — deterministic snapshot QA
 - `scripts/serve.py` — local no-cache server
 - `references/` — detailed production guidance
