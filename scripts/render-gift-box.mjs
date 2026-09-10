@@ -92,6 +92,23 @@ function buildSfx(file){
   console.log(`built deterministic SFX: ${file} (${dur}s, ${sr}Hz stereo)`);
 }
 
+function patchIndexForReadability(file){
+  let html=fs.readFileSync(file,'utf8');
+  const replacements=[
+    ["#story{right:-170px;top:695px;font-size:218px;color:var(--ink)}","#story{right:20px;top:695px;font-size:206px;color:var(--ink)}"],
+    ["#jadi{left:80px;top:640px;font-size:220px;color:var(--ink)}","#jadi{left:72px;top:640px;font-size:155px;color:var(--ink)}"],
+    ["Yang penting bukan jumlah klip. Tapi keputusan.","SETIAP CUT ADALAH KEPUTUSAN."],
+    ["stagger:{each:.03,from:'random'}","stagger:{each:.03,from:'center'}"],
+  ];
+  for(const [from,to] of replacements){
+    if(!html.includes(from)) throw new Error(`Expected render patch source not found: ${from}`);
+    html=html.replace(from,to);
+  }
+  fs.writeFileSync(file,html);
+  console.log('patched index.html for must-read text safety and deterministic stagger');
+}
+
+patchIndexForReadability(path.resolve(process.env.INDEX));
 buildSfx(path.resolve(process.env.SFX));
 
 // GitHub-hosted Ubuntu runners disable the Chrome sandbox mechanism Puppeteer
