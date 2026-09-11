@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Folder Files — 4K Motion Graphic</title>
+<script src="./node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --bg0:#08111f;
+  --bg1:#0d1d33;
+  --cyan:#59d7ff;
+  --cyan2:#1689ff;
+  --blue:#2368ff;
+  --paper:#eef7ff;
+  --paper2:#cfe6ff;
+  --ink:#17304d;
+  --gold:#ffca56;
+  --gold2:#ff9f43;
+  --mint:#58f0c2;
+  --violet:#8e7dff;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg0)}
+body{font-family:Inter,Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:3840px;height:2160px;
+  transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;
+  background:
+    radial-gradient(circle at 72% 20%,rgba(35,104,255,.24),transparent 28%),
+    radial-gradient(circle at 22% 78%,rgba(89,215,255,.14),transparent 30%),
+    linear-gradient(135deg,var(--bg0),var(--bg1));
+}
+#grid{
+  position:absolute;inset:-240px;opacity:.22;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:120px 120px;transform:perspective(1800px) rotateX(64deg) translateY(1180px) scale(1.35);
+  transform-origin:center bottom;
+}
+.glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none}
+#g1{width:900px;height:900px;left:240px;top:420px;background:#0d8cff}
+#g2{width:720px;height:720px;right:300px;top:300px;background:#16d8ff}
+
+#hud{position:absolute;left:240px;top:190px;color:var(--white);z-index:8;opacity:0}
+#eyebrow{font-size:42px;letter-spacing:.28em;font-weight:700;color:var(--cyan);text-transform:uppercase}
+#title{font-size:126px;line-height:.95;font-weight:800;letter-spacing:-.045em;margin-top:24px}
+#subtitle{font-size:42px;color:#9db7d5;margin-top:30px;letter-spacing:.02em}
+
+#world{position:absolute;inset:0;will-change:transform}
+#folderRig{position:absolute;left:1920px;top:1190px;width:0;height:0;transform-origin:0 120px;will-change:transform}
+#folderShadow{position:absolute;left:-760px;top:430px;width:1520px;height:210px;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(55px);transform:scale(.8);opacity:.55}
+#folderBack{
+  position:absolute;left:-700px;top:-360px;width:1400px;height:850px;border-radius:70px 70px 80px 80px;
+  background:linear-gradient(180deg,#2f9cff 0%,#1d6ee9 64%,#124cba 100%);
+  border:10px solid rgba(255,255,255,.16);box-shadow:inset 0 40px 60px rgba(255,255,255,.08);
+  transform:skewX(-1deg);overflow:hidden
+}
+#tab{position:absolute;left:-560px;top:-500px;width:640px;height:220px;border-radius:72px 72px 0 0;background:linear-gradient(180deg,#54c8ff,#2e8fff);border:10px solid rgba(255,255,255,.15);border-bottom:0}
+#folderInside{position:absolute;left:-610px;top:-290px;width:1220px;height:610px;overflow:visible;perspective:1600px}
+#folderFront{
+  position:absolute;left:-740px;top:-90px;width:1480px;height:680px;border-radius:78px 78px 90px 90px;
+  background:linear-gradient(180deg,#48caff 0%,#1594ff 45%,#0c6ddd 100%);
+  border:10px solid rgba(255,255,255,.18);box-shadow:0 60px 120px rgba(0,0,0,.32),inset 0 24px 50px rgba(255,255,255,.12);
+  transform-origin:50% 100%;will-change:transform
+}
+#folderFront:before{content:"";position:absolute;left:90px;right:90px;top:70px;height:14px;border-radius:99px;background:rgba(255,255,255,.20)}
+#folderBadge{position:absolute;left:-155px;top:155px;width:310px;height:118px;border-radius:32px;background:rgba(7,25,54,.38);border:4px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;color:white;font-size:38px;letter-spacing:.18em;font-weight:800}
+
+.file{position:absolute;width:520px;height:690px;border-radius:44px;background:linear-gradient(180deg,var(--paper),var(--paper2));border:8px solid rgba(255,255,255,.55);box-shadow:0 36px 80px rgba(0,0,0,.26);overflow:hidden;transform-origin:50% 88%;will-change:transform,opacity}
+.file:before{content:"";position:absolute;right:0;top:0;border-top:118px solid #b5d9ff;border-left:118px solid transparent}
+.file .icon{position:absolute;left:74px;top:92px;width:116px;height:116px;border-radius:30px;display:grid;place-items:center;color:#fff;font-size:56px;font-weight:800;box-shadow:0 12px 28px rgba(0,0,0,.16)}
+.file .line{position:absolute;left:74px;height:24px;border-radius:99px;background:#7f9ebf;opacity:.62}
+.file .l1{top:270px;width:330px}.file .l2{top:326px;width:280px}.file .l3{top:382px;width:350px}.file .l4{top:438px;width:220px}
+.file .tag{position:absolute;left:74px;bottom:74px;padding:18px 28px;border-radius:22px;font-size:28px;font-weight:800;letter-spacing:.09em;color:#15304d;background:#dbeeff}
+#f1{left:-260px;top:-220px;transform:rotate(-6deg)}#f1 .icon{background:var(--gold2)}
+#f2{left:-260px;top:-220px;transform:rotate(2deg)}#f2 .icon{background:var(--violet)}
+#f3{left:-260px;top:-220px;transform:rotate(8deg)}#f3 .icon{background:var(--mint);color:#0f5749}
+#f4{left:-260px;top:-220px;transform:rotate(14deg)}#f4 .icon{background:var(--cyan2)}
+#f5{left:-260px;top:-220px;transform:rotate(-12deg)}#f5 .icon{background:#ff6b88}
+
+#orbit{position:absolute;left:1920px;top:1070px;width:0;height:0;pointer-events:none}
+.orb{position:absolute;left:-64px;top:-64px;width:128px;height:128px;border-radius:34px;background:rgba(16,42,79,.84);border:3px solid rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.24);display:grid;place-items:center;color:#fff;font-size:54px;font-weight:800;opacity:0;will-change:transform,opacity}
+#orb1{background:linear-gradient(145deg,#ffb14a,#ff7b35)}#orb2{background:linear-gradient(145deg,#8f7dff,#6852ec)}#orb3{background:linear-gradient(145deg,#54efc1,#1eaf8b);color:#0b4d3f}#orb4{background:linear-gradient(145deg,#49ccff,#147bff)}
+
+#searchPanel{position:absolute;left:2180px;top:610px;width:1180px;height:500px;border-radius:56px;background:rgba(8,27,52,.74);border:4px solid rgba(255,255,255,.16);backdrop-filter:blur(18px);box-shadow:0 46px 100px rgba(0,0,0,.30);opacity:0;transform-origin:center;will-change:transform,opacity}
+#searchBar{position:absolute;left:90px;top:84px;width:1000px;height:128px;border-radius:34px;background:rgba(255,255,255,.10);border:3px solid rgba(255,255,255,.18);display:flex;align-items:center;padding:0 46px;color:#d7eaff;font-size:44px;letter-spacing:.02em}
+#lens{width:54px;height:54px;border:9px solid var(--cyan);border-radius:50%;margin-right:34px;position:relative}
+#lens:after{content:"";position:absolute;width:34px;height:9px;background:var(--cyan);right:-27px;bottom:-14px;transform:rotate(45deg);border-radius:99px}
+#searchText{opacity:.9}.caret{display:inline-block;width:4px;height:52px;background:var(--cyan);margin-left:8px;vertical-align:-10px}
+#result{position:absolute;left:90px;top:260px;width:1000px;height:150px;border-radius:34px;background:linear-gradient(90deg,rgba(89,215,255,.18),rgba(35,104,255,.08));border:3px solid rgba(89,215,255,.36);display:flex;align-items:center;padding:0 38px;gap:30px}
+#resultIcon{width:82px;height:94px;border-radius:18px;background:linear-gradient(180deg,#fff,#dcecff);position:relative}#resultIcon:after{content:"";position:absolute;right:0;top:0;border-top:24px solid #a8d1ff;border-left:24px solid transparent}
+#resultMeta{color:#fff;font-size:34px;font-weight:700}.small{display:block;color:#8fb0d6;font-size:26px;font-weight:500;margin-top:10px}
+#check{margin-left:auto;width:64px;height:64px;border-radius:50%;background:var(--mint);display:grid;place-items:center;color:#0a5443;font-size:38px;font-weight:900;transform:scale(0)}
+
+#trail{position:absolute;inset:0;pointer-events:none;opacity:0}
+.trailLine{position:absolute;height:8px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);filter:drop-shadow(0 0 16px var(--cyan));transform-origin:left center}
+#t1{left:660px;top:780px;width:1100px;transform:rotate(13deg)}#t2{left:2180px;top:1450px;width:900px;transform:rotate(-19deg)}#t3{left:870px;top:1570px;width:820px;transform:rotate(-12deg)}
+
+#counter{position:absolute;right:260px;bottom:200px;color:#fff;text-align:right;opacity:0}
+#countBig{font-size:170px;font-weight:800;letter-spacing:-.05em;line-height:.85;color:var(--cyan)}
+#countLabel{margin-top:28px;font-size:34px;letter-spacing:.22em;text-transform:uppercase;color:#94afd0}
+
+#finalCaption{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);color:#c9def8;font-size:34px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;opacity:0}
+#ring{position:absolute;left:1920px;top:1100px;width:1500px;height:1500px;border-radius:50%;border:8px solid rgba(89,215,255,.18);transform:translate(-50%,-50%) scale(.35);opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grid"></div><div class="glow" id="g1"></div><div class="glow" id="g2"></div>
+  <div id="trail"><div class="trailLine" id="t1"></div><div class="trailLine" id="t2"></div><div class="trailLine" id="t3"></div></div>
+  <div id="hud"><div id="eyebrow">Digital Workspace</div><div id="title">FILES<br>IN MOTION</div><div id="subtitle">Sort • Search • Organize</div></div>
+  <div id="ring"></div>
+  <div id="world">
+    <div id="folderRig">
+      <div id="folderShadow"></div>
+      <div id="tab"></div>
+      <div id="folderBack"></div>
+      <div id="folderInside">
+        <div class="file" id="f1"><div class="icon">P</div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="tag">PROJECT</div></div>
+        <div class="file" id="f2"><div class="icon">D</div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="tag">DOCS</div></div>
+        <div class="file" id="f3"><div class="icon">X</div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="tag">SHEETS</div></div>
+        <div class="file" id="f4"><div class="icon">I</div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="tag">IMAGES</div></div>
+        <div class="file" id="f5"><div class="icon">A</div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="tag">ASSETS</div></div>
+      </div>
+      <div id="folderFront"><div id="folderBadge">FOLDER</div></div>
+    </div>
+  </div>
+  <div id="orbit"><div class="orb" id="orb1">P</div><div class="orb" id="orb2">D</div><div class="orb" id="orb3">X</div><div class="orb" id="orb4">I</div></div>
+  <div id="searchPanel"><div id="searchBar"><div id="lens"></div><span id="searchText">report_final</span><span class="caret"></span></div><div id="result"><div id="resultIcon"></div><div id="resultMeta">report_final.pdf<span class="small">Documents / Project / Final</span></div><div id="check">✓</div></div></div>
+  <div id="counter"><div id="countBig">128</div><div id="countLabel">Files Organized</div></div>
+  <div id="finalCaption">Everything in its place</div>
+</div>
+<script>
+const W=3840,H=2160,DURATION=25;
+const stage=document.querySelector('#stage');
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+const q=s=>document.querySelector(s);
+const all=s=>gsap.utils.toArray(s);
+
+// Deterministic initial state.
+tl.set('#folderRig',{y:-1700,rotation:-10,scale:.72},0)
+  .set('#folderFront',{rotationX:-8},0)
+  .set('.file',{opacity:0,y:380,scale:.72},0)
+  .set('#hud',{x:-120,opacity:0},0)
+  .set('#world',{x:0,y:0,scale:1},0)
+  .set('#grid',{opacity:.10},0)
+  .set('#g1',{scale:.6,opacity:.18},0)
+  .set('#g2',{scale:.7,opacity:.12},0);
+
+// 0–3.5s — folder arrives, opens, papers fan out.
+tl.to('#folderRig',{y:0,rotation:2,scale:1,duration:.85,ease:'power4.in'},0)
+  .to('#folderRig',{y:-110,rotation:-1.5,duration:.22,ease:'power2.out'},.85)
+  .to('#folderRig',{y:0,rotation:0,duration:.42,ease:'back.out(2)'},1.07)
+  .fromTo('#ring',{scale:.25,opacity:.65},{scale:1.05,opacity:0,duration:1.0,ease:'power3.out'},.78)
+  .to('#folderFront',{rotationX:18,y:88,duration:.5,ease:'power2.inOut'},1.28)
+  .to('#grid',{opacity:.28,duration:.8},1.1)
+  .to('#g1',{scale:1,opacity:.34,duration:1.0},.8)
+  .to('#g2',{scale:1,opacity:.26,duration:1.0},1.0)
+  .to('#f1',{opacity:1,y:-370,x:-460,rotation:-17,scale:.74,duration:.58,ease:'back.out(1.7)'},1.58)
+  .to('#f2',{opacity:1,y:-470,x:-220,rotation:-8,scale:.82,duration:.62,ease:'back.out(1.7)'},1.72)
+  .to('#f3',{opacity:1,y:-520,x:40,rotation:2,scale:.88,duration:.66,ease:'back.out(1.8)'},1.86)
+  .to('#f4',{opacity:1,y:-430,x:290,rotation:11,scale:.80,duration:.62,ease:'back.out(1.7)'},2.02)
+  .to('#f5',{opacity:1,y:-330,x:470,rotation:18,scale:.72,duration:.58,ease:'back.out(1.7)'},2.16)
+  .to('#hud',{x:0,opacity:1,duration:.7,ease:'power3.out'},2.3);
+
+// 3.5–7s — files launch, orbit, then sort into the folder.
+tl.to('#folderRig',{x:570,scale:.82,duration:.8,ease:'power2.inOut'},3.45)
+  .to('#hud',{x:-25,opacity:.92,duration:.8},3.45)
+  .set('#trail',{opacity:1},3.75)
+  .fromTo('#t1',{scaleX:0,opacity:0},{scaleX:1,opacity:.9,duration:.5,ease:'power2.out'},3.78)
+  .fromTo('#t2',{scaleX:0,opacity:0},{scaleX:1,opacity:.75,duration:.5,ease:'power2.out'},3.93)
+  .fromTo('#t3',{scaleX:0,opacity:0},{scaleX:1,opacity:.7,duration:.5,ease:'power2.out'},4.08)
+  .to('#f1',{x:-1380,y:-710,rotation:-27,scale:.62,duration:.75,ease:'power3.inOut'},3.85)
+  .to('#f2',{x:-900,y:-860,rotation:-10,scale:.66,duration:.75,ease:'power3.inOut'},3.95)
+  .to('#f3',{x:-300,y:-1010,rotation:4,scale:.70,duration:.78,ease:'power3.inOut'},4.05)
+  .to('#f4',{x:420,y:-900,rotation:16,scale:.66,duration:.78,ease:'power3.inOut'},4.15)
+  .to('#f5',{x:980,y:-650,rotation:30,scale:.60,duration:.78,ease:'power3.inOut'},4.25)
+  .to('#orb1',{opacity:1,x:-1160,y:-420,scale:1,duration:.35},4.6)
+  .to('#orb2',{opacity:1,x:-480,y:-700,scale:1,duration:.35},4.7)
+  .to('#orb3',{opacity:1,x:350,y:-650,scale:1,duration:.35},4.8)
+  .to('#orb4',{opacity:1,x:1040,y:-300,scale:1,duration:.35},4.9)
+  .to('#orbit',{rotation:180,duration:1.35,ease:'power1.inOut'},4.95)
+  .to('.orb',{scale:.55,opacity:.15,duration:.45,ease:'power2.in'},6.05)
+  .to('#f1',{x:-330,y:-320,rotation:-7,scale:.58,duration:.6,ease:'power3.in'},6.15)
+  .to('#f2',{x:-165,y:-290,rotation:-3,scale:.63,duration:.6,ease:'power3.in'},6.2)
+  .to('#f3',{x:0,y:-270,rotation:1,scale:.68,duration:.6,ease:'power3.in'},6.25)
+  .to('#f4',{x:165,y:-250,rotation:4,scale:.63,duration:.6,ease:'power3.in'},6.3)
+  .to('#f5',{x:330,y:-230,rotation:8,scale:.58,duration:.6,ease:'power3.in'},6.35)
+  .to('#folderFront',{rotationX:2,y:8,duration:.45,ease:'power2.out'},6.55)
+  .to('#trail',{opacity:0,duration:.4},6.6);
+
+// 7–11s — compact organization sequence, folders/files shuffle cleanly.
+tl.to('#hud',{opacity:0,x:-120,duration:.55},7.0)
+  .to('#folderRig',{x:0,scale:.95,duration:.7,ease:'power2.inOut'},7.05)
+  .to('#folderRig',{rotation:-4,duration:.18,ease:'power2.out'},7.85)
+  .to('#folderRig',{rotation:4,duration:.18,ease:'power2.inOut'},8.03)
+  .to('#folderRig',{rotation:-2,duration:.18,ease:'power2.inOut'},8.21)
+  .to('#folderRig',{rotation:0,duration:.22,ease:'power2.out'},8.39)
+  .to('#f1',{x:-220,y:-560,rotation:-13,scale:.60,duration:.5,ease:'power2.out'},8.0)
+  .to('#f2',{x:-105,y:-500,rotation:-7,scale:.64,duration:.5,ease:'power2.out'},8.08)
+  .to('#f3',{x:0,y:-450,rotation:0,scale:.70,duration:.5,ease:'power2.out'},8.16)
+  .to('#f4',{x:105,y:-500,rotation:7,scale:.64,duration:.5,ease:'power2.out'},8.24)
+  .to('#f5',{x:220,y:-560,rotation:13,scale:.60,duration:.5,ease:'power2.out'},8.32)
+  .to('#f1',{x:-180,y:-245,rotation:-5,scale:.55,duration:.62,ease:'power3.inOut'},9.0)
+  .to('#f2',{x:-90,y:-230,rotation:-2,scale:.58,duration:.62,ease:'power3.inOut'},9.06)
+  .to('#f3',{x:0,y:-215,rotation:0,scale:.62,duration:.62,ease:'power3.inOut'},9.12)
+  .to('#f4',{x:90,y:-200,rotation:2,scale:.58,duration:.62,ease:'power3.inOut'},9.18)
+  .to('#f5',{x:180,y:-185,rotation:5,scale:.55,duration:.62,ease:'power3.inOut'},9.24)
+  .to('#folderRig',{y:-65,duration:.25,ease:'power2.out'},10.1)
+  .to('#folderRig',{y:0,duration:.35,ease:'bounce.out'},10.35);
+
+// 11–15.5s — search/find moment.
+tl.to('#folderRig',{x:-720,scale:.72,duration:.75,ease:'power2.inOut'},11.0)
+  .fromTo('#searchPanel',{x:180,scale:.88,opacity:0},{x:0,scale:1,opacity:1,duration:.72,ease:'power3.out'},11.25)
+  .fromTo('.caret',{opacity:1},{opacity:.15,duration:.28,repeat:5,yoyo:true,ease:'none'},11.95)
+  .to('#result',{x:18,duration:.22,ease:'power2.out'},12.45)
+  .to('#result',{x:0,duration:.25,ease:'power2.out'},12.67)
+  .to('#check',{scale:1,duration:.42,ease:'back.out(2.4)'},12.9)
+  .to('#folderFront',{rotationX:16,y:70,duration:.42,ease:'power2.inOut'},13.2)
+  .to('#f3',{x:760,y:-520,rotation:5,scale:.78,duration:.75,ease:'power3.inOut'},13.25)
+  .to('#f3',{x:760,y:-420,scale:.92,duration:.35,ease:'power2.out'},13.95)
+  .to('#searchPanel',{boxShadow:'0 46px 130px rgba(54,178,255,.28)',duration:.45},14.0)
+  .to('#f3',{x:40,y:-235,rotation:1,scale:.62,duration:.72,ease:'power3.inOut'},14.45)
+  .to('#folderFront',{rotationX:2,y:8,duration:.42},14.9)
+  .to('#searchPanel',{opacity:0,x:160,scale:.92,duration:.55,ease:'power2.in'},15.0);
+
+// 15.5–20s — counting / consolidation.
+tl.to('#folderRig',{x:0,scale:.88,duration:.75,ease:'power2.inOut'},15.45)
+  .fromTo('#counter',{x:120,opacity:0},{x:0,opacity:1,duration:.65,ease:'power3.out'},15.75)
+  .fromTo('#countBig',{scale:.7},{scale:1,duration:.6,ease:'back.out(1.8)'},15.82)
+  .to('#folderRig',{rotation:-2.5,duration:.25,ease:'power2.out'},16.65)
+  .to('#folderRig',{rotation:2.5,duration:.25,ease:'power2.inOut'},16.9)
+  .to('#folderRig',{rotation:0,duration:.25,ease:'power2.out'},17.15)
+  .to('#folderFront',{rotationX:14,y:62,duration:.38,ease:'power2.inOut'},17.55)
+  .to('.file',{y:'-=120',duration:.42,stagger:.05,ease:'power2.out'},17.7)
+  .to('.file',{y:'+=120',duration:.42,stagger:.05,ease:'power2.inOut'},18.2)
+  .to('#folderFront',{rotationX:2,y:8,duration:.42,ease:'power2.out'},18.55)
+  .to('#counter',{opacity:.62,duration:.6},19.05)
+  .to('#folderRig',{scale:.96,duration:.6,ease:'power2.inOut'},19.1);
+
+// 20–25s — final hero pose and calm loop-like finish.
+tl.to('#counter',{opacity:0,x:120,duration:.55,ease:'power2.in'},20.0)
+  .to('#folderRig',{x:0,y:-30,scale:1.06,duration:.8,ease:'power3.inOut'},20.05)
+  .fromTo('#ring',{scale:.55,opacity:.0},{scale:1.3,opacity:.28,duration:1.1,ease:'power2.out'},20.35)
+  .to('#ring',{opacity:0,duration:.6},21.0)
+  .to('#folderFront',{rotationX:12,y:50,duration:.45,ease:'power2.inOut'},20.85)
+  .to('#f1',{x:-230,y:-520,rotation:-11,scale:.60,duration:.55,ease:'back.out(1.6)'},20.95)
+  .to('#f2',{x:-115,y:-490,rotation:-6,scale:.64,duration:.55,ease:'back.out(1.6)'},21.02)
+  .to('#f3',{x:0,y:-470,rotation:0,scale:.68,duration:.55,ease:'back.out(1.6)'},21.09)
+  .to('#f4',{x:115,y:-490,rotation:6,scale:.64,duration:.55,ease:'back.out(1.6)'},21.16)
+  .to('#f5',{x:230,y:-520,rotation:11,scale:.60,duration:.55,ease:'back.out(1.6)'},21.23)
+  .to('#finalCaption',{opacity:1,y:-10,duration:.7,ease:'power2.out'},21.6)
+  .to('#folderRig',{y:-58,duration:1.2,ease:'sine.inOut'},22.0)
+  .to('#folderRig',{y:-30,duration:1.2,ease:'sine.inOut'},23.2)
+  .to('#finalCaption',{opacity:.72,duration:.8,ease:'sine.inOut'},23.5)
+  .to('#folderRig',{scale:1.03,duration:.7,ease:'sine.inOut'},24.1);
+const clock={v:0};tl.to(clock,{v:1,duration:1,ease:'none'},24.0);
+
+window.OPENER={
+  ready:true,
+  DURATION,
+  tl,
+  seek:(t)=>{tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);if(window.gsap?.ticker?.tick)window.gsap.ticker.tick();}
+};
+if(!new URLSearchParams(location.search).has('clean')){tl.play(0)}
+</script>
+</body>
+</html>
