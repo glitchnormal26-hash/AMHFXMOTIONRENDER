@@ -1,0 +1,44 @@
+name: Render Folder Files 25s 4K
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - render/folder-files-4k-25s
+    paths:
+      - 'folder-files.html'
+      - 'scripts/render-folder-files.mjs'
+      - 'scripts/export-mp4.mjs'
+      - '.github/workflows/render-folder-files.yml'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Render 25s 4K MP4
+        run: node scripts/render-folder-files.mjs
+
+      - name: Upload verified MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: folder-files-25s-4k
+          path: |
+            output/folder-files-25s-4k.mp4
+            output/folder-files-25s-4k.verify.json
+          if-no-files-found: error
+          retention-days: 14
