@@ -1,10 +1,10 @@
-name: Render Gift Box 4K Greenscreen
+name: Render Y2K File Folder 4K Greenscreen
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'index.html'
+      - 'file-folder-y2k.html'
       - 'package.json'
       - 'scripts/render-gift-box.mjs'
       - 'scripts/export-mp4.mjs'
@@ -35,9 +35,9 @@ jobs:
       - name: Upload verified MP4
         uses: actions/upload-artifact@v4
         with:
-          name: gift-box-greenscreen-4k
+          name: file-folder-y2k-greenscreen-4k
           path: |
-            output/gift-box-greenscreen-4k.mp4
-            output/gift-box-greenscreen-4k.verify.json
+            output/file-folder-y2k-greenscreen-4k.mp4
+            output/file-folder-y2k-greenscreen-4k.verify.json
           if-no-files-found: error
           retention-days: 14
