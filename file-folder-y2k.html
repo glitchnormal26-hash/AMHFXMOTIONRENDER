@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Y2K File to Folder — 4K Greenscreen Loop</title>
+<script src="./node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --green:#00ff00;
+  --ink:#17112f;
+  --violet:#8b5cff;
+  --violet-dark:#4a2da9;
+  --cyan:#40e8ff;
+  --cyan-dark:#1597c0;
+  --pink:#ff5ccf;
+  --pink-dark:#b6298d;
+  --silver:#d8e4ef;
+  --silver-hi:#ffffff;
+  --silver-mid:#9eafc2;
+  --silver-dark:#586779;
+  --yellow:#fff36a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--green)}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:3840px;height:2160px;
+  transform:translate(-50%,-50%) scale(1);transform-origin:center;
+  overflow:hidden;background:var(--green);
+}
+#world{position:absolute;inset:0;background:var(--green);overflow:hidden}
+#scene{position:absolute;left:1920px;top:1080px;width:0;height:0;transform-origin:0 0}
+
+/* Folder assembly: crisp 2.5D Y2K object, no soft green-adjacent shadows. */
+#folderRig{position:absolute;left:300px;top:130px;width:0;height:0;transform-origin:0 240px;will-change:transform}
+#folderBack{
+  position:absolute;left:-730px;top:-420px;width:1460px;height:820px;
+  border:30px solid var(--ink);border-radius:72px 78px 94px 94px;
+  background:linear-gradient(145deg,#b7f7ff 0%,var(--cyan) 23%,#7e7cff 54%,var(--violet) 100%);
+  overflow:hidden;
+}
+#folderBack:before{
+  content:"";position:absolute;left:42px;top:46px;width:500px;height:132px;
+  border:26px solid var(--ink);border-bottom-width:22px;border-radius:50px 50px 20px 20px;
+  background:linear-gradient(180deg,var(--silver-hi),var(--silver) 50%,var(--silver-mid));
+  transform:skewX(-8deg)
+}
+#folderBack:after{
+  content:"";position:absolute;left:86px;right:86px;top:220px;height:56px;
+  background:rgba(255,255,255,.42);border:12px solid var(--ink);border-radius:999px;
+}
+#folderLip{
+  position:absolute;left:-760px;top:-265px;width:1520px;height:650px;
+  border:30px solid var(--ink);border-radius:72px 72px 112px 112px;
+  background:linear-gradient(160deg,var(--violet) 0%,#6e63ff 33%,var(--pink) 74%,#ff8bda 100%);
+  transform-origin:50% 100%;will-change:transform;overflow:hidden;
+}
+#folderLip:before{
+  content:"";position:absolute;left:52px;right:52px;top:56px;height:82px;
+  border:18px solid var(--ink);border-radius:999px;
+  background:linear-gradient(90deg,var(--silver-dark),var(--silver-hi) 38%,var(--silver-mid) 64%,var(--silver-hi));
+}
+#folderLip:after{
+  content:"";position:absolute;left:118px;right:118px;bottom:78px;height:220px;
+  border:22px solid var(--ink);border-radius:34px;
+  background:
+    linear-gradient(90deg,transparent 0 6%,rgba(255,255,255,.38) 6% 9%,transparent 9% 100%),
+    repeating-linear-gradient(0deg,rgba(23,17,47,.26) 0 12px,transparent 12px 42px);
+}
+#folderBadge{
+  position:absolute;left:-250px;top:-66px;width:500px;height:150px;
+  border:24px solid var(--ink);border-radius:999px;
+  background:linear-gradient(180deg,var(--silver-hi),var(--silver) 46%,var(--silver-mid));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink);font-weight:900;font-size:64px;letter-spacing:8px;
+  transform:rotate(-3deg)
+}
+#folderBadge span{display:inline-block;transform:skewX(-8deg)}
+#hingeL,#hingeR{
+  position:absolute;top:285px;width:150px;height:80px;border:20px solid var(--ink);border-radius:999px;
+  background:linear-gradient(180deg,var(--silver-hi),var(--silver-dark));
+}
+#hingeL{left:-570px}#hingeR{left:420px}
+
+/* File card sits between folder back and front so insertion reads physically. */
+#fileRig{position:absolute;left:-2100px;top:-720px;width:0;height:0;transform-origin:0 0;will-change:transform,opacity}
+#fileCard{
+  position:absolute;left:-310px;top:-390px;width:620px;height:780px;
+  border:30px solid var(--ink);border-radius:54px;
+  background:linear-gradient(145deg,var(--silver-hi) 0%,#dff7ff 28%,var(--silver) 58%,var(--silver-mid) 100%);
+  overflow:hidden;transform-origin:50% 86%;
+}
+#fileCard:before{
+  content:"";position:absolute;right:-22px;top:-22px;width:230px;height:230px;
+  border-left:28px solid var(--ink);border-bottom:28px solid var(--ink);
+  background:linear-gradient(135deg,var(--cyan),#7c74ff 52%,var(--pink));
+  clip-path:polygon(0 0,100% 100%,0 100%);
+}
+#fileCard:after{
+  content:"";position:absolute;left:60px;right:60px;top:295px;height:260px;
+  background:repeating-linear-gradient(0deg,var(--ink) 0 20px,transparent 20px 70px);
+  opacity:.84;
+}
+#fileIcon{
+  position:absolute;left:54px;top:52px;width:190px;height:190px;
+  border:24px solid var(--ink);border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,var(--yellow) 0 20%,var(--pink) 21% 52%,var(--violet-dark) 53% 100%);
+}
+#fileTag{
+  position:absolute;left:66px;bottom:62px;padding:22px 38px 18px;
+  border:20px solid var(--ink);border-radius:30px;
+  background:var(--yellow);color:var(--ink);font-size:58px;font-weight:900;letter-spacing:4px;
+  transform:rotate(-2deg)
+}
+
+/* Y2K punctuation. */
+.star,.orb,.pixel{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity}
+.star{width:140px;height:140px;background:var(--yellow);clip-path:polygon(50% 0,61% 37%,100% 50%,61% 63%,50% 100%,39% 63%,0 50%,39% 37%)}
+.star.pink{background:var(--pink)}
+.star.cyan{background:var(--cyan)}
+.orb{width:126px;height:126px;border:22px solid var(--ink);border-radius:50%;background:linear-gradient(145deg,var(--silver-hi),var(--cyan) 45%,var(--violet))}
+.pixel{width:92px;height:92px;border:18px solid var(--ink);background:var(--silver-hi);transform:rotate(45deg)}
+#trail{position:absolute;left:0;top:0;width:0;height:0}
+#burst{position:absolute;left:300px;top:-80px;width:0;height:0}
+#impactRing,#insertRing{
+  position:absolute;left:-570px;top:-190px;width:1140px;height:530px;
+  border:38px solid var(--silver-hi);border-radius:50%;opacity:0;transform:scale(.2);will-change:transform,opacity
+}
+#insertRing{border-color:var(--yellow);top:-100px;width:1040px;left:-520px;height:360px}
+#chromeFlash{
+  position:absolute;left:-820px;top:-500px;width:1640px;height:1040px;
+  opacity:0;transform:scale(.25) rotate(-8deg);will-change:transform,opacity;
+  background:conic-gradient(from 0deg,transparent 0 10deg,var(--silver-hi) 10deg 16deg,transparent 16deg 42deg,var(--cyan) 42deg 47deg,transparent 47deg 90deg,var(--pink) 90deg 95deg,transparent 95deg 130deg,var(--yellow) 130deg 134deg,transparent 134deg 180deg,var(--silver-hi) 180deg 186deg,transparent 186deg 360deg);
+  clip-path:polygon(50% 0,58% 34%,100% 50%,58% 66%,50% 100%,42% 66%,0 50%,42% 34%);
+}
+
+#debug{display:none;position:fixed;left:50%;bottom:28px;translate:-50% 0;z-index:99;align-items:center;gap:16px;padding:16px 22px;border-radius:18px;background:#111;color:#fff;font:20px Arial}
+#debug.on{display:flex}#debug input{width:720px}#clock{min-width:8ch;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="stage"><div id="world"><div id="scene">
+  <div id="impactRing"></div>
+  <div id="folderRig">
+    <div id="folderBack"></div>
+    <div id="fileRig">
+      <div id="fileCard"><div id="fileIcon"></div><div id="fileTag">FILE_01</div></div>
+    </div>
+    <div id="folderLip"></div>
+    <div id="folderBadge"><span>MY FILES</span></div>
+    <div id="hingeL"></div><div id="hingeR"></div>
+    <div id="insertRing"></div>
+    <div id="chromeFlash"></div>
+    <div id="trail"></div><div id="burst"></div>
+  </div>
+</div></div></div>
+<div id="debug"><button id="play">Pause</button><input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0.00s</span></div>
+<script>
+const W=3840,H=2160,DURATION=10;
+const $=s=>document.querySelector(s);
+const stage=$("#stage");
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener("resize",fit);fit();
+
+const trailData=[
+  ["star cyan",-1320,-520,.78,-24],["orb",-1080,-290,.70,18],["pixel",-850,-590,.58,-14],
+  ["star pink",-610,-260,.72,26],["orb",-400,-520,.52,-22],["pixel",-210,-190,.64,12]
+];
+const trail=$("#trail");
+trailData.forEach(([cls,x,y,s,r])=>{const e=document.createElement("div");e.className=cls;e.dataset.x=x;e.dataset.y=y;e.dataset.s=s;e.dataset.r=r;trail.appendChild(e)});
+const burstData=[
+  ["star",-780,-690,1.05,-24],["star cyan",-500,-840,.84,18],["orb",-170,-760,.70,-10],
+  ["pixel",170,-820,.62,20],["star pink",480,-720,.90,-18],["orb",720,-500,.66,28],
+  ["pixel",-710,-350,.56,-30],["star cyan",690,-250,.72,12]
+];
+const burst=$("#burst");
+burstData.forEach(([cls,x,y,s,r])=>{const e=document.createElement("div");e.className=cls;e.dataset.x=x;e.dataset.y=y;e.dataset.s=s;e.dataset.r=r;burst.appendChild(e)});
+const trailEls=[...trail.children],burstEls=[...burst.children];
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+// Seam contract: folder is identical at t=0 and t=10; file starts fully offscreen and ends hidden offscreen.
+tl.set("#folderRig",{x:0,y:0,rotation:0,scale:1},0);
+tl.set("#folderLip",{rotationX:0,scaleY:1,y:0},0);
+tl.set("#fileRig",{x:-2350,y:-690,rotation:-18,scale:.58,opacity:1},0);
+tl.set("#fileCard",{skewX:-3,scaleX:1,scaleY:1},0);
+tl.set(trailEls,{opacity:0,scale:0},0);tl.set(burstEls,{opacity:0,scale:0},0);
+
+// HOOK — file enters immediately, fast diagonal then curves toward the folder.
+tl.to("#fileRig",{x:-1550,y:-830,rotation:-8,scale:.68,duration:.42,ease:"power3.out"},0);
+tl.to("#fileRig",{x:-740,y:-560,rotation:11,scale:.82,duration:.55,ease:"power2.inOut"},.42);
+tl.to("#fileRig",{x:-360,y:-250,rotation:-7,scale:.92,duration:.38,ease:"power3.out"},.97);
+trailEls.forEach((el,i)=>{
+  const x=Number(el.dataset.x),y=Number(el.dataset.y),s=Number(el.dataset.s),r=Number(el.dataset.r);
+  const t=.18+i*.13;
+  tl.fromTo(el,{x:-1380+i*165,y:-620+i*38,scale:.1,opacity:0,rotation:0},{x,y,scale:s,opacity:1,rotation:r,duration:.20,ease:"power4.out"},t);
+  tl.to(el,{x:x+90,y:y+90,scale:s*.55,opacity:0,rotation:r+70,duration:.40,ease:"power2.in"},t+.18);
+});
+
+// FIRST LANDING — readable hover with a tactile folder reaction.
+tl.to("#fileRig",{x:-210,y:-430,rotation:4,scale:.98,duration:.34,ease:"back.out(1.55)"},1.35);
+tl.fromTo("#impactRing",{opacity:.95,scale:.22},{opacity:0,scale:1.22,duration:.42,ease:"power3.out"},1.38);
+tl.to("#folderRig",{rotation:-3.2,scale:1.035,y:-35,duration:.18,ease:"power3.out"},1.38);
+tl.to("#folderRig",{rotation:1.8,scale:.995,y:12,duration:.20,ease:"power2.inOut"},1.56);
+tl.to("#folderRig",{rotation:0,scale:1,y:0,duration:.24,ease:"power2.out"},1.76);
+tl.to("#fileRig",{y:-500,rotation:-3,duration:.32,ease:"sine.inOut"},1.82);
+tl.to("#fileRig",{y:-440,rotation:3,duration:.32,ease:"sine.inOut"},2.14);
+
+// QUESTION — folder mouth opens; file hesitates and compresses like a card being grabbed.
+tl.to("#folderLip",{scaleY:.90,y:52,duration:.28,ease:"power2.inOut"},2.52);
+tl.to("#fileRig",{x:-80,y:-500,rotation:-2,scale:1.02,duration:.32,ease:"power2.out"},2.54);
+tl.to("#fileCard",{scaleX:1.05,scaleY:.96,skewX:2,duration:.18,ease:"power3.out"},2.82);
+tl.to("#fileCard",{scaleX:.98,scaleY:1.03,skewX:-1,duration:.18,ease:"power2.inOut"},3.00);
+tl.to("#fileCard",{scaleX:1,scaleY:1,skewX:0,duration:.20,ease:"power2.out"},3.18);
+
+// INSERT — file dives into folder while front lip naturally occludes it.
+tl.to("#fileRig",{x:0,y:-160,rotation:0,scale:.92,duration:.32,ease:"power2.in"},3.46);
+tl.to("#fileRig",{x:0,y:260,rotation:0,scale:.78,duration:.38,ease:"power4.in"},3.78);
+tl.fromTo("#insertRing",{opacity:.95,scale:.20},{opacity:0,scale:1.28,duration:.44,ease:"power3.out"},4.08);
+tl.fromTo("#chromeFlash",{opacity:.92,scale:.22,rotation:-12},{opacity:0,scale:1.10,rotation:18,duration:.46,ease:"power4.out"},4.08);
+tl.to("#folderLip",{scaleY:1.06,y:-28,duration:.12,ease:"power3.out"},4.08);
+tl.to("#folderRig",{scaleX:1.06,scaleY:.92,y:38,duration:.12,ease:"power3.out"},4.08);
+tl.to("#folderLip",{scaleY:.98,y:12,duration:.22,ease:"power2.out"},4.20);
+tl.to("#folderRig",{scaleX:.99,scaleY:1.035,y:-20,duration:.20,ease:"power2.out"},4.20);
+tl.to("#folderLip",{scaleY:1,y:0,duration:.24,ease:"power2.inOut"},4.42);
+tl.to("#folderRig",{scaleX:1,scaleY:1,y:0,duration:.24,ease:"power2.inOut"},4.40);
+tl.set("#fileRig",{opacity:0},4.12);
+
+// PAYOFF — celebratory Y2K burst, then a readable hero hold.
+burstEls.forEach((el,i)=>{
+  const x=Number(el.dataset.x),y=Number(el.dataset.y),s=Number(el.dataset.s),r=Number(el.dataset.r);
+  const t=4.12+i*.045;
+  tl.fromTo(el,{x:0,y:0,scale:.12,opacity:0,rotation:0},{x:x*.60,y:y*.60,scale:s,opacity:1,rotation:r,duration:.34,ease:"power4.out"},t);
+  tl.to(el,{x,y:y+180,scale:s*.72,opacity:0,rotation:r+120,duration:.90,ease:"power2.in"},t+.30);
+});
+tl.to("#folderRig",{rotation:-4.5,y:-54,scale:1.045,duration:.22,ease:"power3.out"},4.78);
+tl.to("#folderRig",{rotation:4.0,y:-28,scale:1.025,duration:.24,ease:"power2.inOut"},5.00);
+tl.to("#folderRig",{rotation:-1.5,y:-12,scale:1.012,duration:.24,ease:"power2.inOut"},5.24);
+tl.to("#folderRig",{rotation:0,y:0,scale:1,duration:.30,ease:"power2.out"},5.48);
+
+// BREATH — subtle authored hover, not perpetual drift.
+tl.to("#folderRig",{y:-34,rotation:-1.2,duration:.45,ease:"sine.inOut"},6.10);
+tl.to("#folderRig",{y:0,rotation:0,duration:.45,ease:"sine.inOut"},6.55);
+
+// RESET PREP — one compact chrome pulse; hidden file returns to exact start state.
+tl.fromTo("#chromeFlash",{opacity:0,scale:.35,rotation:0},{opacity:.62,scale:.62,rotation:10,duration:.20,ease:"power4.out"},7.18);
+tl.to("#chromeFlash",{opacity:0,scale:.98,rotation:26,duration:.34,ease:"power3.in"},7.38);
+tl.to("#folderRig",{scale:.965,y:28,duration:.18,ease:"power2.in"},7.82);
+tl.to("#folderRig",{scale:1.035,y:-24,duration:.22,ease:"back.out(1.6)"},8.00);
+tl.to("#folderRig",{scale:1,y:0,rotation:0,duration:.28,ease:"power2.out"},8.22);
+tl.set("#fileRig",{x:-2350,y:-690,rotation:-18,scale:.58,opacity:0},8.40);
+
+// CLEAN LOOP LANDING — folder stays in its base pose; no visible discontinuity at 10→0.
+tl.to("#folderRig",{x:0,y:0,rotation:0,scale:1,duration:.35,ease:"power2.out"},8.45);
+tl.set("#fileRig",{opacity:0},8.45);
+tl.to({},{duration:.01},9.99);
+
+const q=new URLSearchParams(location.search);
+const dbg=$("#debug"),scrub=$("#scrub"),clock=$("#clock"),play=$("#play");
+if(q.has("debug"))dbg.classList.add("on");
+let dragging=false;
+gsap.ticker.add(()=>{const t=tl.time();clock.textContent=t.toFixed(2)+"s";if(!dragging)scrub.value=String((t/DURATION)*1000)});
+scrub.onpointerdown=()=>{dragging=true;tl.pause()};addEventListener("pointerup",()=>dragging=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+play.onclick=()=>tl.paused()?tl.play():tl.pause();
+addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tl.paused()?tl.play():tl.pause()}if(e.key==="r"||e.key==="R")tl.play(0)});
+tl.eventCallback("onComplete",()=>{if(!q.has("clean"))tl.play(0)});
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){const safe=Math.max(0,Math.min(DURATION,t));tl.pause();tl.time(safe,false)},play(){tl.play()}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has("clean"))tl.play(0)});
+</script>
+</body>
+</html>
