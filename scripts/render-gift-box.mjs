@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 
 // Deterministic 10-second 4K chroma-key render preset for the Y2K file→folder loop.
 const defaults = {
-  INDEX: "file-folder-y2k-v3.html",
+  INDEX: "file-folder-y2k-v4.html",
   OUT_VIDEO: "output/file-folder-y2k-greenscreen-4k.mp4",
   QUALITY: "final",
   FPS: "30",
