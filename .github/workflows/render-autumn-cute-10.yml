@@ -33,13 +33,13 @@ jobs:
           done
           cat /tmp/autumn-http.log
           exit 1
-      - name: Browser diagnostic
+      - name: Browser diagnostic with SwiftShader
         env:
           SCENE_URL: http://127.0.0.1:8000/delivery/autumn-cute-10/01-maple-frame.html?clean=1
         run: |
           node --input-type=module <<'NODE'
           import puppeteer from 'puppeteer';
-          const browser=await puppeteer.launch({headless:'new',args:['--allow-file-access-from-files','--autoplay-policy=no-user-gesture-required','--enable-gpu','--ignore-gpu-blocklist']});
+          const browser=await puppeteer.launch({headless:'new',args:['--allow-file-access-from-files','--autoplay-policy=no-user-gesture-required','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
           const page=await browser.newPage();
           page.on('console',m=>console.log('BROWSER_CONSOLE',m.type(),m.text()));
           page.on('pageerror',e=>console.error('PAGE_ERROR',e.stack||e.message));
@@ -47,9 +47,9 @@ jobs:
           await page.setViewport({width:1920,height:1080,deviceScaleFactor:1});
           const resp=await page.goto(process.env.SCENE_URL,{waitUntil:'networkidle0',timeout:30000});
           console.log('HTTP_STATUS',resp?.status());
-          await new Promise(r=>setTimeout(r,3000));
+          await new Promise(r=>setTimeout(r,2000));
           const state=await page.evaluate(()=>({opener:window.OPENER||null,canvas:!!document.querySelector('canvas'),webgl:(()=>{try{return !!document.querySelector('canvas')?.getContext('webgl2')||!!document.querySelector('canvas')?.getContext('webgl')}catch{return false}})()}));
           console.log('STATE',JSON.stringify(state));
           await browser.close();
-          if(!state.opener?.ready) process.exit(2);
+          if(!state.opener?.ready||!state.webgl) process.exit(2);
           NODE
