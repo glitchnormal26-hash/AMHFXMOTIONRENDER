@@ -1,0 +1,105 @@
+name: Render Chat to Motion Camera V2 4K
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - chatgpt/chat-to-motion-camera-v2
+    paths:
+      - 'delivery/chat-to-motion-camera-v2/**'
+      - '.github/workflows/render-chat-to-motion-camera-v2.yml'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Verify Motion Designer v3.9.2
+        shell: bash
+        run: |
+          npm run check
+          grep -q 'Motion Designer v3.9.2' SKILL.md
+          grep -q 'anti-static camera' SKILL.md
+      - name: Camera, speed-ramp, and typography QA
+        shell: bash
+        run: |
+          set -o pipefail
+          node delivery/chat-to-motion-camera-v2/qa-camera.mjs | tee output-camera-qa.json
+          grep -q 'CAMERA_GATE_PASS' output-camera-qa.json
+          grep -q '"speedRamp": "ACTIVE"' output-camera-qa.json
+          grep -q '"cameraFollow": "USED"' output-camera-qa.json
+          grep -q '"typography": "CLEAR"' output-camera-qa.json
+      - name: Build hi-tech SFX mix
+        run: |
+          mkdir -p audio output qa-chat-camera-v2
+          ffmpeg -y \
+            -f lavfi -i "anoisesrc=color=pink:duration=18:sample_rate=48000:amplitude=0.005" \
+            -f lavfi -i "sine=frequency=1150:duration=0.07:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=510:duration=0.12:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=1380:duration=0.09:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=760:duration=0.16:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=1680:duration=0.07:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=620:duration=0.18:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=980:duration=0.13:sample_rate=48000" \
+            -filter_complex "[1:a]adelay=2150|2150,volume=.18[a1];[2:a]adelay=3100|3100,volume=.24[a2];[3:a]adelay=4680|4680,volume=.34[a3];[4:a]adelay=5940|5940,volume=.28[a4];[5:a]adelay=8750|8750,volume=.24[a5];[6:a]adelay=12550|12550,volume=.30[a6];[7:a]adelay=14150|14150,volume=.26[a7];[0:a][a1][a2][a3][a4][a5][a6][a7]amix=inputs=8:duration=longest:normalize=0,highpass=f=90,alimiter=limit=.82[out]" \
+            -map "[out]" -c:a pcm_s16le audio/chat-to-motion-camera-v2-sfx.wav
+      - name: Render verified 4K MP4
+        env:
+          INDEX: delivery/chat-to-motion-camera-v2/index.html
+          QUALITY: final
+          FPS: '30'
+          WIDTH: '3840'
+          HEIGHT: '2160'
+          CRF: '16'
+          PRESET: medium
+          REQUIRE_AUDIO: '1'
+          SFX: audio/chat-to-motion-camera-v2-sfx.wav
+          SFX_GAIN: '1.0'
+          OUT_VIDEO: output/chat-to-motion-camera-v2-4k.mp4
+        run: npm run export:mp4
+      - name: Verify final contract
+        run: |
+          ffprobe -v error -show_entries stream=codec_name,codec_type,width,height,r_frame_rate -show_entries format=duration -of json output/chat-to-motion-camera-v2-4k.mp4 > output/chat-to-motion-camera-v2-4k.ffprobe.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('output/chat-to-motion-camera-v2-4k.ffprobe.json','utf8'));
+          const v=p.streams.find(s=>s.codec_type==='video');
+          const a=p.streams.find(s=>s.codec_type==='audio');
+          const d=Number(p.format.duration);
+          if(!v||v.codec_name!=='h264'||v.width!==3840||v.height!==2160) throw new Error('4K H.264 contract failed');
+          if(!a||a.codec_name!=='aac') throw new Error('AAC audio contract failed');
+          if(Math.abs(d-18)>.3) throw new Error('Duration contract failed: '+d);
+          fs.writeFileSync('output/chat-to-motion-camera-v2-4k.status.txt','FINAL_VISUAL_VERIFIED\nCAMERA_GATE=PASS\nCAMERA_ACTIVITY=ACTIVE_DEFAULT\nSPEED_RAMP=ACTIVE\nCAMERA_FOLLOW=USED\nTYPOGRAPHY=CLEAR\n');
+          console.log('FINAL_VISUAL_VERIFIED', {duration:d,video:v.codec_name,audio:a.codec_name,resolution:`${v.width}x${v.height}`,camera:'PASS',speedRamp:'ACTIVE'});
+          NODE
+      - name: Extract visual QA frames
+        run: |
+          for t in 1.5 2.7 3.9 4.75 5.55 6.9 8.6 9.4 10.8 12.1 13.1 14.8 17.4; do
+            ffmpeg -y -ss "$t" -i output/chat-to-motion-camera-v2-4k.mp4 -frames:v 1 "qa-chat-camera-v2/frame-${t}.png" >/dev/null 2>&1
+          done
+      - name: Record checksum
+        run: sha256sum output/chat-to-motion-camera-v2-4k.mp4 > output/chat-to-motion-camera-v2-4k.sha256.txt
+      - name: Upload final delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat-to-motion-camera-v2-4k-final
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            output/chat-to-motion-camera-v2-4k.mp4
+            output/chat-to-motion-camera-v2-4k.ffprobe.json
+            output/chat-to-motion-camera-v2-4k.status.txt
+            output/chat-to-motion-camera-v2-4k.sha256.txt
+            output-camera-qa.json
+            qa-chat-camera-v2/*.png
