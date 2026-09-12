@@ -1,24 +1,17 @@
 # Repository motion workflow
 
-For motion design, animation, narrated explainers, and render/export tasks, resolve
-runtime, reference, asset, and script paths relative to this repository root.
+AMHFXMOTIONRENDER uses one active integration: **Motion Designer v3.9**.
 
-The intended motion-skill generation is **Motion Designer v3.9**. Its imported core
-source is preserved under `skill-source-v3.9.1/` and must not be deleted during
-routine cleanup.
+For motion design, animation, explainers, runtime work, or render/export tasks:
 
-The repository still has a **legacy v3.8 compatibility/build path**: `SKILL.md`,
-`skill-source/`, `skill-source/manifest.json`, and `npm run build:skill` currently
-reconstruct and integrity-check the older v3.8 rulebook. Treat that as migration
-infrastructure, not as evidence that the intended skill version is v3.8.
+1. read `SKILL.md`;
+2. load `skill-source/part-01.md` then `skill-source/part-02.md` when the full rulebook is needed;
+3. resolve specialized upstream module names through the repository module map in `SKILL.md`;
+4. use the existing `references/`, `runtime/`, `assets/`, and `scripts/` paths relative to the repository root;
+5. run `npm run check` after source, runtime, or render-script changes.
 
-Do not promote the v3.9 source into the active build until its required reference
-modules, source inventory, integrity data, routing, and QA path are complete. Do not
-mix v3.8 and v3.9 source fragments into one reconstructed rulebook.
+There is no active v3.8 compatibility path on `main`. Do not reintroduce parallel version trees, duplicate routers, or rebuild-only copies of the same skill source.
 
-Read `MANAGE.md` before repository cleanup, version migration, or render-file
-maintenance.
+For repository cleanup and file-ownership rules, read `MANAGE.md`.
 
-After changing production source, runtime, or rendering scripts, run `npm run check`.
-Do not claim a video is visually or aurally verified based on syntax/integrity checks
-alone.
+Do not claim rendered media is visually or aurally verified from syntax checks alone.

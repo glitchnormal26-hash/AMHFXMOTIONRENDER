@@ -1,70 +1,53 @@
 ---
-name: motion-designer
-description: Plan, implement, review, and render authored browser motion, kinetic typography, and narrated explainers with Motion Designer v3.8. Use for motion design, animation, deterministic browser capture, and MP4 export tasks.
+name: amhfxmotionrender
+description: Motion Designer v3.9 unified browser-motion skill for authored animation, kinetic typography, explainers, deterministic capture, and MP4 export.
 ---
 
-# Motion Designer v3.8 — Full Runtime Router
+# Motion Designer v3.9 — Unified Integration
 
-This repository stores the complete v3.8 skill source losslessly in `skill-source/part-01.md` through `skill-source/part-21.md`.
+This repository has one active motion-skill integration: **Motion Designer v3.9**.
 
-## Mandatory loading rule
+## Canonical source
 
-When this repository is used as an agent skill, treat the numbered files in `skill-source/` as one continuous `SKILL.md`, in numeric order. Do not skip a part when the task depends on the full motion-direction policy.
-
-For lightweight repository browsing, this router establishes the highest-priority v3.8 defaults:
-
-- one evolving visual world; avoid slide/presentation motion;
-- use the simplest capable runtime: LITE_RUNTIME first, FULL_RUNTIME only when it materially improves communication;
-- GSAP is the default deterministic DOM/SVG timeline engine;
-- Three.js/R3F only when true spatial geometry/camera/light adds value;
-- camera directions must become real camera/world transforms, or be explicitly `LOCKED_INTENTIONAL`;
-- explainers default to **VOICEOVER + HI-TECH SFX + CONTROLLED TECH AMBIENCE + SILENCE — NO BGM**;
-- explainer VO is required unless the user explicitly requests no narration;
-- final VO preference: human/native recording → ElevenLabs → Google Gemini-TTS/Chirp 3 HD → Azure Neural HD → `VO_PROVIDER_PENDING`;
-- browser/system TTS is preview-only, never silent fallback for final narration;
-- user-supplied VO is timing authority; otherwise measure actual generated VO before final timing lock;
-- direct requested video deliverable should be MP4 when render/export capability exists;
-- use `scripts/export-mp4.mjs` for deterministic render → H.264 → audio mix/mux → ffprobe verification;
-- an MP4 missing required VO/audio is not final;
-- use `FINAL_VERIFIED` only after output QA;
-- starters are architecture references, never visual templates;
-- all placeholder palette, type, copy, geometry and motion signatures must be replaced from the actual brief;
-- no legacy source-project branding should appear in outputs.
-
-## Full source
-
-Read in order:
+Load these files in order as one continuous rulebook:
 
 1. `skill-source/part-01.md`
 2. `skill-source/part-02.md`
-3. `skill-source/part-03.md`
-4. `skill-source/part-04.md`
-5. `skill-source/part-05.md`
-6. `skill-source/part-06.md`
-7. `skill-source/part-07.md`
-8. `skill-source/part-08.md`
-9. `skill-source/part-09.md`
-10. `skill-source/part-10.md`
-11. `skill-source/part-11.md`
-12. `skill-source/part-12.md`
-13. `skill-source/part-13.md`
-14. `skill-source/part-14.md`
-15. `skill-source/part-15.md`
-16. `skill-source/part-16.md`
-17. `skill-source/part-17.md`
-18. `skill-source/part-18.md`
-19. `skill-source/part-19.md`
-20. `skill-source/part-20.md`
-21. `skill-source/part-21.md`
 
-To reconstruct the original single-file skill locally:
+Do not load or reconstruct any v3.8 rulebook. Git history preserves retired versions if they are ever needed for archaeology.
+
+## Repository module map
+
+The imported v3.9 source names upstream modular references. This compact repository intentionally maps those concepts onto the existing production modules instead of duplicating files:
+
+- camera / spatial / 3D → `references/full-runtime.md`, `references/architecture.md`, `runtime/camera-rig.js`, `runtime/three-scene.js`
+- kinetic typography / anti-PPT → `references/techniques.md`, `references/anti-ppt.md`
+- audio / VO → `references/explainer.md`, `runtime/audio-runtime.js`
+- visual transitions → `references/techniques.md`, `references/architecture.md`
+- SaaS / composition / brand → `references/architecture.md`, `references/anti-ppt.md`
+- browser runtime → `references/full-runtime.md`, `runtime/`, `scripts/`
+- explainer → `references/explainer.md`, `runtime/explainer-helpers.js`
+- QA / export → `scripts/snap.mjs`, `scripts/export-frames.mjs`, `scripts/export-mp4.mjs`
+
+When an upstream reference filename appears in the v3.9 source but is not present locally, use this mapping rather than creating a duplicate compatibility file.
+
+## Production contract
+
+- one evolving visual world; avoid slide/presentation choreography;
+- use the simplest capable runtime: DOM/SVG/GSAP first, true 3D only when it adds meaning;
+- camera intent must produce visible framing/world transforms or be explicitly locked for a reason;
+- explainers default to VO + purposeful SFX + controlled ambience + silence, with no BGM unless requested;
+- user-supplied VO is timing authority; otherwise measure generated VO before timing lock;
+- use `scripts/export-mp4.mjs` for deterministic H.264 export and ffprobe verification;
+- `FINAL_VERIFIED` requires actual visual/audio QA, not syntax checks alone;
+- starters are architecture references, never visual templates.
+
+## Verification
+
+Run:
 
 ```bash
-node scripts/build-skill.mjs
+npm run check
 ```
 
-Output:
-
-`dist/SKILL.md`
-
-The integrity target is recorded in `skill-source/manifest.json`.
+The check validates the canonical v3.9 source files plus all active JavaScript runtime/render entry points.
