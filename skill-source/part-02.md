@@ -1,346 +1,149 @@
-- directional replacement
-- tracking expansion
-- illustration assembly
-- perspective snap
-- shape transformation
+Context-specific modules may narrow a generic core default. For example, the core
+prefers 2D/2.5D unless 3D adds meaning; a cinematic brief may legitimately escalate
+to 3D after `camera-spatial-3d.md` is loaded. Likewise, no-BGM remains the default,
+but explicit music requests activate the music-aware branch in `audio-vo.md`.
 
-## Exit grammar
+## Production-state vocabulary
 
-Exits should usually be simpler and faster than entrances unless the exit itself is the narrative event.
+Use these states when useful and only when truthful:
 
-## Transition vocabulary
+`REFERENCE_GATE = PASS | FAIL`
 
-Limit the project to a small set of transition ideas so the sequence feels authored rather than assembled.
+`CAMERA_MODE = MOVING | TRACKING | REFRAME | LOCKED_INTENTIONAL`
 
----
+`CAMERA_ACTIVITY = ACTIVE_DEFAULT | LOCKED_FOR_REASON`
 
-## 3.15 Default High-Retention Social Direction
+`WORLD_CONTINUITY = CONTINUOUS | MOTIVATED_BREAK | RESET_FAILURE`
 
-For social / short-form / high-retention briefs, default to:
+`ANTI_PPT_GATE = PASS | FAIL`
 
-`SOCIAL_RETENTION = HIGH`  
-`KINETIC_TYPE_MODE = FAST_EDGY`  
-`TYPE_OWNS_FRAME = TRUE`
+`RUNTIME = LITE_RUNTIME | FULL_RUNTIME`
 
-Execution rules:
+`AUDIO_MODE = NO_BGM | MIXKIT_BGM_ENABLED | USER_MUSIC`
 
-- open with motion on frame one
-- show **1–3 dominant words** at a time by default
-- let **VO carry explanation; on-screen type carries impact**
-- avoid subtitles, paragraphs, and descriptive copy during kinetic passages
-- keep most frames under **6 visible words total** unless a deliberate final landing needs more
-- reset crop, scale, position, depth, or wording every meaningful beat
-- use one unmistakable hero word per passage
-- use 2–7 frame attacks for high-energy type events at 30 fps
-- use short 4–12 frame readable locks between bursts
-- let type cross edges, collide, replace, compress, expand, fracture, or become transition material
-- use hard cuts or directional continuity more often than fades
-- remove support copy entirely when the hero phrase already communicates the idea
+`STATUS = DRAFT | TEMP_VO | VO_PROVIDER_PENDING | SFX_PENDING | EXPORT_PENDING | FINAL_VERIFIED`
 
-Do not default to:
-
-- headline + subtitle + paragraph
-- centered title card
-- explanatory captions covering the frame
-- repeated fade + slide
-- equal emphasis on every word
-- slow cinematic drift over static text
-
-Preferred rhythm:
-
-**HOOK → HIT → INTERRUPT → HERO WORD → HOLD → TRANSFORM → NEXT HOOK**
-
-# 3.25 Specificity Gate — Do Not Output Generic Concepts
-
-Do not consider a concept complete if it can be described only with adjectives such as:
-
-- premium
-- sleek
-- modern
-- futuristic
-- dynamic
-- cinematic
-- engaging
-- energetic
-- clean
-
-These words may describe tone, but they are not an art direction.
-
-Every substantial concept should define concrete behavior.
-
-At minimum, specify:
-
-- **hero subject** — the exact visual object or information that dominates
-- **hero gesture** — what physically or graphically changes
-- **camera / framing event** — what the viewer learns because framing changes, or why the camera stays still
-- **transition cause** — what existing object, motion, light, crop, sound, or semantic idea causes the next state
-- **support reaction** — what responds after the hero action
-- **material behavior** — rigid, glassy, soft, paper-like, luminous, mechanical, etc. when relevant
-- **readable landing** — what the final pose communicates
-- **SFX behavior** — not merely a sound-category label
-
-Prefer instructions like:
-
-> The assistant card rises as the camera pulls back, revealing three agent nodes already attached behind it; the nearest node crosses foreground and becomes the circular mask for the next workflow state. A dry relay click anticipates the node activation by 2 frames, followed by one short filtered air pass and a compact lock on landing.
-
-Avoid instructions like:
-
-> Use a sleek futuristic transition with dynamic cards and cinematic whooshes.
-
-## Cause → Action → Result Rule
-
-For each major scene, be able to state:
-
-**CAUSE → ACTION → RESULT**
-
-Example:
-
-- cause — user submits a prompt
-- action — prompt bar compresses into a node while the camera reveals connected agents
-- result — the viewer understands that one request activates a larger system
-
-If the action does not change meaning, hierarchy, context, or anticipation, it may be decorative.
-
-## Three-Concrete-Details Rule
-
-When proposing a hero moment, include at least three concrete design details from different categories, such as:
-
-- composition / crop
-- object behavior
-- timing / velocity
-- depth / camera
-- material / light
-- typography behavior
-- transition logic
-- SFX structure
-
-Do not satisfy this by listing three adjectives.
+`FINAL_VERIFIED` is reserved for an actual deliverable that passed the relevant
+visual, timing, stream, and audio checks—not for code that merely runs.
 
 ---
 
-# 3.5 Cinematic Intensity Levels
+# 0. Core Objective: Hold Attention
 
-Do not interpret the word **cinematic** as a command to maximize camera movement, depth of field, bloom, or 3D complexity.
+For short-form, social, explainer, branded content, product video, title work, and narrative motion, optimize for:
 
-Before implementation, choose a cinematic intensity level that matches the communication goal.
+- clear visual hierarchy
+- viewer curiosity
+- readable information
+- intentional timing
+- strong composition
+- visual change with purpose
+- coherent motion language
+- emotional fit
+- VO alignment
+- sound punctuation
+- brand consistency
+- technical feasibility
+- restraint
+- polished final delivery
 
-## Level 1 — Clean Product Motion
+The viewer should repeatedly feel one of these:
 
-Use when clarity, UI communication, and product comprehension are primary.
+- What is that?
+- What happens next?
+- Where is this going?
+- Why did that move?
+- What will this become?
+- What is about to be revealed?
+- How will this resolve?
 
-Typical behavior:
+If the sequence becomes visually resolved for too long, introduce a new visual question.
 
-- mostly 2D / 2.5D
-- restrained perspective
-- one or two depth layers
-- minimal camera-equivalent movement
-- typography and UI remain dominant
-- clean lighting or flat graphic shading
-- limited post-processing
-- transitions driven by crop, mask, scale, or object continuity
+Do not confuse retention with constant chaos.
 
-Use this as the default for dense SaaS explanation when real 3D is not necessary.
-
-## Level 2 — Cinematic SaaS
-
-Use when the product or automation concept benefits from spatial storytelling.
-
-Typical behavior:
-
-- one primary 3D hero or spatial system
-- motivated camera push, pull, truck, or reveal
-- foreground / midground / background staging
-- selective lighting choreography
-- controlled depth cues
-- DOM / UI and 3D share attention deliberately
-- stronger shot-to-shot continuity
-- selective DOF, bloom, fog, or motion blur only when they support hierarchy
-
-This is the preferred level for premium SaaS explainers that need more cinematic character without becoming a full 3D film.
-
-## Level 3 — Hero Film
-
-Use only when the brief benefits from strong dimensional storytelling.
-
-Typical behavior:
-
-- deliberate 3D blocking
-- explicit lens and camera language
-- lighting as narrative information
-- real spatial transitions
-- foreground occlusion and deep parallax
-- stronger material behavior
-- more demanding render and performance requirements
-- shot planning closer to film / title design than UI presentation
-
-Level 3 should not be chosen merely because the tool supports it.
-
-## Intensity Escalation Rule
-
-Start at the lowest level that can clearly communicate the idea.
-
-Escalate only when added dimensionality produces a meaningful benefit such as:
-
-- clearer spatial relationships
-- stronger reveal
-- better product metaphor
-- more memorable transformation
-- useful parallax or occlusion
-- lighting-driven state change
-- a hero moment that cannot be achieved as clearly in 2D / 2.5D
-
-If 3D complexity increases without increasing clarity, curiosity, or emotional impact, reduce the level.
+Retention comes from **controlled change, anticipation, reward, contrast, and rhythm**.
 
 ---
 
-# 4. Retention Architecture
+# 1. Operating Principles
 
-Build motion sequences using this loop:
+1. **Concept before keyframes.**
+   Establish the communication goal, emotional intent, and viewer expectation before choosing effects.
 
-**HOOK → QUESTION → REVEAL → RESET**
+2. **Retention before decoration.**
+   Every major motion event should either clarify, surprise, reveal, redirect, emphasize, or create anticipation.
 
-The loop may take 0.5 seconds or several seconds depending on content density.
+3. **Hierarchy before complexity.**
+   The viewer should always know where to look.
 
-## Hook
+4. **Curiosity needs incomplete information.**
+   Do not reveal every visual answer immediately.
 
-Create an immediate reason to look.
+5. **Timing creates personality.**
+   Duration, spacing, velocity, pauses, and rhythm matter more than the number of effects.
 
-Possible hooks:
+6. **Easing communicates weight.**
+   Curves should imply mass, energy, material, urgency, and intent.
 
-- unexpected crop
-- oversized typography
-- a visual already in motion on frame one
-- partial illustration
-- an object entering before context is visible
-- an extreme close-up
-- abrupt scale relationship
-- a visual contradiction
-- unusual perspective
-- foreground obstruction
-- sound arriving slightly before the visual
+7. **Motion must preserve composition.**
+   A strong still frame is usually the foundation of strong motion.
 
-Avoid generic “fade in everything” openings.
+8. **Change the frame, not only the object.**
+   Framing, crop, perspective, occlusion, and scale relationships can create more energy than isolated object transforms.
 
-## Question
+9. **Secondary motion supports primary attention.**
+   Do not let supporting animation compete with the hero action.
 
-Leave something unresolved.
+10. **VO is a choreography map.**
+    Animate to spoken meaning, emphasis, phrasing, pauses, and emotional cadence.
 
-Examples:
+11. **SFX should punctuate attention.**
+    Sound should strengthen visual events, transitions, texture, anticipation, and payoff.
 
-- show only part of an illustration
-- hide information behind another layer
-- crop the important object
-- begin the sentence before the full composition is visible
-- move toward something before showing what it is
-- introduce a visual relationship that has not yet resolved
+12. **Restraint is a feature.**
+    Do not add animation or sound merely because the tool allows it.
 
-The viewer should mentally predict the next state.
+13. **Build for the final medium.**
+    Respect frame rate, aspect ratio, safe area, playback context, platform, codec, device, and audio environment.
 
-## Reveal
+14. **Verify visually and aurally whenever possible.**
+    Plausible implementation is not automatically good design.
 
-Reward the prediction.
+15. **Never pretend an unrendered result was inspected.**
+    If rendering or preview tools are unavailable, state that the result is technically reasoned but visually or aurally unverified.
 
-Reveal through:
-
-- pullback
-- slide
-- mask opening
-- perspective correction
-- foreground wipe
-- object separation
-- typography replacement
-- illustration transformation
-- scale reversal
-- negative-space reveal
-- match cut
-
-The reveal should feel earned, not random.
-
-## Reset
-
-After the reveal, create another expectation.
-
-Do not let the composition remain fully resolved for too long unless a hold is emotionally useful.
-
-A strong sequence repeatedly alternates between:
-
-**uncertainty → clarity → new uncertainty**
+16. **Reference before vector and motion production.**
+    Do not begin authored vector drawing, illustration styling, styleframes, keyframes, or animation implementation until a reference pass has established concrete visual and motion principles, unless the user explicitly forbids external research or supplies an already-approved reference system.
 
 ---
 
-# 5. Retention Rhythm
+# 2. Understand the Brief
 
-Do not interpret retention as constant fast movement.
+Before designing motion, identify as many of these as the request provides:
 
-Use contrast:
+- purpose
+- audience
+- platform
+- duration
+- aspect ratio
+- frame rate
+- brand personality
+- existing visual identity
+- primary message
+- retention goal
+- CTA
+- voiceover
+- transcript
+- SFX references / sonic material references
+- BGM policy — default for this skill is **no background music**
+- sound references
+- illustration style
+- reference style
+- cinematic intensity / whether true 3D is actually needed
+- camera or lens requirements
+- delivery format
+- implementation tool
+- final render / capture path
+- target playback hardware or performance constraints
 
-- fast vs slow
-- dense vs sparse
-- large vs small
-- smooth vs abrupt
-- movement vs stillness
-- full information vs partial information
-- visual action vs audio action
-
-A useful rhythm pattern is:
-
-**motion → impact → hold → interruption → reveal**
-
-Use stillness as tension.
-
-A 6–15 frame hold can create more impact than another transition.
-
-Avoid predictable cadence where every shot changes at the same interval.
-
-When a section feels boring, first inspect:
-
-1. Is the frame already fully understood?
-2. Is there anything unresolved?
-3. Is hierarchy obvious?
-4. Did the visual change meaningfully?
-5. Is the timing too even?
-6. Did the sound create expectation?
-
-## 5.1 Burst → Breath → Burst Architecture
-
-High-energy motion is stronger when it has somewhere to land.
-
-For physical-digital or product films, a useful macro rhythm is:
-
-**BURST → ORIENT → PAYOFF → BREATH → NEW TRIGGER → BURST**
-
-A **burst** may contain:
-
-- rapid camera travel
-- several related objects separating or converging
-- foreground passes
-- a short scale escalation
-- a controlled collision / scatter
-- a fast material transformation
-- a speed-ramped handoff
-
-A **breath** may contain:
-
-- one hero object in a clean frame
-- a readable product state
-- a stable camera pose
-- a simple typographic statement
-- reduced depth motion
-- near-silence or low-contrast texture
-
-Do not confuse a breath with dead time. The viewer should understand what the previous burst produced and anticipate the next trigger.
-
-As a starting point for short-form work, let dense motion clusters last only as long as the spatial idea remains trackable. Then reduce simultaneous motion for several frames or a short phrase so the eye can re-orient.
-
-Avoid:
-
-**burst → burst → burst → burst**
-
-when every section has equal density. Constant intensity flattens perceived impact and makes product information feel incidental.
-
-Prefer escalation by chapter: later bursts may travel farther, transform more meaningfully, or involve a larger scale shift, while the intervening breath states become progressively clearer.
-
----
-
-# 6. Motion Hierarchy — Controlled Disruption
-
+If information is missing, do not block unnecessarily.

@@ -1,7 +1,7 @@
 {
   "name": "amhfxmotionrender",
   "private": true,
-  "version": "3.8.0",
+  "version": "3.9.1",
   "type": "module",
   "scripts": {
     "serve": "python scripts/serve.py",
@@ -11,14 +11,14 @@
     "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
     "render:motra": "node scripts/render-motra.mjs",
     "render:gift-box": "node scripts/render-gift-box.mjs",
-    "check": "node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-gift-box.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js && node --check scripts/build-skill.mjs && node scripts/build-skill.mjs",
-    "build:skill": "node scripts/build-skill.mjs"
+    "check:skill": "node scripts/check-skill.mjs",
+    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-gift-box.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
   },
   "dependencies": {
     "gsap": "^3.13.0",
     "puppeteer": "^24.0.0"
   },
-  "description": "Motion Designer v3.8 full-runtime browser motion renderer with deterministic MP4 export.",
+  "description": "Motion Designer v3.9 browser motion renderer with one canonical skill integration and deterministic MP4 export.",
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"

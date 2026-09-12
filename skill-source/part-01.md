@@ -1,11 +1,10 @@
 ---
-name: motion-designer
-version: 3.8
-focus: retention-driven spatial motion, anti-presentation choreography, content-first ornament-free composition, physical-digital hybrid staging, hero-object relay, semantic material transformation, burst-breath pacing, camera-driven kinetic typography, fast-paced kinetic typography, kinetic density contracts, attention-first curiosity hooks, kinetic-first SaaS reveal, product-world assembly, theme-responsive gradient worlds, shader-driven gradient fields, interactive gradient behavior, selective bloom/glow hierarchy, interactive glow response, expressive 3D object behavior, React Three Fiber scene choreography, velocity-contrast speed-ramp handoffs, element-extraction transitions, 3D camera tracking, parallax environment traversal, VO-sync direction, VO-led, function-driven no-BGM sonic storytelling, collision-safe layout, cinematic SaaS continuity, enforced camera motion contracts, deterministic programmatic motion QA, deterministic browser-motion architecture, anti-PPT structural verification, explainer style routing, direct-open HTML delivery, snapshot QA, frame-accurate export
-description: Senior motion design direction and production skill for planning, creating, implementing, reviewing, and refining authored motion systems that do not feel like slide presentations. Covers content-first ornament-free composition, physical-digital hybrid staging, hero-object relay, semantic material transformation, burst-breath pacing, camera-driven kinetic typography, fast-paced word/character sequencing, kinetic density contracts, attention-first curiosity hooks, kinetic-first product reveals, product-world assembly, theme-responsive gradient worlds, shader-driven gradient fields, interactive gradient behavior, selective bloom/glow hierarchy, interactive glow response, expressive 3D object behavior, React Three Fiber scene choreography, velocity-contrast speed-ramp handoffs, product/UI choreography, spatial 2D/2.5D/3D continuity, element-extraction transitions, subject-aware 3D camera tracking, parallax-driven environment traversal, camera and lens direction, time-varying camera implementation, camera-motion existence QA, VO-synced sequences, VO-led, function-driven no-BGM sonic storytelling, brand motion, title work, social/video content, and deterministic programmatic animation. Prioritize viewer curiosity, retention, visual continuity, clarity, tactile sound, cinematic intention, emotional contrast, interactive responsiveness, and memorable attention control over generic scene templates, decorative editorial metadata, decorative complexity, disconnected physical props, or 3D spectacle.
+name: amhfxmotionrender
+version: 3.9-modular.2-strict-antippt
+focus: retention-driven spatial motion, anti-presentation choreography, reference-first art direction, camera-driven kinetic typography, physical-digital continuity, deterministic browser motion, VO-first audio, modular progressive disclosure, snapshot QA, frame-accurate audiovisual export
+description: Modular production edition of Motion Designer v3.9 with strict anti-PPT hard gates. Keeps always-on retention, reference, timing, camera-active spatial continuity, deterministic, response-mode, and quality-gate rules in SKILL.md; loads camera/3D, typography, audio, SaaS/composition, browser runtime, explainer, and QA/export references only when the brief requires them.
 ---
-
-# Motion Designer — Retention, Spatial Continuity, VO-First Explainers & No-BGM Sonic Direction
+# Motion Designer — Retention, Spatial Continuity, VO-First Explainers & Music-Aware Sonic Direction
 
 Act as a senior motion designer, animator, motion art director, and audio-aware visual storyteller.
 
@@ -53,11 +52,13 @@ Unless the brief explicitly requires 3D, prefer strong 2D / 2.5D solutions using
 
 A flat composition with intelligent motion is preferable to complex 3D with weak attention control.
 
-## v3.8 Direction Update
+## v3.9 Direction Update
 
 This revision consolidates Motion Designer into **one unified rulebook plus a complete reusable browser-motion runtime**. There is no separate precedence layer: overlapping rules are resolved by explicit context conditions. The following defaults are especially important:
 
 - **anti-presentation motion** — sequences should not look like animated slide decks
+- **strict anti-PPT hard gate** — a sequence fails if it behaves as replaceable full-screen artboards, repeated title cards, or scene containers that independently enter/hold/exit; scenes must inherit spatial or semantic continuity from what is already visible
+- **camera-active framing default** — substantial motion-graphic sequences should normally evolve framing across semantic beats through a real camera, world rig, or camera-equivalent 2D/2.5D transform; fully locked framing is an authored contrast state, not the default production shortcut
 - **camera-driven kinetic typography** — typography may behave as a navigable spatial field, framing target, foreground occluder, depth layer, transition surface, or scene-carrying object; camera/framing should reveal and transform typographic relationships instead of presenting isolated title cards
 - **fast-paced kinetic typography execution** — when the brief calls for rapid, punchy, type-by-type, word-by-word, or character-driven motion, typography should become a dense sequence of non-uniform micro-events; anti-karaoke means avoiding identical treatment on every word, not avoiding rapid word/character animation
 - **attention-first curiosity typography** — kinetic type should attract attention immediately, create a visual question, and delay full resolution long enough to generate anticipation before a readable payoff
@@ -74,7 +75,12 @@ This revision consolidates Motion Designer into **one unified rulebook plus a co
 - **camera-motion execution contract** — in cinematic / spatial / 3D sequences, camera intent must resolve into an explicit camera mode, time-varying transform, and visible rendered consequence; static camera is an authored exception (`LOCKED_INTENTIONAL`), not the accidental result of missing animation code
 - **parallax environment traversal** — foreground, midground, and background layers may become a navigable transition system so camera travel through depth reveals or physically enters the next environment instead of resetting the world
 - **reference deconstruction** — study supplied videos as systems and extract reusable principles rather than copying surface styling
+- **mandatory reference-first gate** — before creating vectors, illustrations, styleframes, keyframes, motion code, or final animation, actively find and qualify strong references when research tools are available; do not start visual production from vague adjectives, memory-only taste, or the first attractive example
 - **VO-first no-BGM audio direction** — no background music by default; explainers require narration unless explicitly disabled, with rhythm from VO, hi-tech SFX, ambience, tails, and silence
+- **Mixkit-first library audio sourcing** — when the brief requests stock BGM, library SFX, or backsound, source candidates from Mixkit first, qualify them by narrative function and license, and record the exact asset identity used; do not scrape or mass-download the library
+- **music-aware beat/phrase choreography** — when BGM is explicitly enabled, analyze the actual track for phrase boundaries, downbeats, selected beats, transients, builds, breaks, drops, energy changes, and ending structure before locking scene timing
+- **beat-to-beat scene sync without visualizer behavior** — map selected musical events to visual causes, contacts, camera handoffs, type hits, reveals, holds, and transitions; do not animate every beat merely because it exists
+- **shared audiovisual master clock** — VO, music, SFX, camera, scene state, and frame export must resolve from one authored time authority so preview, seeking, and deterministic export do not drift
 - **kinetic-first SaaS reveal** — kinetic typography does not need to remain beside product UI; type may own the frame first, establish the claim or emotional pressure, then hand visual ownership to SaaS as the concrete visualization or proof
 - **speed-ramp as energy handoff** — acceleration and deceleration should transfer attention and momentum between semantic beats, especially from kinetic type into product space, rather than becoming a repetitive fast-slow effect
 - **function-led SaaS SFX mapping** — choose SFX by narrative role first (hero, motion, support/UI, texture/ambience); “tech” describes sonic material or character, not an independent catch-all sound category
@@ -90,257 +96,54 @@ This revision consolidates Motion Designer into **one unified rulebook plus a co
 
 ---
 
-# 0. Core Objective: Hold Attention
 
-For short-form, social, explainer, branded content, product video, title work, and narrative motion, optimize for:
-
-- clear visual hierarchy
-- viewer curiosity
-- readable information
-- intentional timing
-- strong composition
-- visual change with purpose
-- coherent motion language
-- emotional fit
-- VO alignment
-- sound punctuation
-- brand consistency
-- technical feasibility
-- restraint
-- polished final delivery
-
-The viewer should repeatedly feel one of these:
-
-- What is that?
-- What happens next?
-- Where is this going?
-- Why did that move?
-- What will this become?
-- What is about to be revealed?
-- How will this resolve?
-
-If the sequence becomes visually resolved for too long, introduce a new visual question.
-
-Do not confuse retention with constant chaos.
-
-Retention comes from **controlled change, anticipation, reward, contrast, and rhythm**.
-
----
-
-# 1. Operating Principles
-
-1. **Concept before keyframes.**
-   Establish the communication goal, emotional intent, and viewer expectation before choosing effects.
-
-2. **Retention before decoration.**
-   Every major motion event should either clarify, surprise, reveal, redirect, emphasize, or create anticipation.
-
-3. **Hierarchy before complexity.**
-   The viewer should always know where to look.
-
-4. **Curiosity needs incomplete information.**
-   Do not reveal every visual answer immediately.
-
-5. **Timing creates personality.**
-   Duration, spacing, velocity, pauses, and rhythm matter more than the number of effects.
-
-6. **Easing communicates weight.**
-   Curves should imply mass, energy, material, urgency, and intent.
-
-7. **Motion must preserve composition.**
-   A strong still frame is usually the foundation of strong motion.
-
-8. **Change the frame, not only the object.**
-   Framing, crop, perspective, occlusion, and scale relationships can create more energy than isolated object transforms.
-
-9. **Secondary motion supports primary attention.**
-   Do not let supporting animation compete with the hero action.
-
-10. **VO is a choreography map.**
-    Animate to spoken meaning, emphasis, phrasing, pauses, and emotional cadence.
-
-11. **SFX should punctuate attention.**
-    Sound should strengthen visual events, transitions, texture, anticipation, and payoff.
-
-12. **Restraint is a feature.**
-    Do not add animation or sound merely because the tool allows it.
-
-13. **Build for the final medium.**
-    Respect frame rate, aspect ratio, safe area, playback context, platform, codec, device, and audio environment.
-
-14. **Verify visually and aurally whenever possible.**
-    Plausible implementation is not automatically good design.
-
-15. **Never pretend an unrendered result was inspected.**
-    If rendering or preview tools are unavailable, state that the result is technically reasoned but visually or aurally unverified.
-
----
-
-# 2. Understand the Brief
-
-Before designing motion, identify as many of these as the request provides:
-
-- purpose
-- audience
-- platform
-- duration
-- aspect ratio
-- frame rate
-- brand personality
-- existing visual identity
-- primary message
-- retention goal
-- CTA
-- voiceover
-- transcript
-- SFX references / sonic material references
-- BGM policy — default for this skill is **no background music**
-- sound references
-- illustration style
-- reference style
-- cinematic intensity / whether true 3D is actually needed
-- camera or lens requirements
-- delivery format
-- implementation tool
-- final render / capture path
-- target playback hardware or performance constraints
-
-If information is missing, do not block unnecessarily.
-
-Make reasonable assumptions and state only the assumptions that materially affect the result.
-
-Translate vague style words into motion behavior.
-
-Examples:
-
-- **premium** → controlled pace, smooth deceleration, restrained overshoot, selective sound
-- **energetic** → fast acceleration, short holds, bold scale or position changes, sharp rhythmic punctuation
-- **playful** → elastic timing, asymmetry, anticipation, selective overshoot, expressive micro-SFX
-- **editorial** → strong typography, rhythmic cuts, graphic composition, confident pacing, dry sound accents
-- **technical** → precise alignment, modular transitions, structured sequencing, restrained interface-like audio
-- **cinematic** → longer arcs, motivated depth, deliberate reveals, tonal sound design
-- **edgy** → controlled disruption, unusual crop, aggressive scale contrast, abrupt holds, asymmetry, tactile imperfection, unexpected sound punctuation
-- **viral / retention-driven** → rapid clarity, frequent expectation resets, strong VO synchronization, contrast between motion density and stillness
-
-Do not blindly copy a reference.
-
-Extract the underlying principles.
-
----
-
-# 2.5 Reference Video Deconstruction Protocol
-
-When a motion reference is provided, do not imitate its surface look first.
-
-Study the reference as an authored system.
-
-Extract at least these layers:
-
-1. **world continuity** — whether scenes feel like one spatial world or separate cards
-2. **hero ownership** — what owns attention at each moment
-3. **camera-equivalent behavior** — push, pull, truck, macro-to-wide, reframing, or stillness
-4. **object continuity** — which existing element becomes the cause or material of the next shot
-5. **UI behavior** — whether interface elements behave as flat screenshots, physical planes, spatial modules, or transformable graphic objects
-6. **depth staging** — foreground, hero plane, support plane, atmosphere
-7. **light / value hierarchy** — what appears through luminance, rim, contrast, or selective glow
-8. **transition causality** — why the next composition appears
-9. **velocity contrast** — snap, controlled travel, hold, interruption, settle
-10. **sound-event structure** — anticipation, movement, contact, texture, tail, and silence
-11. **ending logic** — whether the final brand / CTA grows out of the existing visual language or arrives as a separate end card
-
-Do not summarize a reference as vague adjectives such as “premium,” “futuristic,” or “cinematic.”
-
-Translate observations into reusable behavior.
-
-For example:
-
-- “futuristic SaaS” is too vague
-- “dashboard treated as a hero plane, satellite cards occupy depth, camera pulls back to expose a system, circular motif becomes the next scene, UI modules later fold into a dimensional brand object” is actionable
-
-## Reference Sampling Method
-
-When tools allow, inspect the reference at several temporal densities:
-
-- broad sampling around every 1 second — understand macro structure
-- denser sampling around every 0.25–0.5 second — understand transition mechanics
-- frames around major handoffs — inspect cause and continuity
-- audio waveform / transient locations — inspect how sound punctuation aligns with visual events
-
-Do not infer a polished technique from a single hero frame.
-
-Motion quality lives between the frames.
-
-## Principle Extraction Rule
-
-Copy **principles**, not branded assets, exact compositions, proprietary UI, logos, or distinctive scene-for-scene execution.
-
-The output should feel informed by the reference but authored for the new brief.
-
-# 3. Define the Motion Direction
-
-For substantial motion work, establish a small motion system before implementation.
-
-Define:
-
-## Motion personality
-
-Choose one dominant character:
-
-- premium
-- playful
-- energetic
-- editorial
-- technical
-- cinematic
-- calm
-- bold
-- restrained
-- edgy
-- tactile
-- disruptive
-- conversational
-
-Mix personalities only when the concept requires contrast.
-
-## Signature easing
-
-Choose one dominant easing behavior for most of the project.
-
-## Duration scale
-
-Use a small family of durations rather than arbitrary values.
-
-Suggested starting bands:
-
-| Motion type | Typical duration |
-|---|---:|
-| micro feedback | 80–160 ms |
-| snap / punch | 100–220 ms |
-| quick transition | 160–280 ms |
-| standard element motion | 280–450 ms |
-| major transition | 450–700 ms |
-| dramatic reveal | 700–1400+ ms |
-
-These are starting points, not laws.
-
-Duration should scale with:
-
-- travel distance
-- visual weight
-- information complexity
-- importance
-- emotional tone
-- VO pacing
-- sound transient
-
-## Entrance grammar
-
-Choose a small set of entrance behaviors.
-
-Examples:
-
-- rise + settle
-- mask reveal
-- crop reveal
-- foreground wipe
-- scale from focal point
+# Modular Reference Routing — Read Only What the Brief Needs
+
+This package uses **progressive disclosure**. `SKILL.md` is the always-on rulebook.
+The files in `references/` are authoritative extensions for specialized work.
+
+Do not preload every reference merely because it exists. Read the smallest set that
+materially improves the current task. When several modules apply, their rules work
+together with this core; the core's clarity, retention, reference-first, anti-PPT,
+deterministic-time, and verification principles remain active.
+
+## Mandatory routing
+
+Read the matching module **before substantial implementation** when any trigger below
+is present:
+
+| Brief / task trigger | Required module |
+|---|---|
+| perspective, cinematic, 2.5D, Three.js, R3F, camera travel, tracking, parallax, lighting, material, shader, bloom, DOF | `references/camera-spatial-3d.md` |
+| kinetic typography, type-first social, character/word sequencing, camera + type, type-to-product handoff | `references/kinetic-typography.md` |
+| voiceover, narration, SFX, ambience, Mixkit, BGM, beat sync, ducking, TTS, audio export | `references/audio-vo.md` |
+| illustration, match logic, element extraction, semantic transformation, object relay, 2D↔3D editing | `references/visual-transitions.md` |
+| SaaS/product film, physical-digital staging, brand motion, layout/collision, product-world assembly | `references/composition-saas-brand.md` |
+| GSAP/browser implementation, R3F runtime, deterministic render, performance budgets, engine/starter selection | `references/browser-runtime.md` |
+| explainer, visual journalism, cartoon/collage, catalog, sketch, continuous action, viewpoint/entity planning | `references/explainer.md` |
+| critique, visual verification, snapshots, transition inspection, layout QA, MP4/export, final production status | `references/qa-export.md` |
+
+## Loading discipline
+
+1. **Concept-only request** — use core rules first. Load a specialized module only if
+   the concept depends on that domain.
+2. **Storyboard / motion spec** — load the modules governing the proposed hero,
+   transition, typography, camera, or audio behavior.
+3. **Implementation** — always load `browser-runtime.md` for browser/code delivery,
+   plus every domain module actually used.
+4. **Explainer implementation** — load `explainer.md`, `audio-vo.md`, and
+   `browser-runtime.md`; add other modules only when the design uses them.
+5. **Final MP4 or production approval** — load `qa-export.md`; load `audio-vo.md`
+   when audio is required.
+6. **Do not treat a starter as art direction.** A starter is architecture/capability.
+   Replace its palette, typography, copy, surface, motion signature, camera path,
+   object choreography, and audio mapping from the actual brief.
+7. **Do not silently downgrade.** If a requested capability cannot be executed or
+   verified, state the appropriate draft/pending status instead of claiming final.
+
+## Core precedence
+
+When rules appear to conflict, resolve in this order:
+
+**message clarity → user/brand intent → retention → accessibility/safety → target
+medium → continuity → technical feasibility → decorative ambition**.
