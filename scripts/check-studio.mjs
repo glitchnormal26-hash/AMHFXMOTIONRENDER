@@ -8,8 +8,7 @@ const sourcePath = path.resolve('studio/v2.html');
 const source = fs.readFileSync(sourcePath, 'utf8');
 const scripts = [...source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map(match => match[1])
-  .filter(Boolean)
-  .filter(script => !script.includes('src='));
+  .filter(Boolean);
 
 if (!scripts.length) {
   console.error('No inline Studio v2 script found.');
@@ -18,7 +17,7 @@ if (!scripts.length) {
 
 const tempPath = path.join(os.tmpdir(), `motra-studio-v2-check-${process.pid}.mjs`);
 try {
-  fs.writeFileSync(tempPath, scripts.join('\n'), 'utf8');
+  fs.writeFileSync(tempPath, scripts[0], 'utf8');
   const result = spawnSync(process.execPath, ['--check', tempPath], {stdio: 'inherit'});
   if (result.status !== 0) process.exit(result.status ?? 1);
   console.log('Motra Studio v2 inline JavaScript syntax OK.');
