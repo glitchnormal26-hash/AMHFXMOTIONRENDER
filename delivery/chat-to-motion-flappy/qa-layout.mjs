@@ -9,7 +9,18 @@ const checkpoints = [6.7, 7.8, 9.7, 10.6, 11.8, 13.8, 15.4, 16.5];
 const textSelectors = ['#heroA .heroBig','#heroA .heroSub','#heroB .word','.finalKicker','.finalTitle','.finalFooter','.finalBadge'];
 const objectSelectors = ['#engine','#miniGame','#asset','#cursor'];
 
-const browser = await puppeteer.launch({headless:'new',args:['--allow-file-access-from-files','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+const browser = await puppeteer.launch({
+  headless:'new',
+  args:[
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--allow-file-access-from-files',
+    '--use-gl=angle',
+    '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader',
+    '--ignore-gpu-blocklist'
+  ]
+});
 const page = await browser.newPage();
 await page.setViewport({width:1920,height:1080,deviceScaleFactor:1});
 await page.goto(url,{waitUntil:'networkidle0',timeout:120000});
