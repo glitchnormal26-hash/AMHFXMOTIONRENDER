@@ -1,8 +1,8 @@
 # Architecture — Deterministic Browser Motion
 
-> 
 This architecture is intended for HTML/CSS/GSAP/Three.js browser motion where
-scrubbing, replay, screenshot verification, and frame-accurate export matter.
+scrubbing, replay, screenshot verification, camera choreography, speed ramps, and
+frame-accurate export matter.
 
 ## Core model
 
@@ -36,13 +36,33 @@ Prefer:
 - position as a function of master time / authored state;
 - one exposed `seek(t)` / `seekFrame(frame)` API.
 
-## Stage
+## Stage, viewport fit, and camera must be separate
 
 For fixed-composition video output, author at a known stage size and fit the
-stage to the window without changing composition.
+composition to the window without changing authored camera state.
+
+Do **not** use the same transform owner for viewport fitting and narrative camera
+movement. That makes camera travel fragile and often collapses back into a static
+frame.
+
+Recommended hierarchy:
+
+```text
+#viewport-fit        ← fixed composition fit only
+└── #camera          ← authored x/y/scale/rotation
+    └── #world       ← DOM / SVG / WebGL visual world
+        ├── background
+        ├── product / UI / objects
+        └── world-space typography
+
+.lens-fx             ← outside camera when intended to stay lens-space
+.debug-ui            ← outside camera, hidden unless debugging
+```
+
+Example fit wrapper:
 
 ```css
-#stage {
+#viewport-fit {
   position: fixed;
   left: 50%;
   top: 50%;
@@ -52,60 +72,129 @@ stage to the window without changing composition.
   transform-origin: center;
   overflow: hidden;
 }
+
+#camera,
+#world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
 ```
 
 ```js
 const fit = () => {
   const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-  stage.style.setProperty("--fit", s);
+  viewportFit.style.setProperty("--fit", s);
 };
 ```
 
 ## World / camera rig
 
-A useful DOM architecture:
+If the shot direction describes camera travel, animate the actual render camera or
+the rig that owns the rendered world. Do not animate only the subject and describe
+it as camera movement.
 
-```text
-#stage
-├── #world          ← camera-equivalent transform owner
-│   ├── canvas      ← Three.js / WebGL when needed
-│   ├── .background
-│   └── .content
-├── .lens-fx        ← optional foreground lens-space effects
-└── .debug-ui       ← hidden unless ?debug=1
-```
+For DOM/SVG/2.5D, `runtime/camera-rig.js` is the preferred deterministic camera
+helper. For Three.js/R3F, animate the real camera or a dedicated camera parent rig.
 
-If the shot direction describes camera travel, animate the actual render camera
-or the rig that owns the rendered world. Do not animate only the subject and
-describe it as camera movement.
+## Anti-static camera hard gate
 
-## Initial-state rule
-
-Critical hidden states should exist in CSS or deterministic setup before
-playback starts.
-
-```css
-.motion-in { opacity: 0; }
-```
-
-Use `immediateRender:false` for GSAP `fromTo()` when appropriate so a future
-tween does not corrupt frame zero.
-
-## Active camera contract
-
-For every substantial spatial shot declare one mode:
+For every substantial semantic beat declare one mode:
 
 - `MOVING`
 - `TRACKING`
 - `REFRAME`
 - `LOCKED_INTENTIONAL`
 
-For non-locked modes define:
+A substantial sequence fails camera QA when:
+
+1. world framing stays materially unchanged across multiple semantic beats;
+2. all energy comes from subjects/cards/UI animating inside that fixed frame; and
+3. no explicit authored reason exists for the locked shot.
+
+`LOCKED_INTENTIONAL` is a contrast state for readability, suspense, inspection, or
+clean typographic landing. It is not the default shortcut.
+
+For fast-paced explainers, product films, and kinetic ads, framing should normally
+change every 2–4 seconds or enter a short intentional lock.
+
+## Subject follow and attention handoff
+
+When a cursor, dragged asset, character, hero object, or extracted UI element owns
+attention, the camera should normally respond with one of:
+
+- follow;
+- lead;
+- catch-up;
+- reframe;
+- handoff;
+- push-through;
+- pull-back reveal.
+
+A long drag observed from a permanently fixed wide shot should be treated as a
+camera-design failure unless the wide shot itself carries meaning.
+
+Use `trackPoint()`, `followPoints()`, `rampToPoint()`, or `speedRampTo()` from
+`runtime/camera-rig.js` for deterministic 2.5D implementations.
+
+## Speed-ramp architecture
+
+A speed ramp changes authored velocity while output cadence remains fixed.
+
+Do not create a speed ramp by:
+
+- changing capture FPS;
+- dropping/skipping frames;
+- globally changing timeline `timeScale()` in a way that desynchronizes VO/SFX;
+- using realtime velocity integration that cannot be reconstructed by `seek(t)`.
+
+Preferred pattern:
+
+```text
+attack → fast travel → settle
+```
+
+Typical starting proportions:
+
+```text
+attack  12–25%
+travel  45–68%
+settle  18–35%
+```
+
+Implement with explicit timeline keyframes, piecewise interpolation, or the camera
+rig's deterministic `speedRampTo()` / `rampToPoint()` helpers.
+
+Use ramps to transfer energy between semantic beats: pickup→drag→drop,
+kinetic-type→product, push-through→detail, detail→pull-back, or hold→next burst.
+
+## Initial-state rule
+
+Critical hidden states should exist in CSS or deterministic setup before playback
+starts.
+
+```css
+.motion-in { opacity: 0; }
+```
+
+Use `immediateRender:false` for GSAP `fromTo()` when appropriate so a future tween
+does not corrupt frame zero.
+
+## Active camera contract
+
+For every non-locked camera beat define:
 - start camera state;
 - landing camera state;
 - timing;
 - easing / damping;
-- visible screen-space consequence.
+- visible screen-space consequence;
+- attention owner or narrative reason.
+
+For speed-ramped beats also define:
+- attack duration/ratio;
+- travel duration/ratio;
+- settle duration/ratio;
+- fastest midpoint to inspect in QA.
 
 ## Public control API
 
@@ -130,7 +219,7 @@ Set `ready=true` only after critical fonts/assets are loaded.
 ## Debug and clean modes
 
 Recommended query modes:
-- `?debug=1` — show scrub UI and developer clock.
+- `?debug=1` — show scrub UI, camera mode/state, safe lanes, and developer clock.
 - `?clean=1` — disable autoplay and UI for deterministic capture.
 
 Default deliverable should not show a player unless the user asks for one.
@@ -140,6 +229,9 @@ Default deliverable should not show a player unless the user asks for one.
 Verification:
 - capture 6–20 key moments;
 - inspect composition, continuity, clipping, hierarchy, and anti-PPT failures;
+- for active-camera work include opening frame, first framing transfer, fastest ramp
+  midpoint, ramp landing, one follow/handoff moment, and final framing;
+- inspect typography collisions during the fastest camera move, not only at landings;
 - iterate.
 
 Export:
@@ -167,22 +259,22 @@ VO / SFX timing should follow the master time. On seek:
 - pause audio when timeline is paused;
 - preserve deterministic visual state even when audio playback is unavailable.
 
+Camera speed ramps must not alter the audio clock. If a ramp needs stronger sonic
+energy, author additional SFX or timing accents rather than warping playback time.
 
 ## Engine selection note
 
-The main `SKILL.md` now owns the engine-selection contract.
+The main `SKILL.md` owns the engine-selection contract.
 
 Architecture defaults:
-
 - GSAP for deterministic DOM/SVG timeline motion;
-- DOM/SVG world rig for 2.5D before escalating to real 3D;
-- Three.js/R3F only when true geometry/camera/light materially improves the idea;
+- DOM/SVG camera/world rig for 2.5D before escalating to true 3D;
+- Three.js/R3F only when geometry/camera/light materially improves the idea;
 - Puppeteer/browser snapshots for deterministic visual QA;
 - ffmpeg or another verified encoder/muxer for final frame+audio assembly.
 
 Never claim an engine/provider was used unless the current environment actually
 executed it.
-
 
 ## Direct MP4 exporter
 
@@ -193,12 +285,11 @@ It wraps the deterministic browser-render path into one command:
 **OPENER timeline → frame seek/capture → H.264 encode → VO/SFX/ambience mix →
 audio mux → ffprobe verification → `FINAL_VERIFIED`**
 
-Use `QUALITY=fast` for a 30 fps fast path and `QUALITY=final` for a 60 fps
-higher-quality path.
+Use `QUALITY=fast` for a 30 fps fast path and `QUALITY=final` for a higher-quality
+path when justified.
 
-For narrated explainers, set `REQUIRE_VO=1` so the exporter fails instead of
-silently producing a final-looking mute video.
-
+For narrated explainers, set `REQUIRE_VO=1` so the exporter fails instead of silently
+producing a final-looking mute video.
 
 ## Full runtime file structure
 
@@ -226,9 +317,9 @@ The timeline is the only place where authored time should originate.
 
 The Three.js scene receives timeline time through `render(t)`.
 
-For anything that appears to flow, tween a distance/state value and derive
-positions from that value. This keeps pause, seek, snapshots and frame export
+For anything that appears to flow, tween a distance/state value and derive positions
+from that value. This keeps pause, seek, snapshots, camera ramps, and frame export
 reproducible.
 
-Use the no-cache server for local ES-module development. A final direct-open
-HTML can still be consolidated later if portability is required.
+Use the no-cache server for local ES-module development. A final direct-open HTML can
+still be consolidated later if portability is required.
