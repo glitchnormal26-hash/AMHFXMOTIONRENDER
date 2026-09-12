@@ -1,6 +1,6 @@
-# Gift Box Greenscreen Motion
+# Gift Box Deluxe Greenscreen Motion
 
-A deterministic chroma-key motion graphic built for the Motion Designer v3.8 browser renderer in this repository.
+A deterministic 2.5D chroma-key motion graphic built for the Motion Designer v3.9 browser renderer in this repository.
 
 ## Delivery spec
 
@@ -11,18 +11,18 @@ A deterministic chroma-key motion graphic built for the Motion Designer v3.8 bro
 - Quality: CRF 14, medium preset
 - Background: pure chroma green `#00FF00`
 - Audio: silent asset (no audio stream required)
-- Hero palette: magenta / gold / blue / white; no green is used on the animated subject
+- Hero palette: berry-magenta / gold / blue / cyan / white; no green is used on the animated subject
 
 ## Motion idea
 
-1. Gift box drops from above with weight and a short squash/bounce.
-2. Bow reacts after impact and creates anticipation.
-3. Lid trembles, dips, then opens with a fast upward handoff.
-4. Gold reveal energy and deterministic stars/confetti burst from the box.
-5. Open-box pose breathes briefly so the effect remains readable.
-6. Lid anticipates and snaps closed; the body reacts to contact.
-7. Box performs one compact celebration tilt/bounce.
-8. Box compresses and pops away, leaving a clean green plate at the end.
+1. Gift box drops from above with weight, camera-equivalent settle, squash, and contact reaction.
+2. Ribbon and bow pull outward with elastic anticipation while the lid trembles.
+3. The box compresses, then the lid becomes the transition object and launches upward.
+4. A key-safe graphic reveal disc, radial rays, stars, diamonds, confetti, and streamers burst from the box using authored deterministic trajectories.
+5. The camera settles into a readable open-box pose while lid and bow complete their follow-through.
+6. The lid anticipates upward and snaps closed; the body, bow, floor mark, and impact ring react to contact.
+7. The box performs one compact asymmetric celebration tilt/bounce with spark punctuation.
+8. The box compresses and pops away, leaving a clean green plate at the end.
 
 ## Preview
 
@@ -49,8 +49,8 @@ Output:
 
 ## GitHub Actions
 
-Workflow: **Render Gift Box 4K Greenscreen**
+Workflow: **Render E2E QA**
 
 It renders automatically when the animation/render files change and can also be run manually with `workflow_dispatch`.
 
-Artifact name: `gift-box-greenscreen-4k`
+Artifact name: `motion-v3.9-e2e-qa`
