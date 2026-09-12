@@ -1,189 +1,65 @@
 <!doctype html>
 <html lang="en">
-<!--
-Motion Designer v3.8 full-runtime starter.
-
-ARCHITECTURE, NOT STYLE.
-Replace palette, fonts, copy, surfaces, motion signature, and transition logic
-from the actual brief before delivery.
--->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Motion Designer — Browser Motion Starter</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<title>Motion Designer v3.9 — Neutral Starter</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
 <style>
-:root{
-  /* PLACEHOLDERS — replace from brand/theme */
-  --bg:#121418;
-  --surface:#1e232b;
-  --ink:#f4f7fb;
-  --accent:#8f97a3;
-  --accent2:#c7ccd4;
-}
+:root{--bg:#101318;--surface:#202733;--ink:#f5f7fb;--muted:#8d98a8;--accent:#c8d0dc}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050608}
-body{font-family:"Space Grotesk",system-ui,sans-serif;color:var(--ink)}
-#stage{
-  position:fixed;left:50%;top:50%;width:1920px;height:1080px;
-  transform:translate(-50%,-50%) scale(1);overflow:hidden;background:var(--bg)
-}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080a0d}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:radial-gradient(circle at 30% 25%,#27313f 0,#161b22 34%,var(--bg) 72%)}
 #world{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
-#bg{position:absolute;inset:-120px;overflow:hidden}
-.grad{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(70% 60% at var(--gx,20%) var(--gy,20%),
-      color-mix(in srgb,var(--accent) 58%,transparent),transparent 60%),
-    radial-gradient(55% 50% at calc(100% - var(--gx,20%)) 85%,
-      color-mix(in srgb,var(--accent2) 28%,transparent),transparent 62%),
-    linear-gradient(135deg,var(--bg),var(--surface));
-}
-.grid{
-  position:absolute;inset:-80px;opacity:.14;
-  background-image:
-    linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);
-  background-size:90px 90px;
-}
-#content{position:absolute;inset:0}
-.scene{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden}
-.hero{
-  max-width:1500px;text-align:center;font-size:120px;font-weight:600;
-  line-height:.94;letter-spacing:-.045em;opacity:0
-}
-.word{display:inline-block;will-change:transform,opacity,filter}
-.hl{display:inline-block;position:relative;color:var(--ink)}
-.hl{--mark:0}
-.hl:after{
-  content:"";position:absolute;left:-.03em;right:-.03em;bottom:.02em;height:.14em;
-  background:var(--accent);transform-origin:0 50%;transform:scaleX(var(--mark));z-index:-1
-}
-.object{
-  position:absolute;width:300px;height:300px;border-radius:34%;
-  background:linear-gradient(145deg,var(--accent2),var(--accent));
-  box-shadow:0 50px 120px rgba(0,0,0,.35);opacity:0
-}
-#lens{
-  position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(80% 70% at 50% 50%,transparent 52%,rgba(0,0,0,.48));
-}
-#debug{
-  display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-  z-index:10;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;
-  background:rgba(8,10,14,.88);color:white;font:13px system-ui
-}
-#debug.on{display:flex}
-#debug input{width:360px}
-#clock{min-width:6ch;font-variant-numeric:tabular-nums}
+.grid{position:absolute;inset:-80px;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:88px 88px}
+.hero{position:absolute;left:180px;top:270px;width:1180px;font-size:112px;line-height:.92;letter-spacing:-.05em;font-weight:700;opacity:0;will-change:transform,opacity}
+.hero small{display:block;margin-bottom:26px;font-size:28px;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+#orb{position:absolute;right:170px;top:315px;width:300px;height:300px;border-radius:50%;background:linear-gradient(145deg,#f3f6fb,var(--accent) 54%,#667386);box-shadow:0 55px 130px rgba(0,0,0,.38);opacity:0;will-change:transform,opacity}
+#ring{position:absolute;right:95px;top:240px;width:450px;height:450px;border:3px solid rgba(255,255,255,.24);border-radius:50%;opacity:0;will-change:transform,opacity}
+#tag{position:absolute;left:184px;bottom:150px;padding:18px 26px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);font-size:26px;letter-spacing:.02em;opacity:0}
+#debug{display:none;position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:5;padding:10px 14px;border-radius:10px;background:#050608;color:white;font:14px monospace}
+#debug.on{display:block}
 </style>
 </head>
 <body>
 <div id="stage">
   <div id="world">
-    <div id="bg"><div class="grad"></div><div class="grid"></div></div>
-    <div id="content">
-      <section class="scene" id="s1">
-        <div class="hero" id="h1">Replace this with a <span class="hl">real hook</span>.</div>
-        <div class="object" id="obj"></div>
-      </section>
-      <section class="scene" id="s2">
-        <div class="hero" id="h2">Build one evolving world.</div>
-      </section>
-    </div>
+    <div class="grid"></div>
+    <div class="hero" id="hero"><small>Neutral render fixture</small>Motion Designer v3.9</div>
+    <div id="ring"></div>
+    <div id="orb"></div>
+    <div id="tag">OPENER-compatible · deterministic</div>
   </div>
-  <div id="lens"></div>
 </div>
-
-<div id="debug">
-  <button id="play">Pause</button>
-  <input id="scrub" type="range" min="0" max="1000" value="0">
-  <span id="clock">0.00s</span>
-</div>
-
+<div id="debug">0.00s</div>
 <script>
 const W=1920,H=1080,DURATION=9;
-const $=s=>document.querySelector(s);
-const stage=$("#stage"),world=$("#world");
-const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);
-  stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
-addEventListener("resize",fit);fit();
-
-function splitWords(el){
-  const raw=el.childNodes;
-  const nodes=[...raw];
-  for(const n of nodes){
-    if(n.nodeType===3){
-      const frag=document.createDocumentFragment();
-      n.textContent.split(/(\s+)/).forEach(x=>{
-        if(!x)return;
-        if(/\s+/.test(x)){frag.appendChild(document.createTextNode(x));return;}
-        const s=document.createElement("span");s.className="word";s.textContent=x;frag.appendChild(s);
-      });
-      n.replaceWith(frag);
-    }
-  }
-}
-splitWords($("#h1"));splitWords($("#h2"));
+const stage=document.querySelector('#stage');
+const world=document.querySelector('#world');
+const debug=document.querySelector('#debug');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
 
 const tl=gsap.timeline({paused:true});
-tl.set("#s1",{autoAlpha:1},0);
-tl.fromTo("#h1",{opacity:0,y:90,scale:.92},{opacity:1,y:0,scale:1,duration:.85,ease:"power4.out"},.35);
-tl.fromTo("#h1 .word",{opacity:0,yPercent:70,filter:"blur(10px)"},
-  {opacity:1,yPercent:0,filter:"blur(0px)",duration:.55,stagger:.055,ease:"power4.out"},.38);
-tl.to("#h1 .hl",{"--mark":1,duration:.5,ease:"power3.out"},1.3);
-tl.fromTo("#obj",{opacity:0,scale:.4,rotation:-16,x:420,y:260},
-  {opacity:1,scale:1,rotation:8,duration:.85,ease:"back.out(1.5)"},1.55);
-
-tl.to(world,{scale:1.7,x:-220,y:100,duration:.6,ease:"power2.in"},3.45);
-tl.set("#s1",{autoAlpha:0},4.05);
-tl.set("#s2",{autoAlpha:1},4.05);
-tl.set(world,{scale:1.35,x:190,y:-90},4.05);
-tl.to(world,{scale:1,x:0,y:0,duration:.9,ease:"power3.out"},4.05);
-tl.fromTo("#h2",{opacity:0,scale:1.25,filter:"blur(14px)"},
-  {opacity:1,scale:1,filter:"blur(0px)",duration:.75,ease:"power3.out"},4.25);
-tl.to("#h2",{opacity:0,y:-80,duration:.42,ease:"power2.in"},7.7);
-tl.to({},{duration:.01},DURATION);
-
-const bg=$(".grad"),grid=$(".grid");
-function render(t){
-  const gx=24+Math.sin(t*.47)*8;
-  const gy=26+Math.cos(t*.39)*7;
-  bg.style.setProperty("--gx",gx+"%");
-  bg.style.setProperty("--gy",gy+"%");
-  grid.style.transform=`translate(${Math.sin(t*.3)*10}px,${Math.cos(t*.27)*8}px) scale(${1+Math.sin(t*.22)*.008})`;
-}
-gsap.ticker.add(()=>render(tl.time()));
+tl.fromTo('#hero',{opacity:0,y:90,scale:.94},{opacity:1,y:0,scale:1,duration:.9,ease:'power4.out'},.25);
+tl.fromTo('#orb',{opacity:0,scale:.25,rotation:-18},{opacity:1,scale:1,rotation:0,duration:.9,ease:'back.out(1.6)'},.65);
+tl.fromTo('#ring',{opacity:0,scale:.45},{opacity:.75,scale:1,duration:.85,ease:'power3.out'},.78);
+tl.fromTo('#tag',{opacity:0,y:35},{opacity:1,y:0,duration:.55,ease:'power3.out'},1.35);
+tl.to(world,{scale:1.18,x:-115,y:42,duration:1.15,ease:'power2.inOut'},2.7);
+tl.to('#orb',{x:-230,y:90,scale:1.25,rotation:24,duration:1.05,ease:'power3.inOut'},3.0);
+tl.to('#ring',{x:-230,y:90,scale:1.3,rotation:-18,duration:1.05,ease:'power3.inOut'},3.0);
+tl.to(world,{scale:1,x:0,y:0,duration:1.1,ease:'power3.inOut'},5.2);
+tl.to('#orb,#ring',{x:0,y:0,scale:1,rotation:0,duration:1.0,ease:'power3.out'},5.25);
+tl.to('#hero,#orb,#ring,#tag',{opacity:0,y:-35,duration:.6,ease:'power2.in'},8.05);
+tl.to({},{duration:.01},8.99);
 
 const q=new URLSearchParams(location.search);
-const dbg=$("#debug"),scrub=$("#scrub"),clock=$("#clock"),play=$("#play");
-if(q.has("debug"))dbg.classList.add("on");
-let dragging=false;
-gsap.ticker.add(()=>{
-  const t=tl.time();clock.textContent=t.toFixed(2)+"s";
-  if(!dragging)scrub.value=String(t/DURATION*1000);
-});
-scrub.onpointerdown=()=>{dragging=true;tl.pause()};
-addEventListener("pointerup",()=>dragging=false);
-scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
-play.onclick=()=>tl.paused()?tl.play():tl.pause();
-addEventListener("keydown",e=>{
-  if(e.code==="Space"){e.preventDefault();tl.paused()?tl.play():tl.pause();}
-  if(e.key==="r"||e.key==="R")tl.play(0);
-});
-tl.eventCallback("onComplete",()=>tl.play(0));
-
-window.OPENER={
-  W,H,DURATION,tl,ready:false,
-  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);render(tl.time());},
-  play(){tl.play();}
-};
-document.fonts.ready.then(()=>{
-  window.OPENER.ready=true;
-  if(!q.has("clean"))tl.play(0);
-});
+if(q.has('debug'))debug.classList.add('on');
+gsap.ticker.add(()=>{debug.textContent=tl.time().toFixed(2)+'s';});
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
 </script>
 </body>
 </html>
