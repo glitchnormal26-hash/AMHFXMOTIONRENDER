@@ -1,0 +1,89 @@
+name: Render 10 Cute Autumn Backgrounds
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'delivery/autumn-cute-10/**'
+      - '.github/workflows/render-autumn-cute-10.yml'
+  workflow_dispatch:
+
+jobs:
+  render:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: '01', slug: maple-frame }
+          - { id: '02', slug: pumpkin-patch }
+          - { id: '03', slug: fox-nap }
+          - { id: '04', slug: acorn-rain }
+          - { id: '05', slug: cozy-picnic }
+          - { id: '06', slug: leaf-balloon-parade }
+          - { id: '07', slug: tiny-cabin }
+          - { id: '08', slug: squirrel-harvest }
+          - { id: '09', slug: mushroom-garden }
+          - { id: '10', slug: autumn-pond }
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Syntax check authored runtime
+        run: node --check delivery/autumn-cute-10/autumn-runtime.js
+      - name: Render deterministic 1080p30 30s H.264
+        env:
+          INDEX: delivery/autumn-cute-10/${{ matrix.id }}-${{ matrix.slug }}.html
+          FPS: '30'
+          WIDTH: '1920'
+          HEIGHT: '1080'
+          QUALITY: fast
+          CRF: '16'
+          PRESET: medium
+          OUT_VIDEO: output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.mp4
+        run: |
+          mkdir -p output
+          npm run export:mp4
+      - name: Verify render contract
+        env:
+          VERIFY: output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.verify.json
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync(process.env.VERIFY,'utf8'));
+          if(r.status!=='FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if(r.video?.codec_name!=='h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if(r.video?.width!==1920||r.video?.height!==1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if(r.video?.r_frame_rate!=='30/1') throw new Error(`fps=${r.video?.r_frame_rate}`);
+          if(Math.abs(Number(r.duration)-30)>.2) throw new Error(`duration=${r.duration}`);
+          if(r.audio!==null) throw new Error('unexpected audio stream');
+          NODE
+      - name: Extract visual QA frames
+        env:
+          VIDEO: output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.mp4
+          PREFIX: output/qa-${{ matrix.id }}-${{ matrix.slug }}
+        run: |
+          ffmpeg -y -i "$VIDEO" -vf "select='eq(n,0)+eq(n,300)+eq(n,600)+eq(n,899)'" -vsync 0 "${PREFIX}-%02d.png"
+          sha256sum "$VIDEO" > "output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.sha256"
+      - name: Upload final render and QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s
+          path: |
+            output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.mp4
+            output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.verify.json
+            output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.sha256
+            output/qa-${{ matrix.id }}-${{ matrix.slug }}-*.png
+          if-no-files-found: error
+          retention-days: 14
