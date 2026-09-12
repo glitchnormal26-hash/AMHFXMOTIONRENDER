@@ -5,8 +5,8 @@ import { pathToFileURL } from 'node:url';
 
 const index = path.resolve('delivery/chat-to-motion-flappy/final.html');
 const url = pathToFileURL(index).href + '?clean=1';
-const checkpoints = [6.7, 7.8, 9.7, 10.6, 11.8, 13.8, 15.4, 16.5];
-const textSelectors = ['#heroA .heroBig','#heroA .heroSub','#heroB .word','.finalKicker','.finalTitle','.finalFooter','.finalBadge'];
+const checkpoints = [3.4, 4.2, 6.7, 7.8, 9.7, 10.6, 11.8, 13.8, 15.4, 16.5];
+const textSelectors = ['#userBubble','#composer .placeholder','#heroA .heroBig','#heroA .heroSub','#heroB .word','.finalKicker','.finalTitle','.finalFooter','.finalBadge'];
 const objectSelectors = ['#engine','#miniGame','#asset','#cursor'];
 
 const browser = await puppeteer.launch({
@@ -45,6 +45,37 @@ for (const t of checkpoints){
   },{textSelectors,objectSelectors});
   if(hits.length) violations.push({t,hits});
 }
+
+async function stateAt(t){
+  await page.evaluate(async time=>{window.OPENER.seek(time);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));},t);
+  return page.evaluate(()=>{
+    const doc=document.querySelector('#motion')?.contentDocument || document;
+    const view=doc.defaultView || window;
+    const visibleOpacity=el=>{let o=1,n=el;while(n&&n.nodeType===1){const s=view.getComputedStyle(n);o*=Number(s.opacity||1);n=n.parentElement;}return o;};
+    const asset=doc.getElementById('asset');
+    const cursor=doc.getElementById('cursor');
+    const placeholder=doc.querySelector('#composer .placeholder');
+    const composer=doc.getElementById('composer');
+    return {
+      assetOpacity:visibleOpacity(asset),
+      handSvg:!!cursor?.querySelector('svg path'),
+      placeholderOpacity:visibleOpacity(placeholder),
+      composerBorder:view.getComputedStyle(composer).borderColor
+    };
+  });
+}
+
+const dragState=await stateAt(3.4);
+const dropState=await stateAt(4.2);
+const dragErrors=[];
+if(dragState.assetOpacity<.8) dragErrors.push(`skill card hidden during drag: ${dragState.assetOpacity}`);
+if(!dragState.handSvg) dragErrors.push('hand cursor SVG missing');
+if(dropState.assetOpacity<.8) dragErrors.push(`skill card hidden over composer: ${dropState.assetOpacity}`);
+if(dropState.placeholderOpacity>.12) dragErrors.push(`composer typography still visible under dragged object: ${dropState.placeholderOpacity}`);
+
 await browser.close();
-if(violations.length){console.error(JSON.stringify({status:'TYPOGRAPHY_COLLISION',violations},null,2));process.exit(2);}
-console.log(JSON.stringify({status:'TYPOGRAPHY_CLEAR',checkpoints},null,2));
+if(violations.length||dragErrors.length){
+  console.error(JSON.stringify({status:'QA_FAILED',violations,dragErrors,dragState,dropState},null,2));
+  process.exit(2);
+}
+console.log(JSON.stringify({status:'TYPOGRAPHY_CLEAR',drag:'DRAG_VISIBLE',checkpoints,dragState,dropState},null,2));
