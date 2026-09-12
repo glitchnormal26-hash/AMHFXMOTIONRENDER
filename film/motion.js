@@ -12,8 +12,8 @@ const ns='http://www.w3.org/2000/svg';
 const pipes=[];
 for(let i=0;i<4;i++){
  const g=document.createElementNS(ns,'g');g.setAttribute('class','pipe');
- const gap=930+[0,-100,65,-45][i];const top=gap-235,bottom=gap+235;
- g.innerHTML=`<path d="M25 615H215V${top-50}H25Z" fill="url(#pipeFill)" stroke="#25370e" stroke-width="10"/><path d="M7 ${top-58}H233V${top}H7Z" fill="#bbdf38" stroke="#25370e" stroke-width="10"/><path d="M49 625V${top-71}" stroke="#e2ff75" stroke-width="13" opacity=".7"/><path d="M25 ${bottom+52}H215V1730H25Z" fill="url(#pipeFill)" stroke="#25370e" stroke-width="10"/><path d="M7 ${bottom}H233V${bottom+58}H7Z" fill="#bbdf38" stroke="#25370e" stroke-width="10"/><path d="M49 ${bottom+75}V1690" stroke="#e2ff75" stroke-width="13" opacity=".65"/>`;
+ const gap=980+[0,-35,45,-20][i];const top=gap-300,bottom=gap+300;
+ g.innerHTML=`<path d="M25-200H215V${top-50}H25Z" fill="url(#pipeFill)" stroke="#25370e" stroke-width="10"/><path d="M7 ${top-58}H233V${top}H7Z" fill="#bbdf38" stroke="#25370e" stroke-width="10"/><path d="M49-200V${top-71}" stroke="#e2ff75" stroke-width="13" opacity=".7"/><path d="M25 ${bottom+52}H215V1730H25Z" fill="url(#pipeFill)" stroke="#25370e" stroke-width="10"/><path d="M7 ${bottom}H233V${bottom+58}H7Z" fill="#bbdf38" stroke="#25370e" stroke-width="10"/><path d="M49 ${bottom+75}V1690" stroke="#e2ff75" stroke-width="13" opacity=".65"/>`;
  $('#pipe-world').appendChild(g);pipes.push(g);
 }
 const tl=gsap.timeline({paused:true});
@@ -40,7 +40,7 @@ tl.to('#skillToken',{x:27,y:1610,rotation:0,scale:.86,duration:.69,ease:'power3.
 tl.to('#hand',{x:846,y:-150,rotation:-11,duration:.3,ease:'power2.in'},7.72);
 tl.to('#hand',{x:844,y:565,rotation:4,duration:.8,ease:'power2.in'},8.02);
 tl.to('#hand',{x:691,y:1284,rotation:-3,duration:.69,ease:'power3.out'},8.82);
-rig.followPoints(8.05,[{x:535,y:240,scale:.90,offsetY:-120,duration:.75,ease:'power2.in'},{x:533,y:1080,scale:1.04,offsetY:160,duration:.77,ease:'power3.out'}]);
+rig.followPoints(8.05,[{x:535,y:240,scale:.90,offsetY:-120,duration:.75,ease:'power2.in'},{x:533,y:1080,scale:1.12,offsetY:-80,duration:.77,ease:'power3.out'}]);
 tl.to('#skillToken',{scale:.79,opacity:0,duration:.15,ease:'power2.in'},9.58);
 tl.to('#attached',{opacity:1,duration:.12},9.66);
 tl.to('#dropzone',{opacity:0,duration:.16},9.61);
@@ -81,8 +81,8 @@ rig.speedRampTo(17.55,{x:0,y:-1800,scale:1,rotation:0},1.08,{attack:.18,travel:.
 tl.to('#game-title',{opacity:1,duration:.25},18.25);tl.to('#score-ui',{opacity:1,duration:.25},18.5);
 tl.to('#bird-trails',{opacity:.65,duration:.5},18.65);
 tl.to(state,{gameTime:7.05,duration:7.05,ease:'none'},18.65);
-rig.speedRampTo(20.65,{x:-43,y:-1995,scale:1.075,rotation:0},.85,{attack:.2,travel:.5,settle:.3,overshoot:.003});
-rig.speedRampTo(22.9,{x:-77,y:-2170,scale:1.13,rotation:0},.76,{attack:.24,travel:.48,settle:.28,overshoot:.005});
+rig.speedRampTo(20.65,{x:-43,y:-1950,scale:1.075,rotation:0},.85,{attack:.2,travel:.5,settle:.3,overshoot:.003});
+rig.speedRampTo(22.9,{x:-77,y:-2060,scale:1.13,rotation:0},.76,{attack:.24,travel:.48,settle:.28,overshoot:.005});
 tl.to('#bird-trails',{opacity:0,duration:.3},24.3);
 tl.to('#game-title,#score-ui',{opacity:0,duration:.25},24.5);
 rig.speedRampTo(24.48,{x:0,y:-1800,scale:1,rotation:0},1.08,{attack:.12,travel:.6,settle:.28,overshoot:.004});
@@ -100,7 +100,11 @@ tl.to('#hand',{y:3321,duration:.48,ease:'power2.inOut'},30.6);
 tl.to({},{duration:.01},31.99);
 function render(t){
  const n=Math.floor(state.type); chars.forEach((el,i)=>el.style.opacity=i<n?'1':'0');
- $('.cursor-caret').style.opacity=t<11.75&&(t<3.7||Math.floor(t*2.4)%2===0)?'1':'0';
+ const caret=$('.cursor-caret');
+ caret.style.opacity=t<11.75&&(t<3.7||Math.floor(t*2.4)%2===0)?'1':'0';
+ const last=chars[Math.max(0,n-1)];
+ caret.style.position='absolute';caret.style.marginLeft='2px';
+ caret.style.left=(n?last.offsetLeft+last.offsetWidth:0)+'px';caret.style.top=(n?last.offsetTop:0)+'px';
  const v=state.gameTime;
  const bx=365+Math.sin(v*.85)*24;
  const by=t<18.65?1000+Math.sin((t-15)*4)*16:980-90*Math.sin(v*2.32)+32*Math.sin(v*.82);
@@ -115,7 +119,7 @@ function render(t){
  $('#far-city').setAttribute('transform',`translate(${-v*7} 0)`);
  $('#hills').setAttribute('transform',`translate(${-v*10} 0)`);
  $('#floor-hatch').setAttribute('transform',`translate(${-distance%80} 0)`);
- $('#score').textContent=String(Math.max(0,Math.floor((distance-650)/515)+1)).padStart(2,'0');
+ $('#score').textContent=String(Math.max(0,Math.floor((distance-(1080-bx))/515)+1)).padStart(2,'0');
  if(t>=25.7){$('#bird').setAttribute('transform',`translate(392 ${995+Math.sin(t*3.5)*48}) rotate(${Math.cos(t*3.5)*-7}) scale(1.35)`);}
  const p=state.shatter;
  shards.forEach((el,i)=>{
