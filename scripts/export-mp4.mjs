@@ -152,7 +152,9 @@ try {
     args: [
       "--allow-file-access-from-files",
       "--autoplay-policy=no-user-gesture-required",
-      "--enable-gpu",
+      "--use-gl=angle",
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader",
       "--ignore-gpu-blocklist"
     ]
   });
