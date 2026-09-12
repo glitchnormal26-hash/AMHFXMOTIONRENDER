@@ -1,0 +1,108 @@
+name: Render SaaS Text to Motion 4K
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'chatgpt/saas-text-to-motion-4k'
+    paths:
+      - 'delivery/saas-text-to-motion/**'
+      - '.github/workflows/render-saas-text-to-motion-4k.yml'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run repo checks
+        run: npm run check
+
+      - name: Build hi-tech SFX mix
+        run: |
+          mkdir -p audio output
+          ffmpeg -y \
+            -f lavfi -t 18 -i "anoisesrc=color=pink:amplitude=0.025:r=48000" \
+            -f lavfi -i "sine=frequency=72:sample_rate=48000:duration=0.22" \
+            -f lavfi -i "sine=frequency=1320:sample_rate=48000:duration=0.10" \
+            -f lavfi -i "sine=frequency=260:sample_rate=48000:duration=0.18" \
+            -f lavfi -i "sine=frequency=1860:sample_rate=48000:duration=0.09" \
+            -f lavfi -i "sine=frequency=98:sample_rate=48000:duration=0.26" \
+            -f lavfi -i "sine=frequency=980:sample_rate=48000:duration=0.14" \
+            -f lavfi -i "sine=frequency=64:sample_rate=48000:duration=0.28" \
+            -filter_complex "\
+              [0:a]highpass=f=900,lowpass=f=5200,volume=0.020[amb];\
+              [1:a]afade=t=out:st=0.04:d=0.18,volume=0.9,adelay=120|120[s1];\
+              [2:a]afade=t=out:st=0.02:d=0.08,volume=0.55,adelay=2050|2050[s2];\
+              [3:a]afade=t=out:st=0.04:d=0.14,volume=0.75,adelay=4300|4300[s3];\
+              [4:a]afade=t=out:st=0.02:d=0.07,volume=0.52,adelay=7050|7050[s4];\
+              [5:a]afade=t=out:st=0.06:d=0.20,volume=0.85,adelay=10100|10100[s5];\
+              [6:a]afade=t=out:st=0.03:d=0.11,volume=0.50,adelay=13200|13200[s6];\
+              [7:a]afade=t=out:st=0.06:d=0.22,volume=0.95,adelay=15800|15800[s7];\
+              [amb][s1][s2][s3][s4][s5][s6][s7]amix=inputs=8:duration=longest:dropout_transition=0,alimiter=limit=0.92,pan=stereo|c0=c0|c1=c0[out]" \
+            -map "[out]" -ar 48000 -c:a pcm_s16le -t 18 audio/saas-text-motion-sfx.wav
+
+      - name: Render verified 4K MP4
+        run: |
+          /usr/bin/time -v -o output/benchmark.txt \
+            env INDEX=delivery/saas-text-to-motion/index.html \
+            QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 CRF=16 PRESET=medium \
+            REQUIRE_AUDIO=1 SFX=audio/saas-text-motion-sfx.wav SFX_GAIN=1 \
+            OUT_VIDEO=output/saas-text-to-motion-4k.mp4 \
+            npm run export:mp4
+
+      - name: Verify final contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/saas-text-to-motion-4k.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
+          if (Math.abs(Number(r.duration) - 18) > 0.25) throw new Error(`duration=${r.duration}`);
+          NODE
+
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/saas-text-to-motion-4k.mp4 \
+            -vf "select='eq(n,0)+eq(n,65)+eq(n,150)+eq(n,270)+eq(n,410)+eq(n,530)'" \
+            -vsync 0 output/qa-frame-%02d.png
+
+      - name: Record hashes
+        run: |
+          sha256sum output/saas-text-to-motion-4k.mp4 output/qa-frame-*.png > output/sha256.txt
+          stat -c '%n %s bytes' output/saas-text-to-motion-4k.mp4 output/saas-text-to-motion-4k.verify.json > output/artifact-sizes.txt
+          cat output/artifact-sizes.txt
+          cat output/sha256.txt
+
+      - name: Upload final delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: saas-text-to-motion-4k-final
+          path: |
+            output/saas-text-to-motion-4k.mp4
+            output/saas-text-to-motion-4k.verify.json
+            output/qa-frame-*.png
+            output/sha256.txt
+            output/artifact-sizes.txt
+            output/benchmark.txt
+          if-no-files-found: error
+          retention-days: 14
