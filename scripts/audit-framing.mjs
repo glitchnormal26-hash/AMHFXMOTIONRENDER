@@ -14,6 +14,12 @@
  *     }
  *   ]
  *
+ * Optional camera-overlap contract:
+ *   window.OPENER.CAMERA_AUDIT = {
+ *     moves: [{start: 0.75, end: 1.25, label: 'hook push'}],
+ *     cuts: [{time: 7.14, label: 'preview hard cut'}]
+ *   }
+ *
  * Environment:
  *   INDEX=assets/scene.html WIDTH=1080 HEIGHT=1920 node scripts/audit-framing.mjs
  */
@@ -63,18 +69,20 @@ try {
   await page.evaluate(() => document.fonts?.ready);
 
   const audit = await page.evaluate(() => window.OPENER?.FRAME_AUDIT || []);
+  const cameraAudit = await page.evaluate(() => window.OPENER?.CAMERA_AUDIT || null);
   if (!Array.isArray(audit) || audit.length === 0) {
     throw new Error('FRAME_AUDIT is missing or empty. Scene must expose deterministic framing checks.');
   }
 
-  const failures = [];
+  const frameFailures = [];
+  const overlapFailures = [];
   console.log(`FRAME_AUDIT_START ${width}x${height} checks=${audit.length}`);
 
   for (let i = 0; i < audit.length; i++) {
     const check = audit[i] || {};
     const time = Number(check.time);
     if (!Number.isFinite(time) || time < 0) {
-      failures.push(`check[${i}] invalid time=${check.time}`);
+      frameFailures.push(`check[${i}] invalid time=${check.time}`);
       continue;
     }
 
@@ -118,11 +126,11 @@ try {
 
     for (const r of result.targets) {
       if (r.missing) {
-        failures.push(`t=${time.toFixed(3)} ${r.selector} missing`);
+        frameFailures.push(`t=${time.toFixed(3)} ${r.selector} missing`);
         continue;
       }
       if (r.display === 'none' || r.visibility === 'hidden' || r.opacity <= 0.01) {
-        failures.push(`t=${time.toFixed(3)} ${r.selector} not visibly present`);
+        frameFailures.push(`t=${time.toFixed(3)} ${r.selector} not visibly present`);
         continue;
       }
       const ok =
@@ -134,7 +142,7 @@ try {
         `  target ${r.selector} rect=${r.left.toFixed(1)},${r.top.toFixed(1)},${r.right.toFixed(1)},${r.bottom.toFixed(1)} ${ok ? 'PASS' : 'FAIL'}`
       );
       if (!ok) {
-        failures.push(
+        frameFailures.push(
           `t=${time.toFixed(3)} ${r.selector} outside safe frame: ` +
           `rect=[${r.left.toFixed(1)},${r.top.toFixed(1)},${r.right.toFixed(1)},${r.bottom.toFixed(1)}] ` +
           `safe=[${safe.left},${safe.top},${width - safe.right},${height - safe.bottom}]`
@@ -144,7 +152,7 @@ try {
 
     for (const r of result.coverage) {
       if (r.missing) {
-        failures.push(`t=${time.toFixed(3)} coverage ${r.selector} missing`);
+        frameFailures.push(`t=${time.toFixed(3)} coverage ${r.selector} missing`);
         continue;
       }
       const ok = r.left <= 0.5 && r.top <= 0.5 && r.right >= width - 0.5 && r.bottom >= height - 0.5;
@@ -152,7 +160,7 @@ try {
         `  cover  ${r.selector} rect=${r.left.toFixed(1)},${r.top.toFixed(1)},${r.right.toFixed(1)},${r.bottom.toFixed(1)} ${ok ? 'PASS' : 'FAIL'}`
       );
       if (!ok) {
-        failures.push(
+        frameFailures.push(
           `t=${time.toFixed(3)} ${r.selector} does not cover viewport: ` +
           `rect=[${r.left.toFixed(1)},${r.top.toFixed(1)},${r.right.toFixed(1)},${r.bottom.toFixed(1)}]`
         );
@@ -160,13 +168,50 @@ try {
     }
   }
 
-  if (failures.length) {
+  if (cameraAudit) {
+    const moves = Array.isArray(cameraAudit.moves) ? cameraAudit.moves : [];
+    const cuts = Array.isArray(cameraAudit.cuts) ? cameraAudit.cuts : [];
+    const eps = 1e-6;
+    console.log(`CAMERA_OVERLAP_AUDIT moves=${moves.length} cuts=${cuts.length}`);
+
+    for (const cut of cuts) {
+      const t = Number(cut?.time);
+      if (!Number.isFinite(t)) {
+        overlapFailures.push(`invalid cut time=${cut?.time}`);
+        continue;
+      }
+      for (const move of moves) {
+        const start = Number(move?.start);
+        const end = Number(move?.end);
+        if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) {
+          overlapFailures.push(`invalid move interval ${JSON.stringify(move)}`);
+          continue;
+        }
+        if (start + eps < t && t < end - eps) {
+          overlapFailures.push(
+            `${cut.label || 'cut'} at ${t.toFixed(3)} overlaps ${move.label || 'camera move'} ` +
+            `[${start.toFixed(3)}, ${end.toFixed(3)}]`
+          );
+        }
+      }
+    }
+  }
+
+  if (frameFailures.length) {
     console.error('CAMERA_FRAME_GATE=FAIL');
-    for (const f of failures) console.error(` - ${f}`);
-    process.exitCode = 2;
+    for (const f of frameFailures) console.error(` - ${f}`);
   } else {
     console.log('CAMERA_FRAME_GATE=PASS');
   }
+
+  if (overlapFailures.length) {
+    console.error('CAMERA_OVERLAP_GATE=FAIL');
+    for (const f of overlapFailures) console.error(` - ${f}`);
+  } else {
+    console.log('CAMERA_OVERLAP_GATE=PASS');
+  }
+
+  if (frameFailures.length || overlapFailures.length) process.exitCode = 2;
 } finally {
   if (browser) await browser.close();
 }
