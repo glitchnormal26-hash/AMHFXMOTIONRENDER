@@ -26,7 +26,7 @@ tl.fromTo('#chat',{opacity:0,y:190,scale:.88,rotation:1.2},{opacity:1,y:0,scale:
 tl.fromTo('#botRow',{opacity:0,x:-40},{opacity:1,x:0,duration:.44,ease:'power3.out'},2.18);
 tl.fromTo('#promptBubble',{opacity:0,scale:.85,y:36},{opacity:1,scale:1,y:0,duration:.45,ease:'back.out(1.35)'},2.52);
 tl.to('#promptText .char',{opacity:1,y:0,duration:.035,stagger:.026,ease:'none'},2.68);
-tl.to(camera,{scale:1.13,x:-55,y:-250,duration:.85,ease:'power2.inOut'},3.18);
+tl.to(camera,{scale:1.05,x:0,y:-165,duration:.85,ease:'power2.inOut'},3.18);
 
 // 4.45–6.45: cursor pickup + tracked speed-ramped drag into composer.
 tl.fromTo('#skillCard',{opacity:0,scale:.75,rotation:7,y:70},{opacity:1,scale:1,rotation:0,y:0,duration:.45,ease:'back.out(1.6)'},4.12);
@@ -40,13 +40,13 @@ tl.to('.speedLines',{opacity:.78,duration:.12},4.90);
 // attack -> travel -> settle (authored speed ramp)
 tl.to('#cursor',{x:-330,y:20,rotation:-7,duration:.28,ease:'power4.in'},4.92);
 tl.to('#skillCard',{x:-330,y:20,rotation:-7,duration:.28,ease:'power4.in'},4.92);
-tl.to(camera,{x:135,y:-180,scale:1.22,rotation:.45,duration:.34,ease:'power4.in'},4.90);
+tl.to(camera,{x:38,y:-130,scale:1.08,rotation:.28,duration:.34,ease:'power4.in'},4.90);
 tl.to('#cursor',{x:-535,y:-270,rotation:-10,duration:.38,ease:'none'},5.20);
 tl.to('#skillCard',{x:-535,y:-270,rotation:-10,duration:.38,ease:'none'},5.20);
-tl.to(camera,{x:235,y:35,scale:1.29,rotation:.75,duration:.38,ease:'none'},5.20);
+tl.to(camera,{x:68,y:-58,scale:1.10,rotation:.35,duration:.38,ease:'none'},5.20);
 tl.to('#cursor',{x:-584,y:-385,rotation:0,duration:.42,ease:'power4.out'},5.58);
 tl.to('#skillCard',{x:-584,y:-385,rotation:0,scale:.77,duration:.42,ease:'power4.out'},5.58);
-tl.to(camera,{x:145,y:115,scale:1.18,rotation:0,duration:.46,ease:'power4.out'},5.58);
+tl.to(camera,{x:28,y:18,scale:1.05,rotation:0,duration:.46,ease:'power4.out'},5.58);
 tl.to('.speedLines',{opacity:0,duration:.2},5.78);
 tl.to('#skillCard',{opacity:0,duration:.12},6.00);
 tl.fromTo('#docked',{opacity:0,scale:.72},{opacity:1,scale:1,duration:.30,ease:'back.out(1.8)'},6.00);
@@ -58,7 +58,7 @@ tl.to('#send',{scale:.78,rotation:-8,duration:.09,ease:'power2.in'},6.66);
 tl.to('#send',{scale:1,rotation:0,duration:.18,ease:'back.out(2)'},6.75);
 tl.to('.flash',{opacity:.72,duration:.06},6.76).to('.flash',{opacity:0,duration:.24},6.82);
 tl.fromTo('#resultWrap',{opacity:0,scale:.72,y:-35},{opacity:1,scale:1,y:0,duration:.54,ease:'power4.out'},6.88);
-tl.to(camera,{x:72,y:-355,scale:1.35,duration:.75,ease:'power3.inOut'},6.90);
+tl.to(camera,{x:-6,y:-245,scale:1.10,duration:.75,ease:'power3.inOut'},6.90);
 tl.fromTo('#ll1,#ll2,#ll3',{opacity:0,x:-24},{opacity:1,x:0,duration:.25,stagger:.12,ease:'power2.out'},7.26);
 tl.to('#ll1',{background:'linear-gradient(90deg,#7c4dff,#3cf3ff,#d9ff3f)',duration:.32,ease:'power2.out'},7.35);
 tl.fromTo('#sr1,#sr2,#sr3',{opacity:0,x:-18},{opacity:1,x:0,duration:.25,stagger:.18,ease:'power2.out'},7.58);
@@ -81,22 +81,22 @@ tl.to('#bird .birdWing',{rotation:-34,duration:.13,yoyo:true,repeat:15,ease:'pow
 tl.to('#p1',{x:-1010,duration:3.6,ease:'none'},8.72);
 tl.to('#p2',{x:-1190,duration:4.1,ease:'none'},8.72);
 tl.to('#p3',{x:-1390,duration:4.5,ease:'none'},8.72);
-tl.to(camera,{x:-15,y:-440,scale:1.52,duration:.52,ease:'power3.in'},8.70);
-tl.to(camera,{x:82,y:-500,scale:1.58,duration:1.15,ease:'none'},9.22);
-tl.to(camera,{x:30,y:-460,scale:1.46,duration:.55,ease:'power4.out'},10.37);
-tl.to(camera,{x:95,y:-520,scale:1.60,duration:.78,ease:'power2.inOut'},10.96);
-tl.to(camera,{x:10,y:-430,scale:1.43,duration:.72,ease:'power3.out'},11.74);
+tl.to(camera,{x:-12,y:-310,scale:1.16,duration:.52,ease:'power3.in'},8.70);
+tl.to(camera,{x:24,y:-335,scale:1.19,duration:1.15,ease:'none'},9.22);
+tl.to(camera,{x:0,y:-305,scale:1.14,duration:.55,ease:'power4.out'},10.37);
+tl.to(camera,{x:26,y:-342,scale:1.20,duration:.78,ease:'power2.inOut'},10.96);
+tl.to(camera,{x:-4,y:-300,scale:1.13,duration:.72,ease:'power3.out'},11.74);
 tl.to('#score',{duration:.01,onStart:()=>document.querySelector('#score').textContent='01'},9.62);
 tl.to('#score',{duration:.01,onStart:()=>document.querySelector('#score').textContent='02'},10.82);
 tl.to('#score',{duration:.01,onStart:()=>document.querySelector('#score').textContent='03'},12.00);
 
 // 12.8–16: pull back reveal, keep product world visible, payoff lands.
-tl.to(camera,{x:-38,y:-160,scale:1.04,rotation:-.25,duration:.94,ease:'power4.inOut'},12.72);
-tl.to('#chat',{scale:.91,x:-105,y:-55,rotation:-1.2,duration:.72,ease:'power3.inOut'},13.02);
+tl.to(camera,{x:0,y:-90,scale:1.00,rotation:-.15,duration:.94,ease:'power4.inOut'},12.72);
+tl.to('#chat',{scale:.67,x:0,y:-270,rotation:-1.0,duration:.72,ease:'power3.inOut'},13.02);
 tl.to('.hook',{opacity:.08,scale:.62,x:-75,y:-155,duration:.45},13.12);
 tl.fromTo('#payoff',{opacity:0,y:110,scale:.88},{opacity:1,y:0,scale:1,duration:.68,ease:'power4.out'},13.30);
 tl.fromTo('#payoff .lime',{filter:'blur(10px)',textShadow:'0 0 0 rgba(217,255,63,0)'},{filter:'blur(0px)',textShadow:'0 0 44px rgba(217,255,63,.22)',duration:.52,ease:'power2.out'},13.68);
-tl.to(camera,{x:-10,y:-85,scale:1.01,duration:.58,ease:'power2.out'},14.22);
+tl.to(camera,{x:0,y:-35,scale:1.0,duration:.58,ease:'power2.out'},14.22);
 tl.fromTo('.cta',{scale:.88,y:18},{scale:1,y:0,duration:.42,ease:'back.out(1.7)'},14.45);
 tl.to('.brand',{color:'#d9ff3f',duration:.25},14.72);
 tl.to('.edgeWord',{x:-45,opacity:.24,duration:.52,ease:'power2.out'},14.78);
