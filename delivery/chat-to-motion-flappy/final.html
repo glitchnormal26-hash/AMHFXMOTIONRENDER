@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chat to Motion — Final Safe Layout</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030405}
+#motion{display:block;border:0;width:100vw;height:100vh}
+</style>
+</head>
+<body>
+<iframe id="motion" src="index.html?clean=1" title="Chat to Motion"></iframe>
+<script>
+(() => {
+  const frame = document.getElementById('motion');
+  frame.addEventListener('load', () => {
+    const w = frame.contentWindow;
+    const d = frame.contentDocument;
+    const style = d.createElement('style');
+    style.textContent = `
+      /* Keep the final gameplay proof physically outside every typography lane. */
+      #miniGame { bottom: 220px !important; right: 126px !important; }
+    `;
+    d.head.appendChild(style);
+    const expose = () => {
+      if (!w.OPENER?.ready) return requestAnimationFrame(expose);
+      window.OPENER = {
+        ready: true,
+        DURATION: w.OPENER.DURATION,
+        seek(t) { w.OPENER.seek(t); }
+      };
+      const t = Number(new URLSearchParams(location.search).get('t') || 0);
+      window.OPENER.seek(t);
+    };
+    expose();
+  });
+})();
+</script>
+</body>
+</html>
