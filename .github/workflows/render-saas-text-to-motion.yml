@@ -1,0 +1,159 @@
+name: Render SaaS Text to Motion 9x16
+
+on:
+  push:
+    branches: [saas-text-to-motion-vertical]
+    paths:
+      - 'delivery/saas-text-to-motion/**'
+      - '.github/workflows/render-saas-text-to-motion.yml'
+      - 'scripts/export-mp4.mjs'
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Ensure FFmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install locked AMHFX dependencies
+        run: npm ci
+
+      - name: Syntax check authored motion
+        run: node --check delivery/saas-text-to-motion/motion.js
+
+      - name: Generate deterministic hi-tech SFX mix
+        run: |
+          python3 - <<'PY'
+          import math, random, wave, struct
+          RATE=48000
+          DUR=16.0
+          N=int(RATE*DUR)
+          buf=[0.0]*N
+          rng=random.Random(392)
+
+          def env(i,n,attack=.08,release=.22):
+              x=i/max(1,n-1)
+              a=min(1.0,x/max(attack,1e-6))
+              r=min(1.0,(1.0-x)/max(release,1e-6))
+              return max(0.0,min(a,r))
+
+          def tone(t,d,f,amp=.18,decay=True):
+              s=int(t*RATE); n=max(1,int(d*RATE))
+              for i in range(n):
+                  if s+i>=N: break
+                  e=env(i,n,.03,.35)
+                  if decay: e*=1-(i/n)*.45
+                  buf[s+i]+=amp*e*math.sin(2*math.pi*f*i/RATE)
+
+          def chirp(t,d,f0,f1,amp=.18):
+              s=int(t*RATE); n=max(1,int(d*RATE)); phase=0.0
+              for i in range(n):
+                  if s+i>=N: break
+                  x=i/max(1,n-1); f=f0+(f1-f0)*(x*x*(3-2*x))
+                  phase += 2*math.pi*f/RATE
+                  buf[s+i]+=amp*env(i,n,.04,.28)*math.sin(phase)
+
+          def noise(t,d,amp=.12,bright=1.0):
+              s=int(t*RATE); n=max(1,int(d*RATE)); prev=0.0
+              for i in range(n):
+                  if s+i>=N: break
+                  raw=rng.uniform(-1,1)
+                  prev=prev*.72+raw*.28
+                  sig=(raw*bright+prev*(1-bright))
+                  buf[s+i]+=amp*env(i,n,.08,.22)*sig
+
+          # Hook / UI reveal
+          chirp(.12,.28,180,880,.20); tone(.42,.16,1080,.12)
+          chirp(1.56,.22,760,240,.12); tone(2.18,.11,1320,.10)
+          # Typing ticks
+          for j in range(11): tone(2.75+j*.13,.045,1480+(j%3)*170,.045)
+          # Pickup + authored drag ramp
+          tone(4.55,.09,1120,.13); chirp(4.78,1.18,260,1680,.17); noise(4.90,.88,.08,.78)
+          tone(6.01,.17,620,.15); tone(6.05,.11,1240,.08)
+          # Send / generate
+          tone(6.72,.08,148,.24); chirp(6.74,.34,340,1780,.22); noise(6.78,.20,.09,.9)
+          for t,f in [(7.32,980),(7.68,1240),(8.02,1510),(8.31,1760)]: tone(t,.085,f,.08)
+          chirp(8.44,.28,420,1420,.15)
+          # Flappy interactions / scoring
+          for t in [9.10,10.04,10.92,11.86]: chirp(t,.13,980,1420,.09)
+          for t in [9.62,10.82,12.00]: tone(t,.11,1840,.11); tone(t+.025,.08,920,.06)
+          # Pullback payoff + CTA
+          chirp(12.78,.48,920,260,.11); tone(13.34,.22,165,.20); chirp(13.38,.42,310,1120,.15)
+          tone(14.47,.13,740,.13); tone(14.55,.17,1480,.08)
+
+          peak=max(1e-6,max(abs(x) for x in buf))
+          gain=min(0.92/peak,1.0)
+          with wave.open('delivery/saas-text-to-motion/sfx.wav','wb') as w:
+              w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE)
+              frames=bytearray()
+              for x in buf:
+                  y=math.tanh(x*gain*1.15)
+                  frames += struct.pack('<h',max(-32767,min(32767,int(y*32767))))
+              w.writeframes(frames)
+          PY
+
+      - name: Render deterministic vertical H.264
+        env:
+          INDEX: delivery/saas-text-to-motion/index.html
+          QUALITY: final
+          FPS: '30'
+          WIDTH: '1080'
+          HEIGHT: '1920'
+          CRF: '14'
+          PRESET: medium
+          SFX: delivery/saas-text-to-motion/sfx.wav
+          SFX_GAIN: '1.0'
+          REQUIRE_AUDIO: '1'
+          OUT_VIDEO: output/amhfx-saas-text-to-motion-1080x1920.mp4
+        run: |
+          mkdir -p output
+          npm run export:mp4
+
+      - name: Verify final render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='output/amhfx-saas-text-to-motion-1080x1920.verify.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.status!=='FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if(r.video?.codec_name!=='h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if(r.video?.width!==1080||r.video?.height!==1920) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if(r.video?.r_frame_rate!=='30/1') throw new Error(`fps=${r.video?.r_frame_rate}`);
+          if(r.audio?.codec_name!=='aac') throw new Error(`audio=${r.audio?.codec_name}`);
+          if(Math.abs(Number(r.duration)-16)>.2) throw new Error(`duration=${r.duration}`);
+          NODE
+
+      - name: Extract camera and story QA frames
+        run: |
+          ffmpeg -y -i output/amhfx-saas-text-to-motion-1080x1920.mp4 \
+            -vf "select='eq(n,15)+eq(n,159)+eq(n,183)+eq(n,291)+eq(n,414)+eq(n,465)'" \
+            -vsync 0 output/qa-%02d.png
+          sha256sum output/amhfx-saas-text-to-motion-1080x1920.mp4 > output/sha256.txt
+
+      - name: Upload final MP4 and QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: amhfx-saas-text-to-motion-1080x1920
+          path: |
+            output/amhfx-saas-text-to-motion-1080x1920.mp4
+            output/amhfx-saas-text-to-motion-1080x1920.verify.json
+            output/sha256.txt
+            output/qa-*.png
+          if-no-files-found: error
+          retention-days: 14
