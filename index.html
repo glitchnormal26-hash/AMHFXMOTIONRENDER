@@ -3,168 +3,178 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>4K Gift Box Greenscreen Motion</title>
+<title>Gift Box Deluxe Greenscreen Motion</title>
 <script src="./node_modules/gsap/dist/gsap.min.js"></script>
 <style>
 :root{
   --green:#00ff00;
-  --pink:#ef267d;
-  --pink-hi:#ff5ca7;
-  --pink-dark:#ad1257;
+  --berry:#e51f68;
+  --berry-hi:#ff5f9a;
+  --berry-mid:#f03279;
+  --berry-dark:#971044;
+  --berry-deep:#6f0b38;
   --gold:#ffc928;
   --gold-hi:#fff06a;
-  --gold-dark:#d88b00;
-  --blue:#20b8ff;
+  --gold-dark:#d98700;
+  --blue:#2d8cff;
+  --cyan:#42d9ff;
   --orange:#ff7a26;
+  --violet:#7b5cff;
   --white:#ffffff;
+  --ink:#3b1745;
 }
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--green)}
 body{font-family:Arial,Helvetica,sans-serif}
 #stage{
-  position:fixed;
-  left:50%;top:50%;
+  position:fixed;left:50%;top:50%;
   width:3840px;height:2160px;
   transform:translate(-50%,-50%) scale(1);
-  transform-origin:center;
-  overflow:hidden;
-  background:var(--green);
+  transform-origin:center;overflow:hidden;background:var(--green)
 }
-#world{position:absolute;inset:0;overflow:hidden;background:var(--green)}
+#world{
+  position:absolute;inset:0;overflow:hidden;background:var(--green);
+  transform-origin:50% 58%;will-change:transform
+}
 #giftRig{
-  position:absolute;left:1920px;top:1160px;
-  width:0;height:0;
-  transform-origin:0 220px;
-  will-change:transform;
+  position:absolute;left:1920px;top:1160px;width:0;height:0;
+  transform-origin:0 250px;will-change:transform
 }
-#giftCore{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 210px;will-change:transform}
-
-/* Main box — clean 2.5D faces with no green-adjacent shadows. */
+#giftCore{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 220px;will-change:transform}
+#floorMark{
+  position:absolute;left:-590px;top:455px;width:1180px;height:150px;border-radius:50%;
+  background:var(--ink);transform-origin:center;will-change:transform
+}
 #bodyFront{
-  position:absolute;left:-455px;top:-110px;width:910px;height:600px;
-  border-radius:36px;
-  background:linear-gradient(180deg,var(--pink-hi) 0%,var(--pink) 42%,var(--pink-dark) 100%);
-  border:14px solid #8e0d47;
-  overflow:hidden;
+  position:absolute;left:-470px;top:-105px;width:940px;height:610px;
+  border-radius:46px 46px 70px 70px;
+  background:linear-gradient(180deg,var(--berry-hi) 0%,var(--berry-mid) 20%,var(--berry) 56%,var(--berry-dark) 100%);
+  border:16px solid var(--berry-deep);overflow:hidden
 }
 #bodyFront:before{
-  content:"";position:absolute;left:0;right:0;top:68px;height:86px;
-  background:rgba(255,255,255,.13);transform:skewY(-2deg);
+  content:"";position:absolute;left:38px;right:38px;top:48px;height:74px;
+  border-radius:999px;background:#ff8fba;transform:skewY(-2deg)
 }
 #bodyTop{
-  position:absolute;left:-455px;top:-194px;width:910px;height:120px;
-  background:linear-gradient(180deg,#ff77b7,var(--pink));
+  position:absolute;left:-470px;top:-198px;width:940px;height:120px;
+  background:linear-gradient(180deg,#ff89bb,var(--berry-mid));
   clip-path:polygon(8% 0,92% 0,100% 100%,0 100%);
-  border-bottom:12px solid #a90e54;
+  border-bottom:12px solid #a71050
 }
 #bodySide{
-  position:absolute;left:455px;top:-78px;width:118px;height:536px;
-  background:linear-gradient(180deg,#c81463,#8b0e45);
-  clip-path:polygon(0 0,100% 9%,100% 92%,0 100%);
+  position:absolute;left:470px;top:-78px;width:132px;height:548px;
+  background:linear-gradient(180deg,#b71658,var(--berry-deep));
+  clip-path:polygon(0 0,100% 10%,100% 91%,0 100%)
 }
 .ribbonV{
-  position:absolute;left:50%;top:0;bottom:0;width:164px;translate:-50% 0;
-  background:linear-gradient(90deg,var(--gold-dark),var(--gold-hi) 48%,var(--gold));
+  position:absolute;left:50%;top:0;bottom:0;width:176px;translate:-50% 0;
+  background:linear-gradient(90deg,var(--gold-dark),var(--gold-hi) 46%,var(--gold) 66%,var(--gold-dark))
 }
 .ribbonH{
-  position:absolute;left:0;right:0;top:246px;height:132px;
-  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 56%,var(--gold-dark));
+  position:absolute;left:0;right:0;top:248px;height:138px;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 56%,var(--gold-dark))
 }
-.ribbonV:after,.ribbonH:after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.12)}
-#bodyShine{
-  position:absolute;left:-355px;top:-30px;width:105px;height:420px;
-  border-radius:999px;background:rgba(255,255,255,.15);transform:rotate(12deg)
+#bodyBadge{
+  position:absolute;left:95px;top:408px;width:168px;height:70px;border-radius:999px;
+  background:var(--white);transform:rotate(-4deg)
 }
-
-/* Lid and bow stay as one hero object until the reveal. */
+#bodyBadge:after{
+  content:"";position:absolute;left:42px;top:24px;width:84px;height:22px;border-radius:999px;background:var(--berry)
+}
 #lid{
-  position:absolute;left:0;top:-292px;width:0;height:0;
-  transform-origin:-330px 150px;
-  will-change:transform;
+  position:absolute;left:0;top:-310px;width:0;height:0;
+  transform-origin:-355px 176px;will-change:transform
 }
 #lidFront{
-  position:absolute;left:-515px;top:0;width:1030px;height:185px;
-  border-radius:34px;
-  background:linear-gradient(180deg,#ff6bb0,var(--pink) 55%,#b41059);
-  border:14px solid #8e0d47;
-  overflow:hidden;
+  position:absolute;left:-535px;top:0;width:1070px;height:190px;
+  border-radius:42px;background:linear-gradient(180deg,#ff70aa,var(--berry-mid) 52%,#b51158);
+  border:16px solid var(--berry-deep);overflow:hidden
+}
+#lidFront:before{
+  content:"";position:absolute;left:60px;top:28px;width:295px;height:28px;border-radius:99px;background:#ff9fc2
 }
 #lidTop{
-  position:absolute;left:-515px;top:-92px;width:1030px;height:112px;
-  background:linear-gradient(180deg,#ff8cc4,#f94499);
+  position:absolute;left:-535px;top:-105px;width:1070px;height:126px;
+  background:linear-gradient(180deg,#ffa2c9,#ff4e91 70%);
   clip-path:polygon(7% 0,93% 0,100% 100%,0 100%);
-  border-bottom:10px solid #ad1257;
+  border-bottom:12px solid #a71050
 }
-#lid .ribbonV{left:50%;top:-92px;height:277px;bottom:auto;width:184px}
-#lid .ribbonH{top:48px;height:92px}
-#lidShine{
-  position:absolute;left:-390px;top:15px;width:190px;height:26px;
-  background:rgba(255,255,255,.22);border-radius:99px;transform:rotate(-2deg)
-}
-#bow{position:absolute;left:0;top:-178px;width:0;height:0;will-change:transform}
+#lid .ribbonV{left:50%;top:-105px;height:295px;bottom:auto;width:194px}
+#lid .ribbonH{top:52px;height:96px}
+#bow{position:absolute;left:0;top:-188px;width:0;height:0;will-change:transform}
 .bowLoop{
-  position:absolute;top:-72px;width:320px;height:185px;
-  border:48px solid var(--gold);
-  background:var(--orange);
-  border-radius:58% 45% 60% 48%;
-  box-shadow:inset 0 0 0 14px var(--gold-hi);
-  will-change:transform;
+  position:absolute;top:-78px;width:335px;height:192px;border:50px solid var(--gold);
+  background:var(--orange);box-shadow:inset 0 0 0 14px var(--gold-hi);
+  will-change:transform
 }
-#bowLeft{left:-320px;transform-origin:100% 62%;transform:rotate(-19deg)}
-#bowRight{left:0;transform-origin:0 62%;transform:rotate(19deg)}
+#bowLeft{left:-336px;border-radius:68% 38% 62% 44%;transform-origin:100% 62%;transform:rotate(-20deg)}
+#bowRight{left:0;border-radius:38% 68% 44% 62%;transform-origin:0 62%;transform:rotate(20deg)}
 #knot{
-  position:absolute;left:-92px;top:-42px;width:184px;height:164px;
-  border-radius:50%;
-  background:radial-gradient(circle at 38% 30%,var(--gold-hi),var(--gold) 48%,var(--gold-dark) 100%);
-  border:12px solid #c47c00;
-  will-change:transform;
+  position:absolute;left:-96px;top:-46px;width:192px;height:170px;border-radius:52% 48% 55% 45%;
+  background:radial-gradient(circle at 36% 28%,var(--gold-hi),var(--gold) 50%,var(--gold-dark));
+  border:12px solid #bf7600;will-change:transform
 }
 #tailLeft,#tailRight{
-  position:absolute;top:75px;width:118px;height:250px;
+  position:absolute;top:76px;width:126px;height:270px;
   background:linear-gradient(180deg,var(--gold-hi),var(--gold),var(--gold-dark));
-  clip-path:polygon(0 0,100% 8%,80% 100%,49% 83%,18% 100%);
-  transform-origin:50% 0;
+  clip-path:polygon(0 0,100% 8%,82% 100%,50% 82%,18% 100%);transform-origin:50% 0
 }
-#tailLeft{left:-126px;transform:rotate(14deg)}
-#tailRight{left:8px;transform:rotate(-14deg)}
+#tailLeft{left:-136px;transform:rotate(14deg)}
+#tailRight{left:10px;transform:rotate(-14deg)}
 
-/* Reveal energy — opaque graphic shapes keep chroma edges crisp. */
-#insideGlow{
-  position:absolute;left:-410px;top:-360px;width:820px;height:820px;
-  border-radius:50%;
-  background:radial-gradient(circle,var(--white) 0 6%,var(--gold-hi) 7% 18%,var(--gold) 19% 37%,rgba(255,201,40,.45) 38% 56%,rgba(255,201,40,0) 57% 100%);
-  opacity:0;transform:scale(.15);will-change:transform,opacity;pointer-events:none
+#revealDisc{
+  position:absolute;left:-360px;top:-630px;width:720px;height:720px;border-radius:50%;
+  background:var(--gold-hi);border:38px solid var(--white);
+  transform:scale(0);visibility:hidden;will-change:transform
 }
-#burstRoot{position:absolute;left:0;top:-250px;width:0;height:0;pointer-events:none}
-.particle{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity}
-.particle.dot{width:58px;height:58px;border-radius:50%;background:var(--white);border:8px solid #ffb500}
+#revealDisc:after{
+  content:"";position:absolute;left:118px;top:118px;width:408px;height:408px;border-radius:50%;
+  border:54px solid var(--gold);background:var(--white)
+}
+.ray{
+  position:absolute;left:-20px;top:-500px;width:40px;height:320px;border-radius:999px;
+  background:var(--white);transform-origin:50% 500px;visibility:hidden;will-change:transform
+}
+.ray.gold{background:var(--gold-hi)}
+#ray1{transform:rotate(-72deg)} #ray2{transform:rotate(-48deg)} #ray3{transform:rotate(-24deg)}
+#ray4{transform:rotate(24deg)} #ray5{transform:rotate(48deg)} #ray6{transform:rotate(72deg)}
+#burstRoot{position:absolute;left:0;top:-245px;width:0;height:0;pointer-events:none}
+.particle{
+  position:absolute;left:0;top:0;visibility:hidden;will-change:transform
+}
+.particle.dot{width:58px;height:58px;border-radius:50%;background:var(--white);border:9px solid var(--orange)}
 .particle.diamond{
-  width:82px;height:82px;background:var(--blue);border:8px solid var(--white);
+  width:84px;height:84px;background:var(--blue);border:9px solid var(--white);
   clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)
 }
 .particle.star{
-  width:110px;height:110px;background:var(--gold-hi);
-  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 56%,79% 94%,50% 72%,21% 94%,32% 56%,2% 35%,39% 35%);
-  border:none
+  width:118px;height:118px;background:var(--gold-hi);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 56%,79% 94%,50% 72%,21% 94%,32% 56%,2% 35%,39% 35%)
 }
-.particle.confetti{width:36px;height:150px;border-radius:18px;background:var(--orange)}
+.particle.confetti{width:38px;height:158px;border-radius:18px;background:var(--orange)}
 .particle.confetti.blue{background:var(--blue)}
-.particle.confetti.pink{background:#ff9bd0}
-#impactRing,#closeRing,#poofRing{
-  position:absolute;left:-520px;top:440px;width:1040px;height:180px;
-  border:32px solid var(--white);border-radius:50%;opacity:0;transform:scale(.25);
-  will-change:transform,opacity;pointer-events:none
+.particle.confetti.pink{background:#ff94c3}
+.particle.confetti.violet{background:var(--violet)}
+.particle.streamer{
+  width:64px;height:220px;border-radius:99px;background:var(--cyan);
+  clip-path:polygon(0 0,100% 0,70% 25%,100% 50%,70% 75%,100% 100%,0 100%,30% 75%,0 50%,30% 25%)
+}
+.particle.streamer.gold{background:var(--gold)}
+.particle.streamer.pink{background:#ff7eb2}
+.ring{
+  position:absolute;left:-560px;top:440px;width:1120px;height:190px;border:38px solid var(--white);
+  border-radius:50%;transform:scale(.25);visibility:hidden;will-change:transform,border-width
 }
 #closeRing{border-color:var(--gold-hi)}
-#poofRing{top:-20px;border-color:var(--white);width:1180px;left:-590px;height:360px}
-#sparkA,#sparkB,#sparkC,#sparkD{
-  position:absolute;width:38px;height:210px;background:var(--white);border-radius:99px;
-  left:-19px;top:-330px;opacity:0;transform-origin:50% 430px
+#poofRing{left:-650px;top:-40px;width:1300px;height:420px;border-color:var(--white)}
+.spark{
+  position:absolute;width:42px;height:230px;border-radius:999px;background:var(--white);
+  left:-21px;top:-360px;transform-origin:50% 470px;visibility:hidden;will-change:transform
 }
 #sparkB{transform:rotate(90deg)} #sparkC{transform:rotate(45deg)} #sparkD{transform:rotate(-45deg)}
 
 #debug{
-  display:none;position:fixed;left:50%;bottom:26px;translate:-50% 0;z-index:20;
+  display:none;position:fixed;left:50%;bottom:24px;translate:-50% 0;z-index:20;
   gap:16px;align-items:center;padding:16px 22px;border-radius:16px;background:#111;color:#fff;
   font:20px Arial,sans-serif
 }
@@ -177,34 +187,32 @@ body{font-family:Arial,Helvetica,sans-serif}
 <div id="stage">
   <div id="world">
     <div id="giftRig">
-      <div id="impactRing"></div>
-      <div id="closeRing"></div>
-      <div id="poofRing"></div>
-      <div id="insideGlow"></div>
+      <div id="floorMark"></div>
+      <div class="ring" id="impactRing"></div>
+      <div class="ring" id="closeRing"></div>
+      <div class="ring" id="poofRing"></div>
+      <div id="revealDisc"></div>
+      <div id="ray1" class="ray"></div><div id="ray2" class="ray gold"></div><div id="ray3" class="ray"></div>
+      <div id="ray4" class="ray gold"></div><div id="ray5" class="ray"></div><div id="ray6" class="ray gold"></div>
       <div id="burstRoot"></div>
       <div id="giftCore">
         <div id="bodyTop"></div>
         <div id="bodySide"></div>
         <div id="bodyFront">
-          <div class="ribbonV"></div>
-          <div class="ribbonH"></div>
-          <div id="bodyShine"></div>
+          <div class="ribbonV"></div><div class="ribbonH"></div><div id="bodyBadge"></div>
         </div>
         <div id="lid">
           <div id="lidTop"></div>
           <div id="lidFront"></div>
-          <div class="ribbonV"></div>
-          <div class="ribbonH"></div>
-          <div id="lidShine"></div>
+          <div class="ribbonV"></div><div class="ribbonH"></div>
           <div id="bow">
-            <div class="bowLoop" id="bowLeft"></div>
-            <div class="bowLoop" id="bowRight"></div>
-            <div id="tailLeft"></div><div id="tailRight"></div>
-            <div id="knot"></div>
+            <div class="bowLoop" id="bowLeft"></div><div class="bowLoop" id="bowRight"></div>
+            <div id="tailLeft"></div><div id="tailRight"></div><div id="knot"></div>
           </div>
         </div>
       </div>
-      <div id="sparkA"></div><div id="sparkB"></div><div id="sparkC"></div><div id="sparkD"></div>
+      <div id="sparkA" class="spark"></div><div id="sparkB" class="spark"></div>
+      <div id="sparkC" class="spark"></div><div id="sparkD" class="spark"></div>
     </div>
   </div>
 </div>
@@ -225,18 +233,19 @@ const fit=()=>{
 };
 addEventListener("resize",fit);fit();
 
-// Fixed particle data: no Math.random(), so every capture is deterministic.
 const particleData=[
-  ["star",-820,-900,-1040,-35,0.00],["diamond",-560,-1040,-860,130,0.04],
-  ["dot",-330,-1160,-680,-80,0.10],["confetti blue",-120,-1050,-520,260,0.15],
-  ["star",170,-1120,-650,95,0.07],["confetti pink",390,-1000,-700,-210,0.12],
-  ["diamond",610,-900,-850,190,0.02],["dot",830,-760,-1010,-110,0.16],
-  ["confetti",-960,-520,-380,360,0.06],["diamond",960,-500,-420,-260,0.13],
-  ["dot",-720,-690,-320,125,0.18],["star",720,-710,-350,-140,0.09],
-  ["confetti pink",-470,-880,-250,290,0.21],["confetti blue",500,-850,-260,-310,0.23],
-  ["diamond",-220,-820,-210,190,0.25],["dot",250,-790,-190,-130,0.27],
-  ["star",-1040,-300,-90,210,0.20],["star",1020,-260,-110,-190,0.24],
-  ["confetti",-650,-430,-40,420,0.30],["confetti blue",660,-410,-70,-390,0.32]
+  ["star",-900,-980,-180,-75,0.00,1.05],["diamond",-690,-1120,-120,130,0.05,.95],
+  ["dot",-450,-1240,-90,-120,0.11,.92],["confetti blue",-230,-1080,-40,260,0.16,1.02],
+  ["star",100,-1210,-130,96,0.08,.98],["confetti pink",330,-1140,-50,-230,0.14,1.06],
+  ["diamond",590,-1020,-90,210,0.03,.94],["dot",850,-880,-180,-140,0.18,.90],
+  ["confetti",-1020,-650,120,360,0.07,.90],["diamond",1030,-620,80,-280,0.15,.96],
+  ["dot",-760,-760,170,150,0.20,.86],["star",760,-790,130,-155,0.10,.92],
+  ["confetti pink",-520,-930,200,300,0.23,.92],["confetti violet",540,-900,180,-330,0.25,.96],
+  ["diamond",-275,-860,230,190,0.27,.82],["dot",295,-840,250,-135,0.29,.82],
+  ["star",-1110,-400,260,215,0.22,.82],["star",1090,-380,240,-195,0.26,.82],
+  ["streamer gold",-670,-690,300,345,0.18,.92],["streamer pink",670,-720,300,-330,0.20,.92],
+  ["confetti blue",-360,-680,360,480,0.31,.78],["confetti",390,-650,340,-430,0.33,.78],
+  ["dot",-120,-740,410,160,0.35,.72],["diamond",145,-720,420,-150,0.36,.72]
 ];
 const burst=$("#burstRoot");
 particleData.forEach(([cls])=>{
@@ -245,97 +254,143 @@ particleData.forEach(([cls])=>{
   burst.appendChild(el);
 });
 const particles=[...document.querySelectorAll(".particle")];
+const rays=[...document.querySelectorAll(".ray")];
+const sparks=[...document.querySelectorAll(".spark")];
 
 const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
 
-// HOOK: already moving on frame one. A heavy drop establishes the box as hero.
-tl.set("#giftRig",{y:-1760,rotation:-13,scale:.91},0);
-tl.set("#giftCore",{scaleX:1,scaleY:1},0);
-tl.set("#lid",{x:0,y:0,rotation:0},0);
-tl.to("#giftRig",{y:0,rotation:2,duration:.72,ease:"power3.in"},0);
+// Deterministic initial state. Nothing uses per-frame randomness or independent clocks.
+tl.set("#world",{scale:.965,y:18},0);
+tl.set("#giftRig",{y:-1800,rotation:-11,scale:.92},0);
+tl.set("#giftCore",{scaleX:1,scaleY:1,y:0},0);
+tl.set("#lid",{x:0,y:0,rotation:0,scale:1},0);
+tl.set("#floorMark",{scaleX:.42,scaleY:.35},0);
+tl.set("#revealDisc",{scale:0,visibility:"hidden"},0);
+tl.set(".ray",{scaleY:.15,visibility:"hidden"},0);
+tl.set(".particle",{scale:.2,visibility:"hidden"},0);
+tl.set(".ring",{scale:.24,borderWidth:38,visibility:"hidden"},0);
+tl.set(".spark",{scaleY:.2,visibility:"hidden"},0);
 
-// IMPACT: squash, ring, lid/bow delayed reaction, then a short breath.
-tl.to("#giftCore",{scaleX:1.09,scaleY:.82,duration:.11,ease:"power2.out"},.72);
-tl.fromTo("#impactRing",{opacity:.95,scale:.22},{opacity:0,scale:1.35,duration:.44,ease:"power3.out"},.72);
-tl.to("#lid",{y:34,rotation:1.8,duration:.10,ease:"power2.out"},.73);
-tl.to("#bow",{scaleY:.80,scaleX:1.10,duration:.10,ease:"power2.out"},.74);
-tl.to("#giftRig",{y:-150,rotation:-2.2,duration:.28,ease:"power2.out"},.83);
-tl.to("#giftCore",{scaleX:.97,scaleY:1.06,duration:.24,ease:"power2.out"},.84);
-tl.to("#lid",{y:-14,rotation:-1.1,duration:.23,ease:"power2.out"},.84);
-tl.to("#bow",{scaleX:.96,scaleY:1.08,duration:.24,ease:"back.out(1.7)"},.84);
-tl.to("#giftRig",{y:0,rotation:0,duration:.38,ease:"power2.inOut"},1.12);
-tl.to("#giftCore",{scaleX:1,scaleY:1,duration:.30,ease:"power2.out"},1.10);
-tl.to("#lid",{y:0,rotation:0,duration:.30,ease:"power2.out"},1.10);
+// HOOK — heavy drop with a camera-equivalent settle.
+tl.to("#giftRig",{y:0,rotation:1.8,duration:.72,ease:"power3.in"},0);
+tl.to("#world",{scale:1.0,y:0,duration:.84,ease:"power2.out"},0);
+
+// IMPACT — body compresses first, bow and lid react a beat later.
+tl.set("#impactRing",{visibility:"visible"},.71);
+tl.to("#impactRing",{scale:1.38,borderWidth:0,duration:.43,ease:"power3.out"},.71);
+tl.set("#impactRing",{visibility:"hidden"},1.15);
+tl.to("#floorMark",{scaleX:1.0,scaleY:1,duration:.14,ease:"power4.out"},.69);
+tl.to("#giftCore",{scaleX:1.105,scaleY:.80,y:32,duration:.11,ease:"power2.out"},.72);
+tl.to("#lid",{y:42,rotation:2.2,duration:.11,ease:"power2.out"},.73);
+tl.to("#bow",{scaleX:1.11,scaleY:.79,duration:.11,ease:"power2.out"},.74);
+tl.to("#giftRig",{y:-165,rotation:-2.2,duration:.27,ease:"power2.out"},.84);
+tl.to("#giftCore",{scaleX:.965,scaleY:1.07,y:-20,duration:.24,ease:"power2.out"},.84);
+tl.to("#lid",{y:-18,rotation:-1.4,duration:.22,ease:"power2.out"},.85);
+tl.to("#bow",{scaleX:.96,scaleY:1.08,duration:.23,ease:"back.out(1.8)"},.85);
+tl.to("#floorMark",{scaleX:.72,scaleY:.70,duration:.26,ease:"power2.out"},.86);
+tl.to("#giftRig",{y:0,rotation:0,duration:.40,ease:"power2.inOut"},1.12);
+tl.to("#giftCore",{scaleX:1,scaleY:1,y:0,duration:.32,ease:"power2.out"},1.10);
+tl.to("#lid",{y:0,rotation:0,duration:.32,ease:"power2.out"},1.10);
 tl.to("#bow",{scaleX:1,scaleY:1,duration:.30,ease:"power2.out"},1.10);
+tl.to("#floorMark",{scaleX:.86,scaleY:.82,duration:.34,ease:"power2.out"},1.10);
 
-// QUESTION: bow pulls outward and lid trembles before we know what is inside.
-tl.to("#bowLeft",{rotation:-34,scaleX:1.14,scaleY:.91,duration:.24,ease:"power3.out"},1.82);
-tl.to("#bowRight",{rotation:34,scaleX:1.14,scaleY:.91,duration:.24,ease:"power3.out"},1.82);
-tl.to("#knot",{scale:1.13,y:-18,duration:.20,ease:"back.out(2)"},1.86);
-tl.to("#tailLeft",{rotation:24,duration:.28,ease:"power2.out"},1.90);
-tl.to("#tailRight",{rotation:-24,duration:.28,ease:"power2.out"},1.90);
-tl.to("#lid",{rotation:-2.2,y:-18,duration:.12,ease:"power2.out"},2.25);
-tl.to("#lid",{rotation:2.0,y:3,duration:.11,ease:"power2.inOut"},2.37);
-tl.to("#lid",{rotation:-1.0,y:-8,duration:.11,ease:"power2.inOut"},2.48);
-tl.to("#lid",{rotation:0,y:0,duration:.14,ease:"power2.out"},2.59);
+// ANTICIPATION — ribbon behaves like elastic material before the lid opens.
+tl.to("#bowLeft",{rotation:-36,scaleX:1.15,scaleY:.90,duration:.26,ease:"power3.out"},1.74);
+tl.to("#bowRight",{rotation:36,scaleX:1.15,scaleY:.90,duration:.26,ease:"power3.out"},1.74);
+tl.to("#knot",{scale:1.14,y:-20,duration:.22,ease:"back.out(2)"},1.80);
+tl.to("#tailLeft",{rotation:26,duration:.30,ease:"power2.out"},1.84);
+tl.to("#tailRight",{rotation:-26,duration:.30,ease:"power2.out"},1.84);
+tl.to("#giftRig",{rotation:-1.3,duration:.16,ease:"power2.out"},2.20);
+tl.to("#giftRig",{rotation:1.1,duration:.13,ease:"power2.inOut"},2.36);
+tl.to("#giftRig",{rotation:0,duration:.15,ease:"power2.out"},2.49);
+tl.to("#lid",{rotation:-2.8,y:-18,duration:.12,ease:"power2.out"},2.28);
+tl.to("#lid",{rotation:2.4,y:5,duration:.11,ease:"power2.inOut"},2.40);
+tl.to("#lid",{rotation:-1.1,y:-8,duration:.11,ease:"power2.inOut"},2.51);
+tl.to("#lid",{rotation:0,y:0,duration:.14,ease:"power2.out"},2.62);
 
-// REVEAL: anticipation dip then lid becomes the transition object.
-tl.to("#giftCore",{y:38,scaleY:.96,duration:.18,ease:"power2.in"},2.74);
-tl.to("#lid",{y:-18,duration:.18,ease:"power2.in"},2.74);
-tl.to("#lid",{y:-500,x:80,rotation:8,scale:1.03,duration:.62,ease:"back.out(1.28)"},2.92);
-tl.to("#giftCore",{y:0,scaleY:1,duration:.42,ease:"power3.out"},2.96);
-tl.fromTo("#insideGlow",{opacity:0,scale:.12},{opacity:1,scale:1.12,duration:.38,ease:"power4.out"},3.06);
-tl.to("#insideGlow",{opacity:.35,scale:1.42,duration:.70,ease:"power2.out"},3.44);
+// REVEAL — compression, lid relay, then a short camera push.
+tl.to("#giftCore",{y:40,scaleY:.95,duration:.18,ease:"power2.in"},2.72);
+tl.to("#lid",{y:-18,duration:.18,ease:"power2.in"},2.72);
+tl.to("#world",{scale:1.045,y:-12,duration:.46,ease:"power2.inOut"},2.84);
+tl.to("#lid",{y:-520,x:92,rotation:9,scale:1.025,duration:.60,ease:"back.out(1.3)"},2.90);
+tl.to("#giftCore",{y:0,scaleY:1,duration:.40,ease:"power3.out"},2.96);
 
-// Controlled particle burst: one hero reveal, then support elements clear away.
-particles.forEach((el,i)=>{
-  const [,dx,peakY,endY,rot,delay]=particleData[i];
-  const t=3.20+delay;
-  tl.fromTo(el,
-    {x:0,y:0,scale:.20,opacity:0,rotation:0},
-    {x:dx*.52,y:peakY,scale:1,opacity:1,rotation:rot*.35,duration:.42,ease:"power4.out"},t);
-  tl.to(el,
-    {x:dx,y:endY+720,scale:.78,rotation:rot,opacity:0,duration:1.60,ease:"power2.in"},t+.38);
+tl.set("#revealDisc",{visibility:"visible"},3.02);
+tl.to("#revealDisc",{scale:.92,duration:.28,ease:"back.out(1.7)"},3.02);
+tl.to("#revealDisc",{scale:.66,duration:.44,ease:"power2.out"},3.30);
+rays.forEach((el,i)=>{
+  const t=3.06+i*.018;
+  tl.set(el,{visibility:"visible"},t);
+  tl.to(el,{scaleY:1.0,duration:.23,ease:"power4.out"},t);
+  tl.to(el,{scaleY:.18,duration:.34,ease:"power3.in"},t+.32);
+  tl.set(el,{visibility:"hidden"},t+.67);
 });
 
-// Lid hover and bow follow-through during the readable payoff.
-tl.to("#lid",{y:-560,x:130,rotation:12,duration:.45,ease:"power2.inOut"},3.70);
-tl.to("#lid",{y:-520,x:105,rotation:7,duration:.65,ease:"power2.inOut"},4.15);
-tl.to("#bowLeft",{rotation:-25,scaleX:1.04,scaleY:1,duration:.50,ease:"power2.out"},3.78);
-tl.to("#bowRight",{rotation:25,scaleX:1.04,scaleY:1,duration:.50,ease:"power2.out"},3.78);
-tl.to("#knot",{scale:1,y:0,duration:.45,ease:"power2.out"},3.80);
-tl.to("#insideGlow",{opacity:0,scale:1.65,duration:1.05,ease:"power2.out"},4.15);
+// Burst trajectories are authored data, not Math.random().
+particles.forEach((el,i)=>{
+  const [,dx,peakY,endY,rot,delay,s]=particleData[i];
+  const t=3.18+delay;
+  tl.set(el,{visibility:"visible"},t);
+  tl.to(el,{x:dx*.50,y:peakY,scale:s,rotation:rot*.35,duration:.42,ease:"power4.out"},t);
+  tl.to(el,{x:dx,y:endY+520,scale:s*.76,rotation:rot,duration:1.48,ease:"power2.in"},t+.38);
+  tl.set(el,{visibility:"hidden"},t+1.88);
+});
 
-// BREATH: clean open-box pose before the lid returns.
-tl.to("#lid",{rotation:4,y:-535,x:95,duration:.50,ease:"sine.inOut"},5.15);
-tl.to("#giftRig",{rotation:-1.2,duration:.40,ease:"sine.inOut"},5.20);
-tl.to("#giftRig",{rotation:0,duration:.40,ease:"sine.inOut"},5.60);
+// OPEN POSE — lid has follow-through, box breathes, camera settles for readability.
+tl.to("#lid",{y:-590,x:150,rotation:13,duration:.43,ease:"power2.inOut"},3.58);
+tl.to("#lid",{y:-540,x:118,rotation:7,duration:.64,ease:"power2.inOut"},4.01);
+tl.to("#bowLeft",{rotation:-27,scaleX:1.05,scaleY:1,duration:.48,ease:"power2.out"},3.70);
+tl.to("#bowRight",{rotation:27,scaleX:1.05,scaleY:1,duration:.48,ease:"power2.out"},3.70);
+tl.to("#knot",{scale:1,y:0,duration:.44,ease:"power2.out"},3.72);
+tl.to("#world",{scale:1.018,y:0,duration:.68,ease:"power2.out"},3.70);
+tl.to("#revealDisc",{scale:.36,duration:.68,ease:"power2.inOut"},3.74);
+tl.set("#revealDisc",{visibility:"hidden"},4.44);
+tl.to("#lid",{rotation:4.5,y:-552,x:108,duration:.58,ease:"sine.inOut"},4.90);
+tl.to("#giftRig",{rotation:-1.1,y:-12,duration:.44,ease:"sine.inOut"},5.00);
+tl.to("#giftRig",{rotation:0,y:0,duration:.44,ease:"sine.inOut"},5.44);
 
-// RESET: lid anticipates upward, closes fast, body reacts after contact.
-tl.to("#lid",{y:-600,x:125,rotation:10,duration:.23,ease:"power2.out"},6.02);
-tl.to("#lid",{y:0,x:0,rotation:0,scale:1,duration:.48,ease:"power4.in"},6.25);
-tl.to("#giftCore",{scaleX:1.07,scaleY:.86,y:18,duration:.10,ease:"power2.out"},6.73);
-tl.fromTo("#closeRing",{opacity:.90,scale:.24},{opacity:0,scale:1.22,duration:.40,ease:"power3.out"},6.73);
-tl.to("#giftCore",{scaleX:.98,scaleY:1.05,y:-18,duration:.22,ease:"power2.out"},6.83);
-tl.to("#giftCore",{scaleX:1,scaleY:1,y:0,duration:.28,ease:"power2.inOut"},7.05);
-tl.to("#bow",{scaleY:.86,scaleX:1.08,duration:.10,ease:"power2.out"},6.74);
-tl.to("#bow",{scaleY:1,scaleX:1,duration:.28,ease:"back.out(1.8)"},6.84);
+// CLOSE — lid anticipates upward, returns fast, body receives the collision.
+tl.to("#lid",{y:-625,x:138,rotation:11,duration:.24,ease:"power2.out"},5.98);
+tl.to("#world",{scale:.99,y:12,duration:.50,ease:"power2.inOut"},6.08);
+tl.to("#lid",{y:0,x:0,rotation:0,scale:1,duration:.48,ease:"power4.in"},6.23);
+tl.set("#closeRing",{visibility:"visible"},6.70);
+tl.to("#closeRing",{scale:1.28,borderWidth:0,duration:.40,ease:"power3.out"},6.70);
+tl.set("#closeRing",{visibility:"hidden"},7.11);
+tl.to("#giftCore",{scaleX:1.075,scaleY:.85,y:20,duration:.10,ease:"power2.out"},6.70);
+tl.to("#floorMark",{scaleX:1.03,scaleY:1.08,duration:.11,ease:"power3.out"},6.70);
+tl.to("#bow",{scaleX:1.09,scaleY:.84,duration:.10,ease:"power2.out"},6.71);
+tl.to("#giftCore",{scaleX:.98,scaleY:1.055,y:-18,duration:.22,ease:"power2.out"},6.80);
+tl.to("#giftCore",{scaleX:1,scaleY:1,y:0,duration:.28,ease:"power2.inOut"},7.02);
+tl.to("#bow",{scaleX:1,scaleY:1,duration:.28,ease:"back.out(1.8)"},6.82);
+tl.to("#floorMark",{scaleX:.86,scaleY:.82,duration:.30,ease:"power2.out"},6.82);
 
-// Celebration: brief asymmetric tilt, not a perpetual loop.
-tl.to("#giftRig",{rotation:-6,scale:1.035,y:-42,duration:.22,ease:"power3.out"},7.55);
-tl.to("#giftRig",{rotation:7,scale:1.07,y:-105,duration:.26,ease:"power2.inOut"},7.77);
-tl.to("#giftRig",{rotation:-3,scale:1.025,y:-42,duration:.25,ease:"power2.inOut"},8.03);
-tl.to("#giftRig",{rotation:0,scale:1,y:0,duration:.30,ease:"power2.out"},8.28);
+// CELEBRATION — asymmetric tilt/bounce with real follow-through.
+tl.to("#giftRig",{rotation:-6.5,scale:1.035,y:-46,duration:.22,ease:"power3.out"},7.36);
+tl.to("#giftRig",{rotation:7.5,scale:1.07,y:-112,duration:.27,ease:"power2.inOut"},7.58);
+tl.to("#giftRig",{rotation:-3.2,scale:1.025,y:-46,duration:.25,ease:"power2.inOut"},7.85);
+tl.to("#giftRig",{rotation:0,scale:1,y:0,duration:.31,ease:"power2.out"},8.10);
+tl.to("#floorMark",{scaleX:.70,scaleY:.64,duration:.25,ease:"power2.out"},7.50);
+tl.to("#floorMark",{scaleX:.90,scaleY:.86,duration:.34,ease:"power2.out"},7.90);
 
-// Spark punctuation around the final hero pose.
-tl.fromTo("#sparkA,#sparkB,#sparkC,#sparkD",{opacity:0,scaleY:.25},{opacity:1,scaleY:1,duration:.16,ease:"power4.out"},8.18);
-tl.to("#sparkA,#sparkB,#sparkC,#sparkD",{opacity:0,scaleY:.35,duration:.28,ease:"power3.in"},8.42);
+// Spark punctuation.
+sparks.forEach((el,i)=>{
+  const t=8.15+i*.025;
+  tl.set(el,{visibility:"visible"},t);
+  tl.to(el,{scaleY:1,duration:.15,ease:"power4.out"},t);
+  tl.to(el,{scaleY:.18,duration:.25,ease:"power3.in"},t+.18);
+  tl.set(el,{visibility:"hidden"},t+.44);
+});
+tl.to("#world",{scale:1.01,y:0,duration:.46,ease:"sine.inOut"},8.18);
+tl.to("#world",{scale:1,y:0,duration:.42,ease:"sine.inOut"},8.64);
 
-// EXIT: compress, pop away, leave a perfectly clean green plate for the last frames.
-tl.to("#giftRig",{scale:.91,y:45,rotation:-2,duration:.22,ease:"power2.in"},9.02);
-tl.fromTo("#poofRing",{opacity:0,scale:.20},{opacity:.92,scale:.65,duration:.18,ease:"power4.out"},9.22);
-tl.to("#giftRig",{scale:0,rotation:22,y:-190,duration:.48,ease:"back.in(1.55)"},9.22);
-tl.to("#poofRing",{opacity:0,scale:1.42,duration:.48,ease:"power3.out"},9.38);
+// EXIT — compress and pop, leaving an uncontaminated green plate.
+tl.to("#giftRig",{scale:.92,y:52,rotation:-2.2,duration:.22,ease:"power2.in"},8.98);
+tl.to("#floorMark",{scaleX:1.02,scaleY:1.05,duration:.20,ease:"power2.in"},8.99);
+tl.set("#poofRing",{visibility:"visible"},9.19);
+tl.to("#poofRing",{scale:.72,borderWidth:0,duration:.30,ease:"power4.out"},9.19);
+tl.to("#giftRig",{scale:0,rotation:23,y:-210,duration:.48,ease:"back.in(1.55)"},9.20);
+tl.to("#floorMark",{scale:0,duration:.34,ease:"power3.in"},9.20);
+tl.set("#poofRing",{visibility:"hidden"},9.50);
 tl.to({},{duration:.01},9.99);
 
 const q=new URLSearchParams(location.search);
