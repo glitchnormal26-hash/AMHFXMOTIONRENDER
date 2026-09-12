@@ -5,19 +5,22 @@
   "type": "module",
   "scripts": {
     "serve": "python scripts/serve.py",
+    "studio": "node scripts/studio-server.mjs",
+    "web": "node scripts/studio-server.mjs",
     "snap": "node scripts/snap.mjs",
     "export:frames": "node scripts/export-frames.mjs",
     "export:mp4": "node scripts/export-mp4.mjs",
     "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
     "render:motra": "node scripts/render-motra.mjs",
     "check:skill": "node scripts/check-skill.mjs",
-    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
+    "check:studio": "node scripts/check-studio.mjs",
+    "check": "npm run check:skill && npm run check:studio && node --check scripts/check-skill.mjs && node --check scripts/check-studio.mjs && node --check scripts/studio-server.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
   },
   "dependencies": {
     "gsap": "^3.13.0",
     "puppeteer": "^24.0.0"
   },
-  "description": "Motion Designer v3.9 browser motion renderer with one canonical skill integration and deterministic MP4 export.",
+  "description": "Motion Designer v3.9 browser motion renderer with Motra Studio web workflow and deterministic MP4 export.",
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
