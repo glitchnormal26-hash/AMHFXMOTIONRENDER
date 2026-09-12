@@ -52,7 +52,7 @@ body{font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
 #cursor{position:absolute;left:838px;top:1515px;width:90px;height:106px;z-index:30;opacity:0;filter:drop-shadow(0 12px 18px rgba(0,0,0,.4));transform-origin:22% 15%}
 #cursor svg{width:100%;height:100%;overflow:visible}
 #dropRing{position:absolute;left:425px;top:1040px;width:230px;height:230px;border:4px solid var(--acid);border-radius:50%;z-index:25;opacity:0;box-shadow:0 0 0 2px rgba(200,255,33,.18),0 0 70px rgba(200,255,33,.28)}
-#buildWord{position:absolute;left:115px;top:1160px;z-index:6;font:900 170px/.8 Impact,Arial Black,sans-serif;letter-spacing:-.05em;text-transform:uppercase;opacity:0;white-space:nowrap}.build-stroke{color:transparent;-webkit-text-stroke:3px rgba(255,255,255,.5)}
+#buildWord{position:absolute;left:160px;top:1160px;z-index:6;font:900 154px/.8 Impact,Arial Black,sans-serif;letter-spacing:-.05em;text-transform:uppercase;opacity:0;white-space:nowrap}.build-stroke{color:transparent;-webkit-text-stroke:3px rgba(255,255,255,.5)}
 #preview{position:absolute;left:108px;top:430px;width:872px;height:1030px;border-radius:42px;border:1px solid rgba(255,255,255,.16);background:#0c0d12;overflow:hidden;box-shadow:0 60px 150px rgba(0,0,0,.62);opacity:0;z-index:20;transform-origin:center}
 .preview-top{height:94px;display:flex;align-items:center;padding:0 32px;border-bottom:1px solid rgba(255,255,255,.1);font:800 21px/1 Arial,Helvetica,sans-serif;letter-spacing:.1em}.live{margin-left:auto;display:flex;gap:10px;align-items:center;color:var(--acid)}.live i{width:10px;height:10px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid)}
 .game{position:absolute;left:28px;right:28px;top:122px;height:720px;border-radius:28px;overflow:hidden;background:linear-gradient(#17172a 0 56%,#12152a 56% 82%,#090b13 82%);border:1px solid rgba(255,255,255,.12)}
@@ -107,7 +107,6 @@ const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);fitRoot.style.transf
 const prompt='buatkan animasi flappy bird menggunakan skill amhfxmotionrender';
 const promptEl=document.querySelector('#promptText');
 const tl=gsap.timeline({paused:true,defaults:{ease:'power3.out'}});
-const cam=(vars,pos)=>tl.to('#camera',{...vars,duration:vars.duration||1.0,ease:vars.ease||'power3.inOut'},pos);
 
 gsap.set(['#hook .hook-kicker','#hook .hook-line','#chat','#sourceCard','#cursor','#dropRing','#buildWord','#preview','#proof','#cta','#cursor2'],{opacity:0});
 gsap.set('#chat',{scale:.8,rotation:-2,y:120});
@@ -118,7 +117,7 @@ tl.to('#hook .hook-kicker',{opacity:1,y:0,duration:.35},.05)
   .fromTo('#hook .hook-line.a',{opacity:0,x:-120,scaleX:.76},{opacity:1,x:0,scaleX:1,duration:.48,ease:'expo.out'},.15)
   .fromTo('#hook .hook-line.b',{opacity:0,x:120,scaleX:1.25},{opacity:1,x:0,scaleX:1,duration:.42,ease:'expo.out'},.36)
   .to('.glitchbar',{opacity:.85,duration:.05},.32).to('.glitchbar',{opacity:0,duration:.12},.40)
-  .to('#camera',{scale:1.13,x:-54,y:-110,duration:.7,ease:'power4.inOut'},.75)
+  .to('#camera',{scale:1.10,x:-36,y:-70,duration:.50,ease:'power4.inOut'},.75)
   .to('#hook',{opacity:0,y:-100,duration:.35,ease:'power2.in'},1.18)
   .to('#chat',{opacity:1,scale:1,rotation:0,y:0,duration:.72,ease:'back.out(1.25)'},1.28)
   .to('#camera',{scale:1.08,x:-34,y:-30,duration:.65,ease:'power3.out'},1.35)
@@ -132,7 +131,7 @@ tl.to('#hook .hook-kicker',{opacity:1,y:0,duration:.35},.05)
   .to('#sourceCard',{scale:1.05,rotation:-1,duration:.18},4.72)
   .to('#cursor',{x:-210,y:-310,duration:.30,ease:'power3.in'},4.96)
   .to('#sourceCard',{x:-190,y:-275,rotation:4,duration:.30,ease:'power3.in'},4.96)
-  .to('#camera',{scale:1.23,x:105,y:-248,duration:.78,ease:'expo.inOut'},4.86)
+  .to('#camera',{scale:1.08,x:0,y:-120,duration:.60,ease:'expo.inOut'},4.86)
   .to('#cursor',{x:-350,y:-525,duration:.26,ease:'none'},5.26)
   .to('#sourceCard',{x:-330,y:-495,rotation:7,duration:.26,ease:'none'},5.26)
   .to('#cursor',{x:-470,y:-650,duration:.48,ease:'power4.out'},5.52)
@@ -145,43 +144,74 @@ tl.to('#hook .hook-kicker',{opacity:1,y:0,duration:.35},.05)
   .to('.status',{opacity:1,y:0,duration:.26},6.22)
   .to('.progress b',{width:'100%',duration:1.34,ease:'power2.inOut'},6.32)
   .to('.spinner',{rotation:540,duration:1.34,ease:'none'},6.32)
-  .to('#buildWord',{opacity:.72,x:-30,duration:.24},6.40)
-  .to('#camera',{scale:1.38,x:40,y:-310,duration:.30,ease:'power3.in'},6.42)
-  .to('#camera',{scale:1.9,x:-380,y:-650,duration:.32,ease:'expo.in'},6.72)
-  .to('#chat',{scale:1.16,opacity:0,duration:.28,ease:'power2.in'},6.72)
-  .to('#buildWord',{x:-280,scale:1.45,opacity:0,duration:.26,ease:'power3.in'},6.86)
-  .set('#camera',{x:0,y:0,scale:1.45,rotation:0},7.14)
+  .to('#buildWord',{opacity:.72,x:0,duration:.24},6.40)
+  .to('#camera',{scale:1.10,x:-2,y:-105,duration:.26,ease:'power3.in'},6.42)
+  .to('#camera',{scale:1.14,x:-4,y:-125,duration:.34,ease:'expo.inOut'},6.70)
+  .to('#chat',{scale:1.08,opacity:0,duration:.28,ease:'power2.in'},6.78)
+  .to('#buildWord',{x:-180,scale:1.24,opacity:0,duration:.28,ease:'power3.in'},6.98)
+  .set('#camera',{x:0,y:0,scale:1.18,rotation:0},7.14)
   .to('#preview',{opacity:1,scale:1,rotation:0,y:0,duration:.62,ease:'expo.out'},7.15)
-  .to('#camera',{scale:1.08,x:-24,y:-40,duration:.72,ease:'power3.out'},7.18)
+  .to('#camera',{scale:1.05,x:-12,y:-24,duration:.72,ease:'power3.out'},7.18)
   .to('.pipe',{x:-1110,duration:3.45,ease:'none'},7.35)
   .to('#bird',{keyframes:[{y:-118,rotation:-15,duration:.52,ease:'power2.out'},{y:12,rotation:15,duration:.48,ease:'power2.in'},{y:-92,rotation:-13,duration:.48,ease:'power2.out'},{y:24,rotation:18,duration:.50,ease:'power2.in'},{y:-78,rotation:-11,duration:.44,ease:'power2.out'},{y:10,rotation:12,duration:.56,ease:'power2.inOut'}]},7.48)
   .to('.wing',{rotation:-38,duration:.18,yoyo:true,repeat:11,ease:'power1.inOut'},7.50)
-  .to('#camera',{x:-66,y:-92,scale:1.16,duration:1.05,ease:'power1.inOut'},8.55)
-  .to('#camera',{x:18,y:-34,scale:1.08,duration:.95,ease:'power2.inOut'},9.68)
+  .to('#camera',{x:-36,y:-70,scale:1.10,duration:1.05,ease:'power1.inOut'},8.55)
+  .to('#camera',{x:8,y:-24,scale:1.05,duration:.95,ease:'power2.inOut'},9.68)
   .to('.score',{textShadow:'0 0 24px rgba(200,255,33,.8),0 4px #000',scale:1.18,duration:.12,yoyo:true,repeat:1},9.90)
   .to('#preview',{scale:.84,y:70,opacity:.15,duration:.44,ease:'power2.in'},11.02)
   .to('#proof',{opacity:1,y:-20,duration:.48,ease:'power3.out'},11.16)
-  .to('#camera',{scale:.92,x:0,y:40,duration:.72,ease:'power3.inOut'},11.16)
+  .to('#camera',{scale:1.02,x:0,y:0,duration:.72,ease:'power3.inOut'},11.16)
   .fromTo('.proof-card',{y:80,opacity:0},{y:0,opacity:1,duration:.48,stagger:.08,ease:'power4.out'},11.32)
   .to('#proof',{opacity:0,y:-70,duration:.30,ease:'power2.in'},12.82)
-  .to('#camera',{scale:1.36,x:-120,y:-260,duration:.34,ease:'power4.in'},12.90)
+  .to('#camera',{scale:1.18,x:-30,y:-130,duration:.26,ease:'power4.in'},12.88)
   .to('.glitchbar',{opacity:.95,duration:.06},13.06).to('.glitchbar',{opacity:0,duration:.12},13.12)
   .set('#camera',{x:0,y:0,scale:1,rotation:0},13.20)
   .to('#cta',{opacity:1,duration:.28},13.22)
   .fromTo('.folder',{scale:.55,rotation:-9,y:170},{scale:1,rotation:0,y:0,duration:.72,ease:'back.out(1.25)'},13.30)
   .fromTo('.cta-title',{x:-110,opacity:0},{x:0,opacity:1,duration:.48,ease:'expo.out'},13.42)
   .fromTo('.cta-button',{y:70,opacity:0},{y:0,opacity:1,duration:.38,ease:'power4.out'},14.18)
-  .to('#camera',{scale:1.035,y:-22,duration:.72,ease:'power1.inOut'},14.42)
+  .to('#camera',{scale:1.015,x:0,y:-12,duration:.72,ease:'power1.inOut'},14.42)
   .to('#cursor2',{opacity:1,x:-70,y:20,duration:.28},14.72)
   .to('#cursor2',{x:-110,y:-36,duration:.38,ease:'power3.inOut'},15.02)
   .to('.cta-button',{scale:.965,y:8,duration:.08},15.38).to('.cta-button',{scale:1,y:0,duration:.18,ease:'back.out(2)'},15.46)
   .to('.flash',{opacity:.55,duration:.03},15.39).to('.flash',{opacity:0,duration:.13},15.43)
   .to('.folder',{boxShadow:'0 70px 160px rgba(80,110,0,.36),0 0 100px rgba(200,255,33,.16)',duration:.35},15.48)
-  .to('#camera',{scale:1.0,y:0,duration:.62,ease:'power2.out'},15.66)
+  .to('#camera',{scale:1.0,x:0,y:0,duration:.62,ease:'power2.out'},15.66)
   .to({},{duration:.01},17.19);
 
+const FRAME_AUDIT=[
+  {time:.65,selectors:['#hook'],cover:['#world']},
+  {time:2.80,selectors:['#chat .prompt'],cover:['#world']},
+  {time:5.55,selectors:['#sourceCard'],safe:{left:52,right:52,top:72,bottom:110},cover:['#world']},
+  {time:6.86,selectors:['#chat .prompt','.skill-pill','.status','#buildWord'],safe:{left:52,right:52,top:72,bottom:110},cover:['#world']},
+  {time:8.65,selectors:['#preview'],safe:{left:28,right:28,top:70,bottom:110},cover:['#world']},
+  {time:10.15,selectors:['#preview'],safe:{left:28,right:28,top:70,bottom:110},cover:['#world']},
+  {time:12.10,selectors:['#proof'],safe:{left:70,right:70,top:80,bottom:120},cover:['#world']},
+  {time:15.90,selectors:['#cta .cta-title','#cta .folder','#cta .cta-button','#cta .cta-sub'],safe:{left:70,right:70,top:80,bottom:120},cover:['#world']}
+];
+const CAMERA_AUDIT={
+  moves:[
+    {start:.75,end:1.25,label:'hook camera push'},
+    {start:1.35,end:2.00,label:'chat settle'},
+    {start:4.86,end:5.46,label:'drag follow'},
+    {start:6.42,end:6.68,label:'build attack'},
+    {start:6.70,end:7.04,label:'build travel'},
+    {start:7.18,end:7.90,label:'preview settle'},
+    {start:8.55,end:9.60,label:'game follow A'},
+    {start:9.68,end:10.63,label:'game follow B'},
+    {start:11.16,end:11.88,label:'proof reframe'},
+    {start:12.88,end:13.14,label:'proof exit'},
+    {start:14.42,end:15.14,label:'CTA breathe'},
+    {start:15.66,end:16.28,label:'CTA settle'}
+  ],
+  cuts:[
+    {time:7.14,label:'preview hard cut'},
+    {time:13.20,label:'CTA hard cut'}
+  ]
+};
+
 const q=new URLSearchParams(location.search);
-window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+window.OPENER={W,H,DURATION,tl,FRAME_AUDIT,CAMERA_AUDIT,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
 Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
 tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
 </script>
