@@ -4,32 +4,38 @@ This file defines the safe maintenance rules for AMHFXMOTIONRENDER.
 
 ## Version status
 
-- **Active production skill:** Motion Designer v3.8 Full Runtime.
-- **Active source:** `skill-source/part-01.md` through `skill-source/part-21.md`.
-- **Active integrity manifest:** `skill-source/manifest.json`.
-- **Active router:** `SKILL.md`.
+- **Intended motion skill:** Motion Designer v3.9.
+- **Imported v3.9 core source:** `skill-source-v3.9.1/`.
+- **Legacy compatibility source:** `skill-source/part-01.md` through `skill-source/part-21.md`.
+- **Legacy integrity manifest:** `skill-source/manifest.json`.
+- **Legacy compatibility router:** `SKILL.md`.
 
-Keep incomplete future-version imports off `main`. Stage them on a separate branch until the full source inventory, references, integrity data, build path, and QA are complete.
+The v3.8 tree remains connected because the existing deterministic integrity/build path still targets it. It is migration infrastructure, not the intended skill generation.
+
+The v3.9 source must be preserved while migration is completed. Its source currently references specialized modules such as camera/spatial, kinetic typography, audio/VO, transitions, SaaS/composition, browser runtime, explainer, and QA/export guidance; do not claim the v3.9 production migration is complete until those required modules and integrity wiring are present.
 
 ## Source-management rules
 
-1. Keep `skill-source/manifest.json` synchronized with the active v3.8 source. Any active-source byte change requires matching manifest hashes and byte counts.
-2. Keep `SKILL.md`, `AGENTS.md`, `README.md`, `package.json`, and the build/check workflow aligned with the version that is actually active.
-3. Do not mix partial future-version source into the active source tree.
-4. A new version may be promoted only after all required source parts/references are present and an integrity check can reconstruct the intended rulebook deterministically.
-5. Do not claim `FINAL_VERIFIED` for rendered media based only on source integrity or syntax checks.
+1. Do not delete `skill-source-v3.9.1/` during routine cleanup.
+2. Do not mix v3.8 and v3.9 source fragments into one reconstructed rulebook.
+3. Keep the legacy `skill-source/manifest.json` synchronized with v3.8 for as long as the compatibility build remains enabled.
+4. Keep `SKILL.md`, `AGENTS.md`, `README.md`, `package.json`, and build/check workflows explicit about whether they refer to the v3.9 target or the v3.8 compatibility path.
+5. Promote v3.9 into the active deterministic build only after its required source/references, integrity metadata, routing, and QA are complete.
+6. Do not claim `FINAL_VERIFIED` for rendered media based only on source integrity or syntax checks.
 
-## Promotion checklist for a new skill version
+## v3.9 migration checklist
 
-Before changing the active version:
+Before removing the v3.8 compatibility path:
 
-- complete the candidate source inventory on a separate branch;
-- add or update an integrity manifest for that version;
-- make the build script target the intended active source explicitly;
-- update `SKILL.md` routing and version language;
+- complete the v3.9 source inventory;
+- add all reference modules required by the v3.9 router;
+- add a v3.9 integrity manifest or equivalent deterministic source check;
+- update the build script to target v3.9 explicitly;
+- replace or update `SKILL.md` routing for v3.9;
 - update `AGENTS.md`, `README.md`, `package.json`, changelog/version notes, and `RESOURCE-MANIFEST.json` as applicable;
 - run `npm run check`;
-- render representative output and perform the required visual/audio QA before calling the renderer production-ready.
+- render representative output and perform visual/audio QA;
+- only then remove obsolete v3.8 compatibility files.
 
 ## Render-file ownership
 
@@ -41,11 +47,12 @@ Before changing the active version:
 
 ## Safe cleanup policy
 
-A cleanup should remove generated artifacts and caches, not authored production source. Safe cleanup targets are the ignored generated directories/files listed above plus ordinary local caches such as `node_modules/`, Python bytecode, and OS metadata.
+A cleanup should remove generated artifacts and caches, not authored source. Safe cleanup targets are the ignored generated directories/files listed above plus ordinary local caches such as `node_modules/`, Python bytecode, and OS metadata.
 
 Do **not** delete or rewrite these during routine cleanup:
 
-- `skill-source/`;
+- `skill-source-v3.9.1/`;
+- `skill-source/` while the v3.8 compatibility build remains enabled;
 - `runtime/`;
 - `scripts/`;
 - `assets/`;
@@ -54,8 +61,6 @@ Do **not** delete or rewrite these during routine cleanup:
 - `index.html`;
 - `motra-output/README.md`;
 - any user-provided `motra-output/index.html` that is still needed for a render.
-
-Before keeping an experimental or future-version file on `main`, verify that it is complete, referenced, and part of the active build or documented production workflow. Otherwise keep it on a feature branch or remove it.
 
 ## Required verification after maintenance
 
