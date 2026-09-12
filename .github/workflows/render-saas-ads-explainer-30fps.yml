@@ -1,0 +1,80 @@
+name: Render SaaS Ads Explainer 30fps HQ
+
+on:
+  push:
+    branches:
+      - chatgpt/saas-ads-explainer-20260912
+    paths:
+      - '.github/workflows/render-saas-ads-explainer-30fps.yml'
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install render dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          npm ci
+      - name: Check source and skill
+        run: npm run check
+      - name: Create deterministic hi-tech audio
+        run: |
+          mkdir -p audio output
+          ffmpeg -y \
+            -f lavfi -i "anullsrc=r=48000:cl=stereo:d=17.2" \
+            -f lavfi -i "sine=frequency=1300:duration=0.055:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=640:duration=0.11:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=1900:duration=0.07:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=310:duration=0.18:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=1180:duration=0.08:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=760:duration=0.12:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=1480:duration=0.08:sample_rate=48000" \
+            -f lavfi -i "sine=frequency=920:duration=0.10:sample_rate=48000" \
+            -filter_complex "[1:a]volume=.65,adelay=320|320[s1];[2:a]volume=.42,adelay=1870|1870[s2];[3:a]volume=.50,adelay=4720|4720[s3];[4:a]volume=.38,adelay=5400|5400[s4];[5:a]volume=.68,adelay=6160|6160[s5];[6:a]volume=.44,adelay=7150|7150[s6];[7:a]volume=.48,adelay=9950|9950[s7];[8:a]volume=.65,adelay=15390|15390[s8];[0:a][s1][s2][s3][s4][s5][s6][s7][s8]amix=inputs=9:duration=first:dropout_transition=0,highpass=f=120,alimiter=limit=.82[sfx]" \
+            -map "[sfx]" -c:a pcm_s16le audio/sfx-mix.wav
+          ffmpeg -y -f lavfi -i "anoisesrc=color=pink:amplitude=0.025:d=17.2:r=48000" \
+            -af "highpass=f=240,lowpass=f=3500,volume=.45" -ac 2 -c:a pcm_s16le audio/ambience.wav
+      - name: Render 1080x1920 HQ MP4
+        run: |
+          env INDEX=assets/saas-ads-explainer-9x16.html QUALITY=final FPS=30 WIDTH=1080 HEIGHT=1920 CRF=14 PRESET=slow \
+            REQUIRE_AUDIO=1 SFX=audio/sfx-mix.wav AMBIENCE=audio/ambience.wav SFX_GAIN=.82 AMBIENCE_GAIN=.16 \
+            OUT_VIDEO=output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.mp4 npm run export:mp4
+      - name: Verify and capture QA
+        run: |
+          ffprobe -v error -show_entries stream=index,codec_name,codec_type,width,height,r_frame_rate -show_entries format=duration -of json output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.mp4 > output/ffprobe.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p=JSON.parse(fs.readFileSync('output/ffprobe.json','utf8'));
+          const v=p.streams.find(s=>s.codec_type==='video'); const a=p.streams.find(s=>s.codec_type==='audio');
+          const d=Number(p.format.duration);
+          if(v?.codec_name!=='h264'||v?.width!==1080||v?.height!==1920) throw new Error('video contract failed');
+          if(v?.r_frame_rate!=='30/1') throw new Error(`fps=${v?.r_frame_rate}`);
+          if(a?.codec_name!=='aac') throw new Error(`audio=${a?.codec_name}`);
+          if(Math.abs(d-17.2)>.25) throw new Error(`duration=${d}`);
+          console.log('VIDEO_CONTRACT=PASS');
+          NODE
+          for spec in "01-hook:0.65" "02-chat:2.80" "03-drag:5.55" "04-ramp:6.86" "05-preview:8.65" "06-game:10.15" "07-proof:12.10" "08-cta:15.90"; do
+            name="${spec%%:*}"; t="${spec##*:}";
+            ffmpeg -y -ss "$t" -i output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.mp4 -frames:v 1 "output/qa-${name}.png" >/dev/null 2>&1;
+          done
+          sha256sum output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.mp4 > output/sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: amhfxmotionrender-saas-ads-explainer-9x16-30fps-hq
+          path: |
+            output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.mp4
+            output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16-30fps.verify.json
+            output/ffprobe.json
+            output/sha256.txt
+            output/qa-*.png
+          if-no-files-found: error
+          retention-days: 14
