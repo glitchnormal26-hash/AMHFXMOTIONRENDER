@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Chat → Motion — Camera V2</title>
+<link rel="stylesheet" href="style.css" />
+<script src="motion.js" defer></script>
+</head>
+<body>
+<div id="viewport">
+  <div id="camera"><div id="world">
+    <div id="grid"></div><div id="grain"></div>
+    <div class="worldBrand"><i></i><span>AMHFX // MOTION RENDER</span></div>
+    <svg id="route" viewBox="0 0 2400 1400" aria-hidden="true"><defs><linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d8ff45"/><stop offset="1" stop-color="#47e4ff"/></linearGradient></defs><path class="routeGlow" d="M 1680 835 C 1370 880 1040 830 720 790 S 570 805 520 805"/><path class="routePath" d="M 1680 835 C 1370 880 1040 830 720 790 S 570 805 520 805"/></svg>
+    <section id="chat" class="collisionObject"><div class="chatHead"><strong>Motion Assistant</strong><span class="meta">CHAT / 01</span></div><div class="chatBody"><div id="userBubble" class="msg userMsg"><span id="typingText"></span><span id="caret" class="caret"></span></div><div id="botBubble" class="msg botMsg" style="opacity:0">Got it. Building with <b>AMHFXMOTIONRENDER</b>.</div></div><div id="dropHint" class="dropHint"><i></i><span>Drop skill / context</span></div><div id="composer" class="composer"><div class="placeholder">Message Motion Assistant…</div><div class="send">↗</div></div></section>
+    <div id="skillCard" class="collisionObject"><div class="skillTop">SKILL PACKAGE</div><div class="skillName">AMHFXMOTIONRENDER</div><div class="skillTag">.skill</div></div>
+    <div id="cursor" class="collisionObject"><svg viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg"><path d="M31 4c-4.4 0-7 3.3-7 7.4v24.2l-5.6-8.2c-2.4-3.5-7.2-4.4-10.7-2-3.6 2.5-4.5 7.3-2.1 10.9l14.8 22.1C24 64 29.6 69 37.2 69h5.9C52.4 69 59 62.5 59 53.4V32c0-4.1-3.1-7.2-7.1-7.2-2.4 0-4.5 1.1-5.8 2.9v-3.5c0-4.2-3.1-7.3-7.1-7.3-2.5 0-4.6 1.1-6 3V11.4C33 7.3 35.4 4 31 4Z" fill="#f7f4e8" stroke="#07090b" stroke-width="4.5" stroke-linejoin="round"/><path d="M24 35.6V17.5M33 32.5V20M46 35V27.8" fill="none" stroke="#07090b" stroke-width="3" stroke-linecap="round" opacity=".72"/></svg></div>
+    <div id="pulseRing"></div>
+    <div id="tokens"><div class="token t0">animate</div><div class="token key t1">Flappy Bird</div><div class="token t2">using skill</div><div class="token key t3">AMHFX</div></div>
+    <section id="engine" class="collisionObject"><div class="engineHead"><strong>Motion Build Engine</strong><span>CAMERA-ACTIVE / 4K</span></div><div class="logic"><div class="logicRow"><em>01</em><b>PARSE PROMPT</b><div class="meter"><i></i></div></div><div class="logicRow"><em>02</em><b>LOAD SKILL</b><div class="meter"><i></i></div></div><div class="logicRow"><em>03</em><b>BUILD RIG</b><div class="meter"><i></i></div></div><div class="logicRow"><em>04</em><b>ADD MOTION</b><div class="meter"><i></i></div></div><div class="logicRow"><em>05</em><b>RENDER</b><div class="meter"><i></i></div></div></div><div id="preview"><div class="previewGrid"></div><div id="score" class="score">00</div><div id="bird" class="bird"><div class="birdBody"></div><div class="wing"></div><div class="eye"></div><div class="beak"></div></div><div id="pipeTop" class="pipe pipeTop"></div><div id="pipeBottom" class="pipe pipeBottom"></div></div><div class="buildState">STATUS / <b id="buildState">WAITING</b></div></section>
+  </div></div>
+  <div id="lens"><div id="scrim" class="scrim"></div><div id="heroA" class="hero safeText"><div class="kicker">PROMPT → SYSTEM</div><h1>WORDS<br><span>BECOME</span><br>MOTION.</h1><p>The chat request becomes a live build: prompt, skill, rig, physics, render.</p></div><div id="heroB" class="hero heroB safeText"><div class="kicker">SYSTEM → MOTION</div><h1>BUILD.<br><span class="cyan">FOLLOW.</span><br><span>PLAY.</span></h1></div><div id="final" class="safeText"><div class="finalKicker">CHAT → CREATION → MOTION</div><div class="finalTitle">FROM CHAT.<span class="line2">TO MOTION.</span></div><div class="finalFooter">Type the idea. Drop the context. Watch the camera chase the result.</div><div class="badge">POWERED BY <b>AMHFXMOTIONRENDER</b></div></div><div id="flash"></div><div id="scan" class="scan"></div><div class="vignette"></div><div id="debug" class="debug"></div></div>
+</div>
+</body>
+</html>
