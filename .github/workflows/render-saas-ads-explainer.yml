@@ -31,6 +31,9 @@ jobs:
       - name: Run Motion Designer checks
         run: npm run check
 
+      - name: Apply verified coordinate fix
+        run: sed -i 's/inset:-420px/inset:0/' assets/saas-ads-explainer-9x16.html
+
       - name: Create deterministic hi-tech SFX and ambience
         run: |
           mkdir -p audio output
@@ -87,7 +90,7 @@ jobs:
       - name: Upload final delivery and QA
         uses: actions/upload-artifact@v4
         with:
-          name: amhfxmotionrender-saas-ads-explainer-9x16
+          name: amhfxmotionrender-saas-ads-explainer-9x16-final
           path: |
             output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16.mp4
             output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16.verify.json
