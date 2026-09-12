@@ -1,0 +1,31 @@
+name: Apply SaaS Explainer Source Fix
+
+on:
+  push:
+    branches:
+      - chatgpt/saas-ads-explainer-20260912
+    paths:
+      - '.github/workflows/apply-saas-source-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chatgpt/saas-ads-explainer-20260912
+      - name: Normalize world origin in authored source
+        run: |
+          sed -i 's/inset:-420px/inset:0/' assets/saas-ads-explainer-9x16.html
+          if git diff --quiet; then
+            echo 'Source already normalized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/saas-ads-explainer-9x16.html
+          git commit -m '[skip ci] Fix SaaS explainer world origin in source'
+          git push origin HEAD:chatgpt/saas-ads-explainer-20260912
