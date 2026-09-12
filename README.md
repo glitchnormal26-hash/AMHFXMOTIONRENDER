@@ -2,6 +2,12 @@
 
 Production-oriented motion rendering runtime built around **Motion Designer v3.8 Full Runtime**.
 
+## Version status
+
+Motion Designer v3.8 remains the active, integrity-checked production rulebook in `skill-source/`.
+
+A newer source import is being staged under `skill-source-v3.9.1/`, but it is not active yet. Keep the staged tree separate until its source package, references, integrity data, build path, and QA are complete. See `MANAGE.md` for repository cleanup and version-promotion rules.
+
 ## Motra Studio bridge
 
 Prompt-to-motion web studio: https://motra-studio-d13ehp.v2.appdeploy.ai/
@@ -30,7 +36,8 @@ npm run render:motra
 
 ## Main entry points
 
-- `SKILL.md` — Motion Designer v3.8 rules and engine-routing contract
+- `SKILL.md` — active Motion Designer v3.8 rules and engine-routing contract
+- `MANAGE.md` — cleanup, version staging/promotion, and render-file ownership rules
 - `assets/starter.html` — lightweight starter
 - `assets/starter-full-runtime.html` — full runtime starter
 - `runtime/` — reusable motion, camera, Three.js, explainer and audio modules
@@ -44,15 +51,15 @@ npm run render:motra
 
 GitHub repository: [glitchnormal26-hash/AMHFXMOTIONRENDER](https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER).
 
-`AGENTS.md` routes repository motion work to `SKILL.md`, which loads all 21 source parts in order. Rebuild the complete original rulebook with:
+`AGENTS.md` routes repository motion work to `SKILL.md`, which loads all 21 active v3.8 source parts in order. Rebuild the complete original rulebook with:
 
 ```bash
 npm run build:skill
 ```
 
-The output is `dist/SKILL.md`. The build verifies every part and the complete source against `skill-source/manifest.json`. `npm run check` includes this integrity gate and runs in GitHub Actions.
+The output is `dist/SKILL.md`. The build verifies every active part and the complete source against `skill-source/manifest.json`. `npm run check` includes this integrity gate and runs in GitHub Actions.
 
-The source is preserved byte-for-byte from the supplied Motion Designer v3.8 Full Runtime document. Repository integration does not install a personal ChatGPT skill or configure voice-provider credentials.
+The active source is preserved byte-for-byte from the supplied Motion Designer v3.8 Full Runtime document. Repository integration does not install a personal ChatGPT skill or configure voice-provider credentials.
 
 ## Setup
 
