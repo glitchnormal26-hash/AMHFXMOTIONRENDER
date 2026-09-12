@@ -47,12 +47,24 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           p = Path('delivery/halloween-dramatic-copyspace/render.html')
-          s = p.read_text()
-          s = s.replace(
+          s = p.read_text().replace(
               'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js',
               './three.module.js'
           )
           p.write_text(s)
+          PY
+
+      - name: Configure exporter for software WebGL
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/export-mp4.mjs')
+          s = p.read_text()
+          old = '''      "--enable-gpu",\n      "--ignore-gpu-blocklist"'''
+          new = '''      "--enable-gpu",\n      "--ignore-gpu-blocklist",\n      "--use-gl=angle",\n      "--use-angle=swiftshader",\n      "--enable-unsafe-swiftshader",\n      "--disable-gpu-sandbox"'''
+          if old not in s:
+              raise SystemExit('exporter flag block not found')
+          p.write_text(s.replace(old,new,1))
           PY
 
       - name: Run skill/runtime checks
@@ -67,7 +79,15 @@ jobs:
           import puppeteer from 'puppeteer';
           const browser=await puppeteer.launch({
             headless:'new',
-            args:['--allow-file-access-from-files','--enable-gpu','--ignore-gpu-blocklist']
+            args:[
+              '--allow-file-access-from-files',
+              '--enable-gpu',
+              '--ignore-gpu-blocklist',
+              '--use-gl=angle',
+              '--use-angle=swiftshader',
+              '--enable-unsafe-swiftshader',
+              '--disable-gpu-sandbox'
+            ]
           });
           const page=await browser.newPage();
           page.on('console',m=>console.log(`browser ${m.type()}: ${m.text()}`));
