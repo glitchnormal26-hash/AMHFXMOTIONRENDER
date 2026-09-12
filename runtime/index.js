@@ -1,4 +1,5 @@
 export * from "./motion-utils.js";
+export * from "./camera-framing.js";
 export * from "./camera-rig.js";
 export * from "./explainer-helpers.js";
 export * from "./three-scene.js";
