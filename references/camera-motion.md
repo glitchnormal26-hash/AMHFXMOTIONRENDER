@@ -1,11 +1,12 @@
-# Camera Motion Contract — Anti-Static Camera + Speed Ramp
+# Camera Motion Contract — Anti-Static Camera + Safe Framing + Speed Ramp
 
 This module is mandatory whenever a brief contains cinematic motion, camera travel,
 tracking, follow shots, drag/drop journeys, spatial explainers, product traversal,
-2.5D, 3D, or fast-paced kinetic transitions.
+2.5D, 3D, fast-paced kinetic transitions, or any composition where camera movement can
+crop required content.
 
 The camera is part of the storytelling system. Moving objects inside a fixed frame
-is **not** camera movement.
+is **not** camera movement. Camera energy is also never a license to lose information.
 
 ## 1. Anti-static camera hard gate
 
@@ -46,32 +47,75 @@ not merely a 1–2 px decorative drift.
 For DOM/SVG/2.5D work, prefer:
 
 ```text
-#stage
-├── #world        ← camera-equivalent transform owner
-│   ├── background
-│   ├── product / UI / objects
-│   └── typography that belongs in world space
-├── lens-space FX
-└── debug / safe-area overlays
-```
-
-Camera-equivalent motion belongs on `#world` (or a dedicated camera rig), not on
-`#stage` when `#stage` is also responsible for viewport fitting.
-
-Viewport fit and authored camera movement must be separate transforms.
-
-Recommended nesting:
-
-```text
 #viewport-fit  ← fixed composition fit only
 └── #camera    ← authored x/y/scale/rotation
-    └── #world
+    └── #world ← world-space UI, objects, type, backgrounds
 ```
+
+Camera-equivalent motion belongs on `#camera` (or a dedicated camera rig), not on
+`#viewport-fit` when that node is responsible for fitting the composition to the
+browser viewport.
+
+Viewport fit and authored camera movement must be separate transforms.
 
 For Three.js/R3F, animate the real render camera or a parent camera rig. Do not move
 only the subject and describe that as a camera move.
 
-## 4. Camera follow grammar
+## 4. Safe-frame containment hard gate
+
+Every readable beat must declare which element or rectangle is the **attention owner**.
+That owner must remain inside the camera-space safe frame at the inspected time.
+
+Default margins for portrait 9:16 work are:
+
+```text
+left/right ≈ 7% of stage width
+top        ≈ 5% of stage height
+bottom     ≈ 8% of stage height
+```
+
+At 1080×1920 this is approximately:
+
+```text
+left/right 76 px
+top        96 px
+bottom     154 px
+```
+
+Use stricter platform-safe margins when captions, UI chrome, a notch, buttons, or
+navigation overlays consume additional space.
+
+### Readable landing rule
+
+A readable landing, CTA, proof/comprehension frame, product inspection frame, hero
+word, UI card, character close-up, or brand lockup **fails** if any required portion
+is cut by the viewport or pushed outside the safe frame.
+
+Intentional clipping is allowed only as a transient transition gesture, for example a
+push-through, foreground wipe, type-as-occluder, or high-speed chase. The move must
+settle into a safe readable frame before the viewer is expected to parse information.
+
+### Derive scale from bounds
+
+When a whole target must remain visible, derive zoom from the target rectangle instead
+of choosing scale by eye.
+
+Given a target world rectangle `(x, y, width, height)` and safe margins:
+
+```text
+safeWidth  = stageWidth  - safeLeft - safeRight
+safeHeight = stageHeight - safeTop  - safeBottom
+fitScale   = min(safeWidth / width, safeHeight / height)
+```
+
+Clamp the chosen scale to any artistic min/max scale, then translate the rig so the
+target center lands at the safe-frame center. `runtime/camera-rig.js::frameRect()`
+implements this deterministic pattern.
+
+For large typography, use the actual readable word/block bounds, not merely the
+containing world section if the type itself can overhang.
+
+## 5. Camera follow grammar
 
 When the viewer's attention owner moves, choose one:
 
@@ -88,7 +132,7 @@ For cursor/drag interactions, follow the moving object or cursor during the impo
 part of the journey, then settle on the drop target. Avoid watching a long drag from
 a completely fixed wide shot unless the wide framing is the point.
 
-## 5. Follow lag and damping
+## 6. Follow lag and damping
 
 Tracking should not feel welded to the subject unless the style explicitly requires
 it. Prefer small authored lag:
@@ -101,7 +145,34 @@ Lag must remain deterministic. Derive it from authored timeline state, keyed off
 or pure functions of master time. Do not use realtime spring integration in the final
 capture path unless the spring state is analytically reproducible when seeking.
 
-## 6. Speed-ramp contract
+## 7. Camera cut / overlap hard gate
+
+A hard camera reset is not a magic cancellation boundary.
+
+With timeline systems such as GSAP, a `.set()` placed inside the time range of an
+already-running camera tween does **not** guarantee that the older tween stops writing
+x/y/scale/rotation after the set time. The previous tween may continue and pull the
+camera away from the intended cut frame.
+
+Therefore:
+
+- never overlap camera x/y/scale/rotation tweens unless the overlap is a deliberately
+  authored continuous blend on separate properties;
+- before a hard cut/reset at time `t`, every previous camera transform tween must end
+  no later than `t`;
+- after a hard cut, start the next camera move at or after the cut time from the known
+  cut state;
+- if a move must continue across a transition, author it as one continuous camera move
+  rather than tween → `.set()` → unfinished prior tween;
+- use `camera.cutSafe()` when possible; it tracks the camera busy interval and throws
+  when a requested hard cut overlaps an earlier camera move;
+- in hand-authored GSAP timelines, write down camera move intervals and check them as
+  part of QA.
+
+This gate prevents the classic symptom where a scene appears correctly positioned in
+source code but later frames are shifted, exposing a black stage edge or clipping text.
+
+## 8. Speed-ramp contract
 
 A speed ramp is an intentional change in velocity through a single movement or
 transition. It should create an energy handoff, not merely make the timeline faster.
@@ -142,7 +213,7 @@ These are starting ranges, not presets.
 - using `timeScale()` as an uncontrolled global trick that desynchronizes VO/audio;
 - realtime velocity accumulation that breaks deterministic seeking.
 
-## 7. Deterministic implementation
+## 9. Deterministic implementation
 
 Speed ramps must remain functions of authored master time.
 
@@ -158,7 +229,7 @@ Keep audio, VO, SFX, object state, and camera on the same master clock.
 For final render, never implement the ramp by changing capture FPS or by skipping
 frames. The output cadence remains fixed; the **authored motion velocity** changes.
 
-## 8. Typography safety under moving camera
+## 10. Typography safety under moving camera
 
 Anti-static camera does not override readability.
 
@@ -170,11 +241,36 @@ When typography owns the frame:
 - if the camera crosses large type, use the type intentionally as an occluder or
   transition plane;
 - verify actual rendered frames at the fastest portion of the ramp, not only the
-  landing frame.
+  landing frame;
+- inspect glyph overhangs, strokes, shadows, and outline text; visual bounds can extend
+  beyond the nominal CSS box;
+- final CTA and proof typography must pass safe-frame containment without depending on
+  hidden overflow.
 
-## 9. Camera activity QA
+## 11. Automated framing audit
 
-Before `FINAL_VERIFIED`, inspect camera activity at key beats.
+Browser-authored scenes may expose `window.OPENER.FRAME_AUDIT` as an array of checks:
+
+```js
+window.OPENER.FRAME_AUDIT = [
+  { time: 0.65, selectors: ['#hook'], safe: { left: 76, right: 76, top: 96, bottom: 154 } },
+  { time: 15.90, selectors: ['#cta .cta-title', '#cta .folder', '#cta .cta-button'] }
+];
+```
+
+Run:
+
+```bash
+INDEX=assets/scene.html WIDTH=1080 HEIGHT=1920 npm run audit:framing
+```
+
+The audit seeks the deterministic master timeline, reads `getBoundingClientRect()` for
+each required selector, and fails if a required target crosses the configured safe
+margins. It complements, not replaces, visual review.
+
+## 12. Camera activity QA
+
+Before `FINAL_VERIFIED`, inspect camera activity and containment at key beats.
 
 Required checks for substantial fast-paced work:
 
@@ -183,7 +279,10 @@ Required checks for substantial fast-paced work:
 - fastest speed-ramp midpoint;
 - camera landing after the ramp;
 - one subject-follow or handoff moment when a moving hero exists;
-- final framing / payoff.
+- proof/comprehension frame;
+- final CTA/product framing;
+- safe-frame containment of each readable attention owner;
+- camera tween interval overlap around every hard cut/reset.
 
 Fail QA when:
 
@@ -192,16 +291,21 @@ Fail QA when:
 - camera travel is claimed but only the subject moves;
 - the speed ramp has no readable acceleration/deceleration consequence;
 - typography collides with or is obscured by world objects during camera travel;
-- camera movement creates accidental edge clipping or exposes empty stage regions.
+- camera movement creates accidental edge clipping or exposes empty stage regions;
+- a readable target leaves the safe frame;
+- a hard camera reset overlaps a still-running camera transform tween;
+- a CTA/proof/product landing contains truncated words, cards, buttons, or brand marks.
 
 Recommended production labels:
 
 ```text
 CAMERA_GATE = PASS | FAIL
+CAMERA_FRAME_GATE = PASS | FAIL
+CAMERA_OVERLAP_GATE = PASS | FAIL
 CAMERA_MODE = MOVING | TRACKING | REFRAME | LOCKED_INTENTIONAL
 CAMERA_ACTIVITY = ACTIVE_DEFAULT | LOCKED_FOR_REASON
 SPEED_RAMP = ACTIVE | NOT_REQUIRED | FAIL
 CAMERA_FOLLOW = USED | NOT_REQUIRED | FAIL
 ```
 
-`FINAL_VERIFIED` requires `CAMERA_GATE=PASS` whenever this module is triggered.
+`FINAL_VERIFIED` requires all triggered camera gates to pass.
