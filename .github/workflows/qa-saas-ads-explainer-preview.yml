@@ -24,6 +24,8 @@ jobs:
           sudo apt-get install -y ffmpeg
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           npm ci
+      - name: Apply QA coordinate fix
+        run: sed -i 's/inset:-420px/inset:0/' assets/saas-ads-explainer-9x16.html
       - name: Render lightweight deterministic preview
         run: |
           mkdir -p output
@@ -36,7 +38,7 @@ jobs:
           done
       - uses: actions/upload-artifact@v4
         with:
-          name: amhfxmotionrender-saas-ads-qa-preview
+          name: amhfxmotionrender-saas-ads-qa-preview-fixed
           path: |
             output/qa-preview.mp4
             output/qa-*.png
