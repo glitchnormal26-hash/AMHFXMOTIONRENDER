@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMHFXMOTIONRENDER — From Text to Motion</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --ink:#f7f7f2;--muted:#8d92a0;--black:#070708;--panel:#111116;
+  --acid:#c8ff21;--violet:#7a48ff;--cyan:#4de6ff;--red:#ff4d67;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020203}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+#viewport-fit{position:fixed;left:50%;top:50%;width:1080px;height:1920px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:#050506}
+#camera{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#world{position:absolute;inset:-420px;background:
+  radial-gradient(circle at 20% 18%,rgba(122,72,255,.28),transparent 30%),
+  radial-gradient(circle at 75% 62%,rgba(200,255,33,.16),transparent 34%),
+  linear-gradient(145deg,#070709 0%,#0b0b10 45%,#050506 100%);overflow:hidden}
+#world:before{content:"";position:absolute;inset:0;opacity:.13;background-image:
+  linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:72px 72px;transform:skewY(-7deg) scale(1.15)}
+#world:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.23;background:repeating-linear-gradient(0deg,transparent 0 4px,rgba(255,255,255,.025) 5px 6px)}
+.lens{position:absolute;inset:0;pointer-events:none;z-index:50;mix-blend-mode:screen}
+.lens:before{content:"";position:absolute;inset:-30%;background:conic-gradient(from 210deg,transparent,rgba(122,72,255,.08),transparent,rgba(77,230,255,.06),transparent);animation:none}
+.glitchbar{position:absolute;left:-10%;right:-10%;height:9px;top:43%;background:linear-gradient(90deg,transparent,var(--acid),transparent);opacity:0;filter:blur(.5px)}
+.corner{position:absolute;font:700 22px/1 Arial,Helvetica,sans-serif;letter-spacing:.15em;color:#777b88;z-index:8}
+.corner.tl{left:82px;top:86px}.corner.br{right:74px;bottom:82px;transform:rotate(90deg);transform-origin:100% 100%}
+#hook{position:absolute;left:95px;top:290px;width:900px;z-index:5}
+.hook-kicker{font:800 24px/1 Arial,Helvetica,sans-serif;letter-spacing:.28em;color:var(--acid);margin-bottom:28px;opacity:0}
+.hook-line{font:900 148px/.82 Impact,Arial Black,sans-serif;letter-spacing:-.045em;text-transform:uppercase;white-space:nowrap;transform-origin:left center;opacity:0}
+.hook-line.b{color:transparent;-webkit-text-stroke:4px var(--ink);margin-top:10px}
+.hook-arrow{display:inline-block;color:var(--violet);margin:0 2px}
+#chat{position:absolute;left:112px;top:520px;width:860px;height:740px;border:1px solid rgba(255,255,255,.16);border-radius:34px;background:linear-gradient(160deg,rgba(18,18,25,.96),rgba(8,8,12,.94));box-shadow:0 35px 120px rgba(0,0,0,.56),inset 0 1px rgba(255,255,255,.08);overflow:hidden;opacity:0;transform-origin:center;z-index:12}
+.chat-top{height:92px;display:flex;align-items:center;gap:12px;padding:0 28px;border-bottom:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.02)}
+.dot{width:14px;height:14px;border-radius:50%;background:#383944}.dot:nth-child(1){background:var(--red)}.dot:nth-child(2){background:#ffcf3d}.dot:nth-child(3){background:var(--acid)}
+.brandmark{margin-left:auto;font:800 20px/1 Arial,Helvetica,sans-serif;letter-spacing:.18em;color:#cfd0d5}
+.chat-body{padding:38px 34px;position:relative;height:648px}
+.bot{display:inline-flex;align-items:center;gap:12px;padding:11px 16px;border-radius:999px;background:#20212b;color:#b7bac4;font:700 19px/1 Arial,Helvetica,sans-serif;letter-spacing:.05em}
+.bot i{display:block;width:9px;height:9px;border-radius:50%;background:var(--acid);box-shadow:0 0 16px rgba(200,255,33,.8)}
+.prompt{position:absolute;left:34px;right:34px;top:128px;padding:30px 30px 34px;border-radius:26px;background:#f2f3ee;color:#09090b;font:800 34px/1.18 Arial,Helvetica,sans-serif;letter-spacing:-.02em;box-shadow:0 10px 0 #bfc0ba;overflow:hidden}
+#promptText{display:inline}.caret{display:inline-block;width:4px;height:34px;margin-left:5px;background:#111;vertical-align:-4px;opacity:0}
+.skill-pill{position:absolute;left:34px;top:390px;padding:13px 18px;border:1px solid rgba(200,255,33,.45);border-radius:999px;color:var(--acid);background:rgba(200,255,33,.07);font:800 19px/1 Arial,Helvetica,sans-serif;letter-spacing:.04em;opacity:0}
+.status{position:absolute;left:34px;right:34px;bottom:44px;height:92px;border-radius:20px;background:#171820;border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;padding:0 24px;gap:18px;opacity:0}
+.spinner{width:28px;height:28px;border:3px solid #343640;border-top-color:var(--acid);border-radius:50%}.status span{font:700 22px/1 Arial,Helvetica,sans-serif;color:#c8cad1}.progress{margin-left:auto;width:200px;height:6px;background:#2d2f39;border-radius:10px;overflow:hidden}.progress b{display:block;width:0%;height:100%;background:linear-gradient(90deg,var(--violet),var(--acid))}
+#sourceCard{position:absolute;left:758px;top:1300px;width:260px;height:310px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:linear-gradient(160deg,#171821,#0c0c11);box-shadow:0 28px 80px rgba(0,0,0,.48);z-index:18;opacity:0;transform-origin:center}
+.file-icon{position:absolute;left:34px;top:38px;width:98px;height:110px;border-radius:18px;background:linear-gradient(145deg,var(--violet),#4630a8);display:grid;place-items:center;font:900 36px/1 Impact,Arial Black,sans-serif;box-shadow:0 18px 40px rgba(122,72,255,.28)}
+.file-icon:after{content:"";position:absolute;right:0;top:0;border-left:24px solid transparent;border-bottom:24px solid rgba(255,255,255,.25)}
+.file-name{position:absolute;left:34px;right:26px;bottom:82px;font:800 24px/1.05 Arial,Helvetica,sans-serif;letter-spacing:-.02em}.file-meta{position:absolute;left:34px;bottom:34px;font:700 16px/1 Arial,Helvetica,sans-serif;color:#7f8290;letter-spacing:.08em;text-transform:uppercase}
+#cursor{position:absolute;left:838px;top:1515px;width:90px;height:106px;z-index:30;opacity:0;filter:drop-shadow(0 12px 18px rgba(0,0,0,.4));transform-origin:22% 15%}
+#cursor svg{width:100%;height:100%;overflow:visible}
+#dropRing{position:absolute;left:425px;top:1040px;width:230px;height:230px;border:4px solid var(--acid);border-radius:50%;z-index:25;opacity:0;box-shadow:0 0 0 2px rgba(200,255,33,.18),0 0 70px rgba(200,255,33,.28)}
+#buildWord{position:absolute;left:115px;top:1160px;z-index:6;font:900 170px/.8 Impact,Arial Black,sans-serif;letter-spacing:-.05em;text-transform:uppercase;opacity:0;white-space:nowrap}.build-stroke{color:transparent;-webkit-text-stroke:3px rgba(255,255,255,.5)}
+#preview{position:absolute;left:108px;top:430px;width:872px;height:1030px;border-radius:42px;border:1px solid rgba(255,255,255,.16);background:#0c0d12;overflow:hidden;box-shadow:0 60px 150px rgba(0,0,0,.62);opacity:0;z-index:20;transform-origin:center}
+.preview-top{height:94px;display:flex;align-items:center;padding:0 32px;border-bottom:1px solid rgba(255,255,255,.1);font:800 21px/1 Arial,Helvetica,sans-serif;letter-spacing:.1em}.live{margin-left:auto;display:flex;gap:10px;align-items:center;color:var(--acid)}.live i{width:10px;height:10px;border-radius:50%;background:var(--acid);box-shadow:0 0 14px var(--acid)}
+.game{position:absolute;left:28px;right:28px;top:122px;height:720px;border-radius:28px;overflow:hidden;background:linear-gradient(#17172a 0 56%,#12152a 56% 82%,#090b13 82%);border:1px solid rgba(255,255,255,.12)}
+.game:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 68% 18%,rgba(122,72,255,.52),transparent 23%),linear-gradient(180deg,rgba(77,230,255,.08),transparent 45%)}
+.city{position:absolute;left:0;right:0;bottom:127px;height:180px;opacity:.28;background:repeating-linear-gradient(90deg,#5a5d76 0 36px,transparent 36px 54px);clip-path:polygon(0 62%,7% 44%,12% 60%,17% 28%,24% 52%,31% 18%,39% 54%,46% 34%,53% 58%,60% 22%,69% 51%,76% 34%,82% 61%,89% 28%,100% 54%,100% 100%,0 100%)}
+.pipe{position:absolute;width:104px;background:linear-gradient(90deg,#98c817,var(--acid) 48%,#91bb19);border:3px solid #0b0c0d;box-shadow:inset -14px 0 rgba(0,0,0,.12)}
+.pipe:after{content:"";position:absolute;left:-13px;width:130px;height:48px;background:var(--acid);border:3px solid #0b0c0d}.pipe.top{height:240px;top:-20px;left:650px}.pipe.top:after{bottom:-6px}.pipe.bottom{height:300px;bottom:-40px;left:650px}.pipe.bottom:after{top:-6px}
+.pipe.two.top{left:1050px;height:310px}.pipe.two.bottom{left:1050px;height:230px}
+#bird{position:absolute;left:230px;top:340px;width:94px;height:72px;border-radius:18px 32px 22px 24px;background:#ffe052;border:4px solid #111;z-index:6;box-shadow:0 14px 26px rgba(0,0,0,.28);transform-origin:45% 50%}
+#bird:before{content:"";position:absolute;right:-24px;top:22px;border-left:28px solid #ff7d3e;border-top:12px solid transparent;border-bottom:12px solid transparent}.eye{position:absolute;right:14px;top:11px;width:19px;height:19px;border-radius:50%;background:white;border:3px solid #111}.eye:after{content:"";position:absolute;right:2px;top:3px;width:6px;height:6px;border-radius:50%;background:#111}.wing{position:absolute;left:15px;top:31px;width:46px;height:31px;border-radius:50%;background:#fff0a1;border:3px solid #111;transform-origin:10% 50%}
+.score{position:absolute;left:0;right:0;top:28px;text-align:center;font:900 58px/1 Impact,Arial Black,sans-serif;text-shadow:0 4px #000}.game-tag{position:absolute;left:28px;bottom:28px;padding:12px 15px;border-radius:12px;background:rgba(7,7,10,.72);font:800 16px/1 Arial,Helvetica,sans-serif;letter-spacing:.12em;color:#d7d9e0}
+.preview-bottom{position:absolute;left:32px;right:32px;bottom:42px;display:flex;align-items:end}.preview-copy{font:900 56px/.9 Impact,Arial Black,sans-serif;letter-spacing:-.035em;text-transform:uppercase}.preview-copy em{font-style:normal;color:var(--acid)}.render-chip{margin-left:auto;padding:15px 18px;border-radius:14px;background:#1a1b23;color:#aeb1bd;font:800 17px/1 Arial,Helvetica,sans-serif;letter-spacing:.08em}
+#proof{position:absolute;left:120px;top:470px;width:840px;z-index:24;opacity:0}.proof-title{font:900 116px/.82 Impact,Arial Black,sans-serif;text-transform:uppercase;letter-spacing:-.04em}.proof-title span{color:var(--acid)}.proof-row{display:flex;gap:14px;margin-top:54px}.proof-card{flex:1;padding:28px;border:1px solid rgba(255,255,255,.13);background:rgba(16,17,23,.9);border-radius:24px;font:800 20px/1.1 Arial,Helvetica,sans-serif}.proof-card b{display:block;font:900 42px/1 Impact,Arial Black,sans-serif;margin-bottom:12px;color:#fff}.proof-card small{color:#858895;font:700 14px/1 Arial,Helvetica,sans-serif;letter-spacing:.09em}
+#cta{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:40;opacity:0;pointer-events:none}.cta-kicker{position:absolute;left:104px;top:280px;font:800 24px/1 Arial,Helvetica,sans-serif;letter-spacing:.26em;color:var(--acid)}.cta-title{position:absolute;left:104px;top:340px;width:860px;font:900 126px/.84 Impact,Arial Black,sans-serif;letter-spacing:-.045em;text-transform:uppercase}.cta-title span{color:transparent;-webkit-text-stroke:3px #fff}.folder{position:absolute;left:122px;top:800px;width:836px;height:560px;border-radius:38px;background:linear-gradient(145deg,#c7ff21 0%,#a8df12 55%,#7faf08 100%);box-shadow:0 70px 160px rgba(80,110,0,.28),inset 0 2px rgba(255,255,255,.35);transform-origin:center}.folder:before{content:"";position:absolute;left:42px;top:-72px;width:350px;height:100px;border-radius:28px 28px 0 0;background:#c8ff21}.folder:after{content:"";position:absolute;inset:38px;border:2px solid rgba(0,0,0,.18);border-radius:25px}.folder-name{position:absolute;left:56px;right:46px;top:160px;color:#0b0c07;font:900 54px/.9 Impact,Arial Black,sans-serif;letter-spacing:-.025em;overflow-wrap:anywhere}.folder-meta{position:absolute;left:58px;bottom:58px;color:rgba(0,0,0,.63);font:800 18px/1 Arial,Helvetica,sans-serif;letter-spacing:.16em}.cta-button{position:absolute;left:104px;top:1510px;width:872px;height:132px;border-radius:24px;background:#f3f3ef;color:#080809;display:flex;align-items:center;justify-content:center;font:900 45px/1 Impact,Arial Black,sans-serif;text-transform:uppercase;letter-spacing:.02em;box-shadow:0 14px 0 #a9a9a4}.cta-button:after{content:"→";position:absolute;right:38px;font:900 48px/1 Arial,Helvetica,sans-serif}.cta-sub{position:absolute;left:104px;top:1677px;font:800 21px/1 Arial,Helvetica,sans-serif;color:#8b8d98;letter-spacing:.12em}
+#cursor2{position:absolute;left:865px;top:1575px;width:82px;height:96px;z-index:60;opacity:0;filter:drop-shadow(0 12px 18px rgba(0,0,0,.5))}
+#cursor2 svg{width:100%;height:100%}
+.flash{position:absolute;inset:0;background:white;z-index:70;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="viewport-fit">
+  <div id="camera"><div id="world">
+    <div class="corner tl">AMH // MOTION SYSTEM</div><div class="corner br">TEXT → MOTION</div>
+    <section id="hook"><div class="hook-kicker">FROM PROMPT TO PERFORMANCE</div><div class="hook-line a">TEXT <span class="hook-arrow">→</span></div><div class="hook-line b">MOTION</div></section>
+    <section id="chat">
+      <div class="chat-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="brandmark">MOTION CHAT</div></div>
+      <div class="chat-body"><div class="bot"><i></i> READY FOR A BRIEF</div>
+        <div class="prompt"><span id="promptText"></span><span class="caret"></span></div>
+        <div class="skill-pill">skill: amhfxmotionrender</div>
+        <div class="status"><div class="spinner"></div><span>Building motion system…</span><div class="progress"><b></b></div></div>
+      </div>
+    </section>
+    <div id="sourceCard"><div class="file-icon">FX</div><div class="file-name">flappy-bird.ref</div><div class="file-meta">drag into prompt</div></div>
+    <div id="dropRing"></div>
+    <div id="cursor"><svg viewBox="0 0 90 106" aria-hidden="true"><path d="M20 4c-7 0-12 5-12 12v43c0 4 3 7 7 7s7-3 7-7V31c0-4 3-7 7-7s7 3 7 7v17-8c0-4 3-7 7-7s7 3 7 7v10-5c0-4 3-7 7-7s7 3 7 7v10-3c0-4 3-7 7-7s7 3 7 7v18c0 20-12 33-31 33H38c-10 0-17-4-23-12L3 76c-3-5-2-11 2-14 5-3 10-2 14 3l3 4V16c0-7-5-12-12-12z" fill="#f7f7f2" stroke="#09090b" stroke-width="5" stroke-linejoin="round"/></svg></div>
+    <div id="buildWord">BUILD<span class="build-stroke">ING</span></div>
+    <section id="preview">
+      <div class="preview-top">GENERATED PREVIEW <div class="live"><i></i> LIVE</div></div>
+      <div class="game"><div class="city"></div><div class="pipe top"></div><div class="pipe bottom"></div><div class="pipe two top"></div><div class="pipe two bottom"></div><div id="bird"><div class="eye"></div><div class="wing"></div></div><div class="score">03</div><div class="game-tag">FLAPPY // GENERATED</div></div>
+      <div class="preview-bottom"><div class="preview-copy">PROMPT IN.<br><em>MOTION OUT.</em></div><div class="render-chip">1080×1920 / 60FPS</div></div>
+    </section>
+    <section id="proof"><div class="proof-title">ONE BRIEF.<br><span>FULL MOTION.</span></div><div class="proof-row"><div class="proof-card"><b>01</b>TYPE → UI<small>CONTINUOUS WORLD</small></div><div class="proof-card"><b>02</b>DRAG → BUILD<small>CAMERA FOLLOW</small></div><div class="proof-card"><b>03</b>BUILD → MP4<small>FRAME ACCURATE</small></div></div></section>
+    <section id="cta"><div class="cta-kicker">THE MOTION SKILL</div><div class="cta-title">FROM TEXT.<br><span>TO MOTION.</span></div><div class="folder"><div class="folder-name">AMHFXMOTIONRENDER</div><div class="folder-meta">MOTION DESIGN / RENDER / EXPORT</div></div><div class="cta-button">Build Now</div><div class="cta-sub">DROP THE BRIEF. SHIP THE MOTION.</div></section>
+    <div id="cursor2"><svg viewBox="0 0 90 106" aria-hidden="true"><path d="M20 4c-7 0-12 5-12 12v43c0 4 3 7 7 7s7-3 7-7V31c0-4 3-7 7-7s7 3 7 7v17-8c0-4 3-7 7-7s7 3 7 7v10-5c0-4 3-7 7-7s7 3 7 7v10-3c0-4 3-7 7-7s7 3 7 7v18c0 20-12 33-31 33H38c-10 0-17-4-23-12L3 76c-3-5-2-11 2-14 5-3 10-2 14 3l3 4V16c0-7-5-12-12-12z" fill="#f7f7f2" stroke="#09090b" stroke-width="5" stroke-linejoin="round"/></svg></div>
+  </div></div>
+  <div class="lens"><div class="glitchbar"></div></div><div class="flash"></div>
+</div>
+<script>
+const W=1080,H=1920,DURATION=17.2;
+const fitRoot=document.querySelector('#viewport-fit');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);fitRoot.style.transform=`translate(-50%,-50%) scale(${s})`;};addEventListener('resize',fit);fit();
+const prompt='buatkan animasi flappy bird menggunakan skill amhfxmotionrender';
+const promptEl=document.querySelector('#promptText');
+const tl=gsap.timeline({paused:true,defaults:{ease:'power3.out'}});
+const cam=(vars,pos)=>tl.to('#camera',{...vars,duration:vars.duration||1.0,ease:vars.ease||'power3.inOut'},pos);
+
+gsap.set(['#hook .hook-kicker','#hook .hook-line','#chat','#sourceCard','#cursor','#dropRing','#buildWord','#preview','#proof','#cta','#cursor2'],{opacity:0});
+gsap.set('#chat',{scale:.8,rotation:-2,y:120});
+gsap.set('#preview',{scale:.74,rotation:2,y:120});
+gsap.set('#camera',{x:0,y:0,scale:1,rotation:0});
+
+tl.to('#hook .hook-kicker',{opacity:1,y:0,duration:.35},.05)
+  .fromTo('#hook .hook-line.a',{opacity:0,x:-120,scaleX:.76},{opacity:1,x:0,scaleX:1,duration:.48,ease:'expo.out'},.15)
+  .fromTo('#hook .hook-line.b',{opacity:0,x:120,scaleX:1.25},{opacity:1,x:0,scaleX:1,duration:.42,ease:'expo.out'},.36)
+  .to('.glitchbar',{opacity:.85,duration:.05},.32).to('.glitchbar',{opacity:0,duration:.12},.40)
+  .to('#camera',{scale:1.13,x:-54,y:-110,duration:.7,ease:'power4.inOut'},.75)
+  .to('#hook',{opacity:0,y:-100,duration:.35,ease:'power2.in'},1.18)
+  .to('#chat',{opacity:1,scale:1,rotation:0,y:0,duration:.72,ease:'back.out(1.25)'},1.28)
+  .to('#camera',{scale:1.08,x:-34,y:-30,duration:.65,ease:'power3.out'},1.35)
+  .to('.caret',{opacity:1,duration:.1},1.84)
+  .to({p:0},{p:1,duration:2.15,ease:'none',onUpdate:function(){promptEl.textContent=prompt.slice(0,Math.round(this.targets()[0].p*prompt.length));}},1.90)
+  .to('.skill-pill',{opacity:1,y:-6,duration:.25},3.78)
+  .to('.skill-pill',{boxShadow:'0 0 0 5px rgba(200,255,33,.08),0 0 34px rgba(200,255,33,.22)',duration:.22},4.02)
+  .to('#sourceCard',{opacity:1,y:-22,rotation:-4,duration:.45,ease:'back.out(1.4)'},4.18)
+  .to('#cursor',{opacity:1,duration:.16},4.30)
+  .to('#cursor',{x:-12,y:-40,scale:.96,duration:.34,ease:'power2.out'},4.46)
+  .to('#sourceCard',{scale:1.05,rotation:-1,duration:.18},4.72)
+  .to('#cursor',{x:-210,y:-310,duration:.30,ease:'power3.in'},4.96)
+  .to('#sourceCard',{x:-190,y:-275,rotation:4,duration:.30,ease:'power3.in'},4.96)
+  .to('#camera',{scale:1.23,x:105,y:-248,duration:.78,ease:'expo.inOut'},4.86)
+  .to('#cursor',{x:-350,y:-525,duration:.26,ease:'none'},5.26)
+  .to('#sourceCard',{x:-330,y:-495,rotation:7,duration:.26,ease:'none'},5.26)
+  .to('#cursor',{x:-470,y:-650,duration:.48,ease:'power4.out'},5.52)
+  .to('#sourceCard',{x:-450,y:-620,rotation:1,duration:.48,ease:'power4.out'},5.52)
+  .to('#dropRing',{opacity:.9,scale:1.25,duration:.18},5.72)
+  .to('#dropRing',{scale:.76,opacity:0,duration:.36,ease:'power3.in'},6.04)
+  .to('#sourceCard',{scale:.34,opacity:0,duration:.24,ease:'power3.in'},6.03)
+  .to('#cursor',{scale:.82,duration:.12},6.02).to('#cursor',{scale:1,duration:.16},6.16)
+  .to('.flash',{opacity:.7,duration:.04},6.14).to('.flash',{opacity:0,duration:.15},6.18)
+  .to('.status',{opacity:1,y:0,duration:.26},6.22)
+  .to('.progress b',{width:'100%',duration:1.34,ease:'power2.inOut'},6.32)
+  .to('.spinner',{rotation:540,duration:1.34,ease:'none'},6.32)
+  .to('#buildWord',{opacity:.72,x:-30,duration:.24},6.40)
+  .to('#camera',{scale:1.38,x:40,y:-310,duration:.30,ease:'power3.in'},6.42)
+  .to('#camera',{scale:1.9,x:-380,y:-650,duration:.32,ease:'expo.in'},6.72)
+  .to('#chat',{scale:1.16,opacity:0,duration:.28,ease:'power2.in'},6.72)
+  .to('#buildWord',{x:-280,scale:1.45,opacity:0,duration:.26,ease:'power3.in'},6.86)
+  .set('#camera',{x:0,y:0,scale:1.45,rotation:0},7.14)
+  .to('#preview',{opacity:1,scale:1,rotation:0,y:0,duration:.62,ease:'expo.out'},7.15)
+  .to('#camera',{scale:1.08,x:-24,y:-40,duration:.72,ease:'power3.out'},7.18)
+  .to('.pipe',{x:-1110,duration:3.45,ease:'none'},7.35)
+  .to('#bird',{keyframes:[{y:-118,rotation:-15,duration:.52,ease:'power2.out'},{y:12,rotation:15,duration:.48,ease:'power2.in'},{y:-92,rotation:-13,duration:.48,ease:'power2.out'},{y:24,rotation:18,duration:.50,ease:'power2.in'},{y:-78,rotation:-11,duration:.44,ease:'power2.out'},{y:10,rotation:12,duration:.56,ease:'power2.inOut'}]},7.48)
+  .to('.wing',{rotation:-38,duration:.18,yoyo:true,repeat:11,ease:'power1.inOut'},7.50)
+  .to('#camera',{x:-66,y:-92,scale:1.16,duration:1.05,ease:'power1.inOut'},8.55)
+  .to('#camera',{x:18,y:-34,scale:1.08,duration:.95,ease:'power2.inOut'},9.68)
+  .to('.score',{textShadow:'0 0 24px rgba(200,255,33,.8),0 4px #000',scale:1.18,duration:.12,yoyo:true,repeat:1},9.90)
+  .to('#preview',{scale:.84,y:70,opacity:.15,duration:.44,ease:'power2.in'},11.02)
+  .to('#proof',{opacity:1,y:-20,duration:.48,ease:'power3.out'},11.16)
+  .to('#camera',{scale:.92,x:0,y:40,duration:.72,ease:'power3.inOut'},11.16)
+  .fromTo('.proof-card',{y:80,opacity:0},{y:0,opacity:1,duration:.48,stagger:.08,ease:'power4.out'},11.32)
+  .to('#proof',{opacity:0,y:-70,duration:.30,ease:'power2.in'},12.82)
+  .to('#camera',{scale:1.36,x:-120,y:-260,duration:.34,ease:'power4.in'},12.90)
+  .to('.glitchbar',{opacity:.95,duration:.06},13.06).to('.glitchbar',{opacity:0,duration:.12},13.12)
+  .set('#camera',{x:0,y:0,scale:1,rotation:0},13.20)
+  .to('#cta',{opacity:1,duration:.28},13.22)
+  .fromTo('.folder',{scale:.55,rotation:-9,y:170},{scale:1,rotation:0,y:0,duration:.72,ease:'back.out(1.25)'},13.30)
+  .fromTo('.cta-title',{x:-110,opacity:0},{x:0,opacity:1,duration:.48,ease:'expo.out'},13.42)
+  .fromTo('.cta-button',{y:70,opacity:0},{y:0,opacity:1,duration:.38,ease:'power4.out'},14.18)
+  .to('#camera',{scale:1.035,y:-22,duration:.72,ease:'power1.inOut'},14.42)
+  .to('#cursor2',{opacity:1,x:-70,y:20,duration:.28},14.72)
+  .to('#cursor2',{x:-110,y:-36,duration:.38,ease:'power3.inOut'},15.02)
+  .to('.cta-button',{scale:.965,y:8,duration:.08},15.38).to('.cta-button',{scale:1,y:0,duration:.18,ease:'back.out(2)'},15.46)
+  .to('.flash',{opacity:.55,duration:.03},15.39).to('.flash',{opacity:0,duration:.13},15.43)
+  .to('.folder',{boxShadow:'0 70px 160px rgba(80,110,0,.36),0 0 100px rgba(200,255,33,.16)',duration:.35},15.48)
+  .to('#camera',{scale:1.0,y:0,duration:.62,ease:'power2.out'},15.66)
+  .to({},{duration:.01},17.19);
+
+const q=new URLSearchParams(location.search);
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
