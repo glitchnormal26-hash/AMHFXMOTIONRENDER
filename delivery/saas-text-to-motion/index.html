@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Text to Motion — Edgy SaaS Explainer</title>
+<style>
+:root{
+  --ink:#080a0d;
+  --paper:#f3f0e8;
+  --acid:#d8ff38;
+  --hot:#ff4b2b;
+  --cyan:#22dff5;
+  --muted:#808793;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030406}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:1920px;height:1080px;
+  transform:translate(-50%,-50%);transform-origin:center center;overflow:hidden;
+  background:
+    radial-gradient(circle at 78% 18%,rgba(34,223,245,.10),transparent 27%),
+    radial-gradient(circle at 12% 78%,rgba(216,255,56,.07),transparent 31%),
+    linear-gradient(135deg,#05070a 0%,#090c11 52%,#050609 100%);
+  color:var(--paper);
+}
+#grain{position:absolute;inset:-40%;opacity:.12;pointer-events:none;background-image:repeating-radial-gradient(circle at 0 0,rgba(255,255,255,.42) 0 1px,transparent 1px 4px);background-size:7px 7px;mix-blend-mode:soft-light;transform:rotate(8deg)}
+#scan{position:absolute;left:-15%;top:-20%;width:46%;height:140%;background:linear-gradient(90deg,transparent,rgba(216,255,56,.08),rgba(216,255,56,.22),transparent);filter:blur(20px);transform:skewX(-18deg);opacity:.5;pointer-events:none}
+#frame{position:absolute;inset:30px;border:1px solid rgba(243,240,232,.14);pointer-events:none}
+#cornerA,#cornerB{position:absolute;font:700 15px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;color:rgba(243,240,232,.45);z-index:30}
+#cornerA{left:54px;top:52px}#cornerB{right:54px;bottom:48px;text-align:right}
+#world{position:absolute;left:0;top:0;width:4200px;height:1080px;transform-origin:0 0;will-change:transform}
+.world-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom,transparent 2%,#000 18%,#000 84%,transparent 98%)}
+.world-svg{position:absolute;left:0;top:0;width:4200px;height:1080px;overflow:visible}
+#routeShadow{fill:none;stroke:rgba(216,255,56,.13);stroke-width:46;stroke-linecap:round;filter:blur(18px)}
+#route{fill:none;stroke:var(--acid);stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 14px rgba(216,255,56,.3))}
+.zone{position:absolute;height:1080px;top:0}
+#intro{left:0;width:1100px}
+#parse{left:760px;width:1100px}
+#product{left:1500px;width:1450px}
+#outro{left:2700px;width:1500px}
+.kicker{font:700 16px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase}
+#rawLabel{position:absolute;left:96px;top:132px;color:var(--acid)}
+#heroWrap{position:absolute;left:84px;top:175px;width:950px;height:410px;overflow:hidden}
+.heroWord{position:absolute;left:0;font-weight:900;letter-spacing:-.075em;line-height:.82;white-space:nowrap;transform-origin:left center}
+#heroText{top:0;font-size:300px;color:var(--paper)}
+#heroGhostA{top:0;font-size:300px;color:var(--cyan);mix-blend-mode:screen;opacity:0}
+#heroGhostB{top:0;font-size:300px;color:var(--hot);mix-blend-mode:screen;opacity:0}
+#question{position:absolute;left:610px;top:360px;font-size:96px;font-weight:900;letter-spacing:-.06em;color:var(--acid);transform:rotate(-8deg)}
+#promptBox{position:absolute;left:94px;top:650px;width:810px;height:168px;border:2px solid rgba(243,240,232,.28);background:rgba(243,240,232,.055);backdrop-filter:blur(10px);overflow:hidden;transform-origin:left center}
+#promptBox:before{content:"";position:absolute;left:0;top:0;width:8px;height:100%;background:var(--acid)}
+#promptText{position:absolute;left:38px;top:32px;width:720px;font:700 32px/1.34 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.035em;color:var(--paper)}
+#promptCaret{display:inline-block;width:18px;height:34px;margin-left:5px;vertical-align:-4px;background:var(--acid)}
+#slash{position:absolute;left:835px;top:510px;font-size:420px;line-height:.7;font-weight:900;color:var(--hot);opacity:.95;transform:rotate(9deg);mix-blend-mode:screen}
+#parseLabel{position:absolute;left:210px;top:154px;color:var(--cyan)}
+#parseHero{position:absolute;left:190px;top:210px;font-size:170px;font-weight:900;line-height:.85;letter-spacing:-.075em;color:var(--paper);transform:rotate(-2deg)}
+#parseHero em{font-style:normal;color:var(--acid)}
+#logicSpine{position:absolute;left:505px;top:510px;width:390px;height:380px;border-left:8px solid var(--cyan)}
+.logicRow{position:absolute;left:0;width:350px;height:72px;display:flex;align-items:center;gap:22px;padding-left:28px;font:800 30px/1 Arial,sans-serif;letter-spacing:-.04em;color:var(--paper)}
+.logicRow:before{content:"";width:18px;height:18px;border-radius:50%;background:var(--cyan);box-shadow:0 0 24px rgba(34,223,245,.55)}
+#logic1{top:0}#logic2{top:92px}#logic3{top:184px}#logic4{top:276px}
+#tokenLayer{position:absolute;inset:0;pointer-events:none}
+.token{position:absolute;min-width:112px;height:58px;padding:0 20px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(243,240,232,.34);background:#10141b;color:var(--paper);font:800 22px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.04em;box-shadow:0 12px 35px rgba(0,0,0,.28);will-change:transform,opacity}
+.token.acid{border-color:rgba(216,255,56,.65);color:var(--acid)}
+.token.cyan{border-color:rgba(34,223,245,.65);color:var(--cyan)}
+#appShell{position:absolute;left:118px;top:128px;width:1220px;height:824px;background:#0c0f14;border:2px solid rgba(243,240,232,.26);box-shadow:0 50px 120px rgba(0,0,0,.48),0 0 0 1px rgba(216,255,56,.05) inset;overflow:hidden;transform-origin:60% 55%}
+#appTop{position:absolute;left:0;top:0;width:100%;height:76px;border-bottom:1px solid rgba(243,240,232,.14);display:flex;align-items:center;padding:0 28px;gap:14px}
+.dot{width:12px;height:12px;border-radius:50%;background:#343943}.dot:nth-child(1){background:var(--hot)}.dot:nth-child(2){background:var(--acid)}.dot:nth-child(3){background:var(--cyan)}
+#appName{margin-left:18px;font:800 16px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;color:rgba(243,240,232,.7)}
+#appStatus{margin-left:auto;font:800 14px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--acid)}
+#leftPanel{position:absolute;left:0;top:76px;width:390px;height:748px;border-right:1px solid rgba(243,240,232,.12);padding:44px 34px}
+#leftPanel .small{color:rgba(243,240,232,.46);font:700 14px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em}
+#inputMini{margin-top:24px;padding:24px 22px;border:1px solid rgba(243,240,232,.18);background:#12171e;font:700 24px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.04em;color:var(--paper)}
+#generateBtn{margin-top:24px;width:100%;height:66px;display:flex;align-items:center;justify-content:center;background:var(--acid);color:#080a0d;font:900 24px/1 Arial,sans-serif;letter-spacing:-.04em}
+#signalStack{margin-top:42px;display:grid;gap:14px}.sig{height:10px;background:#242b34;overflow:hidden}.sig i{display:block;height:100%;background:var(--cyan);width:35%}
+#preview{position:absolute;left:390px;top:76px;width:830px;height:525px;overflow:hidden;background:radial-gradient(circle at 60% 38%,rgba(216,255,56,.14),transparent 26%),linear-gradient(145deg,#0b0e13,#121821)}
+#previewGrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:52px 52px}
+#previewWord{position:absolute;left:70px;top:112px;font-size:170px;font-weight:900;letter-spacing:-.08em;line-height:.8;color:var(--paper);transform-origin:left center}
+#previewWord b{color:var(--acid)}
+#previewRibbon{position:absolute;left:-80px;top:330px;width:990px;height:48px;background:var(--hot);transform:rotate(-7deg);box-shadow:0 0 35px rgba(255,75,43,.22)}
+#previewCard{position:absolute;right:54px;top:70px;width:205px;height:126px;border:1px solid rgba(243,240,232,.2);background:rgba(3,4,6,.62);padding:20px;font:800 15px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(243,240,232,.75)}
+#previewCard strong{display:block;font-size:38px;color:var(--cyan);letter-spacing:-.05em}
+#timeline{position:absolute;left:390px;top:601px;width:830px;height:223px;background:#090c10;border-top:1px solid rgba(243,240,232,.13);padding:28px 34px}
+#timeline:before{content:"";position:absolute;left:34px;right:34px;top:49px;height:1px;background:rgba(243,240,232,.12)}
+.track{position:relative;height:44px;margin-top:14px;background:#131821;overflow:hidden}.block{position:absolute;top:7px;height:30px;background:var(--acid)}.track:nth-child(3) .block{background:var(--cyan)}.track:nth-child(4) .block{background:var(--hot)}
+#playhead{position:absolute;top:18px;bottom:18px;width:3px;background:var(--paper);box-shadow:0 0 18px rgba(243,240,232,.6)}
+#cursor{position:absolute;width:34px;height:42px;z-index:20;filter:drop-shadow(0 6px 7px rgba(0,0,0,.5));transform-origin:4px 4px}
+#cursor:before{content:"";position:absolute;left:0;top:0;width:0;height:0;border-left:0 solid transparent;border-right:25px solid transparent;border-top:38px solid var(--paper);transform:rotate(-28deg)}
+#productClaim{position:absolute;left:72px;top:84px;font-size:94px;font-weight:900;letter-spacing:-.07em;line-height:.9;color:var(--paper);pointer-events:none}
+#productClaim span{color:var(--acid)}
+#outroRule{position:absolute;left:100px;top:178px;width:1120px;height:12px;background:var(--acid);transform-origin:left center}
+#outroMain{position:absolute;left:94px;top:245px;width:1270px;font-size:218px;line-height:.79;font-weight:900;letter-spacing:-.085em;color:var(--paper)}
+#outroMain .arrow{color:var(--hot);display:inline-block}
+#outroMain .motion{color:var(--acid)}
+#outroSub{position:absolute;left:104px;top:760px;font-size:48px;font-weight:800;letter-spacing:-.045em;color:rgba(243,240,232,.82)}
+#outroTags{position:absolute;left:105px;top:845px;display:flex;gap:16px}
+.tag{padding:14px 18px;border:1px solid rgba(243,240,232,.24);font:800 16px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:rgba(243,240,232,.7)}
+#outroOrb{position:absolute;left:1180px;top:205px;width:300px;height:300px;border-radius:50%;border:10px solid var(--cyan);box-shadow:0 0 60px rgba(34,223,245,.15),inset 0 0 80px rgba(34,223,245,.10)}
+#outroOrb:before,#outroOrb:after{content:"";position:absolute;inset:50%;width:470px;height:2px;background:rgba(34,223,245,.4);transform-origin:left center}
+#outroOrb:after{transform:rotate(90deg)}
+#flash{position:absolute;inset:0;background:var(--paper);opacity:0;pointer-events:none;z-index:50}
+#dbg{display:none;position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:100;padding:10px 14px;background:rgba(0,0,0,.85);font:12px ui-monospace,monospace;color:#fff}
+#dbg.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grain"></div><div id="scan"></div><div id="frame"></div>
+  <div id="cornerA">TEXT → MOTION / 4K</div><div id="cornerB">NO TEMPLATE<br>ONE CONTINUOUS WORLD</div>
+  <div id="world">
+    <div class="world-grid"></div>
+    <svg class="world-svg" viewBox="0 0 4200 1080" preserveAspectRatio="none">
+      <path id="routeShadow" d="M 530 765 C 900 645 1040 760 1260 610 S 1660 370 1960 530 S 2400 790 2680 610 S 3180 300 3670 535" pathLength="1"/>
+      <path id="route" d="M 530 765 C 900 645 1040 760 1260 610 S 1660 370 1960 530 S 2400 790 2680 610 S 3180 300 3670 535" pathLength="1"/>
+    </svg>
+
+    <section id="intro" class="zone">
+      <div id="rawLabel" class="kicker">Raw input / unshaped</div>
+      <div id="heroWrap">
+        <div id="heroGhostA" class="heroWord">TEXT</div>
+        <div id="heroGhostB" class="heroWord">TEXT</div>
+        <div id="heroText" class="heroWord">TEXT</div>
+      </div>
+      <div id="question">static?</div>
+      <div id="promptBox"><div id="promptText">Launch our SaaS. Fast. Sharp.<br>No template energy.<span id="promptCaret"></span></div></div>
+      <div id="slash">/</div>
+    </section>
+
+    <section id="parse" class="zone">
+      <div id="parseLabel" class="kicker">Same words / new physics</div>
+      <div id="parseHero">BREAK<br><em>THE LINE.</em></div>
+      <div id="logicSpine">
+        <div id="logic1" class="logicRow">extract meaning</div>
+        <div id="logic2" class="logicRow">assign timing</div>
+        <div id="logic3" class="logicRow">build hierarchy</div>
+        <div id="logic4" class="logicRow">move the world</div>
+      </div>
+    </section>
+
+    <section id="product" class="zone">
+      <div id="productClaim">PROMPT <span>→</span><br>TIMING → MOTION</div>
+      <div id="appShell">
+        <div id="appTop"><i class="dot"></i><i class="dot"></i><i class="dot"></i><div id="appName">MOTION // ENGINE</div><div id="appStatus">LIVE / 18.0s</div></div>
+        <div id="leftPanel">
+          <div class="small">SOURCE TEXT</div>
+          <div id="inputMini">Fast.<br>Sharp.<br>No template energy.</div>
+          <div id="generateBtn">TURN INTO MOTION</div>
+          <div id="signalStack"><div class="sig"><i></i></div><div class="sig"><i></i></div><div class="sig"><i></i></div><div class="sig"><i></i></div></div>
+        </div>
+        <div id="preview"><div id="previewGrid"></div><div id="previewRibbon"></div><div id="previewWord">MAKE IT<br><b>MOVE.</b></div><div id="previewCard">MOTION STATE<strong id="stateNum">07</strong>ACTIVE</div></div>
+        <div id="timeline"><div id="playhead"></div><div class="track"><i id="b1" class="block"></i><i id="b2" class="block"></i></div><div class="track"><i id="b3" class="block"></i><i id="b4" class="block"></i></div><div class="track"><i id="b5" class="block"></i><i id="b6" class="block"></i></div></div>
+      </div>
+      <div id="cursor"></div>
+    </section>
+
+    <section id="outro" class="zone">
+      <div id="outroRule"></div>
+      <div id="outroMain">TEXT <span class="arrow">→</span><br><span class="motion">MOTION.</span></div>
+      <div id="outroSub">Type it. Direct it. Render it.</div>
+      <div id="outroTags"><div class="tag">KINETIC TYPE</div><div class="tag">PRODUCT UI</div><div class="tag">4K H.264</div></div>
+      <div id="outroOrb"></div>
+    </section>
+
+    <div id="tokenLayer"></div>
+  </div>
+  <div id="flash"></div><div id="dbg"></div>
+</div>
+<script>
+(() => {
+const W=1920,H=1080,DURATION=18;
+const $=s=>document.querySelector(s);
+const clamp=v=>Math.max(0,Math.min(1,v));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const easeOut=p=>1-Math.pow(1-clamp(p),4);
+const easeInOut=p=>{p=clamp(p);return p<.5?8*p*p*p*p:1-Math.pow(-2*p+2,4)/2};
+const easeBack=p=>{p=clamp(p);const c1=1.55,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2)};
+const pulse=(t,c,w)=>Math.max(0,1-Math.abs(t-c)/w);
+const stage=$('#stage'),world=$('#world'),route=$('#route'),routeShadow=$('#routeShadow');
+const q=new URLSearchParams(location.search);
+const tokens=['LAUNCH','SAAS','FAST','SHARP','NO','TEMPLATE','ENERGY'];
+const tokenEls=tokens.map((txt,i)=>{
+  const e=document.createElement('div');e.className='token '+(i%3===1?'acid':i%3===2?'cyan':'');e.textContent=txt;$('#tokenLayer').appendChild(e);return e;
+});
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`};
+addEventListener('resize',fit);fit();
+
+function setOpacity(sel,v){$(sel).style.opacity=String(clamp(v))}
+function cameraAt(t){
+  let x=0,s=1,r=0,y=0;
+  if(t<2.7){const p=easeInOut(t/2.7);x=lerp(0,-80,p);s=lerp(1.05,1.0,p);r=lerp(-.7,0,p)}
+  else if(t<6.1){const p=easeInOut((t-2.7)/3.4);x=lerp(-80,-760,p);s=lerp(1.0,1.07,p);r=lerp(0,-1.1,p)}
+  else if(t<10.8){const p=easeInOut((t-6.1)/4.7);x=lerp(-760,-1515,p);s=lerp(1.07,.91,p);r=lerp(-1.1,.45,p);y=lerp(0,12,p)}
+  else if(t<14.15){const p=easeInOut((t-10.8)/3.35);x=lerp(-1515,-2040,p);s=lerp(.91,1.13,p);r=lerp(.45,-.4,p);y=lerp(12,-34,p)}
+  else {const p=easeInOut((t-14.15)/3.85);x=lerp(-2040,-2730,p);s=lerp(1.13,.96,p);r=lerp(-.4,0,p);y=lerp(-34,0,p)}
+  return {x,y,s,r};
+}
+
+function render(t){
+  t=Math.max(0,Math.min(DURATION,t));
+  const cam=cameraAt(t);
+  world.style.transform=`translate3d(${cam.x}px,${cam.y}px,0) scale(${cam.s}) rotate(${cam.r}deg)`;
+  const routeP=clamp((t-.8)/14.4);
+  route.style.strokeDashoffset=String(1-routeP);
+  routeShadow.style.opacity=String(.18+.22*pulse(t,10.6,2.0));
+  $('#scan').style.transform=`translateX(${lerp(-420,2200,clamp(t/18))}px) skewX(-18deg)`;
+
+  const introIn=easeOut(t/.7), introOut=1-easeInOut((t-2.8)/1.2);
+  setOpacity('#rawLabel',introIn*introOut);
+  setOpacity('#heroText',introIn*introOut);
+  setOpacity('#question',clamp((t-.75)/.35)*(1-clamp((t-2.75)/.65)));
+  $('#heroText').style.transform=`translateX(${lerp(-40,0,introIn)}px) scaleX(${lerp(.74,1,introIn)})`;
+  const glitch=Math.max(pulse(t,1.12,.08),pulse(t,2.08,.055),pulse(t,2.62,.045));
+  $('#heroGhostA').style.opacity=String(glitch*.8*introOut);$('#heroGhostB').style.opacity=String(glitch*.62*introOut);
+  $('#heroGhostA').style.transform=`translate(${glitch*22}px,${glitch*-8}px)`;
+  $('#heroGhostB').style.transform=`translate(${glitch*-18}px,${glitch*11}px)`;
+  const boxIn=easeBack((t-.35)/.65),boxOut=1-easeInOut((t-2.55)/.9);
+  $('#promptBox').style.opacity=String(clamp(boxIn*boxOut));
+  $('#promptBox').style.transform=`translateX(${lerp(-90,0,boxIn)}px) scaleX(${lerp(.55,1,boxIn)}) rotate(${lerp(-3,0,boxIn)}deg)`;
+  $('#slash').style.opacity=String(clamp((t-1.55)/.22)*(1-clamp((t-3.0)/.55)));
+  $('#slash').style.transform=`rotate(${lerp(22,9,easeOut((t-1.55)/.4))}deg) scale(${lerp(1.4,1,easeOut((t-1.55)/.4))})`;
+  $('#promptCaret').style.opacity=(Math.floor(t*5)%2===0?1:.18);
+
+  tokenEls.forEach((e,i)=>{
+    const p1=easeInOut((t-(2.05+i*.075))/2.45);
+    const p2=easeInOut((t-(5.55+i*.055))/2.65);
+    const sx=210+i*105, sy=745+(i%2)*30;
+    const mx=940+(i%3)*150, my=680+Math.floor(i/3)*92;
+    const ex=1730+(i%4)*150, ey=760+Math.floor(i/4)*62;
+    let x=lerp(sx,mx,p1), y=lerp(sy,my,p1)-Math.sin(p1*Math.PI)*(120+i*8), sc=lerp(.72,1,p1),rot=lerp(-10+i*2,(i%2?3:-3),p1);
+    if(p2>0){x=lerp(mx,ex,p2);y=lerp(my,ey,p2)-Math.sin(p2*Math.PI)*90;sc=lerp(1,.74,p2);rot=lerp(rot,0,p2)}
+    const a=clamp((t-(1.9+i*.06))/.22)*(1-clamp((t-9.0)/.8));
+    e.style.opacity=String(a);e.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg) scale(${sc})`;
+  });
+
+  const parseIn=easeOut((t-3.15)/.7),parseOut=1-easeInOut((t-6.65)/1.0);
+  setOpacity('#parseLabel',parseIn*parseOut);
+  setOpacity('#parseHero',parseIn*parseOut);
+  $('#parseHero').style.transform=`translateY(${lerp(80,0,parseIn)}px) rotate(${lerp(5,-2,parseIn)}deg) scale(${lerp(.84,1,parseIn)})`;
+  for(let i=1;i<=4;i++){
+    const p=easeOut((t-(3.9+(i-1)*.28))/.48)*(1-clamp((t-6.9)/.65));
+    const el=$('#logic'+i);el.style.opacity=String(clamp(p));el.style.transform=`translateX(${lerp(-55,0,p)}px)`;
+  }
+
+  const appIn=easeBack((t-6.2)/1.0),appOut=1-easeInOut((t-13.6)/.9);
+  $('#appShell').style.opacity=String(clamp(appIn*appOut));
+  $('#appShell').style.transform=`translateY(${lerp(100,0,appIn)}px) scale(${lerp(.83,1,appIn)}) rotate(${lerp(-4.8,0,appIn)}deg)`;
+  const claimIn=easeOut((t-6.55)/.6),claimOut=1-easeInOut((t-9.0)/.65);
+  $('#productClaim').style.opacity=String(clamp(claimIn*claimOut));
+  $('#productClaim').style.transform=`translate(${lerp(30,0,claimIn)}px,${lerp(-18,0,claimIn)}px) skewX(${lerp(-10,0,claimIn)}deg)`;
+  const genP=easeOut((t-7.15)/.55);
+  $('#generateBtn').style.transform=`scale(${lerp(.88,1,genP)})`;
+  $('#generateBtn').style.boxShadow=`0 0 ${Math.round(52*pulse(t,7.65,.5))}px rgba(216,255,56,.35)`;
+  const sigs=document.querySelectorAll('.sig i');sigs.forEach((e,i)=>{const p=clamp((t-(7.4+i*.16))/2.6);e.style.width=`${Math.round(18+74*(.5+.5*Math.sin((p*5+i)*1.7))*p)}%`});
+  const prevP=easeOut((t-8.0)/.65);
+  $('#previewWord').style.opacity=String(clamp(prevP));
+  $('#previewWord').style.transform=`translateX(${lerp(90,0,prevP)}px) scaleX(${lerp(.55,1,prevP)}) rotate(${lerp(7,0,prevP)}deg)`;
+  $('#previewRibbon').style.transform=`translateX(${lerp(-620,0,easeInOut((t-8.35)/.7))}px) rotate(-7deg)`;
+  $('#stateNum').textContent=String(Math.max(1,Math.min(99,Math.round(7+(t-7.6)*11)))).padStart(2,'0');
+  const blocks=[['#b1',32,250,8.25],['#b2',322,190,8.7],['#b3',90,280,9.15],['#b4',402,125,9.55],['#b5',210,175,10.0],['#b6',430,230,10.3]];
+  blocks.forEach(([sel,left,width,start])=>{const p=easeOut((t-start)/.5);const el=$(sel);el.style.left=left+'px';el.style.width=(width*p)+'px';el.style.opacity=String(p)});
+  const playP=clamp((t-8.05)/4.7);$('#playhead').style.left=(34+playP*750)+'px';
+  const curP=easeInOut((t-7.0)/4.9);const cx=1640+curP*650,cy=350+Math.sin(curP*Math.PI*1.35)*190;$('#cursor').style.opacity=String(clamp((t-6.8)/.3)*(1-clamp((t-12.35)/.35)));$('#cursor').style.transform=`translate(${cx}px,${cy}px) rotate(${lerp(-8,6,curP)}deg) scale(${1+.14*pulse(t,10.9,.18)})`;
+
+  const outIn=easeOut((t-13.65)/.85);
+  $('#outroRule').style.opacity=String(outIn);$('#outroRule').style.transform=`scaleX(${outIn})`;
+  $('#outroMain').style.opacity=String(outIn);$('#outroMain').style.transform=`translateY(${lerp(80,0,outIn)}px) scaleX(${lerp(.72,1,outIn)})`;
+  $('#outroSub').style.opacity=String(easeOut((t-14.55)/.6));
+  $('#outroTags').style.opacity=String(easeOut((t-15.0)/.65));
+  $('#outroTags').style.transform=`translateY(${lerp(38,0,easeOut((t-15.0)/.65))}px)`;
+  const orbP=easeBack((t-14.2)/1.1);$('#outroOrb').style.opacity=String(clamp(orbP));$('#outroOrb').style.transform=`scale(${lerp(.2,1,orbP)}) rotate(${lerp(-65,18,clamp((t-14.2)/3.3))}deg)`;
+  $('.arrow').style.transform=`translateX(${Math.sin(t*8)*4*pulse(t,15.2,1.2)}px) skewX(${Math.sin(t*12)*6*pulse(t,15.2,.8)}deg)`;
+
+  const flash=Math.max(pulse(t,2.06,.045)*.26,pulse(t,6.15,.045)*.16,pulse(t,13.65,.055)*.20,pulse(t,15.8,.05)*.12);
+  $('#flash').style.opacity=String(flash);
+  if(q.has('debug')) $('#dbg').textContent=`${t.toFixed(2)}s  camX=${cam.x.toFixed(0)}  scale=${cam.s.toFixed(2)}`;
+}
+
+let raf=null,start=0;
+function play(){cancelAnimationFrame(raf);start=performance.now();const loop=now=>{const t=((now-start)/1000)%DURATION;render(t);raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop)}
+window.OPENER={W,H,DURATION,ready:false,seek(t){cancelAnimationFrame(raf);render(t)},play};
+if(q.has('debug')) $('#dbg').classList.add('on');
+document.fonts.ready.then(()=>{render(0);window.OPENER.ready=true;if(!q.has('clean'))play()});
+})();
+</script>
+</body>
+</html>
