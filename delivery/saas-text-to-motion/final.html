@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Text to Motion — Final Camera QA</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030406}
+#src{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+</style>
+</head>
+<body>
+<iframe id="src" src="./index.html?clean=1"></iframe>
+<script>
+(() => {
+  const W=1920,H=1080,DURATION=18;
+  const frame=document.querySelector('#src');
+  const clamp=v=>Math.max(0,Math.min(1,v));
+  const easeInOut=p=>{p=clamp(p);return p<.5?8*p*p*p*p:1-Math.pow(-2*p+2,4)/2};
+  let inner=null,raf=null,start=0;
+
+  function applyFinalCameraCorrection(t){
+    if(!inner?.OPENER) return;
+    inner.OPENER.seek(t);
+    const world=inner.document.querySelector('#world');
+    if(!world) return;
+    const p=easeInOut((t-14.15)/3.85);
+    const dx=150*p;
+    world.style.transform=`translate3d(${dx}px,0,0) ${world.style.transform}`;
+  }
+
+  function seek(t){
+    cancelAnimationFrame(raf);
+    applyFinalCameraCorrection(Math.max(0,Math.min(DURATION,t)));
+  }
+
+  function play(){
+    cancelAnimationFrame(raf);
+    start=performance.now();
+    const loop=now=>{
+      applyFinalCameraCorrection(((now-start)/1000)%DURATION);
+      raf=requestAnimationFrame(loop);
+    };
+    raf=requestAnimationFrame(loop);
+  }
+
+  window.OPENER={W,H,DURATION,ready:false,seek,play};
+  frame.addEventListener('load',()=>{
+    inner=frame.contentWindow;
+    const wait=()=>{
+      if(inner?.OPENER?.ready){
+        applyFinalCameraCorrection(0);
+        window.OPENER.ready=true;
+        if(!new URLSearchParams(location.search).has('clean')) play();
+      } else setTimeout(wait,25);
+    };
+    wait();
+  });
+})();
+</script>
+</body>
+</html>
