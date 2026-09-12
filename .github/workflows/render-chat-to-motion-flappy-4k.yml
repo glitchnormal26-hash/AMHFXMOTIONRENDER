@@ -47,7 +47,7 @@ jobs:
             -map "[out]" -c:a pcm_s16le audio/chat-to-motion-sfx.wav
       - name: Render verified 4K MP4
         env:
-          INDEX: delivery/chat-to-motion-flappy/index.html
+          INDEX: delivery/chat-to-motion-flappy/final.html
           QUALITY: final
           FPS: '30'
           WIDTH: '3840'
