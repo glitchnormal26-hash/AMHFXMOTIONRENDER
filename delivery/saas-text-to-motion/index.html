@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMHFX Motion Render — From Text to Motion</title>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage"><div id="fit"><div id="camera"><div id="world">
+  <div class="grid"></div><div class="scan"></div><div class="noise"></div>
+  <div class="brand"><span class="brandDot"></span>AMHFX / MOTION RENDER</div>
+  <div class="hook"><span>TEXT</span> <span class="arrow">→</span><br><span class="motion">MOTION</span></div>
+  <div class="hookSub">PROMPT IT. DROP THE SKILL. WATCH IT MOVE.</div>
+  <div class="edgeWord">BUILD</div>
+
+  <div class="chat" id="chat">
+    <div class="chatTop"><div class="chatTitle">Motion <span>Agent</span></div><div class="live">● READY</div></div>
+    <div class="chatBody">
+      <div class="botRow" id="botRow"><div class="botAvatar">A</div><div class="botMsg">Apa yang mau kamu gerakkan?</div></div>
+      <div class="promptBubble" id="promptBubble"><span class="promptText" id="promptText">Buatkan animasi Flappy Bird menggunakan skill amhfxmotionrender.</span></div>
+      <div class="resultWrap" id="resultWrap">
+        <div class="resultHeader"><b>GENERATING / FLAPPY_BIRD</b><span id="resultStatus">ANALYZING</span></div>
+        <div class="loader" id="loader">
+          <div class="loaderLine" id="ll1"></div><div class="loaderLine" id="ll2"></div><div class="loaderLine" id="ll3"></div>
+          <div class="statusRows">
+            <div class="statusRow" id="sr1"><span>CAMERA</span><i>TRACKING</i></div>
+            <div class="statusRow" id="sr2"><span>SPEED RAMP</span><i>ACTIVE</i></div>
+            <div class="statusRow" id="sr3"><span>RUNTIME</span><i>GSAP / DOM</i></div>
+          </div>
+        </div>
+        <div class="game" id="game">
+          <div class="gameGrid"></div><div class="gameTitle">FLAPPY.MOTION</div><div class="score" id="score">00</div>
+          <div class="bird" id="bird"><div class="birdBody"></div><div class="birdWing"></div><div class="birdEye"></div><div class="beak"></div></div>
+          <div class="pair one" id="p1"><div class="pipe pipeTop"></div><div class="pipe pipeBottom"></div></div>
+          <div class="pair two" id="p2"><div class="pipe pipeTop"></div><div class="pipe pipeBottom"></div></div>
+          <div class="pair three" id="p3"><div class="pipe pipeTop"></div><div class="pipe pipeBottom"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="composer"><div class="composeText">Add instruction or drop a skill</div><div class="dropZone">DROP SKILL HERE</div><div class="docked" id="docked"><span class="mini"></span>amhfxmotionrender</div><div class="send" id="send">↗</div></div>
+  </div>
+
+  <div class="skillCard" id="skillCard"><div class="skillTop"><div class="skillIcon">✦</div><div><div class="skillName">amhfxmotionrender</div><div class="skillMeta">camera · kinetic · export</div></div></div><div class="skillBadge">SKILL</div></div>
+  <div class="cursor" id="cursor"><div class="cursorHalo"></div><svg viewBox="0 0 82 100" fill="none"><path d="M20 9c0-5 8-5 8 0v29-20c0-6 9-6 9 0v22-14c0-6 9-6 9 0v17-10c0-6 9-6 9 0v23l8-10c4-5 12 1 8 7L58 79c-4 8-12 12-22 12H25c-9 0-16-7-16-16V48c0-7 11-7 11 0V9Z" fill="#F5F5F3" stroke="#111118" stroke-width="4" stroke-linejoin="round"/></svg></div>
+  <div class="speedLines"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="payoff" id="payoff"><div class="payoffBig">FROM TEXT.<br><span class="lime">TO MOTION.</span></div><div class="payoffSub">One prompt becomes a motion system — camera, timing, animation, render.</div><div class="cta">Create motion <b>→</b></div></div>
+  <div class="flash"></div>
+</div></div></div></div>
+<div class="debug" id="debug">0.00s</div>
+<script src="motion.js"></script>
+</body>
+</html>
