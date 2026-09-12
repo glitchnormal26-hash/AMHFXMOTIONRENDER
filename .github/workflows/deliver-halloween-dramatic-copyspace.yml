@@ -1,0 +1,103 @@
+name: Deliver Halloween Dramatic Copyspace 30s
+
+on:
+  push:
+    branches:
+      - deliver/halloween-dramatic-copyspace-30s
+    paths:
+      - 'delivery/halloween-dramatic-copyspace/**'
+      - '.github/workflows/deliver-halloween-dramatic-copyspace.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run skill/runtime checks
+        run: npm run check
+
+      - name: Render deterministic 30s 1080p MP4
+        run: |
+          mkdir -p output
+          env \
+            INDEX=delivery/halloween-dramatic-copyspace/index.html \
+            QUALITY=fast \
+            FPS=30 \
+            WIDTH=1920 \
+            HEIGHT=1080 \
+            CRF=17 \
+            PRESET=medium \
+            OUT_VIDEO=output/halloween-dramatic-copyspace-30s-1080p.mp4 \
+            npm run export:mp4
+
+      - name: Verify delivery contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='output/halloween-dramatic-copyspace-30s-1080p.mp4'
+          REPORT='output/halloween-dramatic-copyspace-30s-1080p.verify.json'
+          test -s "$FILE"
+          test -s "$REPORT"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync('output/halloween-dramatic-copyspace-30s-1080p.verify.json','utf8'));
+          if(r.status!=='FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if(r.video?.codec_name!=='h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if(r.video?.width!==1920||r.video?.height!==1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if(Math.abs(Number(r.duration)-30)>0.12) throw new Error(`duration=${r.duration}`);
+          if(r.audio!==null) throw new Error('Unexpected audio stream');
+          NODE
+          FPS=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$FILE")
+          PIX=$(ffprobe -v error -select_streams v:0 -show_entries stream=pix_fmt -of default=nw=1:nk=1 "$FILE")
+          test "$FPS" = '30/1'
+          case "$PIX" in yuv420p|yuvj420p) ;; *) echo "Unexpected pixel format: $PIX"; exit 1 ;; esac
+
+      - name: Extract representative visual QA frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='output/halloween-dramatic-copyspace-30s-1080p.mp4'
+          ffmpeg -y -ss 0.0  -i "$FILE" -frames:v 1 output/qa-00s.png
+          ffmpeg -y -ss 4.5  -i "$FILE" -frames:v 1 output/qa-04_5s.png
+          ffmpeg -y -ss 9.0  -i "$FILE" -frames:v 1 output/qa-09s.png
+          ffmpeg -y -ss 15.0 -i "$FILE" -frames:v 1 output/qa-15s.png
+          ffmpeg -y -ss 22.5 -i "$FILE" -frames:v 1 output/qa-22_5s.png
+          ffmpeg -y -ss 29.5 -i "$FILE" -frames:v 1 output/qa-29_5s.png
+          sha256sum "$FILE" > output/halloween-dramatic-copyspace-30s-1080p.sha256
+
+      - name: Upload delivery and QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-dramatic-copyspace-30s-1080p
+          path: |
+            delivery/halloween-dramatic-copyspace/index.html
+            output/halloween-dramatic-copyspace-30s-1080p.mp4
+            output/halloween-dramatic-copyspace-30s-1080p.verify.json
+            output/halloween-dramatic-copyspace-30s-1080p.sha256
+            output/qa-*.png
+          if-no-files-found: error
+          retention-days: 14
