@@ -12,7 +12,7 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,12 +21,18 @@ jobs:
           cache: npm
       - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Install locked dependencies
         run: npm ci
       - name: Run repository checks
         run: npm run check
       - name: Verify typography safe lanes
-        run: node delivery/chat-to-motion-flappy/qa-layout.mjs | tee output-layout-qa.json
+        shell: bash
+        run: |
+          set -o pipefail
+          node delivery/chat-to-motion-flappy/qa-layout.mjs | tee output-layout-qa.json
+          grep -q 'TYPOGRAPHY_CLEAR' output-layout-qa.json
       - name: Build hi-tech SFX mix
         run: |
           mkdir -p audio output qa-chat-to-motion
