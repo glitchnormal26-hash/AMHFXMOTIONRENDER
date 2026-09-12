@@ -5,6 +5,12 @@ on:
     branches:
       - chatgpt/saas-ads-explainer-20260912
     paths:
+      - 'SKILL.md'
+      - 'references/camera-motion.md'
+      - 'runtime/camera-framing.js'
+      - 'runtime/index.js'
+      - 'scripts/audit-framing.mjs'
+      - 'package.json'
       - 'assets/saas-ads-explainer-9x16.html'
       - '.github/workflows/render-saas-ads-explainer.yml'
   workflow_dispatch:
@@ -31,8 +37,10 @@ jobs:
       - name: Run Motion Designer checks
         run: npm run check
 
-      - name: Apply verified coordinate fix
-        run: sed -i 's/inset:-420px/inset:0/' assets/saas-ads-explainer-9x16.html
+      - name: Audit camera framing and hard cuts
+        run: |
+          env INDEX=assets/saas-ads-explainer-9x16.html WIDTH=1080 HEIGHT=1920 \
+            npm run audit:framing
 
       - name: Create deterministic hi-tech SFX and ambience
         run: |
@@ -90,7 +98,7 @@ jobs:
       - name: Upload final delivery and QA
         uses: actions/upload-artifact@v4
         with:
-          name: amhfxmotionrender-saas-ads-explainer-9x16-final
+          name: amhfxmotionrender-saas-ads-explainer-9x16-framing-fixed
           path: |
             output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16.mp4
             output/AMHFXMOTIONRENDER-saas-ads-explainer-9x16.verify.json
