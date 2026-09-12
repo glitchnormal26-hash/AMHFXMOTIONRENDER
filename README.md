@@ -4,9 +4,9 @@ Production-oriented motion rendering runtime built around **Motion Designer v3.8
 
 ## Version status
 
-Motion Designer v3.8 remains the active, integrity-checked production rulebook in `skill-source/`.
+Motion Designer v3.8 is the active, integrity-checked production rulebook in `skill-source/`.
 
-A newer source import is being staged under `skill-source-v3.9.1/`, but it is not active yet. Keep the staged tree separate until its source package, references, integrity data, build path, and QA are complete. See `MANAGE.md` for repository cleanup and version-promotion rules.
+Incomplete future-version imports should not live on `main`. Stage them on a separate branch and promote them only after the source package, references, integrity data, build path, and QA are complete. See `MANAGE.md` for repository cleanup and version-promotion rules.
 
 ## Motra Studio bridge
 
@@ -37,7 +37,7 @@ npm run render:motra
 ## Main entry points
 
 - `SKILL.md` — active Motion Designer v3.8 rules and engine-routing contract
-- `MANAGE.md` — cleanup, version staging/promotion, and render-file ownership rules
+- `MANAGE.md` — cleanup, version promotion, and render-file ownership rules
 - `assets/starter.html` — lightweight starter
 - `assets/starter-full-runtime.html` — full runtime starter
 - `runtime/` — reusable motion, camera, Three.js, explainer and audio modules

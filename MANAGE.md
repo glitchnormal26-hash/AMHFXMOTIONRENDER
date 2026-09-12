@@ -8,24 +8,22 @@ This file defines the safe maintenance rules for AMHFXMOTIONRENDER.
 - **Active source:** `skill-source/part-01.md` through `skill-source/part-21.md`.
 - **Active integrity manifest:** `skill-source/manifest.json`.
 - **Active router:** `SKILL.md`.
-- **Staged next-version source:** `skill-source-v3.9.1/`.
-- The staged v3.9.1 tree is **not active** and must not replace v3.8 until the source package is complete, internally consistent, and has its own integrity/build path.
 
-At the time this management file was added, the staged v3.9.1 tree contains only `part-01.md` and `part-02.md`. Treat it as an import/staging area, not as the renderer's production rulebook.
+Keep incomplete future-version imports off `main`. Stage them on a separate branch until the full source inventory, references, integrity data, build path, and QA are complete.
 
 ## Source-management rules
 
-1. Do not mix files from `skill-source/` and `skill-source-v3.9.1/` into one reconstructed skill.
-2. Keep `skill-source/manifest.json` synchronized with the active v3.8 source. Any active-source byte change requires matching manifest hashes and byte counts.
-3. Keep `SKILL.md`, `AGENTS.md`, `README.md`, `package.json`, and the build/check workflow aligned with the version that is actually active.
-4. A staged version may be promoted only after all required source parts/references are present and an integrity check can reconstruct the intended rulebook deterministically.
+1. Keep `skill-source/manifest.json` synchronized with the active v3.8 source. Any active-source byte change requires matching manifest hashes and byte counts.
+2. Keep `SKILL.md`, `AGENTS.md`, `README.md`, `package.json`, and the build/check workflow aligned with the version that is actually active.
+3. Do not mix partial future-version source into the active source tree.
+4. A new version may be promoted only after all required source parts/references are present and an integrity check can reconstruct the intended rulebook deterministically.
 5. Do not claim `FINAL_VERIFIED` for rendered media based only on source integrity or syntax checks.
 
 ## Promotion checklist for a new skill version
 
 Before changing the active version:
 
-- complete the staged source inventory;
+- complete the candidate source inventory on a separate branch;
 - add or update an integrity manifest for that version;
 - make the build script target the intended active source explicitly;
 - update `SKILL.md` routing and version language;
@@ -43,12 +41,11 @@ Before changing the active version:
 
 ## Safe cleanup policy
 
-A cleanup should remove generated artifacts and caches, not authored source. Safe cleanup targets are the ignored generated directories/files listed above plus ordinary local caches such as `node_modules/`, Python bytecode, and OS metadata.
+A cleanup should remove generated artifacts and caches, not authored production source. Safe cleanup targets are the ignored generated directories/files listed above plus ordinary local caches such as `node_modules/`, Python bytecode, and OS metadata.
 
 Do **not** delete or rewrite these during routine cleanup:
 
 - `skill-source/`;
-- `skill-source-v3.9.1/`;
 - `runtime/`;
 - `scripts/`;
 - `assets/`;
@@ -57,6 +54,8 @@ Do **not** delete or rewrite these during routine cleanup:
 - `index.html`;
 - `motra-output/README.md`;
 - any user-provided `motra-output/index.html` that is still needed for a render.
+
+Before keeping an experimental or future-version file on `main`, verify that it is complete, referenced, and part of the active build or documented production workflow. Otherwise keep it on a feature branch or remove it.
 
 ## Required verification after maintenance
 
