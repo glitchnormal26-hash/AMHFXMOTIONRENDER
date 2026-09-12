@@ -21,14 +21,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install ffmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install locked dependencies
+        run: npm ci
 
       - name: Run code and skill checks
         run: npm run check
@@ -80,10 +81,12 @@ jobs:
           ffmpeg -y -i output/gift-box-greenscreen-4k.mp4 \
             -vf "select='eq(n,0)+eq(n,150)+eq(n,299)'" -vsync 0 output/qa-frame-%02d.png
 
-      - name: Record artifact sizes
+      - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
+          sha256sum output/*.mp4 output/qa-frame-*.png > output/sha256.txt
           cat output/artifact-sizes.txt
+          cat output/sha256.txt
           echo '--- 4K benchmark ---'
           cat output/benchmark-4k.txt
           echo '--- audio benchmark ---'
@@ -101,6 +104,7 @@ jobs:
             output/benchmark-4k.txt
             output/benchmark-audio.txt
             output/artifact-sizes.txt
+            output/sha256.txt
             output/qa-frame-*.png
             package-lock.json
           if-no-files-found: error
