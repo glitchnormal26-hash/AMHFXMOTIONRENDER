@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Motra Studio — Idea to Motion</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--panel:#11151d;--panel2:#161b25;--line:#283142;--ink:#f4f7fb;--muted:#8e9aae;--accent:#b7ff52;--accent2:#7c5cff;--danger:#ff6b7a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,textarea,select,input{font:inherit}button{color:inherit}.app{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto}.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(9,11,16,.92);position:sticky;top:0;z-index:10;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#5dffca);color:#0b0e12;display:grid;place-items:center;font-weight:900}.brand strong{display:block;font-size:14px;letter-spacing:.06em}.brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}.flow{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px}.flow b{color:var(--ink);font-weight:650}.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#596273}.dot.ok{background:var(--accent);box-shadow:0 0 14px rgba(183,255,82,.45)}
+.workspace{display:grid;grid-template-columns:minmax(280px,340px) minmax(420px,1fr) minmax(280px,360px);min-height:calc(100vh - 128px)}.panel{min-width:0;padding:16px;border-right:1px solid var(--line);background:var(--panel)}.panel:last-child{border-right:0;border-left:1px solid var(--line)}.panel h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px;color:#c8d0dd}.label{display:flex;align-items:center;justify-content:space-between;margin:16px 0 7px;font-size:12px;color:#c8d0dd}.label small{color:var(--muted)}
+textarea{width:100%;resize:vertical;background:#0c1016;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px;outline:0;line-height:1.5}.brief{min-height:150px}.code{min-height:310px;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;tab-size:2}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.preset{border:1px solid var(--line);background:#0d1118;border-radius:12px;padding:10px;text-align:left;cursor:pointer}.preset b{display:block;font-size:12px}.preset span{display:block;font-size:10px;color:var(--muted);margin-top:4px}.preset.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px rgba(183,255,82,.25)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.control{width:100%;height:38px;background:#0c1016;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:0 10px}.primary,.secondary,.ghost{border:0;border-radius:11px;padding:11px 13px;cursor:pointer;font-weight:750}.primary{background:var(--accent);color:#0b0e12;width:100%;margin-top:14px}.secondary{background:#222a36}.ghost{background:transparent;border:1px solid var(--line);color:#cbd3df}.primary:disabled,.secondary:disabled,.ghost:disabled{opacity:.45;cursor:not-allowed}
+.center{background:#0b0e13;display:grid;grid-template-rows:auto 1fr auto;min-width:0}.previewbar{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 14px;border-bottom:1px solid var(--line);font-size:12px}.previewbar .tools{display:flex;gap:8px}.canvas-wrap{display:grid;place-items:center;padding:18px;min-height:0;overflow:hidden;background:radial-gradient(circle at 50% 30%,#171d29 0,#0a0d12 65%)}.canvas-shell{width:min(100%,1100px);aspect-ratio:16/9;border:1px solid #313b4e;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 35px 90px rgba(0,0,0,.48);transition:aspect-ratio .2s ease}.canvas-shell.portrait{width:min(58%,560px);aspect-ratio:9/16}.canvas-shell.square{width:min(72%,720px);aspect-ratio:1/1}.canvas-shell iframe{display:block;width:100%;height:100%;border:0;background:#000}.timeline{padding:12px 16px;border-top:1px solid var(--line);background:#0d1118}.timeline-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.track{height:7px;border-radius:999px;background:#232a36;overflow:hidden}.track>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#5dffca);transition:width .12s linear}
+.plan{display:grid;gap:8px}.beat{display:grid;grid-template-columns:30px 1fr;gap:9px;border:1px solid var(--line);border-radius:11px;padding:9px;background:#0d1118}.beat i{font-style:normal;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#1d2531;color:var(--accent);font-size:11px;font-weight:800}.beat b{font-size:11px;display:block}.beat span{font-size:10px;color:var(--muted);display:block;margin-top:3px;line-height:1.4}.notice{font-size:10px;line-height:1.5;color:var(--muted);padding:10px 11px;border:1px dashed var(--line);border-radius:10px;margin-top:12px}.log{margin-top:10px;padding:10px;background:#080b10;border:1px solid var(--line);border-radius:10px;min-height:70px;max-height:130px;overflow:auto;font:10px/1.45 ui-monospace,monospace;color:#aab5c6;white-space:pre-wrap}
+.dock{min-height:64px;border-top:1px solid var(--line);background:#0c1016;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;gap:12px}.dock-left,.dock-right{display:flex;align-items:center;gap:8px}.download{display:none;text-decoration:none;background:#203323;color:#dfffc6;border:1px solid #3e6636;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:700}.download.show{display:inline-flex}.meta{font-size:11px;color:var(--muted)}
+@media(max-width:1100px){.workspace{grid-template-columns:300px 1fr}.panel.right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}.center{min-height:650px}}@media(max-width:760px){.flow{display:none}.workspace{display:block}.panel{border-right:0;border-bottom:1px solid var(--line)}.center{min-height:560px}.dock{align-items:flex-start;flex-direction:column}.dock-left,.dock-right{flex-wrap:wrap}.canvas-shell.portrait{width:min(80%,420px)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="mark">M</div><div><strong>MOTRA STUDIO</strong><span>AMHFX Motion Render · Web Lab</span></div></div>
+    <div class="flow"><b>IDEA</b><span>→</span><b>SCENE</b><span>→</span><b>PREVIEW</b><span>→</span><b>MP4</b></div>
+    <div class="status"><span class="dot" id="engineDot"></span><span id="engineStatus">checking engine…</span></div>
+  </header>
+
+  <main class="workspace">
+    <section class="panel">
+      <h2>01 · Idea</h2>
+      <div class="label"><span>Creative brief</span><small>one idea is enough</small></div>
+      <textarea class="brief" id="brief">Launch a creator tool that turns a rough idea into a polished motion graphic. Fast, cinematic, precise, and made for web creators.</textarea>
+
+      <div class="label"><span>Motion language</span><small id="styleLabel">Kinetic</small></div>
+      <div class="preset-grid" id="presets">
+        <button class="preset active" data-style="kinetic"><b>Kinetic</b><span>type, scale, punch</span></button>
+        <button class="preset" data-style="editorial"><b>Editorial</b><span>clean, grid, story</span></button>
+        <button class="preset" data-style="neon"><b>Neon</b><span>glow, depth, energy</span></button>
+        <button class="preset" data-style="minimal"><b>Minimal</b><span>quiet, premium, precise</span></button>
+      </div>
+
+      <div class="label"><span>Output</span></div>
+      <div class="row">
+        <select class="control" id="format"><option value="16:9">16:9 · Landscape</option><option value="9:16">9:16 · Vertical</option><option value="1:1">1:1 · Square</option></select>
+        <select class="control" id="duration"><option value="6">6 sec</option><option value="9" selected>9 sec</option><option value="12">12 sec</option><option value="15">15 sec</option></select>
+      </div>
+      <button class="primary" id="generate">Generate motion scene</button>
+      <div class="notice">This first web version generates a deterministic motion concept locally. It does not require an AI key. A future AI provider can replace the brief parser while keeping the same renderer contract.</div>
+    </section>
+
+    <section class="center">
+      <div class="previewbar"><span><b>Live preview</b> · OPENER compatible</span><div class="tools"><button class="ghost" id="restart">Restart</button><button class="ghost" id="openClean">Clean preview</button></div></div>
+      <div class="canvas-wrap"><div class="canvas-shell" id="canvasShell"><iframe id="preview" title="Motion preview"></iframe></div></div>
+      <div class="timeline"><div class="timeline-head"><span id="timeLabel">0.0s</span><span id="durationLabel">9.0s</span></div><div class="track"><div id="progress"></div></div></div>
+    </section>
+
+    <section class="panel right">
+      <h2>02 · Motion plan</h2>
+      <div class="plan" id="plan"></div>
+      <div class="label"><span>Scene source</span><small>editable HTML</small></div>
+      <textarea class="code" id="code" spellcheck="false"></textarea>
+      <button class="secondary" id="applyCode" style="width:100%;margin-top:8px">Apply code to preview</button>
+      <div class="label"><span>Render log</span><small id="jobState">idle</small></div>
+      <div class="log" id="log">Studio ready.</div>
+    </section>
+  </main>
+
+  <footer class="dock">
+    <div class="dock-left"><button class="secondary" id="save">Save scene to renderer</button><span class="meta" id="saveMeta">Not saved yet</span></div>
+    <div class="dock-right"><a class="download" id="download" href="#">Download MP4</a><button class="ghost" id="renderFast">Render fast</button><button class="primary" id="renderFinal" style="width:auto;margin:0">Render final</button></div>
+  </footer>
+</div>
+<script>
+const $=(q)=>document.querySelector(q);
+const state={style:'kinetic',format:'16:9',duration:9,scene:'',job:null,timer:null};
+const palettes={
+ kinetic:{bg:'#0a0d13',surface:'#151b25',ink:'#f7f9fc',muted:'#8f9bad',a:'#b7ff52',b:'#5dffca'},
+ editorial:{bg:'#ece8df',surface:'#f8f5ee',ink:'#15171a',muted:'#6c6a64',a:'#ff4b2b',b:'#ffb000'},
+ neon:{bg:'#080815',surface:'#121128',ink:'#fbf8ff',muted:'#9c93ba',a:'#a86cff',b:'#20e3ff'},
+ minimal:{bg:'#0e0f11',surface:'#17191d',ink:'#f5f3ed',muted:'#8d8d89',a:'#f5f3ed',b:'#8b8b82'}
+};
+const stop=new Set('the and for with from into that this your you are was were have has akan yang dan untuk dari dengan menjadi bisa sebuah dalam sebagai agar pada ini itu atau serta lebih rough idea motion graphic fast made web creator creators'.split(' '));
+const esc=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const js=(s)=>JSON.stringify(String(s)).slice(1,-1).replace(/<\/script/gi,'<\\/script');
+function extractBrief(text){
+ const clean=text.trim().replace(/\s+/g,' ');
+ const sentences=clean.split(/(?<=[.!?])\s+/).filter(Boolean);
+ let title=(sentences[0]||'Idea into motion').replace(/[.!?]+$/,'');
+ if(title.length>62) title=title.slice(0,59).trim()+'…';
+ let subtitle=(sentences.slice(1).join(' ')||'Built in Motra Studio and rendered by AMHFX.');
+ if(subtitle.length>150) subtitle=subtitle.slice(0,147).trim()+'…';
+ const words=clean.toLowerCase().replace(/[^a-z0-9à-ÿ\s-]/gi,' ').split(/\s+/).filter(w=>w.length>4&&!stop.has(w));
+ const counts={}; for(const w of words)counts[w]=(counts[w]||0)+1;
+ const keywords=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]||b.length-a.length).slice(0,4);
+ while(keywords.length<4)keywords.push(['motion','story','design','render'][keywords.length]);
+ return{title,subtitle,keywords};
+}
+function dims(format){return format==='9:16'?{w:1080,h:1920}:format==='1:1'?{w:1080,h:1080}:{w:1920,h:1080}}
+function buildScene(){
+ const brief=extractBrief($('#brief').value); const p=palettes[state.style]; const d=dims(state.format); const D=state.duration;
+ const title=esc(brief.title),subtitle=esc(brief.subtitle),keywords=brief.keywords.map(esc);
+ const fontSize=state.format==='9:16'?116:state.format==='1:1'?98:126;
+ const scene=`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"><\/script>
+<style>
+:root{--bg:${p.bg};--surface:${p.surface};--ink:${p.ink};--muted:${p.muted};--a:${p.a};--b:${p.b}}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050608;font-family:Arial,Helvetica,sans-serif}#stage{position:fixed;left:50%;top:50%;width:${d.w}px;height:${d.h}px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:var(--bg);color:var(--ink)}#world{position:absolute;inset:0;will-change:transform}.wash{position:absolute;inset:-18%;background:radial-gradient(circle at 82% 20%,color-mix(in srgb,var(--a) 30%,transparent),transparent 30%),radial-gradient(circle at 18% 86%,color-mix(in srgb,var(--b) 20%,transparent),transparent 28%);filter:blur(14px)}.grid{position:absolute;inset:-80px;opacity:${state.style==='editorial'?'.18':'.09'};background-image:linear-gradient(color-mix(in srgb,var(--ink) 24%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ink) 24%,transparent) 1px,transparent 1px);background-size:96px 96px}.eyebrow{position:absolute;left:${state.format==='9:16'?'90':'140'}px;top:${state.format==='9:16'?'230':'170'}px;font-size:${state.format==='9:16'?'27':'24'}px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);opacity:0}.title{position:absolute;left:${state.format==='9:16'?'86':'132'}px;top:${state.format==='9:16'?'340':'278'}px;width:${state.format==='9:16'?'900':'1280'}px;font-size:${fontSize}px;line-height:.88;letter-spacing:-.065em;font-weight:800;opacity:0;will-change:transform,opacity}.subtitle{position:absolute;left:${state.format==='9:16'?'90':'140'}px;top:${state.format==='9:16'?'790':'610'}px;width:${state.format==='9:16'?'820':'840'}px;font-size:${state.format==='9:16'?'34':'30'}px;line-height:1.3;color:var(--muted);opacity:0}.orb{position:absolute;right:${state.format==='9:16'?'-260':'120'}px;top:${state.format==='9:16'?'1040':'250'}px;width:${state.format==='9:16'?'620':'430'}px;height:${state.format==='9:16'?'620':'430'}px;border-radius:50%;background:linear-gradient(145deg,var(--a),var(--b));box-shadow:0 55px 140px color-mix(in srgb,var(--a) 24%,transparent);opacity:0;will-change:transform,opacity}.ring{position:absolute;right:${state.format==='9:16'?'-330':'55'}px;top:${state.format==='9:16'?'970':'185'}px;width:${state.format==='9:16'?'760':'560'}px;height:${state.format==='9:16'?'760':'560'}px;border:2px solid color-mix(in srgb,var(--ink) 30%,transparent);border-radius:50%;opacity:0}.chips{position:absolute;left:${state.format==='9:16'?'90':'140'}px;bottom:${state.format==='9:16'?'210':'125'}px;display:flex;gap:12px;flex-wrap:wrap;width:${state.format==='9:16'?'850':'1200'}px}.chip{padding:13px 18px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);background:color-mix(in srgb,var(--surface) 86%,transparent);border-radius:999px;font-size:${state.format==='9:16'?'25':'20'}px;text-transform:uppercase;letter-spacing:.08em;opacity:0}.rule{position:absolute;left:${state.format==='9:16'?'90':'140'}px;right:${state.format==='9:16'?'90':'140'}px;bottom:${state.format==='9:16'?'115':'62'}px;height:3px;background:color-mix(in srgb,var(--ink) 12%,transparent);overflow:hidden}.rule span{display:block;width:0;height:100%;background:var(--a)}.index{position:absolute;right:${state.format==='9:16'?'88':'135'}px;bottom:${state.format==='9:16'?'170':'105'}px;color:var(--muted);font-size:18px;letter-spacing:.16em;opacity:0}</style></head>
+<body><div id="stage"><div id="world"><div class="wash"></div><div class="grid"></div><div class="eyebrow">MOTRA / IDEA TO MOTION</div><div class="title">${title}</div><div class="subtitle">${subtitle}</div><div class="ring"></div><div class="orb"></div><div class="chips">${keywords.map(k=>`<div class="chip">${k}</div>`).join('')}</div><div class="rule"><span></span></div><div class="index">AMHFX · ${state.style.toUpperCase()}</div></div></div>
+<script>
+const W=${d.w},H=${d.h},DURATION=${D};const stage=document.querySelector('#stage');const world=document.querySelector('#world');const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform='translate(-50%,-50%) scale('+s+')'};addEventListener('resize',fit);fit();
+const tl=gsap.timeline({paused:true});
+tl.fromTo('.eyebrow',{opacity:0,y:22},{opacity:1,y:0,duration:.55,ease:'power3.out'},.18)
+.fromTo('.title',{opacity:0,y:90,scale:.94},{opacity:1,y:0,scale:1,duration:.92,ease:'power4.out'},.38)
+.fromTo('.orb',{opacity:0,scale:.18,rotation:-28},{opacity:1,scale:1,rotation:0,duration:1.0,ease:'back.out(1.5)'},.7)
+.fromTo('.ring',{opacity:0,scale:.55},{opacity:.72,scale:1,duration:.85,ease:'power3.out'},.82)
+.fromTo('.subtitle',{opacity:0,y:34},{opacity:1,y:0,duration:.65,ease:'power3.out'},1.1)
+.fromTo('.chip',{opacity:0,y:25,scale:.92},{opacity:1,y:0,scale:1,duration:.45,stagger:.11,ease:'power3.out'},1.5)
+.fromTo('.index',{opacity:0},{opacity:1,duration:.4},1.8)
+.to('.rule span',{width:'100%',duration:Math.max(2,DURATION-2.5),ease:'none'},.7)
+.to(world,{scale:${state.style==='minimal'?'1.04':'1.12'},x:${state.format==='9:16'?'0':'-45'},y:${state.format==='9:16'?'-40':'18'},duration:Math.max(1.2,DURATION*.24),ease:'power2.inOut'},Math.max(2,DURATION*.34))
+.to('.orb',{x:${state.format==='9:16'?'-240':'-190'},y:${state.format==='9:16'?'-160':'100'},scale:${state.style==='neon'?'1.35':'1.18'},rotation:22,duration:Math.max(1.1,DURATION*.22),ease:'power3.inOut'},Math.max(2.1,DURATION*.35))
+.to('.ring',{x:${state.format==='9:16'?'-240':'-190'},y:${state.format==='9:16'?'-160':'100'},scale:1.22,rotation:-15,duration:Math.max(1.1,DURATION*.22),ease:'power3.inOut'},Math.max(2.1,DURATION*.35))
+.to(world,{scale:1,x:0,y:0,duration:1.05,ease:'power3.inOut'},Math.max(3.5,DURATION-2.2))
+.to('.title,.subtitle,.eyebrow,.chip,.orb,.ring,.index',{opacity:0,y:-26,duration:.55,ease:'power2.in'},Math.max(4,DURATION-.75)).to({},{duration:.01},DURATION-.01);
+const q=new URLSearchParams(location.search);window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false)},play(){tl.play()}};Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0)});tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0)});
+<\/script></body></html>`;
+ return {scene,brief,d};
+}
+function updatePlan(brief){const items=[['01','Hook',brief.title],['02','Build',brief.keywords.slice(0,2).join(' · ')],['03','Resolve',brief.keywords.slice(2).join(' · ')+' · brand lockup']];$('#plan').innerHTML=items.map(x=>`<div class="beat"><i>${x[0]}</i><div><b>${esc(x[1])}</b><span>${esc(x[2])}</span></div></div>`).join('')}
+function previewScene(scene){state.scene=scene;$('#code').value=scene;$('#preview').srcdoc=scene;$('#durationLabel').textContent=state.duration.toFixed(1)+'s';const shell=$('#canvasShell');shell.className='canvas-shell'+(state.format==='9:16'?' portrait':state.format==='1:1'?' square':'');startProgress()}
+function generate(){state.format=$('#format').value;state.duration=Number($('#duration').value);const out=buildScene();updatePlan(out.brief);previewScene(out.scene);$('#saveMeta').textContent='Generated · not saved';$('#download').classList.remove('show')}
+function startProgress(){clearInterval(state.timer);const started=performance.now();state.timer=setInterval(()=>{const t=((performance.now()-started)/1000)%state.duration;$('#timeLabel').textContent=t.toFixed(1)+'s';$('#progress').style.width=(t/state.duration*100)+'%'},100)}
+async function api(path,options){const res=await fetch(path,{headers:{'Content-Type':'application/json'},...options});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data}
+async function checkEngine(){try{const s=await api('/api/status');$('#engineDot').classList.toggle('ok',!!s.ready);$('#engineStatus').textContent=s.ready?'renderer online':'renderer needs setup';$('#save').disabled=!s.writeEnabled;$('#renderFast').disabled=!s.writeEnabled;$('#renderFinal').disabled=!s.writeEnabled;if(!s.writeEnabled)$('#log').textContent='Preview is available, but write/render APIs are disabled. Run locally or enable remote writes explicitly.'}catch(e){$('#engineStatus').textContent='preview-only mode';$('#log').textContent='Studio UI is running without the local render server. Run: npm run studio';$('#save').disabled=true;$('#renderFast').disabled=true;$('#renderFinal').disabled=true}}
+async function saveScene(){try{$('#saveMeta').textContent='Saving…';const d=await api('/api/scene',{method:'POST',body:JSON.stringify({html:state.scene})});$('#saveMeta').textContent='Saved · '+d.path;$('#log').textContent='Scene saved to '+d.path;return true}catch(e){$('#saveMeta').textContent='Save failed';$('#log').textContent=e.message;return false}}
+async function render(quality){if(!await saveScene())return;try{$('#jobState').textContent='starting';$('#download').classList.remove('show');const d=await api('/api/render',{method:'POST',body:JSON.stringify({quality,format:state.format})});state.job=d.id;$('#jobState').textContent='rendering';pollJob()}catch(e){$('#jobState').textContent='error';$('#log').textContent=e.message}}
+async function pollJob(){if(!state.job)return;try{const j=await api('/api/render/'+encodeURIComponent(state.job));$('#jobState').textContent=j.status;$('#log').textContent=(j.logs||[]).join('\n')||'Rendering…';$('#log').scrollTop=$('#log').scrollHeight;if(j.status==='done'){const a=$('#download');a.href=j.url;a.download='';a.classList.add('show');return}if(j.status==='error')return;setTimeout(pollJob,1100)}catch(e){$('#jobState').textContent='error';$('#log').textContent=e.message}}
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('.preset');if(!b)return;document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.style=b.dataset.style;$('#styleLabel').textContent=b.querySelector('b').textContent;generate()});
+$('#format').addEventListener('change',generate);$('#duration').addEventListener('change',generate);$('#generate').addEventListener('click',generate);$('#restart').addEventListener('click',()=>previewScene(state.scene));$('#openClean').addEventListener('click',()=>{const w=open();w.document.write(state.scene.replace('<body>','<body data-clean="1">'));w.document.close()});$('#applyCode').addEventListener('click',()=>previewScene($('#code').value));$('#save').addEventListener('click',saveScene);$('#renderFast').addEventListener('click',()=>render('fast'));$('#renderFinal').addEventListener('click',()=>render('final'));
+generate();checkEngine();
+</script>
+</body>
+</html>
