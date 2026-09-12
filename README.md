@@ -1,12 +1,14 @@
 # AMHFXMOTIONRENDER
 
-Production-oriented motion rendering runtime built around **Motion Designer v3.8 Full Runtime**.
+Production-oriented motion rendering runtime targeting **Motion Designer v3.9**.
 
 ## Version status
 
-Motion Designer v3.8 is the active, integrity-checked production rulebook in `skill-source/`.
+**Motion Designer v3.9 is the intended motion skill.** The imported v3.9 core source is preserved under `skill-source-v3.9.1/`.
 
-Incomplete future-version imports should not live on `main`. Stage them on a separate branch and promote them only after the source package, references, integrity data, build path, and QA are complete. See `MANAGE.md` for repository cleanup and version-promotion rules.
+The repository still carries a legacy v3.8 compatibility/build path in `SKILL.md`, `skill-source/`, `skill-source/manifest.json`, and `npm run build:skill`. That path remains useful for deterministic integrity checks while the v3.9 source package, reference modules, routing, integrity metadata, and QA wiring are completed. It should not be interpreted as the intended skill generation.
+
+See `MANAGE.md` for cleanup and version-migration rules.
 
 ## Motra Studio bridge
 
@@ -36,8 +38,9 @@ npm run render:motra
 
 ## Main entry points
 
-- `SKILL.md` — active Motion Designer v3.8 rules and engine-routing contract
-- `MANAGE.md` — cleanup, version promotion, and render-file ownership rules
+- `skill-source-v3.9.1/` — imported Motion Designer v3.9 core source being wired into production
+- `SKILL.md` — current legacy v3.8 compatibility router
+- `MANAGE.md` — cleanup, version migration, and render-file ownership rules
 - `assets/starter.html` — lightweight starter
 - `assets/starter-full-runtime.html` — full runtime starter
 - `runtime/` — reusable motion, camera, Three.js, explainer and audio modules
@@ -49,17 +52,13 @@ npm run render:motra
 
 ## Skill connection and integrity
 
-GitHub repository: [glitchnormal26-hash/AMHFXMOTIONRENDER](https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER).
-
-`AGENTS.md` routes repository motion work to `SKILL.md`, which loads all 21 active v3.8 source parts in order. Rebuild the complete original rulebook with:
+The current integrity builder still reconstructs the legacy v3.8 source:
 
 ```bash
 npm run build:skill
 ```
 
-The output is `dist/SKILL.md`. The build verifies every active part and the complete source against `skill-source/manifest.json`. `npm run check` includes this integrity gate and runs in GitHub Actions.
-
-The active source is preserved byte-for-byte from the supplied Motion Designer v3.8 Full Runtime document. Repository integration does not install a personal ChatGPT skill or configure voice-provider credentials.
+The output is `dist/SKILL.md`. `npm run check` runs syntax checks plus this legacy integrity gate. The v3.9 migration is complete only after its own source inventory, required reference modules, integrity metadata, routing, and QA path are connected.
 
 ## Setup
 
