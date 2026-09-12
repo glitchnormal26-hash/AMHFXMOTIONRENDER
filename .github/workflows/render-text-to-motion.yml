@@ -1,0 +1,86 @@
+name: From text to motion — film
+on:
+  push:
+    branches: [codex/from-text-to-motion-ad]
+    paths: ['film/**', '.github/workflows/render-text-to-motion.yml']
+permissions:
+  contents: read
+jobs:
+  film:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install renderer and fonts
+        run: |
+          npm ci
+          mkdir -p film/fonts film/qa
+          curl -fL 'https://raw.githubusercontent.com/google/fonts/main/ofl/barlowcondensed/BarlowCondensed-ExtraBold.ttf' -o film/fonts/BarlowCondensed-ExtraBold.ttf
+          curl -fL 'https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf' -o film/fonts/Inter.ttf
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          npm run check
+      - name: Start scene server
+        run: python -m http.server 8765 --bind 127.0.0.1 > /tmp/film-server.log 2>&1 &
+      - name: Capture composition and camera checks
+        env:
+          NODE_OPTIONS: --import ./film/chromium-config.mjs
+          URL: http://127.0.0.1:8765/film/index.html?clean=1
+          WIDTH: '540'
+          HEIGHT: '960'
+          TIMES: '0.5,2.6,4.1,6.6,7.5,8.4,9.2,9.8,11.4,12.6,14.3,15.6,16.8,18.6,20,21.8,23.8,25,26.5,28.7,31'
+          OUT: film/qa
+        run: node scripts/snap.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: text-to-motion-frames
+          path: film/qa
+      - name: Make narrated final mix
+        if: ${{ hashFiles('film/FINAL_RENDER') != '' }}
+        run: |
+          pip install edge-tts==7.2.8 numpy
+          python film/generate_vo.py
+          python film/mix_audio.py
+      - name: Render review motion
+        if: ${{ hashFiles('film/FINAL_RENDER') == '' }}
+        env:
+          NODE_OPTIONS: --import ./film/chromium-config.mjs
+          URL: http://127.0.0.1:8765/film/index.html?clean=1
+          WIDTH: '540'
+          HEIGHT: '960'
+          FPS: '15'
+          CRF: '20'
+          PRESET: veryfast
+          OUT_VIDEO: output/motion-review.mp4
+        run: node scripts/export-mp4.mjs
+      - name: Render final 1080 × 1920 / 60 fps
+        if: ${{ hashFiles('film/FINAL_RENDER') != '' }}
+        env:
+          NODE_OPTIONS: --import ./film/chromium-config.mjs
+          URL: http://127.0.0.1:8765/film/index.html?clean=1
+          WIDTH: '1080'
+          HEIGHT: '1920'
+          FPS: '60'
+          QUALITY: final
+          CRF: '16'
+          PRESET: slow
+          REQUIRE_AUDIO: '1'
+          REQUIRE_VO: '1'
+          AUDIO: film/audio/final-mix.wav
+          OUT_VIDEO: output/from-text-to-motion-1080x1920.mp4
+        run: node scripts/export-mp4.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: text-to-motion-video
+          path: |
+            output/*.mp4
+            output/*.verify.json
+            film/audio/mix-timing.json
+          retention-days: 30

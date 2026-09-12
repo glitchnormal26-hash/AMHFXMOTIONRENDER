@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMHFX — From text to motion</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:Barlow;src:url(fonts/BarlowCondensed-ExtraBold.ttf);font-weight:800;font-display:block}
+@font-face{font-family:Inter;src:url(fonts/Inter.ttf);font-weight:100 900;font-display:block}
+:root{--ink:#f3f1e9;--lime:#d1ff38;--muted:#8d9486;--black:#0b0d0a}
+*{box-sizing:border-box}html,body{margin:0;background:var(--black);width:100%;height:100%;overflow:hidden;color:var(--ink)}body{font-family:Inter,Arial,sans-serif}
+#viewport-fit{position:fixed;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;transform-origin:center;background:#0b0d0a}
+#camera,#world{position:absolute;inset:0;transform-origin:0 0}
+#backdrop{position:absolute;left:-2500px;top:-2200px;width:6200px;height:8500px;background:radial-gradient(ellipse at 48% 40%,#242b1d 0%,#10140d 23%,#0b0d0a 46%)}
+.type{font-family:Barlow,Impact,sans-serif;font-weight:800;line-height:.86;letter-spacing:-.022em}.mono{font-family:monospace}.abs{position:absolute}.hidden{opacity:0}.muted{color:var(--muted)}
+#brand{left:118px;top:175px;display:flex;align-items:center;gap:15px;font-size:34px;font-weight:760;letter-spacing:-1.8px}
+.mark{width:43px;height:43px;background:var(--lime);clip-path:polygon(0 70%,32% 0,59% 0,36% 50%,72% 0,100% 0,66% 70%,41% 70%,23% 100%,0 100%)}
+#hook{left:109px;top:279px;font-size:204px;line-height:.87;transform-origin:0 100%}#hook span{display:block}#hook .lime{color:var(--lime);padding-left:126px}
+#hook-stroke{position:absolute;left:80px;top:640px;width:934px;height:9px;background:var(--lime);transform-origin:left center;transform:rotate(-5deg)}
+#chat{left:110px;top:745px;width:860px;height:850px;border:2px solid #414738;border-radius:36px;background:linear-gradient(137deg,#20251e,#11150f 70%);box-shadow:0 55px 95px #0008;overflow:hidden}
+#chat-head{position:absolute;inset:0 0 auto;height:134px;border-bottom:2px solid #383e32;display:flex;align-items:center;padding:0 35px;gap:23px}
+#bot-avatar{width:62px;height:62px;background:var(--lime);border-radius:18px;color:#11170a;font-size:46px;text-align:center;line-height:62px;font-weight:900}
+#bot-name{font-size:34px;font-weight:650;letter-spacing:-1.3px}#bot-name small{display:block;font-size:21px;font-weight:450;letter-spacing:0;color:#9ca690;margin-top:5px}
+#chat-menu{margin-left:auto;color:#a4ad96;font-size:35px;letter-spacing:6px}
+#composer{left:144px;top:948px;width:792px;height:546px;border:2px solid #61694f;border-radius:24px;background:#242a1f;overflow:hidden;box-shadow:0 22px 65px #0005;transform-origin:top center}
+#prompt{position:absolute;left:37px;top:37px;font-size:41px;line-height:1.43;font-weight:520;letter-spacing:-1.45px;white-space:pre-wrap;width:728px;min-height:180px}
+.char{opacity:0}.cursor-caret{display:inline-block;width:4px;height:46px;background:var(--lime);vertical-align:-8px;margin-left:4px}
+#composer-tools{position:absolute;left:36px;right:29px;bottom:28px;display:flex;align-items:center;justify-content:space-between}
+#plus{font-size:45px;font-weight:300;color:#bcc6b0}#send{width:72px;height:72px;border-radius:19px;background:var(--lime);display:grid;place-items:center;color:#132003;transform-origin:center}
+#send svg{width:35px;height:35px}#attached{position:absolute;left:36px;top:296px;opacity:0;font-size:27px;color:#d1ff38;border:2px solid #718835;background:#323d1e;padding:16px 22px;border-radius:13px;width:654px;display:flex;align-items:center;gap:15px}
+#attached strong{font-weight:550}.tick{margin-left:auto}
+#source{left:110px;top:-635px;width:860px;height:511px;background:#151912;border:2px solid #535c46;border-radius:27px;box-shadow:0 45px 80px #0005;overflow:hidden}
+#source-head{padding:30px 35px;border-bottom:2px solid #353d2e;display:flex;align-items:center;gap:20px;font-size:34px;font-weight:650}
+#ghicon{width:43px;height:43px;fill:#f4f5ed}.source-repo{position:absolute;left:38px;top:130px;font-size:34px;letter-spacing:-1.1px;font-weight:570}.source-repo small{display:block;margin-top:18px;font-size:22px;letter-spacing:0;color:#8e9a80}
+#ghost-slot{position:absolute;left:35px;right:35px;top:293px;height:149px;border:2px dashed #596346;border-radius:17px;color:#6f7b5e;font:26px monospace;padding:48px 33px}
+#skillToken{left:146px;top:-342px;width:786px;height:149px;background:var(--ink);border:2px solid #fff;border-radius:17px;color:#151b0d;display:flex;align-items:center;padding:24px 31px;gap:22px;transform-origin:top left;box-shadow:0 16px 40px #0005}
+#token-icon{display:grid;place-items:center;width:64px;height:73px;flex-shrink:0;background:#1b2510;border-radius:10px;color:var(--lime);font:bold 32px monospace}
+#token-copy{font-size:33px;font-weight:650;letter-spacing:-1.1px;white-space:nowrap}#token-copy small{display:block;font-size:21px;letter-spacing:0;font-weight:500;margin-top:7px;color:#677457}
+#grip{margin-left:auto;font-size:31px;color:#899778;line-height:.6;letter-spacing:3px}
+#dropzone{left:168px;top:1218px;width:744px;height:107px;border:3px dashed #b8e534;border-radius:14px;opacity:0;background:#d1ff3810}
+#reply{left:149px;top:1535px;font-size:33px;line-height:1.35;display:flex;gap:24px;align-items:center;opacity:0}
+#reply-mark{display:grid;place-items:center;width:54px;height:54px;background:var(--lime);color:#101709;border-radius:15px;font-size:33px;font-weight:900}
+#reply-copy{font-weight:530;letter-spacing:-.6px}.dots{color:var(--lime);display:inline-block;width:32px}
+#fly-word{left:180px;top:1040px;font-size:56px;color:var(--lime);font-weight:730;letter-spacing:-2px;opacity:0;white-space:nowrap;transform-origin:50% 50%}
+#construction-label{left:130px;top:1680px;font-size:102px;color:#f3f1e9;opacity:0;line-height:.91}
+#game{left:130px;top:1800px;width:820px;height:1140px;overflow:hidden;border-radius:28px;border:2px solid #626b50;background:#151e0d;opacity:0;box-shadow:0 40px 90px #0008;transform-origin:50% 50%}
+#game svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#game-outline{left:130px;top:1800px;width:820px;height:1140px;border:2px dashed #a0b66b;border-radius:28px;opacity:0}
+#flying-bird{left:445px;top:2240px;width:242px;height:208px;opacity:0;transform-origin:50% 50%}
+#hand{left:0;top:0;width:124px;height:149px;transform-origin:26px 9px;filter:drop-shadow(0 13px 6px #0007);opacity:0;z-index:40}
+#hand svg{width:100%;height:100%;overflow:visible}#click-ring{position:absolute;left:-24px;top:-30px;width:62px;height:62px;border:5px solid var(--lime);border-radius:50%;opacity:0}
+#drop-ripple{left:130px;top:1160px;width:760px;height:215px;border:4px solid var(--lime);border-radius:23px;opacity:0;transform-origin:center}
+#shards{position:absolute;inset:0;pointer-events:none}.shard{position:absolute;width:24px;height:24px;background:var(--lime);opacity:0}
+#end-brand{left:119px;top:1885px;display:flex;gap:14px;align-items:center;font-size:35px;font-weight:760;letter-spacing:-1px;opacity:0}
+#ending{left:113px;top:1982px;font-size:178px;opacity:0;line-height:.86;letter-spacing:-2px}#ending .end-line{display:block;overflow:hidden;height:168px}#ending .end-word{display:inline-block}#ending .acid{color:var(--lime)}
+#filecard{left:120px;top:3020px;width:840px;height:130px;border:2px solid #404936;border-top:0;background:#1b2216;border-radius:0 0 24px 24px;opacity:0;display:flex;align-items:center;gap:25px;padding:24px 30px}
+#file-icon{color:var(--lime);font-size:42px}#file-name{font-size:31px;letter-spacing:-.7px;font-weight:550}#file-name small{display:block;font-size:22px;color:#96a183;letter-spacing:0;margin-top:7px}#file-check{margin-left:auto;width:45px;height:45px;border:2px solid #91b547;border-radius:50%;color:var(--lime);font-size:29px;text-align:center;line-height:40px}
+#cta{left:120px;top:3250px;width:840px;height:151px;display:flex;align-items:center;justify-content:space-between;padding:10px 44px;background:var(--lime);color:#131b09;border-radius:15px;opacity:0;transform-origin:center;font-size:66px;letter-spacing:-.9px}#cta span:last-child{font:70px Inter;line-height:1}
+#skill-credit{left:120px;top:3460px;font:27px monospace;color:#a7b597;opacity:0;width:840px;text-align:center}
+#flash{position:absolute;inset:0;pointer-events:none;background:#d1ff38;opacity:0;mix-blend-mode:screen}
+#scan{position:absolute;inset:0;pointer-events:none;opacity:.035;background:repeating-linear-gradient(0deg,#fff0 0px,#fff0 5px,#d1ff38 6px,#fff0 7px);mix-blend-mode:screen}
+</style>
+</head>
+<body><div id="viewport-fit"><div id="camera"><div id="world">
+<div id="backdrop"></div>
+<div id="brand" class="abs"><i class="mark"></i>AMHFX</div>
+<div id="hook" class="type abs"><span>CUMA</span><span class="lime">TEKS?</span></div><div id="hook-stroke"></div>
+<div id="source" class="abs"><div id="source-head"><svg id="ghicon" viewBox="0 0 24 24"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.57.1.79-.25.79-.56v-2.22c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18a10.94 10.94 0 0 1 5.75 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.58.23 2.75.12 3.04.73.81 1.18 1.84 1.18 3.1 0 4.44-2.7 5.41-5.28 5.7.42.36.78 1.06.78 2.14v3.23c0 .32.21.67.8.55A11.5 11.5 0 0 0 12 .7Z"/></svg>GitHub</div><div class="source-repo">AMHFXMOTIONRENDER<small>main / SKILL.md</small></div><div id="ghost-slot">Tarik skill ke chat</div></div>
+<div id="chat" class="abs"><div id="chat-head"><div id="bot-avatar">✳</div><div id="bot-name">AMHFX Assistant<small>Ide kamu, dalam gerak.</small></div><div id="chat-menu">···</div></div></div>
+<div id="composer" class="abs"><div id="prompt"></div><div id="attached"><span>⌘</span><strong>amhfxmotionrender</strong><span class="tick">✓</span></div><div id="composer-tools"><span id="plus">+</span><div id="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg></div></div></div>
+<div id="dropzone" class="abs"></div>
+<div id="skillToken" class="abs"><div id="token-icon">&gt;_</div><div id="token-copy">amhfxmotionrender<small>SKILL.md</small></div><div id="grip">··<br>··<br>··</div></div>
+<div id="drop-ripple" class="abs"></div>
+<div id="reply" class="abs"><div id="reply-mark">✳</div><div id="reply-copy">Siap. Menyusun animasi<span class="dots">...</span></div></div>
+<div id="fly-word" class="abs">Flappy Bird</div>
+<div id="construction-label" class="abs type">TEKSNYA<br>MULAI HIDUP.</div>
+<div id="game-outline" class="abs"></div>
+<div id="game" class="abs">
+<svg id="game-svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d9e8c2"/><stop offset="1" stop-color="#ecf7d2"/></linearGradient>
+ <linearGradient id="pipeFill" x1="0" x2="1"><stop stop-color="#749429"/><stop offset=".24" stop-color="#b7df3a"/><stop offset=".7" stop-color="#c5ec44"/><stop offset="1" stop-color="#718821"/></linearGradient>
+ <pattern id="ground" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M0 80L80 0M-40 40L40-40M40 120L120 40" stroke="#1f2d10" stroke-width="15"/></pattern>
+ <g id="bird-design" stroke="#17220b" stroke-width="8" stroke-linejoin="miter">
+  <path d="M-84-39H-63V-63H-20V-76H38V-62H65V-41H79V33H61V59H18V72H-37V57H-69V31H-90Z" fill="#e9c731"/>
+  <path d="M-67-35H-51V-53H-10V-65H38V-51H58V-23H26V-7H-67Z" stroke="none" fill="#ffe767"/>
+  <path d="M21-54H62V-39H73V6H21V-4H8V-43H21Z" fill="#fbf8e7"/>
+  <path d="M48-37H62V-8H48Z" fill="#17220b" stroke="none"/>
+  <path d="M49 8H99V21H113V39H91V51H42V34H28V17H49Z" fill="#ff6b38"/>
+  <path d="M43 30H105" fill="none" stroke-width="6"/>
+  <g class="wing"><path d="M-83-1H-62V-13H-30V0H-12V29H-27V44H-63V32H-83Z" fill="#fff1a0"/><path d="M-68 13H-29" stroke="#dbc44a" stroke-width="9"/></g>
+ </g>
+</defs>
+<rect id="sky-field" width="1080" height="1920" fill="url(#sky)" opacity="0"/>
+<g id="clouds" fill="#f8ffe6" opacity="0"><path d="M-120 771H-61V739H-7V713H35V681H86V713H137V739H220V771Z"/><path d="M543 692H595V658H663V625H734V652H795V682H905V707H543Z"/><path d="M900 901H944V864H1010V838H1072V871H1122V901Z"/></g>
+<g id="far-city" fill="#b0c695" opacity="0"><path d="M-60 1330V1190H30V1230H102V1140H150V1094H202V1150H245V1210H280V1080H364V1120H438V1240H498V1180H573V1123H621V1173H676V1064H730V1135H800V1200H874V1096H951V1186H1040V1100H1130V1400Z"/></g>
+<g id="hills" opacity="0"><path d="M-50 1430L178 1220 315 1310 485 1195 650 1365 837 1234 1150 1400V1700H-50Z" fill="#8daf64"/><path d="M-80 1590L131 1430 261 1490 445 1373 657 1504 848 1417 1170 1570V1870H-80Z" fill="#71904d"/></g>
+<g id="pipe-world" opacity="0"></g>
+<g id="bird-trails" opacity="0" fill="none" stroke="#253810" stroke-linecap="square"><path d="M133 980H229" stroke-width="10"/><path d="M145 1025H205" stroke-width="7"/><path d="M171 936H230" stroke-width="7"/></g>
+<g id="bird" opacity="0"><use href="#bird-design"/></g>
+<g id="floor" opacity="0"><rect x="-300" y="1690" width="1680" height="40" fill="#d6ff41" stroke="#21330b" stroke-width="10"/><rect x="-300" y="1730" width="1680" height="250" fill="#abc446"/><rect id="floor-hatch" x="-300" y="1750" width="1680" height="190" fill="url(#ground)" opacity=".22"/></g>
+<g id="game-title" opacity="0" fill="#18290d"><text x="79" y="279" font-family="Barlow" font-size="214" letter-spacing="-3">FLAPPY</text><text x="79" y="466" font-family="Barlow" font-size="214" letter-spacing="-3">BIRD.</text></g>
+<g id="score-ui" opacity="0"><rect x="83" y="518" width="146" height="87" rx="12" fill="#18290d"/><text id="score" x="109" y="580" font-family="Inter" font-weight="650" font-size="51" fill="#d8ff4a">00</text></g>
+<g id="build-guides" stroke="#afc277" stroke-width="2" fill="none" opacity="0"><path stroke-dasharray="8 13" d="M100 1000H980M360 650V1430"/><rect x="230" y="855" width="300" height="280" stroke-dasharray="9 12"/><circle cx="360" cy="1000" r="183"/></g>
+</svg></div>
+<div id="shards"></div>
+<div id="end-brand" class="abs"><i class="mark"></i>AMHFX</div>
+<div id="ending" class="type abs"><span class="end-line"><span class="end-word">FROM TEXT</span></span><span class="end-line acid"><span class="end-word">TO MOTION.</span></span></div>
+<div id="filecard" class="abs"><div id="file-icon">↓</div><div id="file-name">flappy-bird.mp4<small>1080 × 1920 · 60 fps</small></div><div id="file-check">✓</div></div>
+<div id="cta" class="abs type"><span>GILIRAN IDEMU.</span><span>↗</span></div>
+<div id="skill-credit" class="abs">amhfxmotionrender</div>
+<div id="hand" class="abs"><div id="click-ring"></div><svg viewBox="0 0 124 149"><path d="M26 64V13Q26 3 36 3Q47 3 47 14V49Q50 39 60 42Q67 43 68 51Q72 42 81 47Q87 49 88 58Q93 49 103 56Q110 60 110 73V102Q110 117 97 128V142H48V128L15 94Q6 84 13 76Q19 68 26 77L41 92V65" fill="#f6f4ec" stroke="#141b0d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M63 64V92M82 69V94M99 77V95" fill="none" stroke="#9aa18d" stroke-width="3" stroke-linecap="round"/></svg></div>
+</div></div><div id="scan"></div><div id="flash"></div></div>
+<script type="module" src="motion.js"></script></body></html>
