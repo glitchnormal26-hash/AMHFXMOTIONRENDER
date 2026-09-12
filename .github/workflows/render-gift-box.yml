@@ -1,4 +1,4 @@
-name: Render Gift Box 4K Greenscreen
+name: Render E2E QA
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
     paths:
       - 'index.html'
       - 'package.json'
+      - 'package-lock.json'
       - 'scripts/render-gift-box.mjs'
       - 'scripts/export-mp4.mjs'
       - '.github/workflows/render-gift-box.yml'
@@ -20,24 +21,91 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install ffmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install locked dependencies
+        run: npm ci
 
-      - name: Render 10s 4K MP4
-        run: npm run render:gift-box
+      - name: Run code and skill checks
+        run: npm run check
 
-      - name: Upload verified MP4
+      - name: Prepare deterministic audio fixture
+        run: |
+          mkdir -p audio output
+          ffmpeg -y -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
+            -c:a pcm_s16le audio/test-voice.wav
+
+      - name: Render 10s 4K final MP4
+        run: |
+          /usr/bin/time -v -o output/benchmark-4k.txt npm run render:gift-box
+
+      - name: Verify 4K render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/gift-box-greenscreen-4k.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('4K baseline unexpectedly contains audio');
+          NODE
+
+      - name: Render audio and VO mux smoke test
+        run: |
+          /usr/bin/time -v -o output/benchmark-audio.txt \
+            env QUALITY=fast FPS=30 WIDTH=1280 HEIGHT=720 CRF=18 PRESET=veryfast \
+            REQUIRE_AUDIO=1 REQUIRE_VO=1 VOICEOVER=audio/test-voice.wav \
+            OUT_VIDEO=output/e2e-audio.mp4 npm run render:gift-box
+
+      - name: Verify audio render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/e2e-audio.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (!r.audio_sources?.voiceover?.endsWith('audio/test-voice.wav')) throw new Error('voiceover fixture was not used');
+          NODE
+
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/gift-box-greenscreen-4k.mp4 \
+            -vf "select='eq(n,0)+eq(n,150)+eq(n,299)'" -vsync 0 output/qa-frame-%02d.png
+
+      - name: Record artifact sizes and hashes
+        run: |
+          stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
+          sha256sum output/*.mp4 output/qa-frame-*.png > output/sha256.txt
+          cat output/artifact-sizes.txt
+          cat output/sha256.txt
+          echo '--- 4K benchmark ---'
+          cat output/benchmark-4k.txt
+          echo '--- audio benchmark ---'
+          cat output/benchmark-audio.txt
+
+      - name: Upload E2E evidence
         uses: actions/upload-artifact@v4
         with:
-          name: gift-box-greenscreen-4k
+          name: motion-v3.9-e2e-qa
           path: |
             output/gift-box-greenscreen-4k.mp4
             output/gift-box-greenscreen-4k.verify.json
+            output/e2e-audio.mp4
+            output/e2e-audio.verify.json
+            output/benchmark-4k.txt
+            output/benchmark-audio.txt
+            output/artifact-sizes.txt
+            output/sha256.txt
+            output/qa-frame-*.png
+            package-lock.json
           if-no-files-found: error
           retention-days: 14
