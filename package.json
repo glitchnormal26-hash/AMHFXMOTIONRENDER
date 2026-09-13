@@ -6,18 +6,19 @@
   "scripts": {
     "serve": "python scripts/serve.py",
     "snap": "node scripts/snap.mjs",
+    "clip:plan": "node scripts/clip-plan.mjs",
     "export:frames": "node scripts/export-frames.mjs",
     "export:mp4": "node scripts/export-mp4.mjs",
     "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
     "render:motra": "node scripts/render-motra.mjs",
     "check:skill": "node scripts/check-skill.mjs",
-    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
+    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/clip-plan.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check scripts/render-motra.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
   },
   "dependencies": {
     "gsap": "^3.13.0",
     "puppeteer": "^24.0.0"
   },
-  "description": "Motion Designer v3.9.2 browser motion renderer with anti-static camera choreography, deterministic speed ramps, one canonical skill integration, and verified MP4 export.",
+  "description": "Motion Designer v3.9.2 browser motion renderer with anti-static camera choreography, deterministic speed ramps, local clip planning, one canonical skill integration, and verified MP4 export.",
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
