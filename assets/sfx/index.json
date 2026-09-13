@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "library": "AMHFX Motion Graphic SFX Essentials",
+  "source": "User-supplied Motion Graphic SFX.zip",
+  "normalization": "Curated for motion/UI use; mono 48 kHz MP3, with short repo-optimized variants where useful.",
+  "items": [
+    {"id":"ui.click.mouse","path":"assets/sfx/ui/click-mouse.mp3","duration":0.408,"tags":["ui","click","mouse"],"source_name":"mouse-click-290204.mp3"},
+    {"id":"ui.click.scifi","path":"assets/sfx/ui/click-sci-fi.mp3","duration":0.744,"tags":["ui","click","sci-fi"],"source_name":"mixkit-sci-fi-click-900.wav"},
+    {"id":"ui.typing","path":"assets/sfx/ui/typing.mp3","duration":0.144,"tags":["ui","typing","keyboard"],"source_name":"Typing.wav"},
+    {"id":"ui.pop","path":"assets/sfx/ui/pop.mp3","duration":1.128,"tags":["ui","pop","micro-interaction"],"source_name":"ui-pop-sound-316482 (1).mp3"},
+    {"id":"ui.approve","path":"assets/sfx/ui/approve.mp3","duration":0.840,"tags":["ui","approve","success","confirm"],"source_name":"Aproove.wav"},
+    {"id":"text.reveal","path":"assets/sfx/text/reveal.mp3","duration":1.296,"tags":["text","reveal","kinetic-type"],"source_name":"Text Animation.wav"},
+    {"id":"transition.whoosh.fast","path":"assets/sfx/transition/whoosh-fast.mp3","duration":0.576,"tags":["transition","whoosh","fast","camera"],"source_name":"epic-fast-whoosh-345469 (1).mp3"},
+    {"id":"camera.shutter","path":"assets/sfx/camera/shutter.mp3","duration":0.840,"tags":["camera","shutter","capture"],"source_name":"camera-shutter-199580.mp3"}
+  ]
+}
