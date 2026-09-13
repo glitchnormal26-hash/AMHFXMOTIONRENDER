@@ -1,6 +1,6 @@
 # AMHFXMOTIONRENDER
 
-Production-oriented browser motion renderer using **Motion Designer v3.9** as a single integrated rulebook/runtime stack.
+Production-oriented browser motion renderer using **Motion Designer v3.9.3** as a single integrated rulebook/runtime stack.
 
 ## Architecture
 
@@ -10,7 +10,7 @@ There is one active skill path:
 
 The repository carries no parallel legacy skill tree and no project-specific render source on `main`. Older versions and retired project examples remain available through Git history.
 
-`SKILL.md` maps the upstream v3.9 modular reference names onto the compact reference/runtime modules already present in this repository, avoiding duplicate compatibility files.
+`SKILL.md` maps the modular motion rules onto the compact reference/runtime modules already present in this repository.
 
 ## Generic render entry
 
@@ -43,14 +43,17 @@ npm run render:motra
 
 ## Main entry points
 
-- `SKILL.md` — Motion Designer v3.9 integration/router and module map
-- `skill-source/` — canonical v3.9 source
-- `references/` — compact production guidance
+- `SKILL.md` — Motion Designer v3.9.3 integration/router and hard quality gates
+- `skill-source/` — canonical active rule source
+- `references/camera-motion.md` — camera choreography and framing gate
+- `references/anti-ppt.md` — continuity / anti-presentation verification
+- `references/techniques.md` — kinetic and transition techniques
+- `references/` — additional compact production guidance
 - `runtime/` — motion, camera, Three.js, explainer, and audio helpers
 - `scripts/export-mp4.mjs` — deterministic MP4 exporter
 - `scripts/render-motra.mjs` — Motra Studio bridge
 - `scripts/snap.mjs` — snapshot QA
-- `assets/` — neutral starter architectures
+- `assets/` — neutral starter architectures and allowed SFX assets
 - `.github/workflows/render-e2e.yml` — project-agnostic render QA
 - `MANAGE.md` — cleanup and repository ownership rules
 
@@ -58,9 +61,11 @@ npm run render:motra
 
 Use DOM/SVG/GSAP first. Escalate to true 3D only when spatial geometry, camera, lighting, or post-processing materially improves communication.
 
-Explainers default to **VOICEOVER + purposeful SFX + controlled ambience + silence — NO BGM** unless the brief explicitly requests music.
+Substantial motion must pass skill-usage, camera, composition, kinetic, and anti-PPT gates before `FINAL_VERIFIED`.
 
-`FINAL_VERIFIED` is reserved for media that has actually passed the relevant visual, timing, stream, and audio checks.
+There are no voice-over rules. SFX are optional and may only use user-supplied files or repository files already present under `assets/`. If no suitable SFX asset exists, render without SFX.
+
+`FINAL_VERIFIED` is reserved for media that has actually passed the relevant visual, timing, stream, composition, camera, kinetic, continuity, and audio checks.
 
 ## Requirements
 
