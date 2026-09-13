@@ -1,129 +1,97 @@
-# Camera Motion Contract — Anti-Static Camera + Speed Ramp
+# Camera Motion Contract — Authored Framing, Follow & Speed Ramp
 
-This module is mandatory whenever a brief contains cinematic motion, camera travel,
-tracking, follow shots, drag/drop journeys, spatial explainers, product traversal,
-2.5D, 3D, or fast-paced kinetic transitions.
+This module is mandatory for every substantial motion piece unless the concept is
+explicitly a locked-camera composition.
 
-The camera is part of the storytelling system. Moving objects inside a fixed frame
-is **not** camera movement.
+The camera is part of the storytelling system. Moving objects inside a fixed frame is
+**not** camera movement.
 
-## 1. Anti-static camera hard gate
+## 1. Hard camera gate
 
-For every substantial sequence, declare a camera state per semantic beat:
+For every semantic beat, declare one state:
 
-- `MOVING` — camera travels through the world.
-- `TRACKING` — camera follows or leads a moving subject.
-- `REFRAME` — camera changes crop/scale/position to transfer attention.
-- `LOCKED_INTENTIONAL` — camera is deliberately static for contrast, comprehension,
-  suspense, product inspection, or a clean typographic landing.
+- `MOVING` — camera/world rig travels through space;
+- `TRACKING` — camera follows or leads the attention owner;
+- `REFRAME` — crop/scale/position/perspective changes to transfer attention;
+- `LOCKED_INTENTIONAL` — deliberate static hold for contrast, comprehension, tension,
+  inspection, or a clean landing.
 
-A substantial sequence **fails the camera gate** when all of these are true:
+A sequence fails when the frame remains materially unchanged across multiple beats and
+all perceived energy comes from objects moving inside it.
 
-1. the world/stage framing stays materially unchanged across multiple semantic beats;
-2. only subjects/cards/UI elements animate;
-3. no explicit reason is recorded for a locked shot.
+For roughly 8–20 second social/product films, target at least **three visibly distinct
+framing states** unless a locked shot is the concept. The states must create different
+spatial relationships through position, scale/FOV, crop, perspective, depth, target,
+or occlusion.
 
-`LOCKED_INTENTIONAL` is an authored contrast state, never the default shortcut.
+Decorative 1–2 px drift, generic camera breathing, or scaling the hero alone does not
+count.
 
-## 2. Minimum camera activity requirement
+## 2. Camera must follow attention
 
-For fast-paced explainers, product films, kinetic ads, and spatial motion:
+When the attention owner moves, choose an authored response:
 
-- every 2–4 seconds, either the camera must change framing meaningfully or the shot
-  must explicitly enter `LOCKED_INTENTIONAL` for a readable hold;
-- at least one major transition should be carried by camera/world motion instead of
-  object opacity/slide alone;
-- a drag, cursor journey, extracted hero object, or moving character should normally
-  receive a follow/lead/reframe response when it is the attention owner;
-- hero typography may become a camera target, transition plane, foreground wipe, or
-  spatial landmark instead of sitting inside a fixed full-frame layout.
-
-A change is meaningful when the viewer can perceive a different spatial relation,
-not merely a 1–2 px decorative drift.
-
-## 3. Camera rig architecture
-
-For DOM/SVG/2.5D work, prefer:
-
-```text
-#stage
-├── #world        ← camera-equivalent transform owner
-│   ├── background
-│   ├── product / UI / objects
-│   └── typography that belongs in world space
-├── lens-space FX
-└── debug / safe-area overlays
-```
-
-Camera-equivalent motion belongs on `#world` (or a dedicated camera rig), not on
-`#stage` when `#stage` is also responsible for viewport fitting.
-
-Viewport fit and authored camera movement must be separate transforms.
-
-Recommended nesting:
-
-```text
-#viewport-fit  ← fixed composition fit only
-└── #camera    ← authored x/y/scale/rotation
-    └── #world
-```
-
-For Three.js/R3F, animate the real render camera or a parent camera rig. Do not move
-only the subject and describe that as a camera move.
-
-## 4. Camera follow grammar
-
-When the viewer's attention owner moves, choose one:
-
-- **follow** — camera tracks the subject center with controlled lag;
-- **lead** — camera looks ahead of the subject to create anticipation;
+- **follow** — track with controlled lag;
+- **lead** — frame ahead of the subject to create anticipation;
 - **catch-up** — subject moves first, camera accelerates after it;
-- **handoff** — camera transfers from subject A to subject B without resetting world
-  orientation;
-- **push-through** — camera advances into or through a visible object/word/UI region;
-- **pull-back reveal** — camera retreats to expose the larger system or final payoff;
-- **orbit/reframe** — only when depth or spatial relationship benefits from it.
+- **handoff** — transfer from subject A to B without resetting orientation;
+- **push-through** — advance into/through a visible object, word, or UI region;
+- **pull-back reveal** — retreat to expose the larger system;
+- **orbit/reframe** — only when depth/spatial relation benefits from it.
 
-For cursor/drag interactions, follow the moving object or cursor during the important
-part of the journey, then settle on the drop target. Avoid watching a long drag from
-a completely fixed wide shot unless the wide framing is the point.
+Long cursor drags, extracted objects, characters, or hero UI journeys should not be
+watched from a fixed wide shot by default.
 
-## 5. Follow lag and damping
+## 3. Camera rhythm
 
-Tracking should not feel welded to the subject unless the style explicitly requires
-it. Prefer small authored lag:
+For fast-paced product/social work:
 
-- fast digital UI: roughly 1–3 frames of perceptual lag;
-- tactile/product motion: roughly 2–5 frames;
-- heavier cinematic move: roughly 4–8 frames plus a soft settle.
+- change framing meaningfully every 2–4 seconds, or enter a short
+  `LOCKED_INTENTIONAL` hold;
+- use at least one camera/world-driven transition rather than object opacity/slide only;
+- avoid repeating the same push-in/pull-out pattern at every cut;
+- use burst → breath → burst: travel, settle, read, then move again;
+- let the next camera move be caused by the current attention owner whenever possible.
 
-Lag must remain deterministic. Derive it from authored timeline state, keyed offsets,
-or pure functions of master time. Do not use realtime spring integration in the final
-capture path unless the spring state is analytically reproducible when seeking.
+## 4. Camera rig architecture
+
+For DOM/SVG/2.5D:
+
+```text
+#viewport-fit  ← fixed fit only
+└── #camera    ← authored x/y/scale/rotation/perspective behavior
+    └── #world ← background, UI, objects, world-space type
+```
+
+Do not animate the viewport-fit transform as the authored camera.
+
+For Three.js/R3F, animate the real render camera or a dedicated parent rig. Do not move
+only the subject and call it a camera move.
+
+## 5. Follow lag
+
+Tracking should not feel welded to the subject unless intentional.
+
+Starting ranges:
+
+- fast digital UI: 1–3 frames perceptual lag;
+- tactile/product motion: 2–5 frames;
+- heavier cinematic move: 4–8 frames plus a soft settle.
+
+Lag must remain deterministic and seekable.
 
 ## 6. Speed-ramp contract
 
-A speed ramp is an intentional change in velocity through a single movement or
-transition. It should create an energy handoff, not merely make the timeline faster.
+A speed ramp is an intentional velocity change through one movement or transition.
+Use it as an energy handoff, not as a repeated preset.
 
-Use speed ramps for:
+Preferred shape:
 
-- cursor/object pickup → drag acceleration → precise drop;
-- kinetic word hit → camera chase → product landing;
-- push-through transitions;
-- rapid traversal into a detail followed by a readable settle;
-- exiting a comprehension hold and entering the next high-energy beat;
-- final pull-back or punch-in payoff.
-
-### Default shape
-
-A practical camera speed ramp usually has three phases:
-
-1. **attack** — short acceleration / anticipation release;
-2. **travel** — fastest portion of the move;
+1. **attack** — anticipation release / acceleration;
+2. **travel** — fastest portion;
 3. **settle** — deceleration into readable framing.
 
-Typical proportion ranges:
+Starting proportions:
 
 ```text
 attack  12–25%
@@ -131,70 +99,58 @@ travel  45–68%
 settle  18–35%
 ```
 
-These are starting ranges, not presets.
-
-### Avoid
-
-- identical fast-slow ramps on every transition;
-- constant high speed with no readable landing;
-- speed ramps that move supporting objects faster than the attention owner;
-- ramps that make typography unreadable;
-- using `timeScale()` as an uncontrolled global trick that desynchronizes VO/audio;
-- realtime velocity accumulation that breaks deterministic seeking.
+Avoid identical fast-slow ramps on every transition, constant high speed, unreadable
+landings, global `timeScale()` hacks, realtime velocity accumulation, capture-FPS
+changes, or frame skipping.
 
 ## 7. Deterministic implementation
-
-Speed ramps must remain functions of authored master time.
 
 Preferred options:
 
 - GSAP keyframes with explicit durations/eases;
 - piecewise interpolation from master time;
 - authored camera state keyframes sampled by `seek(t)`;
-- a distance/progress proxy whose value is tweened by the master timeline.
+- a distance/progress proxy tweened by the master timeline.
 
-Keep audio, VO, SFX, object state, and camera on the same master clock.
+Output cadence remains fixed. Authored motion velocity changes; capture does not.
 
-For final render, never implement the ramp by changing capture FPS or by skipping
-frames. The output cadence remains fixed; the **authored motion velocity** changes.
+## 8. Composition safety under camera movement
 
-## 8. Typography safety under moving camera
+A camera move that destroys composition is a failed move.
 
-Anti-static camera does not override readability.
+During each major transfer:
 
-When typography owns the frame:
+- keep one clear attention owner;
+- protect type with camera-space safe lanes;
+- avoid accidental tangent/collision with UI or frame edges;
+- preserve deliberate negative space;
+- do not expose dead stage regions;
+- use foreground/background parallax only when it strengthens depth and hierarchy;
+- inspect the transition midpoint, not only the landing.
 
-- keep text inside a camera-space safe region;
-- move supporting objects behind, outside, or around the type lane;
-- do not allow a camera follow target to drag unrelated objects across hero text;
-- if the camera crosses large type, use the type intentionally as an occluder or
-  transition plane;
-- verify actual rendered frames at the fastest portion of the ramp, not only the
-  landing frame.
+## 9. Camera QA
 
-## 9. Camera activity QA
+Before `FINAL_VERIFIED`, inspect:
 
-Before `FINAL_VERIFIED`, inspect camera activity at key beats.
-
-Required checks for substantial fast-paced work:
-
-- opening framing state;
+- opening framing;
 - first focus transfer;
-- fastest speed-ramp midpoint;
-- camera landing after the ramp;
-- one subject-follow or handoff moment when a moving hero exists;
-- final framing / payoff.
+- fastest ramp midpoint;
+- ramp landing;
+- one subject follow/handoff when applicable;
+- final framing.
 
-Fail QA when:
+Fail when:
 
-- the frame is visually locked for most of the piece without authored justification;
-- all energy comes from object transforms inside a static viewport;
-- camera travel is claimed but only the subject moves;
-- the speed ramp has no readable acceleration/deceleration consequence;
-- typography collides with or is obscured by world objects during camera travel;
-- camera movement creates accidental edge clipping or exposes empty stage regions.
+- the frame is locked for most of the piece without authored justification;
+- only subjects move;
+- claimed camera travel has no visible rendered consequence;
+- acceleration/deceleration is imperceptible;
+- type becomes unreadable during travel;
+- camera exposes empty stage edges;
+- camera causes accidental collisions or weakens hierarchy;
+- multiple consecutive beats share effectively the same framing.
 
-Recommended production labels:
+Required labels:
 
 ```text
 CAMERA_GATE = PASS | FAIL
@@ -204,4 +160,4 @@ SPEED_RAMP = ACTIVE | NOT_REQUIRED | FAIL
 CAMERA_FOLLOW = USED | NOT_REQUIRED | FAIL
 ```
 
-`FINAL_VERIFIED` requires `CAMERA_GATE=PASS` whenever this module is triggered.
+`FINAL_VERIFIED` requires `CAMERA_GATE=PASS` for substantial motion.
