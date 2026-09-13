@@ -133,6 +133,12 @@ Retention comes from **controlled change, anticipation, reward, contrast, and rh
     their composition, camera path, transition logic, hierarchy, and kinetic rhythm
     before implementation.
 
+20. **Demonstrate skill through a real visual problem, not meta copy.** A sample or
+    demo must use a believable product, object, process, story, or transformation as
+    the subject. Do not use slogans such as “move the frame”, “camera led”, “motion
+    system”, or other self-referential statements as a substitute for actually
+    demonstrating camera, composition, or kinetic skill.
+
 ---
 
 # 2. Understand the Brief
@@ -187,5 +193,87 @@ Reject the render when any of these are true:
 - transitions feel like unrelated screens loading;
 - camera exposes dead space or creates accidental collisions;
 - a starter's default composition or motion signature survives into final work.
+
+## 3.1 Production proof gate
+
+Before final export, the piece must prove the skill without relying on explanatory
+labels about the skill itself.
+
+A sample/demo fails when:
+
+- the core message is primarily about camera, motion, composition, or animation itself;
+- the viewer would not understand a product, process, object, narrative, or visual
+  transformation without reading meta-motion labels;
+- the frame uses a generic dark gradient + oversized sans-serif + neon accent as a
+  default aesthetic without a brief-specific reason;
+- the visual language could be replaced by another generic tech template without
+  changing the idea.
+
+Use a concrete demonstration subject. The motion should reveal capability indirectly.
+
+## 3.2 Camera consequence gate
+
+A camera move must change what the viewer understands, not merely crop different parts
+of the same layout.
+
+At least one major camera transfer in a substantial short-form piece must do one of:
+
+- follow a moving hero and land on its destination;
+- hand off attention from subject A to subject B;
+- reveal information previously outside the readable frame;
+- travel through a meaningful foreground/occluder into the next state;
+- pull back to expose a larger system assembled from prior elements;
+- change depth/perspective so spatial relationships become newly legible.
+
+Reject arbitrary pans, zooms, or crops whose destination is not semantically motivated.
+
+## 3.3 Composition snapshot gate
+
+Capture a contact sheet containing the required verification frames before export.
+Judge each frame as a still design.
+
+Reject if two or more key frames show any of the following:
+
+- accidental clipping of hero type or UI;
+- large dead corners with no compositional counterweight;
+- unrelated objects distributed without a dominant axis, field, or hierarchy;
+- repeated center-weighted composition with only scale/position changes;
+- text cut by the viewport simply because the camera moved;
+- supporting decoration becoming more visually dominant than the subject;
+- final frame collapsing into a tiny centered card/logo after a high-energy sequence
+  without a deliberate scale-resolution concept.
+
+## 3.4 Kinetic event depth gate
+
+A kinetic passage must include differentiated semantic events, not a timeline of
+basic transforms.
+
+For a substantial 8–20 second sample, use at least four distinct kinetic roles when
+kinetic typography is a primary device, chosen from:
+
+- anticipation/compression;
+- attack/impact;
+- replacement;
+- mask/crop reveal;
+- typographic occlusion;
+- scale discontinuity;
+- character/word reflow;
+- semantic morph;
+- camera-target handoff;
+- foreground invasion;
+- object/type relay;
+- settle/lock.
+
+At least one type event must materially affect the camera, an object, or the next
+transition. Purely decorative word motion does not count.
+
+## 3.5 Pre-export rejection rule
+
+Do not export a “final sample” merely because the animation renders successfully.
+If any required visual gate is uncertain after contact-sheet inspection, mark the piece
+`DRAFT`, revise it, and inspect again.
+
+A renderer is not allowed to self-award `FINAL_VERIFIED` from code structure, labels,
+or intended motion logic. The rendered frames are the authority.
 
 `FINAL_VERIFIED` requires all applicable gates to pass.
