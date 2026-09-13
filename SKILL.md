@@ -1,15 +1,15 @@
 ---
 name: amhfxmotionrender
-description: Motion Designer v3.9.3 unified browser-motion skill for authored camera choreography, composition, kinetic typography, spatial continuity, deterministic speed ramps, frame-accurate capture, and MP4 export.
+description: Motion Designer v3.9.4 unified browser-motion skill for authored camera choreography, composition, kinetic typography, spatial continuity, playback-first QA, deterministic speed ramps, frame-accurate capture, and MP4 export.
 ---
 
-# Motion Designer v3.9.3 — Motion Depth Gate
+# Motion Designer v3.9.4 — Playback-First Motion Depth Gate
 
-This repository has one active motion-skill integration: **Motion Designer v3.9.3**.
+This repository has one active motion-skill integration: **Motion Designer v3.9.4**.
 
-The v3.9 modular source remains the canonical creative rulebook. v3.9.3 adds hard
-production gates for **camera choreography, composition, kinetic depth, actual skill
-usage, and asset-only SFX**.
+The v3.9 modular source remains the canonical creative rulebook. v3.9.4 adds hard
+production gates for **camera choreography, composition, hero authority, kinetic depth,
+continuity material, actual skill usage, playback-first verification, and asset-only SFX**.
 
 ## Canonical source
 
@@ -20,6 +20,7 @@ Load these files in order as one continuous rulebook for every substantial motio
 3. `references/camera-motion.md`
 4. `references/anti-ppt.md`
 5. `references/techniques.md`
+6. `references/failure-gates.md`
 
 Then load task-specific modules only when needed:
 
@@ -35,6 +36,7 @@ versions if they are ever needed for archaeology.
 - camera / spatial / 3D → `references/camera-motion.md`, `references/full-runtime.md`, `references/architecture.md`, `runtime/camera-rig.js`, `runtime/three-scene.js`
 - kinetic typography / anti-PPT → `references/techniques.md`, `references/anti-ppt.md`
 - composition / SaaS / brand → `references/architecture.md`, `references/anti-ppt.md`
+- playback / failure rejection → `references/failure-gates.md`
 - visual transitions → `references/techniques.md`, `references/architecture.md`
 - browser runtime → `references/full-runtime.md`, `runtime/`, `scripts/`
 - explainer → `references/explainer.md`, `runtime/explainer-helpers.js`
@@ -82,22 +84,39 @@ transforms must remain separate.
 
 Use `CAMERA_GATE=PASS|FAIL` and `CAMERA_FOLLOW=USED|NOT_REQUIRED` truthfully.
 
-### 3. Composition gate
+### 3. Camera energy gate
+
+Camera movement must have an authored energy shape, not one generic smooth ease reused
+throughout the sequence.
+
+For active-camera short-form work, use at least two meaningfully different movement
+signatures such as anticipation→chase→impact→settle, lead→catch-up→overshoot→correction,
+or pull-back→hold→push-through.
+
+Reject constant-distance follow, uniform smooth pans, or camera motion that feels like a
+screensaver across a static canvas.
+
+Use `CAMERA_ENERGY_GATE=PASS|FAIL`.
+
+### 4. Composition / hero authority gate
 
 Every hero frame must have a deliberate attention hierarchy and balanced negative
 space. The piece fails when:
 
 - the hero has no clear visual owner;
+- the attention owner becomes tiny for a sustained interval without a deliberate wide-shot reason;
 - type, UI, and decoration compete at similar weight;
 - important elements collide with edges or each other without intent;
 - the same centered composition is reused across consecutive beats;
 - the frame reads like unrelated cards placed on a canvas;
+- negative space has no tension, directional role, landing zone, or counterweight;
 - camera moves expose dead stage regions or destroy the intended reading order.
 
 Before final export, inspect opening, hero impact, mid-transition, landing, and final
-frame as still compositions. Use `COMPOSITION_GATE=PASS|FAIL`.
+frame as still compositions. Use `COMPOSITION_GATE=PASS|FAIL` and
+`HERO_AUTHORITY_GATE=PASS|FAIL`.
 
-### 4. Kinetic depth gate
+### 5. Kinetic depth / causality gate
 
 Kinetic typography must be authored as a sequence of differentiated micro-events.
 A piece fails when kinetic animation is primarily:
@@ -108,21 +127,44 @@ A piece fails when kinetic animation is primarily:
 - text moving independently from camera, objects, or semantic transitions;
 - decorative motion with no anticipation, attack, contact, handoff, or settle.
 
-For a kinetic passage, use at least **three distinct motion roles** where appropriate,
-such as attack, replacement, crop reveal, compression, overshoot, foreground invasion,
-masking, camera target, occlusion, semantic morph, or type-to-product handoff.
+For a kinetic-led short sample, use multiple distinct roles such as anticipation,
+attack, replacement, crop reveal, compression, masking, occlusion, semantic morph,
+camera target, object/type relay, or settle.
 
-Typography may own the frame, become a spatial landmark, occluder, transition plane,
-or cause the next shot. Use `KINETIC_GATE=PASS|FAIL`.
+At least one type event must materially change camera framing, object state, or the next
+transition. If typography can be removed without changing the choreography of the world,
+it fails the causality gate.
 
-### 5. Continuity / anti-PPT gate
+Use `KINETIC_GATE=PASS|FAIL` and `KINETIC_CAUSALITY_GATE=PASS|FAIL`.
+
+### 6. Continuity / anti-PPT gate
 
 Use one evolving visual world. Avoid slide/presentation choreography, replaceable
 full-screen artboards, repeated title cards, or unrelated screens that enter/hold/exit.
 Preserve continuity through camera velocity, object identity, geometry, typography,
 material, light, screen position, or semantic transformation.
 
-Use `ANTI_PPT_GATE=PASS|FAIL`.
+A thin decorative connector alone is insufficient. At least one visible carrier must
+materially persist, transform, transfer role, or physically cause the next state.
+
+Reject consecutive major beats that behave as card/screen swaps: previous hero leaves,
+new hero appears unrelated, camera/world effectively resets, and no visible material or
+semantic cause bridges them.
+
+Use `ANTI_PPT_GATE=PASS|FAIL`, `CONTINUITY_MATERIAL_GATE=PASS|FAIL`, and
+`SCREEN_SWAP_GATE=PASS|FAIL`.
+
+### 7. Payoff gate
+
+The final state must resolve the energy built by the sequence.
+
+Reject endings that shrink into a tiny centered card, lose hero authority, appear as a
+fresh unrelated screen, or contain no visual memory of the journey that created them.
+
+Prefer the persistent hero, route, type, object, or transformed material resolving
+into the final payoff.
+
+Use `PAYOFF_GATE=PASS|FAIL`.
 
 ## Motion execution contract
 
@@ -154,7 +196,12 @@ missing audio.
 When SFX assets are used, place them deterministically on the same master timeline and
 verify the exported audio stream.
 
-Use `SFX_MODE=ASSET_ONLY|NONE`.
+Reject clipped, hard-limited, wildly inconsistent, or constantly cluttered SFX mixes.
+For SFX-only short-form, `-24 to -18 LUFS integrated` and true peak around or below
+`-3 dBTP` are practical starting safety values unless the delivery brief specifies
+otherwise.
+
+Use `SFX_MODE=ASSET_ONLY|NONE` and `AUDIO_MIX_GATE=PASS|NOT_REQUIRED`.
 
 ## Camera implementation default
 
@@ -190,15 +237,27 @@ For substantial motion, visually inspect:
 - final framing;
 - typography/object collision during the fastest move.
 
+Then watch the **actual encoded video from start to finish at normal speed**. Contact
+sheets are necessary but not sufficient. The encoded playback is the final visual
+authority.
+
 `FINAL_VERIFIED` requires:
 
 ```text
 SKILL_USAGE_GATE=PASS
+PLAYBACK_GATE=PASS
 CAMERA_GATE=PASS
+CAMERA_ENERGY_GATE=PASS
+HERO_AUTHORITY_GATE=PASS
 COMPOSITION_GATE=PASS
 KINETIC_GATE=PASS
+KINETIC_CAUSALITY_GATE=PASS
 ANTI_PPT_GATE=PASS
+CONTINUITY_MATERIAL_GATE=PASS
+SCREEN_SWAP_GATE=PASS
+PAYOFF_GATE=PASS
 SPEED_RAMP=ACTIVE|NOT_REQUIRED
 CAMERA_FOLLOW=USED|NOT_REQUIRED
 SFX_MODE=ASSET_ONLY|NONE
+AUDIO_MIX_GATE=PASS|NOT_REQUIRED
 ```
