@@ -38,6 +38,28 @@ jobs:
       - name: Run code and skill checks
         run: npm run check
 
+      - name: Capture SaaS starter keyframes
+        run: |
+          env URL="file://${GITHUB_WORKSPACE}/assets/starter-saas-glass.html?clean=1" \
+            TIMES="0,1.2,2.5,3.8,4.8,6.3,8.2" \
+            OUT=output/saas-snapshots WIDTH=1920 HEIGHT=1080 npm run snap
+
+      - name: Render SaaS starter smoke MP4
+        run: |
+          env INDEX=assets/starter-saas-glass.html QUALITY=fast FPS=30 WIDTH=1920 HEIGHT=1080 \
+            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-saas.mp4 npm run export:mp4
+
+      - name: Verify SaaS starter render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/e2e-saas.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1920 || r.video?.height !== 1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
+          NODE
+
       - name: Prepare deterministic audio fixture
         run: |
           mkdir -p audio output
@@ -77,8 +99,8 @@ jobs:
           if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
-          if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
           if (!r.audio_sources?.voiceover?.endsWith('audio/test-voice.wav')) throw new Error('voiceover fixture was not used');
           NODE
 
@@ -90,7 +112,7 @@ jobs:
       - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
-          sha256sum output/*.mp4 output/qa-frame-*.png > output/sha256.txt
+          sha256sum output/*.mp4 output/qa-frame-*.png output/saas-snapshots/*.png > output/sha256.txt
           cat output/artifact-sizes.txt
           cat output/sha256.txt
           echo '--- 4K benchmark ---'
@@ -103,6 +125,10 @@ jobs:
         with:
           name: motion-v3.9-e2e-qa
           path: |
+            output/e2e-saas.mp4
+            output/e2e-saas.verify.json
+            output/saas-snapshots/*.png
+            output/saas-snapshots/contact-sheet.html
             output/e2e-4k.mp4
             output/e2e-4k.verify.json
             output/e2e-audio.mp4
