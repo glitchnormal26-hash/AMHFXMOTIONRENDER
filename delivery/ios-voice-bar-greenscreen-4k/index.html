@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>iOS Voice Bar Greenscreen — 10s</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#00ff00}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,Arial,sans-serif}
+  #viewport{position:fixed;inset:0;overflow:hidden;background:#00ff00}
+  #camera{position:absolute;inset:-4%;transform-origin:50% 50%;will-change:transform}
+  #world{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  #halo{position:absolute;width:min(62vw,2380px);height:min(19vw,650px);border-radius:999px;background:rgba(0,0,0,.10);filter:blur(52px);opacity:0;transform:scale(.72);will-change:transform,opacity}
+  #card{position:relative;width:min(62vw,2280px);height:min(12.8vw,470px);min-height:270px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,248,251,.96));
+    border:2px solid rgba(255,255,255,.98);
+    box-shadow:0 34px 90px rgba(0,0,0,.18),0 10px 28px rgba(0,0,0,.10),inset 0 2px 0 rgba(255,255,255,1),inset 0 -1px 0 rgba(24,30,42,.06);
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(38px,3.1vw,104px);padding:clamp(30px,2.45vw,86px);padding-left:clamp(40px,3.0vw,108px);
+    opacity:0;will-change:transform,opacity}
+  #mic{width:clamp(130px,7vw,250px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:linear-gradient(155deg,#11151b,#252c35);box-shadow:0 18px 36px rgba(8,12,18,.24),inset 0 1px 1px rgba(255,255,255,.13);transform:scale(.74);will-change:transform}
+  #mic svg{width:42%;height:42%;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  #micRing{position:absolute;inset:-11%;border-radius:50%;border:3px solid rgba(45,115,255,.42);opacity:0;transform:scale(.9);will-change:transform,opacity}
+  #wave{height:clamp(106px,5.8vw,210px);display:flex;align-items:center;justify-content:center;gap:clamp(7px,.5vw,19px);overflow:hidden;
+    mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+  .bar{height:100%;width:clamp(7px,.37vw,14px);display:flex;align-items:center;justify-content:center;--sy:.22;--bo:1;--by:0px}
+  .bar::before{content:"";display:block;width:100%;height:23%;border-radius:999px;background:linear-gradient(180deg,#2574ff,#6f91ff);box-shadow:0 2px 9px rgba(45,115,255,.20);transform-origin:50% 50%;transform:scaleY(var(--sy)) translateY(var(--by));opacity:var(--bo)}
+  #level{width:clamp(104px,6.2vw,220px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:linear-gradient(180deg,#f8f9fc,#eef1f7);border:1px solid rgba(18,24,34,.07);box-shadow:inset 0 1px 0 #fff,0 8px 18px rgba(31,43,68,.06)}
+  #levelRing{position:absolute;inset:14%;border-radius:50%;border:2px solid rgba(45,115,255,.14);transform:scale(.92);opacity:.55}
+  #dot{width:24%;aspect-ratio:1;border-radius:50%;background:#2d73ff;box-shadow:0 0 0 0 rgba(45,115,255,.20);will-change:transform,box-shadow}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="camera">
+    <div id="world">
+      <div id="halo"></div>
+      <div id="card">
+        <div id="mic" aria-hidden="true">
+          <div id="micRing"></div>
+          <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="12" rx="4"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/><path d="M9 21h6"/></svg>
+        </div>
+        <div id="wave" aria-hidden="true"></div>
+        <div id="level" aria-hidden="true"><div id="levelRing"></div><div id="dot"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const DURATION=10;
+  const $=id=>document.getElementById(id);
+  const camera=$('camera'),card=$('card'),halo=$('halo'),mic=$('mic'),micRing=$('micRing'),wave=$('wave'),levelRing=$('levelRing'),dot=$('dot');
+  const bars=[];
+  for(let i=0;i<38;i++){const el=document.createElement('div');el.className='bar';wave.appendChild(el);bars.push(el)}
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
+  const out=t=>1-Math.pow(1-clamp(t),3);
+  const inOut=t=>{t=clamp(t);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2};
+  const pulse=(t,c,w)=>Math.exp(-Math.pow((t-c)/w,2));
+
+  function seek(raw){
+    const t=clamp(raw,0,DURATION);
+    const intro=out(t/1.0);
+    const active=smooth(.7,1.35,t)*(1-smooth(8.0,8.85,t));
+    const settle=smooth(7.9,8.9,t);
+    const outro=smooth(9.25,10,t);
+
+    let camS=1,camX=0,camY=0,camR=0;
+    if(t<2.0){const p=inOut(t/2);camS=lerp(1.04,1,p);camY=lerp(24,0,p)}
+    else if(t<6.6){const p=(t-2)/4.6;camS=1+.011*Math.sin(p*Math.PI);camX=14*Math.sin(p*Math.PI*1.15);camY=-8*Math.sin(p*Math.PI*.9);camR=.09*Math.sin(p*Math.PI)}
+    else if(t<8.6){const p=inOut((t-6.6)/2);camS=lerp(1.01,1.045,p);camX=lerp(8,-10,p);camY=lerp(-4,7,p)}
+    else {const p=inOut((t-8.6)/1.4);camS=lerp(1.045,1.012,p);camX=lerp(-10,0,p);camY=lerp(7,0,p)}
+    camera.style.transform=`translate(${camX}px,${camY}px) scale(${camS}) rotate(${camR}deg)`;
+
+    card.style.opacity=String(intro*(1-outro*.97));
+    const cardS=lerp(.86,1,intro)*(1-.012*pulse(t,4.8,.48)+.014*pulse(t,7.8,.38));
+    const lift=lerp(38,0,intro)-8*pulse(t,7.75,.42)+8*outro;
+    card.style.transform=`translateY(${lift}px) scale(${cardS})`;
+    halo.style.opacity=String(.9*intro*(1-outro));
+    halo.style.transform=`scale(${lerp(.74,1.03,intro)+.025*Math.sin(t*.8)})`;
+
+    const energy=active*(.3+.7*(.5+.5*Math.sin(t*4.8)));
+    mic.style.transform=`scale(${lerp(.74,1,intro)+.032*Math.sin(t*2.7)*active})`;
+    micRing.style.opacity=String((.14+.42*energy)*intro*(1-outro));
+    micRing.style.transform=`scale(${.94+.17*energy})`;
+    dot.style.transform=`scale(${1+.28*energy})`;
+    dot.style.boxShadow=`0 0 0 ${Math.round(14+42*energy)}px rgba(45,115,255,${.045+.075*energy})`;
+    levelRing.style.transform=`scale(${.92+.16*energy})`;
+    levelRing.style.opacity=String(.28+.42*energy);
+
+    bars.forEach((el,i)=>{
+      const x=i/(bars.length-1);
+      const edge=Math.pow(Math.sin(Math.PI*x),.48);
+      const a=.5+.24*Math.sin(t*7.15+i*.71)+.16*Math.sin(t*11.4-i*.39)+.10*Math.sin(t*4.05+i*1.27);
+      const syll=.24+.76*clamp(.5+.5*Math.sin(t*2.12-.85));
+      const wake=smooth(.55,1.25,t);
+      const live=(.15+active*.72*clamp(a)*syll)*edge*wake*(1-settle);
+      const resolved=.13+.028*Math.sin(i*.68);
+      const h=settle?lerp(Math.max(.075,live),resolved,settle):Math.max(.075,live);
+      el.style.setProperty('--sy',String(Math.max(.13,h*3.55)));
+      el.style.setProperty('--by',`${1+.04*Math.sin(t*3+i*.36)*active}px`);
+      el.style.setProperty('--bo',String((.54+.46*edge*(.42+.58*active))*(1-outro*.4)));
+    });
+  }
+
+  window.OPENER={DURATION,ready:true,seek};
+  seek(0);
+})();
+</script>
+</body>
+</html>
