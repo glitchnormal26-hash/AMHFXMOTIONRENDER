@@ -34,9 +34,13 @@ for (const relative of [
   "SKILL.md",
   "references/anti-ppt.md",
   "references/architecture.md",
+  "references/camera-motion.md",
+  "references/clip-workflow.md",
   "references/explainer.md",
+  "references/external-visuals.md",
   "references/full-runtime.md",
   "references/techniques.md",
+  "scripts/clip-plan.mjs",
   "scripts/export-mp4.mjs",
 ]) {
   if (!fs.existsSync(path.join(root, relative))) {
