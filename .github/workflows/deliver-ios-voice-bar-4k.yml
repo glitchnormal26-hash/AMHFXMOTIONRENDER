@@ -36,6 +36,11 @@ jobs:
       - name: Validate renderer
         run: npm run check
 
+      - name: Enable Chromium sandbox on Ubuntu 24
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
+
       - name: Render 10s 4K 60fps MP4
         env:
           INDEX: delivery/ios-voice-bar-4k/index.html
