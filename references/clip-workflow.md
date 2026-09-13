@@ -19,6 +19,7 @@ npm run clip:plan -- --brief "SaaS launch showing browser UI and dashboard"
 Useful options:
 
 ```bash
+npm run clip:plan -- --brief "SaaS launch with aurora gradient, frosted glass and liquid logo" --duration 9 --format 16:9
 npm run clip:plan -- --brief "historical investigation opener" --duration 9 --format 16:9
 npm run clip:plan -- --brief "friendly character explainer" --json
 npm run clip:plan -- --brief "product feature comparison" --write clip-plan.json
@@ -28,13 +29,25 @@ The matcher only selects among authored starter architectures already in `assets
 
 Current archetypes:
 
-- `assets/starter-full-runtime.html` — product, SaaS, browser, dashboard, and UI showcases;
+- `assets/starter-saas-glass.html` — modern SaaS launch, dashboard, analytics, gradient, frosted-glass, and original liquid/chrome logo treatments;
+- `assets/starter-full-runtime.html` — general product, browser, UI, and spatial runtime showcases;
 - `assets/starter-explainer-jurnalisme.html` — journalism, documentary, evidence, investigation, and historical explainers;
 - `assets/starter-explainer-katalog.html` — catalog, product-feature, lineup, and comparison sequences;
 - `assets/starter-explainer-kartun.html` — character-led and playful explainers;
 - `assets/starter-explainer-sketsa.html` — sketch, concept, diagram, and storyboard treatments;
 - `assets/starter-explainer.html` — continuous-action explainers;
 - `assets/starter.html` — neutral opener, title, bumper, hook, and reveal work.
+
+### SaaS starter design contract
+
+`starter-saas-glass.html` demonstrates the new visual knowledge without creating hard third-party dependencies:
+
+- shader-style gradient motion is authored as deterministic timeline-driven local layers;
+- frosted glass is used selectively with CSS backdrop blur, translucency, border/specular hierarchy, and a readable fallback visual structure;
+- the liquid/chrome logo moment is an original local SVG goo/metal treatment and does not copy Paper Design implementation code;
+- the camera follows semantic attention: brand formation -> product push-through -> cursor-led dashboard reframe -> short intentional comprehension hold -> CTA settle.
+
+Treat it as a generic architecture reference. Replace the fake `Nova Cloud` copy and fake metrics when adapting it to a real product.
 
 ## 2. Customize by authorship, not fake form fields
 
@@ -78,7 +91,7 @@ Always run:
 npm run check
 ```
 
-For cinematic, tracking, spatial, or fast-ramp clips also inspect:
+For cinematic, tracking, spatial, shader/glass, or fast-ramp clips also inspect:
 
 - opening framing;
 - first transfer/reframe;
@@ -86,6 +99,7 @@ For cinematic, tracking, spatial, or fast-ramp clips also inspect:
 - ramp landing;
 - hero follow or handoff when applicable;
 - final framing;
-- typography/media collisions during the fastest move.
+- typography/media collisions during the fastest move;
+- glass readability and gradient capture stability at representative timestamps.
 
 Do not use `FINAL_VERIFIED` from syntax checks or a successful encoder exit alone.
