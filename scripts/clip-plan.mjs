@@ -24,10 +24,18 @@ if (!Number.isFinite(duration) || duration <= 0) {
 const normalized = `${brief} ${readArg("style") || ""}`.toLowerCase();
 const catalog = [
   {
+    id: "saas-glass",
+    path: "assets/starter-saas-glass.html",
+    label: "SaaS launch / glass dashboard showcase",
+    keywords: ["saas", "dashboard", "software", "app", "launch", "workspace", "analytics", "glass", "frosted", "gradient", "aurora", "liquid logo", "chrome logo"],
+    modules: ["references/full-runtime.md", "references/camera-motion.md", "references/external-visuals.md", "runtime/camera-rig.js"],
+    camera: "TRACKING product journey: brand formation -> push-through -> cursor-led dashboard reframe -> intentional CTA settle",
+  },
+  {
     id: "full-runtime",
     path: "assets/starter-full-runtime.html",
-    label: "Product / SaaS / UI showcase",
-    keywords: ["saas", "app", "ui", "interface", "dashboard", "browser", "product", "launch", "screen", "mockup", "software", "website", "web"],
+    label: "Product / UI showcase",
+    keywords: ["ui", "interface", "browser", "product", "screen", "mockup", "website", "web", "spatial", "runtime"],
     modules: ["references/full-runtime.md", "references/camera-motion.md", "runtime/camera-rig.js"],
     camera: "TRACKING with 2–4s reframes; follow the active UI/hero object during transfers",
   },
@@ -129,7 +137,7 @@ const visualEffects = effectCatalog
 
 const cleanHeadline = brief.replace(/\s+/g, " ").trim().slice(0, 72);
 const plan = {
-  version: 2,
+  version: 3,
   source: "AMHFXMOTIONRENDER local clip workflow",
   brief,
   format,
@@ -167,7 +175,7 @@ const plan = {
   audio: {
     default: "VOICEOVER + purposeful SFX + controlled ambience + silence; NO BGM unless requested",
   },
-  modules: visualEffects.length ? [...selected.modules, "references/external-visuals.md"] : selected.modules,
+  modules: visualEffects.length ? [...new Set([...selected.modules, "references/external-visuals.md"])] : selected.modules,
   handoff: {
     prepare: `cp ${selected.path} motra-output/index.html`,
     preview: "QUALITY=fast npm run render:motra",
