@@ -5,9 +5,15 @@ on:
     branches: [main]
     paths:
       - 'delivery/autumn-cute-10/**'
-      - 'scripts/export-mp4.mjs'
       - '.github/workflows/render-autumn-cute-10.yml'
   workflow_dispatch:
+
+concurrency:
+  group: autumn-cute-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   render:
@@ -93,7 +99,8 @@ jobs:
           VIDEO: output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.mp4
           PREFIX: output/qa-${{ matrix.id }}-${{ matrix.slug }}
         run: |
-          ffmpeg -y -i "$VIDEO" -vf "select='eq(n,0)+eq(n,300)+eq(n,600)+eq(n,899)'" -vsync 0 "${PREFIX}-%02d.png"
+          ffmpeg -y -i "$VIDEO" -vf "select='eq(n,0)+eq(n,300)+eq(n,600)+eq(n,899)'" \
+            -fps_mode passthrough "${PREFIX}-%02d.png"
           sha256sum "$VIDEO" > "output/autumn-${{ matrix.id }}-${{ matrix.slug }}-1080p30-30s.sha256"
       - name: Upload final render and QA evidence
         uses: actions/upload-artifact@v4
@@ -106,3 +113,4 @@ jobs:
             output/qa-${{ matrix.id }}-${{ matrix.slug }}-*.png
           if-no-files-found: error
           retention-days: 14
+          compression-level: 0

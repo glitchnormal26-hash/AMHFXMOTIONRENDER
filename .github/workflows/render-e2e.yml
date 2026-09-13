@@ -2,19 +2,120 @@ name: Render E2E QA
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     paths:
       - 'index.html'
-      - 'assets/**'
+      - 'assets/**/*.html'
       - 'runtime/**'
-      - 'scripts/**'
+      - 'scripts/export-mp4.mjs'
+      - 'scripts/snap.mjs'
+      - 'scripts/serve.py'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/render-e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/**/*.html'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'scripts/snap.mjs'
+      - 'scripts/serve.py'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
 
+concurrency:
+  group: render-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  render:
-    runs-on: ubuntu-latest
+  smoke:
+    name: PR render smoke
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Ensure FFmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Capture keyframes and render 720p smoke
+        run: |
+          mkdir -p output
+          python scripts/serve.py 8000 > /tmp/amhfx-serve.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+
+          ready=0
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:8000/assets/starter-saas-glass.html >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep .25
+          done
+          if [ "$ready" != "1" ]; then
+            cat /tmp/amhfx-serve.log
+            exit 1
+          fi
+
+          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
+            TIMES="0,2.5,4.8,6.3,8.2" OUT=output/saas-snapshots \
+            WIDTH=1280 HEIGHT=720 npm run snap
+
+          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
+            QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 CRF=22 PRESET=veryfast \
+            OUT_VIDEO=output/e2e-saas-smoke.mp4 npm run export:mp4
+
+      - name: Verify PR smoke contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/e2e-saas-smoke.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
+          NODE
+
+      - name: Upload PR smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: motion-pr-smoke
+          path: |
+            output/e2e-saas-smoke.mp4
+            output/e2e-saas-smoke.verify.json
+            output/saas-snapshots/*.png
+            output/saas-snapshots/contact-sheet.html
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
+  full:
+    name: Full 4K regression
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -24,10 +125,12 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install ffmpeg
+      - name: Ensure FFmpeg
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
 
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -38,34 +141,33 @@ jobs:
       - name: Run code and skill checks
         run: npm run check
 
-      - name: Capture SaaS starter keyframes
+      - name: Capture SaaS keyframes and render 1080p smoke
         run: |
+          mkdir -p output
           python scripts/serve.py 8000 > /tmp/amhfx-serve.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
-          ready=0
-          for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:8000/assets/starter-saas-glass.html >/dev/null; then ready=1; break; fi
-            sleep .25
-          done
-          if [ "$ready" != "1" ]; then cat /tmp/amhfx-serve.log; exit 1; fi
-          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
-            TIMES="0,1.2,2.5,3.8,4.8,6.3,8.2" \
-            OUT=output/saas-snapshots WIDTH=1920 HEIGHT=1080 npm run snap
 
-      - name: Render SaaS starter smoke MP4
-        run: |
-          python scripts/serve.py 8000 > /tmp/amhfx-serve.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           ready=0
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:8000/assets/starter-saas-glass.html >/dev/null; then ready=1; break; fi
+            if curl -fsS http://127.0.0.1:8000/assets/starter-saas-glass.html >/dev/null; then
+              ready=1
+              break
+            fi
             sleep .25
           done
-          if [ "$ready" != "1" ]; then cat /tmp/amhfx-serve.log; exit 1; fi
-          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" QUALITY=fast FPS=15 WIDTH=1920 HEIGHT=1080 \
-            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-saas.mp4 npm run export:mp4
+          if [ "$ready" != "1" ]; then
+            cat /tmp/amhfx-serve.log
+            exit 1
+          fi
+
+          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
+            TIMES="0,1.2,2.5,3.8,4.8,6.3,8.2" OUT=output/saas-snapshots \
+            WIDTH=1920 HEIGHT=1080 npm run snap
+
+          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
+            QUALITY=fast FPS=15 WIDTH=1920 HEIGHT=1080 CRF=20 PRESET=veryfast \
+            OUT_VIDEO=output/e2e-saas.mp4 npm run export:mp4
 
       - name: Verify SaaS starter render contract
         run: |
@@ -125,20 +227,20 @@ jobs:
       - name: Extract visual QA frames
         run: |
           ffmpeg -y -i output/e2e-4k.mp4 \
-            -vf "select='eq(n,0)+eq(n,135)+eq(n,269)'" -vsync 0 output/qa-frame-%02d.png
+            -vf "select='eq(n,0)+eq(n,135)+eq(n,269)'" \
+            -fps_mode passthrough output/qa-frame-%02d.png
 
       - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
           sha256sum output/*.mp4 output/qa-frame-*.png output/saas-snapshots/*.png > output/sha256.txt
           cat output/artifact-sizes.txt
-          cat output/sha256.txt
           echo '--- 4K benchmark ---'
           cat output/benchmark-4k.txt
           echo '--- audio benchmark ---'
           cat output/benchmark-audio.txt
 
-      - name: Upload E2E evidence
+      - name: Upload full E2E evidence
         uses: actions/upload-artifact@v4
         with:
           name: motion-v3.9-e2e-qa
@@ -157,4 +259,5 @@ jobs:
             output/sha256.txt
             output/qa-frame-*.png
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
+          compression-level: 0
