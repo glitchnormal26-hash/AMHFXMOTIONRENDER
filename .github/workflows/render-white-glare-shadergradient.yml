@@ -7,6 +7,12 @@ on:
     paths:
       - 'delivery/white-glare-shadergradient-4k/**'
       - '.github/workflows/render-white-glare-shadergradient.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'delivery/white-glare-shadergradient-4k/**'
+      - '.github/workflows/render-white-glare-shadergradient.yml'
   workflow_dispatch:
 
 jobs:
