@@ -1,0 +1,83 @@
+name: Deliver iOS Voice Bar Greenscreen 4K MP4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'delivery/ios-voice-bar-greenscreen-4k/**'
+      - '.github/workflows/deliver-ios-voice-bar-greenscreen-4k.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install renderer dependencies
+        run: npm ci
+
+      - name: Validate renderer
+        run: npm run check
+
+      - name: Enable Chromium sandbox on Ubuntu 24
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
+
+      - name: Render 10s 4K 60fps MP4
+        env:
+          INDEX: delivery/ios-voice-bar-greenscreen-4k/index.html
+          OUT_VIDEO: motra-output/ios-voice-bar-greenscreen-4k-16x9-10s.mp4
+          QUALITY: final
+          WIDTH: '3840'
+          HEIGHT: '2160'
+          FPS: '60'
+          CRF: '16'
+          PRESET: medium
+        run: node scripts/export-mp4.mjs
+
+      - name: ffprobe QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='motra-output/ios-voice-bar-greenscreen-4k-16x9-10s.mp4'
+          test -s "$FILE"
+          CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$FILE")
+          WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$FILE")
+          HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$FILE")
+          FPS=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$FILE")
+          PIX=$(ffprobe -v error -select_streams v:0 -show_entries stream=pix_fmt -of default=nw=1:nk=1 "$FILE")
+          DURATION=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FILE")
+          echo "codec=$CODEC size=${WIDTH}x${HEIGHT} fps=$FPS pix_fmt=$PIX duration=$DURATION"
+          test "$CODEC" = 'h264'
+          test "$WIDTH" = '3840'
+          test "$HEIGHT" = '2160'
+          test "$FPS" = '60/1'
+          case "$PIX" in yuv420p|yuvj420p) ;; *) exit 1 ;; esac
+          awk -v d="$DURATION" 'BEGIN { if (d < 9.95 || d > 10.05) exit 1 }'
+          sha256sum "$FILE" > motra-output/ios-voice-bar-greenscreen-4k-16x9-10s.sha256
+
+      - name: Publish verified delivery
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f motra-output/ios-voice-bar-greenscreen-4k-16x9-10s.mp4 motra-output/ios-voice-bar-greenscreen-4k-16x9-10s.sha256
+          git commit -m 'Publish iOS voice bar greenscreen 4K MP4' || exit 0
+          git push origin HEAD:main
