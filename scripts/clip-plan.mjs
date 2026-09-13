@@ -81,6 +81,36 @@ const catalog = [
   },
 ];
 
+const effectCatalog = [
+  {
+    id: "shadergradient",
+    label: "Animated shader gradient",
+    repo: "https://github.com/ruucm/shadergradient",
+    integrationMode: "optional-package",
+    license: "MIT (published shadergradient package)",
+    keywords: ["gradient", "mesh gradient", "aurora", "shader gradient", "iridescent", "color field", "fluid color", "animated background"],
+    guidance: "Use as a bounded/background visual layer. Keep AMHFX as timeline authority and provide a deterministic or local fallback.",
+  },
+  {
+    id: "liquid-glass-js",
+    label: "Frosted / refractive liquid glass",
+    repo: "https://github.com/dashersw/liquid-glass-js",
+    integrationMode: "optional-package",
+    license: "MIT",
+    keywords: ["glass", "frosted", "frosted glass", "liquid glass", "refractive", "refraction", "translucent", "glassmorphism", "glass card"],
+    guidance: "Use for selected hero/UI surfaces. Capture-test WebGL in the Puppeteer path and keep a CSS fallback.",
+  },
+  {
+    id: "liquid-logo",
+    label: "Liquid-metal logo reference",
+    repo: "https://github.com/paper-design/liquid-logo",
+    integrationMode: "reference-only",
+    license: "PolyForm Shield 1.0.0",
+    keywords: ["liquid logo", "liquid metal", "molten logo", "molten chrome", "chrome logo", "fluid emblem", "metallic logo"],
+    guidance: "Do not vendor or auto-install by default. Author an original local AMHFX treatment unless the project separately approves the upstream license.",
+  },
+];
+
 for (const item of catalog) {
   item.score = item.keywords.reduce((score, keyword) => score + (normalized.includes(keyword) ? 2 : 0), 0);
 }
@@ -88,9 +118,18 @@ const ranked = [...catalog].sort((a, b) => b.score - a.score);
 const selected = ranked[0].score > 0 ? ranked[0] : catalog.find(x => x.id === "opener");
 const alternates = ranked.filter(x => x.id !== selected.id).slice(0, 2);
 
+const visualEffects = effectCatalog
+  .map(effect => ({
+    ...effect,
+    score: effect.keywords.reduce((score, keyword) => score + (normalized.includes(keyword) ? 1 : 0), 0),
+  }))
+  .filter(effect => effect.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .map(({ keywords, ...effect }) => effect);
+
 const cleanHeadline = brief.replace(/\s+/g, " ").trim().slice(0, 72);
 const plan = {
-  version: 1,
+  version: 2,
   source: "AMHFXMOTIONRENDER local clip workflow",
   brief,
   format,
@@ -116,6 +155,10 @@ const plan = {
     media: [],
     note: "Treat these as authored edit targets. Do not claim a field is runtime-wired unless the selected scene exposes it.",
   },
+  visualEffects,
+  visualEffectsPolicy: visualEffects.length
+    ? "Load references/external-visuals.md. Optional effects enhance the scene but do not replace AMHFX camera/timeline authority."
+    : "No external visual module required by this brief.",
   motion: {
     cameraIntent: selected.camera,
     speedRamp: duration >= 6 ? "ACTIVE when it improves traversal; preserve deterministic seeking" : "NOT_REQUIRED unless justified",
@@ -124,12 +167,12 @@ const plan = {
   audio: {
     default: "VOICEOVER + purposeful SFX + controlled ambience + silence; NO BGM unless requested",
   },
-  modules: selected.modules,
+  modules: visualEffects.length ? [...selected.modules, "references/external-visuals.md"] : selected.modules,
   handoff: {
     prepare: `cp ${selected.path} motra-output/index.html`,
     preview: "QUALITY=fast npm run render:motra",
     final: "npm run render:motra",
-    verify: "npm run check, then visually inspect opening, fastest move, landing, and final framing",
+    verify: "npm run check, then visually inspect opening, fastest move, landing, final framing, and any optional WebGL effect in the capture path",
   },
 };
 
@@ -143,6 +186,9 @@ if (hasFlag("json") || write) {
   console.log(`Selected: ${plan.selection.label}`);
   console.log(`Starter:  ${plan.selection.starter}`);
   console.log(`Camera:   ${plan.motion.cameraIntent}`);
+  if (visualEffects.length) {
+    console.log(`Effects:  ${visualEffects.map(x => `${x.label} [${x.integrationMode}]`).join(" | ")}`);
+  }
   console.log(`Preview:  ${plan.handoff.preview}`);
   console.log(`Final:    ${plan.handoff.final}`);
   if (alternates.length) console.log(`Alternates: ${alternates.map(x => x.label).join(" | ")}`);
