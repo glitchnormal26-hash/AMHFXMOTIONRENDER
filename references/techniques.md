@@ -1,37 +1,99 @@
-# Techniques — Browser Motion Recipes
+# Techniques — Authored Motion Recipes
 
-> 
-Numbers below are starting points, not laws. The brief owns palette, type,
-surface, movement character, and narrative rhythm.
+Numbers below are starting points, not laws. The brief owns palette, type, surface,
+movement character, hierarchy, and narrative rhythm.
 
-## 1. Living typography
+## 1. Kinetic depth gate
 
-Use a small number of text behaviors, varied by semantic importance.
+Kinetic typography is not a repeated stagger.
+
+A hero kinetic passage should combine **at least three distinct motion roles** when the
+content supports them. Useful roles include:
+
+- **attack** — abrupt scale/position/weight change that establishes priority;
+- **replacement** — one word physically displaces or overwrites another;
+- **crop reveal** — type is discovered through a moving mask or changing frame;
+- **compression/release** — tracking, scale, or line spacing stores and releases energy;
+- **overshoot/settle** — weight and impact without generic springiness;
+- **foreground invasion** — type crosses the lens plane or occludes the world;
+- **camera target** — camera reframes because a word becomes the attention owner;
+- **transition plane** — a word or letter becomes the surface that carries the next shot;
+- **semantic morph** — text geometry transforms according to meaning;
+- **type-to-product handoff** — type establishes the claim, then becomes or reveals proof;
+- **punctuation payoff** — final word/mark lands as a separate rhythmic event;
+- **depth split** — foreground/midground/background type layers create parallax.
+
+Fail `KINETIC_GATE` when the passage is mainly identical word-by-word fade/slide/scale,
+one easing curve, one entry direction, or text moving independently from the camera and
+world.
+
+## 2. Kinetic phrase construction
+
+Build phrases as non-uniform micro-events:
+
+```text
+ANTICIPATE → ATTACK → INTERRUPT → HANDOFF → LAND
+```
+
+Not every word needs animation. Give the strongest motion to the semantic owner.
+Supporting words may lock, crop, compress, or remain still to create contrast.
+
+Useful variation knobs:
+
+- duration;
+- delay spacing;
+- entry direction;
+- scale range;
+- blur axis;
+- mask geometry;
+- origin point;
+- easing family;
+- camera response;
+- overlap amount;
+- hold length;
+- exit logic.
+
+Variation must follow hierarchy, not randomization.
+
+## 3. Composition choreography
+
+Motion should evolve composition, not merely animate objects inside a fixed layout.
+
+Across consecutive beats, vary one or more of:
+
+- dominant visual owner;
+- center of gravity;
+- crop;
+- negative-space location;
+- scale relationship;
+- foreground/background relation;
+- camera target;
+- directional flow;
+- text lane;
+- object density.
+
+Avoid repeating the same centered hero + subtitle + card stack composition.
+
+Before export, freeze opening, hero impact, transition midpoint, landing, and final frame.
+Each should work as a deliberate still composition.
+
+## 4. Living typography entrances
 
 Useful entrances:
+
 - vertical rise + directional blur;
 - lateral replacement;
 - scale attack;
 - mask/crop reveal;
 - tracking compression/expansion;
-- foreground type invasion.
+- foreground type invasion;
+- perspective sweep;
+- letterform wipe;
+- camera-discovered reveal.
 
-Use identical word treatment only when deliberate uniformity is the concept.
+Use identical treatment only when deliberate uniformity is the concept.
 
-### One highlight language
-
-Choose one highlight language per piece:
-- underline;
-- marker;
-- outline box;
-- color-only;
-- strike/replace;
-- filled block/pill;
-- clipping mask.
-
-Do not inherit a highlight shape from the starter.
-
-## 2. Directional motion blur
+## 5. Directional motion blur
 
 CSS blur is isotropic. SVG `feGaussianBlur` can create separate X/Y blur.
 
@@ -39,15 +101,10 @@ CSS blur is isotropic. SVG `feGaussianBlur` can create separate X/Y blur.
 blurNode.setAttribute("stdDeviation", `${x} ${y}`);
 ```
 
-Horizontal travel → larger X than Y.  
-Vertical travel → larger Y than X.
+Horizontal travel → larger X than Y. Vertical travel → larger Y than X.
+Expand the filter region to avoid clipped trails. Remove the filter after the event.
 
-Expand the filter region to avoid clipped trails. Remove the SVG filter after
-the motion event so the element is not unnecessarily rasterized every frame.
-
-## 3. Camera-equivalent push-through
-
-A simple DOM camera rig can create a spatial handoff:
+## 6. Camera-equivalent push-through
 
 ```js
 function pushThrough(tl, rig, cut, {
@@ -59,118 +116,104 @@ function pushThrough(tl, rig, cut, {
 }
 ```
 
-Use only when the destination is conceptually “inside” or “through” the
-current subject. Do not repeat this at every cut.
+Use only when the destination is conceptually inside/through the current subject. Do
+not repeat it at every cut.
 
-## 4. Transition menu
+## 7. Transition vocabulary
 
 Prefer a small authored vocabulary:
-- element extraction → next-scene material;
+
+- element extraction → next-state material;
 - subject tracking with camera lag;
 - foreground object occlusion;
 - semantic line/path transformation;
 - depth-card turn / fold;
 - typography as mask or transition surface;
 - motivated push-through;
-- hard match cut;
-- light field / shader-state handoff;
+- hard geometry match cut;
+- light-field/shader-state handoff;
 - environment traversal through parallax.
 
-Use at least two distinct transition logics in longer pieces when repetition
-would feel templated.
+Use at least two distinct transition logics in longer pieces.
 
-## 5. Background movement menu
+Every transition should answer:
+
+**CAUSE → ACTION → RESULT**
+
+## 8. Type → product handoff
+
+Strong SaaS pattern:
+
+```text
+TYPE OWNS FRAME
+→ HERO WORD LOCKS
+→ WORD/SHAPE CHANGES ROLE
+→ CAMERA FOLLOWS THE CHANGE
+→ PRODUCT WORLD IS REVEALED
+→ PRODUCT BECOMES PROOF
+```
+
+Do not force UI to share the frame during the strongest kinetic passage.
+
+## 9. Background motion
 
 Background motion should be selected, not defaulted.
 
 Options:
+
 - gradient field shifts;
 - slow mesh deformation;
 - drifting large forms;
 - subtle grain evolution;
-- light sweep tied to scene state;
-- low-amplitude camera breathing;
-- rising particles;
+- light sweep tied to state;
+- restrained camera breathing;
+- particles;
 - grid breathing;
-- ghost type parallax;
-- restrained Ken Burns + actual foreground parallax;
+- ghost-type parallax;
+- actual foreground/background parallax;
 - shader parameter state changes.
 
-Do not default to horizontal streaks / lanes unless the theme is speed or flow.
+Background movement must stay subordinate to the hero.
 
-## 6. Background surface menu
-
-Use at least two visual layers when depth/atmosphere is desired:
-- base gradient + local light;
-- paper + grain;
-- color field + mesh blob;
-- spotlight + tint;
-- sky bands + haze;
-- grid + soft lighting;
-- image + tonal overlay;
-- shader gradient + selective bloom.
-
-A flat single-color field is valid only when deliberate brutal/minimal art
-direction calls for it.
-
-## 7. Selective bloom / glow
+## 10. Selective glow / bloom
 
 Glow is hierarchy, not decoration.
 
-Prefer:
-- emissive hero objects;
-- brief activation peaks;
-- state-dependent glow;
-- bloom after a meaningful interaction.
+Prefer emissive hero objects, brief activation peaks, state-dependent glow, or bloom
+after meaningful contact.
 
-Avoid:
-- glow on every title;
-- permanently luminous UI;
-- low bloom thresholds that wash out the whole frame;
-- using glow to rescue weak contrast.
+Avoid glow on every title, permanently luminous UI, low bloom thresholds that wash out
+the frame, or using glow to rescue weak contrast.
 
-## 8. Camera breathing
+## 11. Object performance
 
-Breathing is low-amplitude authored change, not perpetual random drift.
+For 3D/2.5D hero objects:
 
-Example:
-- scale/FOV shift of only a few percent;
-- one slow positional arc;
-- pause or lock during a critical read.
+- anticipation tilt;
+- compress/release;
+- reaction;
+- lag/follow-through;
+- magnetic assembly;
+- hinge/fold/peel;
+- collision response;
+- authored landing pose.
 
-Breathing should stop when stillness makes the idea stronger.
+Avoid perpetual showroom rotation.
 
-## 9. Type → product handoff
-
-A strong SaaS pattern:
-
-**TYPE OWNS FRAME → HERO WORD LOCK → WORD / SHAPE TRANSFORMS →
-PRODUCT WORLD IS REVEALED → PRODUCT BECOMES PROOF**
-
-Do not force UI to share the frame during the strongest kinetic passage.
-
-## 10. Deterministic counters
+## 12. Deterministic counters
 
 ```js
 const n = {v:0};
 tl.to(n, {
-  v: 350,
-  duration: 1,
-  onUpdate() {
-    el.textContent = Math.round(n.v);
-  }
+  v:350,
+  duration:1,
+  onUpdate() { el.textContent = Math.round(n.v); }
 });
 ```
 
-Use:
+Use `font-variant-numeric: tabular-nums` and stable width.
 
-```css
-font-variant-numeric: tabular-nums;
-```
-
-and a stable width so the layout does not jitter.
-
-## 11. Deterministic procedural motion
+## 13. Deterministic procedural motion
 
 Good:
 
@@ -185,45 +228,10 @@ x += velocity * dt;
 x += Math.random();
 ```
 
-## 12. Light leak
-
-Treat it as a lens-space event above the world, not an object inside the world.
-Use sparingly. A leak at every cut becomes an editor preset.
-
-## 13. Collage camera helpers
-
-Conceptual helpers:
-
-```js
-look(at, x, y, z, dur)
-home(at, dur)
-into(cutAt, x, y, z)
-settle(cutAt, x, y, z)
-```
-
-The important idea is choreography:
-- close inspection;
-- travel;
-- landing;
-- text/readable information after the move.
-
-## 14. Object performance
-
-For 3D or 2.5D hero objects:
-- anticipation tilt;
-- compress/release;
-- reaction;
-- lag/follow-through;
-- magnetic assembly;
-- hinge/fold/peel;
-- collision response;
-- authored landing pose.
-
-Avoid perpetual turntable rotation.
-
-## 15. Snapshot QA
+## 14. Snapshot QA
 
 Capture:
+
 - first readable frame;
 - hero impact;
 - just before transition;
@@ -232,95 +240,31 @@ Capture:
 - final CTA/brand frame.
 
 Inspect:
+
 - clipping;
 - collision;
 - hierarchy;
+- composition;
 - camera consequence;
+- kinetic variation;
 - contrast;
 - continuity;
-- unintended visible placeholders;
 - anti-PPT symptoms.
 
-## 16. Common traps
+## 15. Common traps
 
 - future GSAP `from()` tween corrupts frame zero;
-- CSS specificity reveals supposedly hidden elements;
+- CSS specificity reveals hidden elements;
 - SVG filter region clips motion blur;
-- WebGL bloom threshold washes out the frame;
-- local module caching makes edits look ignored;
+- bloom threshold washes out the frame;
 - multiple clocks cause scrub/export mismatch;
-- camera pose is calculated but never applied to the active camera;
-- control system overwrites authored camera transforms;
-- 3D geometry rotates edge-on and becomes a line;
+- camera pose is calculated but never applied;
+- a control system overwrites authored camera transforms;
 - continuous random drift changes every capture;
-- starter palette/font survives into final work;
-- every cut uses the same “cinematic” trick.
+- starter palette/font/motion survives into final work;
+- every cut uses the same cinematic trick;
+- all kinetic words use the same stagger/ease;
+- camera moves but composition has no clear attention owner.
 
-When a technique becomes visible as a reusable preset rather than a motivated
-event, reduce or replace it.
-
-
-## 17. Full typography highlight menu
-
-Choose one highlight family for a piece:
-
-| Variant | Character | Typical fit |
-|---|---|---|
-| `pill` | assertive, product-like | app / SaaS / tech |
-| `under` | editorial, calm | finance / journalism / productivity |
-| `marker` | human, educational | community / education |
-| `box` | technical, precise | developer / hardware |
-| `color` | luxury, minimal | automotive / fashion / property |
-| `strike` | contrast / correction | before-after / misconception |
-
-One keyword highlight per sentence is a strong default. The shape itself is not
-a universal signature and must be derived from the project.
-
-## 18. Contrast pocket
-
-When white type sits on a busy dark world, create a local luminance pocket
-under the reading area rather than adding glow to the letters.
-
-The background should become quieter exactly where comprehension happens.
-
-For light scenes, reverse the strategy: high-luminance surface + dark ink.
-
-## 19. Dashed-line drawing
-
-Do not reveal a dashed line by animating `stroke-dashoffset` if that makes the
-dashes visibly walk.
-
-Reveal the already-dashed line using `clip-path` / masking from the intended
-drawing direction.
-
-`runtime/explainer-helpers.js` provides `drawDash()` for this use case.
-
-## 20. Full state-driven WebGL pattern
-
-A reusable state object may include:
-
-```js
-{
-  grid, dust, nebula, stars, tunnel, flow,
-  camX, camY, camZ, camRoll, bloom, shake,
-  heroO, heroS, heroX, heroY, heroZ,
-  heroRotX, heroRotY, heroRotZ
-}
-```
-
-Tween state values from GSAP. Recompute visual positions from state + stable
-seeds during render.
-
-Do not integrate velocity over frame time in a seekable/exportable scene.
-
-## 21. Bloom pipeline
-
-When true WebGL bloom is justified, the full runtime includes:
-
-- `EffectComposer`;
-- `RenderPass`;
-- `UnrealBloomPass`;
-- `OutputPass`.
-
-Keep threshold/strength restrained. Bloom belongs to hierarchy and activation,
-not every surface.
+When a technique becomes visible as a reusable preset rather than a motivated event,
+reduce, vary, or replace it.
