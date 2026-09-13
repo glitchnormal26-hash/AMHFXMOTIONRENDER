@@ -1,5 +1,7 @@
 import { mkdir, writeFile, stat } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
+import { once } from 'node:events'
+import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import puppeteer from 'puppeteer-core'
 
@@ -46,11 +48,26 @@ async function waitForServer(url, timeoutMs = 30000) {
   throw new Error(`Preview server did not become ready: ${url}`)
 }
 
+async function stopPreview(preview) {
+  if (!preview?.pid) return
+  try {
+    if (process.platform === 'win32') preview.kill('SIGTERM')
+    else process.kill(-preview.pid, 'SIGTERM')
+  } catch {}
+  preview.stdout?.destroy()
+  preview.stderr?.destroy()
+  await Promise.race([
+    once(preview, 'exit').catch(() => {}),
+    new Promise((resolve) => setTimeout(resolve, 2500)),
+  ])
+}
+
 await mkdir(OUT_DIR, { recursive: true })
 
 const preview = spawn('npm', ['run', 'preview'], {
   stdio: ['ignore', 'pipe', 'pipe'],
   shell: process.platform === 'win32',
+  detached: process.platform !== 'win32',
 })
 preview.stdout.on('data', (data) => process.stdout.write(`[preview] ${data}`))
 preview.stderr.on('data', (data) => process.stderr.write(`[preview] ${data}`))
@@ -94,9 +111,9 @@ try {
     const url = `${BASE_URL}/?preset=${index}`
     console.log(`Rendering ${expectedName} ...`)
 
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     await page.waitForFunction(() => window.__RENDER_READY__ === true, { timeout: 30000 })
-    await new Promise((resolve) => setTimeout(resolve, 600))
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
     const diagnostics = await page.evaluate(() => {
       const canvas = document.querySelector('canvas')
@@ -119,7 +136,7 @@ try {
 
     const fileUrl = new URL(`${expectedName}.jpg`, OUT_DIR)
     await page.screenshot({
-      path: fileUrl,
+      path: fileURLToPath(fileUrl),
       type: 'jpeg',
       quality: 96,
       fullPage: false,
@@ -144,5 +161,5 @@ try {
   console.log(`Done: ${PRESET_NAMES.length} JPG files at ${WIDTH}x${HEIGHT}`)
 } finally {
   if (browser) await browser.close().catch(() => {})
-  preview.kill('SIGTERM')
+  await stopPreview(preview)
 }
