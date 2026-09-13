@@ -40,7 +40,14 @@ jobs:
 
       - name: Capture SaaS starter keyframes
         run: |
-          env URL="file://${GITHUB_WORKSPACE}/assets/starter-saas-glass.html?clean=1" \
+          python scripts/serve.py 8000 > /tmp/amhfx-serve.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:8000/assets/starter-saas-glass.html >/dev/null; then break; fi
+            sleep .25
+          done
+          env URL="http://127.0.0.1:8000/assets/starter-saas-glass.html?clean=1" \
             TIMES="0,1.2,2.5,3.8,4.8,6.3,8.2" \
             OUT=output/saas-snapshots WIDTH=1920 HEIGHT=1080 npm run snap
 
