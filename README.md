@@ -16,6 +16,18 @@ The repository carries no parallel legacy skill tree and no project-specific ren
 
 `assets/starter.html` is the neutral OPENER-compatible smoke-test/starter scene used for generic renderer QA. The root `index.html` is only a lightweight launcher to that starter so the standard commands work without shipping a sample project.
 
+`assets/starter-saas-glass.html` is a generic SaaS architecture example for modern product-launch work. It demonstrates deterministic shader-style gradient motion, selective frosted glass, an original local liquid/chrome SVG logo treatment, and camera-led product traversal without adding hard third-party dependencies.
+
+## Local clip planning
+
+Use the deterministic local matcher when a brief needs a starting architecture:
+
+```bash
+npm run clip:plan -- --brief "SaaS launch with aurora gradient, frosted glass and liquid logo"
+```
+
+The planner selects a local starter, recommends optional visual capabilities when relevant, and prints the prepare/preview/render handoff. It does not claim hosted template availability.
+
 ## Motra Studio bridge
 
 Motra Studio can hand standalone HTML/SVG/CSS/JavaScript scenes to this renderer without replacing repository source.
@@ -33,6 +45,7 @@ Use `QUALITY=fast npm run render:motra` for iteration or the default final-quali
 
 ```bash
 npm run check
+npm run clip:plan -- --brief "..."
 npm run serve
 npm run snap
 npm run export:frames
@@ -45,13 +58,15 @@ npm run render:motra
 
 - `SKILL.md` — Motion Designer v3.9 integration/router and module map
 - `skill-source/` — canonical v3.9 source
-- `references/` — compact production guidance
+- `references/clip-workflow.md` — local find → customize → preview/render workflow
+- `references/external-visuals.md` — optional gradient, glass, and liquid-logo integration boundaries
 - `runtime/` — motion, camera, Three.js, explainer, and audio helpers
+- `scripts/clip-plan.mjs` — deterministic local starter/effect matcher
 - `scripts/export-mp4.mjs` — deterministic MP4 exporter
 - `scripts/render-motra.mjs` — Motra Studio bridge
 - `scripts/snap.mjs` — snapshot QA
-- `assets/` — neutral starter architectures
-- `.github/workflows/render-e2e.yml` — project-agnostic render QA
+- `assets/` — neutral and reusable starter architectures
+- `.github/workflows/render-e2e.yml` — project-agnostic render QA, including SaaS starter smoke coverage
 - `MANAGE.md` — cleanup and repository ownership rules
 
 ## Runtime principles

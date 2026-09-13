@@ -23,3 +23,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Optional external visual references
+
+The following repositories are referenced by `references/external-visuals.md` as optional capabilities. Their source code is **not vendored by this repository** through the local clip workflow.
+
+- `ruucm/shadergradient` — the published `shadergradient` package identifies itself as MIT. Use the published package/API rather than copying unrelated monorepo files.
+- `dashersw/liquid-glass-js` — MIT License. May be considered as an optional external dependency for WebGL glass/refraction effects.
+- `paper-design/liquid-logo` — PolyForm Shield License 1.0.0. This integration is reference-only by default; do not copy, vendor, or automatically install its source without separate project-level license review.
+
+When any external package is actually added to a project, preserve all license notices required by that package and its transitive dependencies.

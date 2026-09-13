@@ -32,15 +32,33 @@ if (!combined.includes("version: 3.9-modular.2-strict-antippt")) {
 
 for (const relative of [
   "SKILL.md",
+  "assets/starter-saas-glass.html",
   "references/anti-ppt.md",
   "references/architecture.md",
+  "references/camera-motion.md",
+  "references/clip-workflow.md",
   "references/explainer.md",
+  "references/external-visuals.md",
   "references/full-runtime.md",
   "references/techniques.md",
+  "scripts/clip-plan.mjs",
   "scripts/export-mp4.mjs",
 ]) {
   if (!fs.existsSync(path.join(root, relative))) {
     throw new Error(`Required integration file missing: ${relative}`);
+  }
+}
+
+const saasStarter = fs.readFileSync(path.join(root, "assets/starter-saas-glass.html"), "utf8");
+for (const requiredMarker of [
+  'id="camera"',
+  "window.OPENER",
+  "createWorldCamera",
+  "backdrop-filter",
+  'id="liquidMark"',
+]) {
+  if (!saasStarter.includes(requiredMarker)) {
+    throw new Error(`SaaS starter contract marker missing: ${requiredMarker}`);
   }
 }
 

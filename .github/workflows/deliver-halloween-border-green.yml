@@ -8,6 +8,10 @@ on:
       - '.github/workflows/deliver-halloween-border-green.yml'
   workflow_dispatch:
 
+concurrency:
+  group: halloween-border-green-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -24,14 +28,16 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install FFmpeg
+      - name: Ensure FFmpeg
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
 
       - name: Install isolated Remotion dependencies
         working-directory: delivery/halloween-border-green
-        run: npm install
+        run: npm install --no-audit --no-fund
 
       - name: Render delivery mirror
         working-directory: delivery/halloween-border-green

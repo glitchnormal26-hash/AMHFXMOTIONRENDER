@@ -1,6 +1,6 @@
 ---
 name: amhfxmotionrender
-description: Motion Designer v3.9.2 unified browser-motion skill for authored animation, kinetic typography, explainers, anti-static camera choreography, deterministic speed ramps, frame-accurate capture, and MP4 export.
+description: Motion Designer v3.9.2 unified browser-motion skill for authored animation, kinetic typography, explainers, anti-static camera choreography, deterministic speed ramps, local clip planning, optional shader/glass effects, frame-accurate capture, and MP4 export.
 ---
 
 # Motion Designer v3.9.2 — Anti-Static Camera Patch
@@ -36,15 +36,43 @@ maps those concepts onto the active production modules instead of duplicating fi
 - SaaS / composition / brand → `references/architecture.md`, `references/anti-ppt.md`
 - browser runtime → `references/full-runtime.md`, `runtime/`, `scripts/`
 - explainer → `references/explainer.md`, `runtime/explainer-helpers.js`
+- local clip discovery / starter matching / customization handoff → `references/clip-workflow.md`, `scripts/clip-plan.mjs`
+- optional shader gradient / frosted glass / liquid-logo research → `references/external-visuals.md`
 - QA / export → `scripts/snap.mjs`, `scripts/export-frames.mjs`, `scripts/export-mp4.mjs`
 
 When an upstream reference filename appears in the v3.9 source but is not present
 locally, use this mapping rather than creating a duplicate compatibility file.
 
+## Local clip planning
+
+When the user asks to find, choose, or customize a motion-graphic clip and no external
+hosted template service is required, use the local clip workflow instead of inventing
+or installing a parallel skill:
+
+```bash
+npm run clip:plan -- --brief "SaaS launch showing browser UI and dashboard"
+```
+
+Use the selected starter as an architecture reference, then author text, media, palette,
+camera behavior, and timing in the working scene. The planner is deterministic local
+routing; it does not claim third-party template availability or runtime-wired form fields.
+See `references/clip-workflow.md` for the full find → customize → preview/render contract.
+
+When the brief asks for animated/mesh/aurora gradients, frosted or refractive glass,
+or liquid-metal logo treatments, the planner may also emit `visualEffects` recommendations.
+Load `references/external-visuals.md` before using them. External effects are optional
+visual capabilities only: AMHFX remains the camera and master-timeline authority.
+
+`shadergradient` and `liquid-glass-js` may be considered as optional external packages
+when their effect materially improves the scene. `paper-design/liquid-logo` is
+**reference-only by default** because its PolyForm Shield license contains restrictions;
+do not vendor or auto-install it without separate project-level license review.
+
 ## Production contract
 
 - one evolving visual world; avoid slide/presentation choreography;
 - use the simplest capable runtime: DOM/SVG/GSAP first, true 3D only when it adds meaning;
+- external WebGL/shader effects are progressive enhancement, never a substitute for deterministic timeline or camera authorship;
 - **anti-static camera is the default for substantial motion:** every semantic beat
   must declare `MOVING`, `TRACKING`, `REFRAME`, or `LOCKED_INTENTIONAL`;
 - a sequence fails the camera gate if only subjects move while the world framing stays
@@ -107,4 +135,5 @@ For any cinematic / tracking / fast-paced sequence, also visually inspect:
 - ramp landing;
 - one hero follow/handoff moment when applicable;
 - final framing;
-- typography/object collision during the fastest move.
+- typography/object collision during the fastest move;
+- optional WebGL/shader effects in the actual capture path, including fallback behavior when applicable.
