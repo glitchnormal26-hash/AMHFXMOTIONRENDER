@@ -118,7 +118,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02030a;fon
 </div>
 <div id="debug"><button id="play">Pause</button><input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0.00s</span></div>
 <script type="module">
-import { $, fitFixedStage, createWorldCamera } from "../runtime/index.js";
+import { $, fitFixedStage } from "../runtime/motion-utils.js";
+import { createWorldCamera } from "../runtime/camera-rig.js";
 
 const W=1920,H=1080,DURATION=9;
 const stage=$("#stage"), cameraEl=$("#camera");
