@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS KPI Pulse — 15s</title>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --ink:#111629;
+  --ink2:#1b2238;
+  --paper:#f4f0e7;
+  --paper2:#e7e0d4;
+  --lime:#b9f26c;
+  --lime2:#7fd14c;
+  --apricot:#ff9d72;
+  --blue:#93b9ff;
+  --muted:#9ca5b8;
+  --line:rgba(244,240,231,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b13}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--paper)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:
+  radial-gradient(circle at 12% 18%,rgba(147,185,255,.12),transparent 28%),
+  radial-gradient(circle at 83% 72%,rgba(255,157,114,.10),transparent 30%),
+  linear-gradient(135deg,#10162a 0%,#0b1020 52%,#111526 100%)}
+#stage:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 20%,transparent 80%,rgba(255,255,255,.02));box-shadow:inset 0 0 180px rgba(0,0,0,.32)}
+#grain{position:absolute;inset:0;opacity:.16;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.2) .55px,transparent .6px);background-size:7px 7px;mix-blend-mode:soft-light}
+#viewport-fit{position:absolute;inset:0;overflow:hidden}
+#camera{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
+#world{position:absolute;left:-420px;top:-300px;width:2760px;height:1680px;transform-origin:0 0}
+.world-grid{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:96px 96px;mask-image:linear-gradient(to bottom,transparent 4%,black 22%,black 78%,transparent 97%)}
+.brand{position:absolute;left:580px;top:390px;display:flex;align-items:center;gap:14px;font-size:25px;font-weight:700;letter-spacing:.02em;color:rgba(244,240,231,.82)}
+.brand-dot{width:18px;height:18px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 7px rgba(185,242,108,.09)}
+.eyebrow{font-size:20px;line-height:1;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+#headline{position:absolute;left:580px;top:475px;width:700px;opacity:0}
+#headline .metric-name{font-size:86px;line-height:.9;letter-spacing:-.06em;font-weight:800;transform-origin:left center}
+#headline .metric-name .slash{display:inline-block;color:var(--lime);margin-left:8px}
+#heroMetric{position:absolute;left:570px;top:590px;width:820px;height:360px;transform-origin:left top}
+#heroValue{display:flex;align-items:flex-start;gap:12px;font-variant-numeric:tabular-nums;letter-spacing:-.075em;font-size:198px;line-height:.82;font-weight:800;white-space:nowrap;opacity:0;transform-origin:left center}
+#heroValue .currency{font-size:.40em;margin-top:18px;letter-spacing:-.03em;color:var(--lime)}
+#heroValue .suffix{font-size:.48em;margin-top:73px;letter-spacing:-.035em;color:var(--paper2)}
+#heroMeta{display:flex;align-items:center;gap:18px;margin-top:36px;opacity:0}
+.delta{display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border-radius:999px;background:var(--lime);color:#14200d;font-size:25px;font-weight:800}
+.delta:before{content:"↗";font-size:21px}
+.meta-copy{font-size:24px;color:var(--muted)}
+#metricRule{position:absolute;left:575px;top:900px;width:0;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--lime),var(--lime) 70%,var(--apricot));box-shadow:0 0 28px rgba(185,242,108,.22);transform-origin:left center}
+#metricRule:after{content:"";position:absolute;right:-11px;top:-8px;width:22px;height:22px;border-radius:50%;background:var(--paper);box-shadow:0 0 0 8px rgba(185,242,108,.18)}
+
+#chartShell{position:absolute;left:1260px;top:490px;width:980px;height:650px;border:1px solid rgba(244,240,231,.12);border-radius:42px;background:linear-gradient(145deg,rgba(244,240,231,.065),rgba(244,240,231,.018));box-shadow:0 44px 120px rgba(0,0,0,.28);overflow:hidden;opacity:0;transform-origin:left center}
+.chart-head{position:absolute;left:54px;right:54px;top:44px;display:flex;justify-content:space-between;align-items:flex-start}
+.chart-title{font-size:30px;font-weight:700;letter-spacing:-.025em}
+.chart-sub{margin-top:8px;font-size:19px;color:var(--muted)}
+.chart-badge{padding:11px 16px;border-radius:999px;background:rgba(185,242,108,.12);border:1px solid rgba(185,242,108,.25);color:var(--lime);font-size:18px;font-weight:700}
+#chartSvg{position:absolute;left:40px;top:140px;width:900px;height:450px;overflow:visible}
+.chart-grid-line{stroke:rgba(244,240,231,.10);stroke-width:1}
+#area{fill:url(#areaGradient);opacity:0}
+#growthPath{fill:none;stroke:var(--lime);stroke-width:8;stroke-linecap:round;stroke-linejoin:round;filter:url(#softGlow)}
+#growthPath2{fill:none;stroke:rgba(244,240,231,.17);stroke-width:2;stroke-linecap:round;stroke-dasharray:8 16}
+#focusDot{position:absolute;left:2110px;top:775px;width:30px;height:30px;margin:-15px;border-radius:50%;background:var(--paper);box-shadow:0 0 0 10px rgba(185,242,108,.20),0 0 50px rgba(185,242,108,.52);opacity:0;z-index:8;transform-origin:center}
+#netNew{position:absolute;left:1930px;top:680px;padding:16px 22px;border-radius:20px;background:var(--paper);color:var(--ink);font-size:22px;font-weight:800;opacity:0;transform-origin:left bottom}
+#netNew span{color:#4c7d26}
+
+#nrrCluster{position:absolute;left:1980px;top:700px;width:520px;height:520px;opacity:0;transform-origin:center}
+#nrrRing{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--lime) 0deg 326deg,rgba(244,240,231,.11) 326deg 360deg);box-shadow:0 50px 140px rgba(0,0,0,.30)}
+#nrrRing:before{content:"";position:absolute;inset:44px;border-radius:50%;background:linear-gradient(145deg,#161d31,#101628);box-shadow:inset 0 0 0 1px rgba(244,240,231,.10)}
+#nrrInner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#nrrInner .eyebrow{margin-bottom:25px}
+#nrrValue{font-size:138px;line-height:.82;letter-spacing:-.07em;font-weight:800;font-variant-numeric:tabular-nums}
+#nrrValue span{font-size:.43em;margin-left:6px;color:var(--lime)}
+#nrrCopy{margin-top:28px;width:260px;font-size:22px;line-height:1.25;color:var(--muted)}
+#retentionNeedle{position:absolute;left:257px;top:-30px;width:6px;height:94px;border-radius:10px;background:var(--apricot);transform-origin:3px 290px;transform:rotate(-54deg);box-shadow:0 0 22px rgba(255,157,114,.45)}
+
+#lowerStrip{position:absolute;left:1110px;top:1115px;width:1230px;height:300px;display:grid;grid-template-columns:1fr 1.1fr;gap:30px;opacity:0}
+.kpi-card{position:relative;border-radius:36px;padding:38px 42px;background:linear-gradient(145deg,rgba(244,240,231,.07),rgba(244,240,231,.025));border:1px solid rgba(244,240,231,.12);overflow:hidden}
+.kpi-card .eyebrow{font-size:18px}
+.kpi-big{margin-top:26px;font-size:94px;line-height:.84;letter-spacing:-.065em;font-weight:800;font-variant-numeric:tabular-nums}
+#churnCard .kpi-big{color:var(--apricot)}
+#expansionCard .kpi-big{color:var(--lime)}
+.kpi-note{position:absolute;right:34px;bottom:30px;width:180px;text-align:right;font-size:18px;line-height:1.25;color:var(--muted)}
+#churnWord{position:absolute;left:42px;bottom:28px;font-size:42px;letter-spacing:.02em;font-weight:800;color:rgba(255,157,114,.20);transform-origin:left center}
+#expansionFill{position:absolute;left:0;bottom:0;width:0;height:8px;background:var(--lime)}
+
+#finalLabel{position:absolute;left:600px;top:1270px;width:450px;opacity:0}
+#finalLabel .big{font-size:52px;line-height:.96;letter-spacing:-.045em;font-weight:800}
+#finalLabel .small{margin-top:14px;font-size:20px;line-height:1.35;color:var(--muted)}
+
+#routeSvg{position:absolute;left:0;top:0;width:2760px;height:1680px;overflow:visible;pointer-events:none}
+#routePath{fill:none;stroke:rgba(185,242,108,.28);stroke-width:3;stroke-linecap:round}
+#routeGhost{fill:none;stroke:rgba(244,240,231,.08);stroke-width:1;stroke-dasharray:8 18}
+
+#topCaption{position:absolute;left:72px;top:58px;z-index:20;display:flex;align-items:center;gap:13px;font-size:18px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:rgba(244,240,231,.58);opacity:0}
+#topCaption:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--lime)}
+#debug{display:none;position:absolute;right:28px;bottom:24px;z-index:30;padding:10px 14px;border-radius:10px;background:#05070d;color:white;font:14px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grain"></div>
+  <div id="topCaption">Northstar Cloud · Growth pulse</div>
+  <div id="viewport-fit">
+    <div id="camera">
+      <div id="world">
+        <div class="world-grid"></div>
+        <svg id="routeSvg" viewBox="0 0 2760 1680" aria-hidden="true">
+          <path id="routeGhost" d="M 570 910 C 830 905 1020 900 1240 880 C 1460 860 1620 810 1810 760 C 1980 718 2140 740 2285 825 C 2405 895 2415 1030 2290 1130 C 2160 1236 1900 1280 1600 1270 C 1320 1260 1060 1228 830 1255"/>
+          <path id="routePath" d="M 570 910 C 830 905 1020 900 1240 880 C 1460 860 1620 810 1810 760 C 1980 718 2140 740 2285 825 C 2405 895 2415 1030 2290 1130 C 2160 1236 1900 1280 1600 1270 C 1320 1260 1060 1228 830 1255"/>
+        </svg>
+
+        <div class="brand"><span class="brand-dot"></span>Northstar Cloud</div>
+        <div id="headline">
+          <div class="eyebrow">SaaS KPI · September</div>
+          <div class="metric-name">MRR<span class="slash">/</span></div>
+        </div>
+        <div id="heroMetric">
+          <div id="heroValue"><span class="currency">$</span><span id="heroDigits">428</span><span class="suffix">K</span></div>
+          <div id="heroMeta"><span class="delta">12.4%</span><span class="meta-copy">month over month</span></div>
+        </div>
+        <div id="metricRule"></div>
+
+        <div id="chartShell">
+          <div class="chart-head">
+            <div><div class="chart-title">Recurring revenue velocity</div><div class="chart-sub">Trailing 8 months</div></div>
+            <div class="chart-badge">+$46K net new</div>
+          </div>
+          <svg id="chartSvg" viewBox="0 0 900 450" aria-label="MRR growth chart">
+            <defs>
+              <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9f26c" stop-opacity=".23"/><stop offset="1" stop-color="#b9f26c" stop-opacity="0"/></linearGradient>
+              <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <line class="chart-grid-line" x1="30" y1="80" x2="870" y2="80"/>
+            <line class="chart-grid-line" x1="30" y1="180" x2="870" y2="180"/>
+            <line class="chart-grid-line" x1="30" y1="280" x2="870" y2="280"/>
+            <line class="chart-grid-line" x1="30" y1="380" x2="870" y2="380"/>
+            <path id="area" d="M30 360 C130 340 170 330 235 305 C320 272 350 292 445 242 C520 203 575 214 650 163 C725 112 785 128 870 74 L870 420 L30 420 Z"/>
+            <path id="growthPath2" d="M30 360 C130 340 170 330 235 305 C320 272 350 292 445 242 C520 203 575 214 650 163 C725 112 785 128 870 74"/>
+            <path id="growthPath" d="M30 360 C130 340 170 330 235 305 C320 272 350 292 445 242 C520 203 575 214 650 163 C725 112 785 128 870 74"/>
+          </svg>
+        </div>
+        <div id="focusDot"></div>
+        <div id="netNew"><span>+$46K</span> net new</div>
+
+        <div id="nrrCluster">
+          <div id="nrrRing"></div>
+          <div id="retentionNeedle"></div>
+          <div id="nrrInner"><div class="eyebrow">Net revenue retention</div><div id="nrrValue"><span id="nrrDigits">118</span><span>%</span></div><div id="nrrCopy">Revenue retained + expanded across existing accounts.</div></div>
+        </div>
+
+        <div id="lowerStrip">
+          <div class="kpi-card" id="churnCard">
+            <div class="eyebrow">Gross churn</div>
+            <div class="kpi-big"><span id="churnDigits">1.8</span>%</div>
+            <div id="churnWord">CHURN</div>
+            <div class="kpi-note">down 0.6 pts after annual-plan migration</div>
+          </div>
+          <div class="kpi-card" id="expansionCard">
+            <div class="eyebrow">Expansion MRR</div>
+            <div class="kpi-big">+$<span id="expansionDigits">64</span>K</div>
+            <div class="kpi-note">upsell + seats from retained cohorts</div>
+            <div id="expansionFill"></div>
+          </div>
+        </div>
+
+        <div id="finalLabel"><div class="big">One pulse.<br>Four growth signals.</div><div class="small">MRR, retention, churn and expansion resolve into one operating view.</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="debug">0.00s</div>
+</div>
+<script>
+const W=1920,H=1080,DURATION=15;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const q=new URLSearchParams(location.search);
+
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+const growth=document.querySelector('#growthPath');
+const growthLen=growth.getTotalLength();
+growth.style.strokeDasharray=growthLen;
+growth.style.strokeDashoffset=growthLen;
+const route=document.querySelector('#routePath');
+const routeLen=route.getTotalLength();
+route.style.strokeDasharray=routeLen;
+route.style.strokeDashoffset=routeLen;
+
+const mrr={v:296};
+const nrr={v:100};
+const churn={v:4.9};
+const expansion={v:0};
+const setText=()=>{
+  document.querySelector('#heroDigits').textContent=Math.round(mrr.v);
+  document.querySelector('#nrrDigits').textContent=Math.round(nrr.v);
+  document.querySelector('#churnDigits').textContent=churn.v.toFixed(1);
+  document.querySelector('#expansionDigits').textContent=Math.round(expansion.v);
+};
+setText();
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+// Deterministic initial state.
+tl.set('#topCaption',{opacity:0},0)
+  .set('#headline',{opacity:0,y:34},0)
+  .set('#heroValue',{opacity:0,y:70,scale:.90},0)
+  .set('#heroMeta',{opacity:0,y:22},0)
+  .set('#chartShell',{opacity:0,scale:.86,x:80},0)
+  .set('#area',{opacity:0},0)
+  .set('#focusDot',{opacity:0,scale:.3},0)
+  .set('#netNew',{opacity:0,y:18,scale:.8},0)
+  .set('#nrrCluster',{opacity:0,scale:.18},0)
+  .set('#lowerStrip',{opacity:0,y:70},0)
+  .set('#finalLabel',{opacity:0,y:35},0)
+  .set(camera,{x:-55,y:-72,scale:1.17,rotation:.001},0)
+  .set('#metricRule',{width:0},0);
+
+// Beat 1 — MRR owns the frame. LOCKED_INTENTIONAL -> REFRAME.
+tl.to('#topCaption',{opacity:1,duration:.38,ease:'power2.out'},.12)
+  .to('#headline',{opacity:1,y:0,duration:.58,ease:'power3.out'},.28)
+  .to('#headline .metric-name',{scaleX:.86,duration:.22,ease:'power2.in'},.72)
+  .to('#headline .metric-name',{scaleX:1,duration:.46,ease:'expo.out'},.94)
+  .to('#heroValue',{opacity:1,y:0,scale:1,duration:.74,ease:'power4.out'},.58)
+  .to(mrr,{v:428,duration:1.55,ease:'power3.out',onUpdate:setText},.60)
+  .to('#heroMeta',{opacity:1,y:0,duration:.42,ease:'power3.out'},1.42)
+  .to('#metricRule',{width:760,duration:.64,ease:'power4.out'},1.58)
+  .to(camera,{x:-98,y:-96,scale:1.24,duration:.80,ease:'power2.inOut'},1.86)
+  .to('#heroValue',{scale:1.045,duration:.18,ease:'power2.in'},2.22)
+  .to('#heroValue',{scale:1,duration:.42,ease:'back.out(1.35)'},2.40);
+
+// Beat 2 — the MRR rule becomes a route and the camera chases into the chart.
+tl.to('#metricRule',{width:1110,duration:.42,ease:'power2.in'},2.58)
+  .to(route,{strokeDashoffset:routeLen*.64,duration:1.10,ease:'power3.inOut'},2.70)
+  .to(camera,{x:-345,y:-190,scale:1.22,duration:.38,ease:'power2.in'},2.78)
+  .to(camera,{x:-520,y:-130,scale:1.31,duration:.52,ease:'expo.out'},3.16)
+  .to('#headline,#heroMeta',{opacity:.22,duration:.36,ease:'power2.out'},3.05)
+  .to('#chartShell',{opacity:1,scale:1,x:0,duration:.66,ease:'power4.out'},3.12)
+  .to(growth,{strokeDashoffset:0,duration:2.35,ease:'power2.inOut'},3.34)
+  .to('#area',{opacity:.9,duration:.70,ease:'power2.out'},4.22)
+  .to(camera,{x:-620,y:-160,scale:1.36,duration:.74,ease:'power1.inOut'},3.92)
+  .to(camera,{x:-720,y:-210,scale:1.40,duration:.78,ease:'power3.out'},4.74)
+  .to('#focusDot',{opacity:1,scale:1,duration:.34,ease:'back.out(1.8)'},5.16)
+  .to('#focusDot',{scale:1.55,duration:.18,ease:'power2.in'},5.55)
+  .to('#focusDot',{scale:1,duration:.38,ease:'elastic.out(1,.45)'},5.73)
+  .to('#netNew',{opacity:1,y:0,scale:1,duration:.42,ease:'power3.out'},5.38);
+
+// Beat 3 — chart point transforms into NRR ring. TRACKING + impact/settle signature.
+tl.to(route,{strokeDashoffset:routeLen*.36,duration:.88,ease:'power2.inOut'},5.74)
+  .to('#focusDot',{scale:15,opacity:.18,duration:.42,ease:'power3.in'},6.02)
+  .to('#nrrCluster',{opacity:1,scale:.92,duration:.32,ease:'power3.out'},6.24)
+  .to('#nrrCluster',{scale:1,duration:.46,ease:'back.out(1.45)'},6.56)
+  .to('#focusDot',{opacity:0,duration:.22,ease:'power1.out'},6.42)
+  .to(camera,{x:-900,y:-175,scale:1.28,duration:.28,ease:'power3.in'},6.12)
+  .to(camera,{x:-1160,y:-110,scale:1.42,duration:.58,ease:'expo.out'},6.40)
+  .to(nrr,{v:118,duration:1.35,ease:'power3.out',onUpdate:setText},6.44)
+  .to('#retentionNeedle',{rotation:16,duration:1.10,ease:'power3.inOut'},6.70)
+  .to('#nrrInner .eyebrow',{letterSpacing:'0.11em',duration:.52,ease:'power2.out'},7.22)
+  .to('#nrrValue',{scale:1.07,duration:.20,ease:'power2.in'},7.54)
+  .to('#nrrValue',{scale:1,duration:.42,ease:'back.out(1.4)'},7.74)
+  .to(camera,{x:-1110,y:-76,scale:1.35,duration:.56,ease:'power3.out'},7.82);
+
+// Beat 4 — retention route drops into churn/expansion; typography causes compression.
+tl.to(route,{strokeDashoffset:routeLen*.10,duration:1.00,ease:'power2.inOut'},8.22)
+  .to('#nrrCluster',{x:-30,y:-40,scale:.84,duration:.64,ease:'power3.inOut'},8.38)
+  .to('#lowerStrip',{opacity:1,y:0,duration:.62,ease:'power4.out'},8.66)
+  .to(camera,{x:-775,y:-440,scale:1.23,duration:.34,ease:'power2.in'},8.62)
+  .to(camera,{x:-665,y:-530,scale:1.30,duration:.58,ease:'expo.out'},8.96)
+  .to(churn,{v:1.8,duration:1.22,ease:'power3.out',onUpdate:setText},9.08)
+  .to('#churnWord',{scaleX:.22,x:0,duration:.54,ease:'power3.inOut'},9.18)
+  .to('#churnWord',{opacity:.07,duration:.32,ease:'power2.out'},9.66)
+  .to(expansion,{v:64,duration:1.34,ease:'power3.out',onUpdate:setText},9.72)
+  .to('#expansionFill',{width:'100%',duration:1.16,ease:'power3.inOut'},9.72)
+  .to('#expansionCard',{scale:1.035,duration:.20,ease:'power2.in'},10.70)
+  .to('#expansionCard',{scale:1,duration:.44,ease:'back.out(1.4)'},10.90)
+  .to(camera,{x:-720,y:-490,scale:1.24,duration:.52,ease:'power3.out'},10.86);
+
+// Beat 5 — pull back: prior elements become the final operating dashboard.
+tl.to(route,{strokeDashoffset:0,duration:.70,ease:'power2.out'},11.34)
+  .to('#headline,#heroMeta',{opacity:1,duration:.40,ease:'power2.out'},11.42)
+  .to('#headline',{scale:.66,x:8,y:0,duration:.72,ease:'power3.inOut'},11.48)
+  .to('#heroMetric',{scale:.60,x:8,y:-2,duration:.72,ease:'power3.inOut'},11.48)
+  .to('#metricRule',{scaleX:.62,transformOrigin:'left center',duration:.72,ease:'power3.inOut'},11.48)
+  .to('#chartShell',{scale:.76,x:-70,y:40,duration:.72,ease:'power3.inOut'},11.48)
+  .to('#nrrCluster',{x:-145,y:-88,scale:.66,duration:.72,ease:'power3.inOut'},11.48)
+  .to('#lowerStrip',{scale:.77,x:-80,y:-40,transformOrigin:'left top',duration:.72,ease:'power3.inOut'},11.48)
+  .to(camera,{x:-305,y:-250,scale:.88,duration:.38,ease:'power2.in'},11.46)
+  .to(camera,{x:-178,y:-168,scale:.82,duration:.90,ease:'expo.out'},11.84)
+  .to('#finalLabel',{opacity:1,y:0,duration:.62,ease:'power3.out'},12.20)
+  .to('#topCaption',{opacity:.92,duration:.30,ease:'power1.out'},12.42)
+  .to(camera,{x:-166,y:-164,scale:.825,duration:1.45,ease:'power1.inOut'},12.58)
+  .to('#finalLabel .big',{letterSpacing:'-0.035em',duration:.60,ease:'power2.out'},13.00)
+  .to({},{duration:.01},14.99);
+
+if(q.has('debug'))debug.classList.add('on');
+gsap.ticker.add(()=>{debug.textContent=`${tl.time().toFixed(2)}s · SaaS KPI`;});
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);setText();},play(){tl.play();}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
