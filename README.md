@@ -26,7 +26,8 @@ Render the root starter or set `INDEX` to another OPENER-compatible HTML scene:
 npm ci
 npm run render:ffmpeg
 QUALITY=final npm run render:ffmpeg
-INDEX=assets/starter-full-runtime.html OUT_VIDEO=output/example.mp4 npm run render:ffmpeg
+# Serve module-based scenes with npm run serve in a separate terminal
+URL=http://localhost:8000/assets/starter-full-runtime.html?clean=1 OUT_VIDEO=output/example.mp4 npm run render:ffmpeg
 ```
 
 Generated media belongs under `output/` (or another ignored local path) and must not be committed to `main`.
@@ -80,3 +81,48 @@ There are no voice-over rules. SFX are optional and may only use user-supplied f
 ## License
 
 See `THIRD_PARTY_LICENSES.md`.
+
+## Efficient capture and verification
+
+Remotion is not a dependency or render path. The pipeline uses one shared browser
+capture module for snapshots, PNG export and MP4, and one FFmpeg encoder.
+Lossless PNGs stream directly into FFmpeg with bounded writes while capture runs;
+normal exports need no intermediate frame directory. This saves PNG disk writes and
+reads without adding a lossy capture step. Actual speed depends on scene and hardware.
+
+- `QUALITY=fast`: 30 FPS, CRF 18, veryfast encoding for iteration.
+- `QUALITY=final`: 60 FPS, CRF 16, medium encoding for delivery review.
+- `ENCODE_THREADS` defaults to at most four workers, leaving CPU capacity for
+  Chromium. Increase only after benchmarking the target machine.
+- Override `FPS`, even `WIDTH`/`HEIGHT`, `CRF` (0–51), and `PRESET` for the brief.
+- `KEEP_FRAMES=1` or `FRAMES_DIR=frames` retains PNGs in a unique `render-*`
+  subdirectory. `export:frames` uses the same directory layout to prevent stale-frame
+  contamination. `ENCODE=1 npm run export:frames` delegates to the MP4 exporter.
+- Explicit `AUDIO`, `VOICEOVER`, `SFX`, or `AMBIENCE` paths must exist. Audio is
+  preflighted before capture; missing audio is allowed unless a require flag is set.
+- Failed capture, encoding or verification leaves the previous MP4 untouched and
+  removes private staging files. Retained debugging frames are kept intentionally.
+
+The `.verify.json` report records `TECHNICALLY_VERIFIED` after checking H.264,
+yuv420p, dimensions, FPS, decoded frame count, timeline duration, and expected AAC
+presence. `playback_review` remains `PENDING`: watch the encoded video and apply the
+creative/audio gates before declaring `FINAL_VERIFIED`.
+
+Run `npm run check` for syntax, source integrity and render-contract tests. Render
+E2E CI exercises the real Chromium/FFmpeg path and stores review artifacts.
+
+## Chromium startup
+
+Removing Remotion does not remove Chromium: HTML, SVG, GSAP and WebGL still need a
+browser to produce pixels. FFmpeg performs media encoding, not browser rendering.
+
+Use `npm ci` to install the locked dependency versions, then
+`npx puppeteer browsers install chrome` if the browser download was skipped.
+For a preinstalled compatible Chrome, set `PUPPETEER_EXECUTABLE_PATH` to its absolute
+executable path. In restricted environments, point `TMPDIR` and
+`PUPPETEER_CACHE_DIR` at writable directories. Linux hosts also need Chrome's system
+libraries and a working sandbox. Do not disable the sandbox as a default fix.
+
+The exporter fails explicitly when Chromium cannot launch; it does not silently
+produce a placeholder video. Existing output remains intact. CI runs the browser
+smoke test before expensive renders so environment failures surface early.

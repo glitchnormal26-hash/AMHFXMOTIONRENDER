@@ -17,41 +17,21 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
-import puppeteer from "puppeteer";
+import { captureOptions, withCapture } from './lib/capture.mjs';
 
-const cwd = process.cwd();
-const out = path.resolve(process.env.OUT || "snapshots");
-fs.mkdirSync(out, {recursive:true});
-
-const width = Number(process.env.WIDTH || 1920);
-const height = Number(process.env.HEIGHT || 1080);
-const times = (process.env.TIMES || "0,1,2.5,4,6,8")
-  .split(",").map(Number).filter(Number.isFinite);
-
-const defaultFile = path.join(cwd, "index.html");
-const defaultUrl = pathToFileURL(defaultFile).href + "?clean=1";
-const url = process.env.URL || defaultUrl;
-
-const browser = await puppeteer.launch({
-  headless: "new",
-  args: ["--allow-file-access-from-files", "--autoplay-policy=no-user-gesture-required"]
+const out = path.resolve(process.env.OUT || 'snapshots');
+const options = captureOptions();
+const times = (process.env.TIMES || '0,1,2.5,4,6,8').split(',').map(Number);
+if (!times.length || times.some(t => !Number.isFinite(t) || t < 0)) throw new Error('TIMES must contain nonnegative numbers');
+fs.mkdirSync(out, { recursive: true });
+await withCapture(options, async ({ duration, frame }) => {
+  if (times.some(t => t > duration)) throw new Error('Snapshot time exceeds OPENER.DURATION');
+  for (const t of times) {
+    const name = `t-${String(t).replaceAll('.', '_')}.png`;
+    fs.writeFileSync(path.join(out, name), await frame(t));
+    console.log('captured', t, '→', name);
+  }
 });
-const page = await browser.newPage();
-await page.setViewport({width, height, deviceScaleFactor:1});
-await page.goto(url, {waitUntil:"networkidle0"});
-await page.waitForFunction(() => window.OPENER && window.OPENER.ready === true, {timeout:30000});
-
-for (const t of times) {
-  await page.evaluate((time) => {
-    window.OPENER.seek(time);
-    if (window.gsap?.ticker?.tick) window.gsap.ticker.tick();
-  }, t);
-  await new Promise(r => setTimeout(r, 60));
-  const name = `t-${String(t).replaceAll(".","_")}.png`;
-  await page.screenshot({path:path.join(out,name), fullPage:false});
-  console.log("captured", t, "→", name);
-}
 
 // Build a simple HTML contact sheet without additional image dependencies.
 const imgs = times.map(t => {
@@ -70,5 +50,4 @@ img{width:100%;display:block;border-radius:6px}
 figcaption{padding:8px 2px 2px}
 </style><main>${imgs}</main>`);
 
-await browser.close();
 console.log("done:", out);

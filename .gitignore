@@ -18,3 +18,5 @@ __pycache__/
 .env.*
 !.env.example
 dist/
+snapshots/
+.render-*/

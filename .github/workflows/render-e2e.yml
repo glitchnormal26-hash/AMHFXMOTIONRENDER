@@ -9,6 +9,8 @@ on:
       - 'runtime/**'
       - 'scripts/export-mp4.mjs'
       - 'scripts/export-frames.mjs'
+      - 'scripts/lib/**'
+      - 'tests/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
@@ -20,6 +22,8 @@ on:
       - 'runtime/**'
       - 'scripts/export-mp4.mjs'
       - 'scripts/export-frames.mjs'
+      - 'scripts/lib/**'
+      - 'tests/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
@@ -52,6 +56,8 @@ jobs:
         run: npm ci
       - name: Run code and skill checks
         run: npm run check
+      - name: Verify shared capture and failure handling
+        run: npm run test:e2e
       - name: Render lightweight PR smoke
         run: |
           mkdir -p output
@@ -62,7 +68,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
@@ -102,6 +108,8 @@ jobs:
         run: npm ci
       - name: Run code and skill checks
         run: npm run check
+      - name: Verify shared capture and failure handling
+        run: npm run test:e2e
       - name: Prepare deterministic audio fixture
         run: |
           mkdir -p audio output
@@ -117,7 +125,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-4k.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
@@ -134,7 +142,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-audio.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
