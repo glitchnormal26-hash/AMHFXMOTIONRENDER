@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {
   AbsoluteFill,
   Composition,
@@ -43,7 +43,6 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
-  const bootErrorRef = useRef(null);
   const handle = useMemo(
     () => delayRender(`AMHFX OPENER frame ${frame}`),
     [frame],
@@ -55,27 +54,10 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
     return injectBaseHref(sceneHtml, baseHref);
   }, [sceneBase, sceneHtml]);
 
-  useLayoutEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-
-    try {
-      const win = iframe.contentWindow;
-      if (!win) throw new Error('AMHFX scene window is unavailable');
-      const doc = win.document;
-      doc.open();
-      doc.write(preparedHtml);
-      doc.close();
-    } catch (error) {
-      bootErrorRef.current = error;
-    }
-  }, [preparedHtml]);
-
   useEffect(() => {
     let active = true;
 
     const renderFrame = async () => {
-      if (bootErrorRef.current) throw bootErrorRef.current;
       const iframe = iframeRef.current;
       if (!iframe) throw new Error('AMHFX scene iframe is unavailable');
       const win = iframe.contentWindow;
@@ -91,7 +73,7 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
             readyState = win.document?.readyState || 'unknown';
             href = win.location?.href || 'unknown';
           } catch {
-            // Same-origin is required; diagnostics remain best effort.
+            // srcDoc inherits the parent origin unless sandboxed; diagnostics remain best effort.
           }
           return `frame=${frame}, readyState=${readyState}, href=${href}, opener=${Boolean(win.OPENER)}, gsap=${Boolean(win.gsap)}`;
         },
@@ -123,6 +105,7 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
     {style: {backgroundColor: '#000'}},
     React.createElement('iframe', {
       ref: iframeRef,
+      srcDoc: preparedHtml,
       title: 'AMHFX scene',
       style: {
         width: '100%',
