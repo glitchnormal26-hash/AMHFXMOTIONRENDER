@@ -6,7 +6,6 @@ import {
   continueRender,
   delayRender,
   registerRoot,
-  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
@@ -38,8 +37,8 @@ const SceneBridge = ({sceneFile, sceneTimeoutMs}) => {
     [frame],
   );
   const sceneUrl = useMemo(() => {
-    const url = staticFile(sceneFile);
-    return `${url}${url.includes('?') ? '&' : '?'}clean=1`;
+    const normalized = String(sceneFile || '').replace(/^\/+/, '');
+    return `${window.location.origin}/${normalized}?clean=1`;
   }, [sceneFile]);
 
   useEffect(() => {
