@@ -1,4 +1,4 @@
-name: Deliver Frosted iOS Voice Bar + SFX 4K
+name: Deliver Frosted iOS Voice Bar 4K
 
 on:
   push:
@@ -9,104 +9,75 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: deliver-ios-glass-voice-bar-4k-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  render-and-publish:
+  render:
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-
       - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-
       - name: Install renderer dependencies
         run: npm ci
-
       - name: Validate renderer
         run: npm run check
-
       - name: Enable Chromium sandbox on Ubuntu 24
         run: |
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           sudo sysctl -w kernel.unprivileged_userns_clone=1 || true
-
       - name: Render text-free 10s 4K 60fps picture
         env:
           INDEX: delivery/ios-glass-voice-bar-sfx-4k/index.html
-          OUT_VIDEO: motra-output/ios-glass-voice-bar-sfx-4k-video.mp4
+          OUT_VIDEO: output/ios-glass-voice-bar-4k-16x9-10s.mp4
           QUALITY: final
           WIDTH: '3840'
           HEIGHT: '2160'
           FPS: '60'
           CRF: '16'
           PRESET: medium
-        run: node scripts/export-mp4.mjs
-
-      - name: Build full UI SFX bed
+        run: npm run render:ffmpeg
+      - name: ffprobe QA
         shell: bash
         run: |
           set -euo pipefail
-          ffmpeg -y \
-            -f lavfi -t 10 -i 'anoisesrc=color=pink:amplitude=0.018:sample_rate=48000' \
-            -f lavfi -t 1.25 -i 'anoisesrc=color=white:amplitude=0.11:sample_rate=48000' \
-            -f lavfi -t 0.09 -i 'sine=frequency=740:sample_rate=48000' \
-            -f lavfi -t 1.10 -i 'anoisesrc=color=white:amplitude=0.10:sample_rate=48000' \
-            -f lavfi -t 0.72 -i 'sine=frequency=880:sample_rate=48000' \
-            -f lavfi -t 0.58 -i 'sine=frequency=1320:sample_rate=48000' \
-            -filter_complex "[0:a]highpass=f=160,lowpass=f=1750,volume=0.18,afade=t=in:st=0:d=0.8,afade=t=out:st=8.6:d=1.4[bed];[1:a]highpass=f=260,lowpass=f=6800,volume=0.16,afade=t=in:st=0:d=0.08,afade=t=out:st=0.42:d=0.83,adelay=230|230[whoosh];[2:a]volume=0.18,afade=t=out:st=0.015:d=0.075,asplit=4[t1][t2][t3][t4];[t1]adelay=1600|1600[t1d];[t2]adelay=3150|3150[t2d];[t3]adelay=4700|4700[t3d];[t4]adelay=6250|6250[t4d];[3:a]highpass=f=420,lowpass=f=7600,volume=0.13,afade=t=in:st=0:d=0.10,afade=t=out:st=0.30:d=0.80,adelay=7280|7280[sweep];[4:a]volume=0.17,afade=t=in:st=0:d=0.015,afade=t=out:st=0.16:d=0.56,adelay=8060|8060[c1];[5:a]volume=0.11,afade=t=in:st=0:d=0.015,afade=t=out:st=0.10:d=0.48,adelay=8270|8270[c2];[bed][whoosh][t1d][t2d][t3d][t4d][sweep][c1][c2]amix=inputs=9:normalize=0,highpass=f=55,lowpass=f=15000,acompressor=threshold=-18dB:ratio=2.2:attack=8:release=120,loudnorm=I=-18:TP=-1.5:LRA=6,pan=stereo|c0=c0|c1=c0[a]" \
-            -map '[a]' -t 10 -c:a aac -b:a 320k -ar 48000 -ac 2 motra-output/ios-glass-voice-bar-sfx-4k-audio.m4a
-
-      - name: Mux final 4K master
-        run: |
-          ffmpeg -y \
-            -i motra-output/ios-glass-voice-bar-sfx-4k-video.mp4 \
-            -i motra-output/ios-glass-voice-bar-sfx-4k-audio.m4a \
-            -map 0:v:0 -map 1:a:0 -c:v copy -c:a copy -shortest \
-            -movflags +faststart motra-output/ios-glass-voice-bar-sfx-4k-16x9-10s.mp4
-
-      - name: ffprobe AV QA
-        shell: bash
-        run: |
-          set -euo pipefail
-          FILE='motra-output/ios-glass-voice-bar-sfx-4k-16x9-10s.mp4'
+          FILE='output/ios-glass-voice-bar-4k-16x9-10s.mp4'
           test -s "$FILE"
           VCODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$FILE")
           WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$FILE")
           HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$FILE")
           FPS=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$FILE")
           PIX=$(ffprobe -v error -select_streams v:0 -show_entries stream=pix_fmt -of default=nw=1:nk=1 "$FILE")
-          ACODEC=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$FILE")
-          SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of default=nw=1:nk=1 "$FILE")
-          CH=$(ffprobe -v error -select_streams a:0 -show_entries stream=channels -of default=nw=1:nk=1 "$FILE")
           DURATION=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$FILE")
-          echo "video=$VCODEC ${WIDTH}x${HEIGHT} fps=$FPS pix=$PIX audio=$ACODEC ${SR}Hz ${CH}ch duration=$DURATION"
+          AUDIO_COUNT=$(ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$FILE" | wc -l)
+          echo "video=$VCODEC ${WIDTH}x${HEIGHT} fps=$FPS pix=$PIX audio_streams=$AUDIO_COUNT duration=$DURATION"
           test "$VCODEC" = 'h264'
           test "$WIDTH" = '3840'
           test "$HEIGHT" = '2160'
           test "$FPS" = '60/1'
           case "$PIX" in yuv420p|yuvj420p) ;; *) exit 1 ;; esac
-          test "$ACODEC" = 'aac'
-          test "$SR" = '48000'
-          test "$CH" = '2'
+          test "$AUDIO_COUNT" = '0'
           awk -v d="$DURATION" 'BEGIN { if (d < 9.95 || d > 10.05) exit 1 }'
-          sha256sum "$FILE" > motra-output/ios-glass-voice-bar-sfx-4k-16x9-10s.sha256
-          rm -f motra-output/ios-glass-voice-bar-sfx-4k-video.mp4 motra-output/ios-glass-voice-bar-sfx-4k-audio.m4a
-
-      - name: Publish verified delivery
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f motra-output/ios-glass-voice-bar-sfx-4k-16x9-10s.mp4 motra-output/ios-glass-voice-bar-sfx-4k-16x9-10s.sha256
-          git commit -m 'Publish frosted voice bar 4K master with SFX' || exit 0
-          git push origin HEAD:main
+          sha256sum "$FILE" > output/ios-glass-voice-bar-4k-16x9-10s.sha256
+      - name: Upload verified delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-glass-voice-bar-4k-16x9-10s
+          path: |
+            output/ios-glass-voice-bar-4k-16x9-10s.mp4
+            output/ios-glass-voice-bar-4k-16x9-10s.verify.json
+            output/ios-glass-voice-bar-4k-16x9-10s.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
