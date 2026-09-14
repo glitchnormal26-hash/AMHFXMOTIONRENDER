@@ -82,6 +82,65 @@ jobs:
           retention-days: 7
           compression-level: 0
 
+  halloween-delivery:
+    if: github.event_name == 'pull_request' && github.head_ref == 'render/halloween-parallax-4k-vertical'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run code and skill checks
+        run: npm run check
+      - name: Render Halloween 4K vertical delivery
+        run: |
+          mkdir -p output
+          env INDEX=assets/halloween-parallax-4k-vertical.html QUALITY=final FPS=30 WIDTH=2160 HEIGHT=3840 \
+            CRF=16 PRESET=medium OUT_VIDEO=output/halloween-parallax-4k-vertical.mp4 npm run render:ffmpeg
+      - name: Verify Halloween delivery contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/halloween-parallax-4k-vertical.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 2160 || r.video?.height !== 3840) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 15) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Halloween background unexpectedly contains audio');
+          NODE
+      - name: Extract Halloween visual evidence
+        run: |
+          ffmpeg -y -i output/halloween-parallax-4k-vertical.mp4 \
+            -vf "select='eq(n,0)+eq(n,112)+eq(n,225)+eq(n,337)+eq(n,449)'" \
+            -fps_mode vfr output/halloween-frame-%02d.png
+      - name: Record Halloween artifact hash
+        run: |
+          sha256sum output/halloween-parallax-4k-vertical.mp4 > output/halloween-sha256.txt
+          stat -c '%n %s bytes' output/halloween-parallax-4k-vertical.mp4 >> output/halloween-sha256.txt
+          cat output/halloween-sha256.txt
+      - name: Upload Halloween delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-parallax-4k-vertical-delivery
+          path: |
+            output/halloween-parallax-4k-vertical.mp4
+            output/halloween-parallax-4k-vertical.verify.json
+            output/halloween-sha256.txt
+            output/halloween-frame-*.png
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
   full-regression:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
