@@ -13,11 +13,12 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 30000;
 
-const waitFor = async (predicate, timeoutMs) => {
+const waitFor = async (predicate, timeoutMs, describe) => {
   const started = performance.now();
   while (!predicate()) {
     if (performance.now() - started > timeoutMs) {
-      throw new Error(`Timed out waiting for OPENER after ${timeoutMs}ms`);
+      const detail = typeof describe === 'function' ? describe() : '';
+      throw new Error(`Timed out waiting for OPENER after ${timeoutMs}ms${detail ? ` (${detail})` : ''}`);
     }
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
@@ -28,17 +29,7 @@ const waitForPaint = (win) =>
     win.requestAnimationFrame(() => win.requestAnimationFrame(resolve));
   });
 
-const escapeAttribute = (value) =>
-  value.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
-
-const injectBaseHref = (html, baseHref) => {
-  const tag = `<base href="${escapeAttribute(baseHref)}">`;
-  const head = /<head(?:\s[^>]*)?>/i;
-  if (head.test(html)) return html.replace(head, (match) => `${match}${tag}`);
-  return `${tag}${html}`;
-};
-
-const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
+const SceneBridge = ({sceneFile, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
@@ -46,10 +37,10 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
     () => delayRender(`AMHFX OPENER frame ${frame}`),
     [frame],
   );
-  const srcDoc = useMemo(() => {
-    const baseHref = sceneBase ? staticFile(sceneBase) : '/';
-    return injectBaseHref(sceneHtml, baseHref);
-  }, [sceneBase, sceneHtml]);
+  const sceneUrl = useMemo(() => {
+    const url = staticFile(sceneFile);
+    return `${url}${url.includes('?') ? '&' : '?'}clean=1`;
+  }, [sceneFile]);
 
   useEffect(() => {
     let active = true;
@@ -63,6 +54,17 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
       await waitFor(
         () => win.OPENER?.ready === true && typeof win.OPENER?.seek === 'function',
         sceneTimeoutMs,
+        () => {
+          let readyState = 'unknown';
+          let href = sceneUrl;
+          try {
+            readyState = win.document?.readyState || 'unknown';
+            href = win.location?.href || sceneUrl;
+          } catch {
+            // Same-origin is required; the diagnostic falls back to the requested URL.
+          }
+          return `frame=${frame}, readyState=${readyState}, href=${href}, opener=${Boolean(win.OPENER)}, gsap=${Boolean(win.gsap)}`;
+        },
       );
 
       await win.OPENER.seek(frame / fps);
@@ -84,14 +86,14 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
         // The handle may already have been continued for the captured frame.
       }
     };
-  }, [frame, fps, handle, sceneTimeoutMs]);
+  }, [frame, fps, handle, sceneTimeoutMs, sceneUrl]);
 
   return React.createElement(
     AbsoluteFill,
     {style: {backgroundColor: '#000'}},
     React.createElement('iframe', {
       ref: iframeRef,
-      srcDoc,
+      src: sceneUrl,
       title: 'AMHFX scene',
       style: {
         width: '100%',
@@ -105,8 +107,7 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
 };
 
 const defaults = {
-  sceneHtml: '<!doctype html><html><head></head><body></body></html>',
-  sceneBase: '',
+  sceneFile: 'amhfx-scene/index.html',
   width: 1920,
   height: 1080,
   fps: 30,
