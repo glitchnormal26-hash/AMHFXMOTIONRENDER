@@ -27,7 +27,8 @@ test('Remotion bridge loads an isolated same-origin scene URL in clean mode', as
   const bridge = await fs.readFile('remotion/src/index.js', 'utf8');
   const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
 
-  assert.match(bridge, /staticFile\(sceneFile\)/);
+  assert.match(bridge, /window\.location\.origin/);
+  assert.doesNotMatch(bridge, /staticFile/);
   assert.match(bridge, /clean=1/);
   assert.match(bridge, /src:\s*sceneUrl/);
   assert.doesNotMatch(bridge, /srcDoc/);
