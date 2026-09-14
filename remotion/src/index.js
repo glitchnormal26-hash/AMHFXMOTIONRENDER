@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useLayoutEffect, useMemo, useRef} from 'react';
 import {
   AbsoluteFill,
   Composition,
@@ -39,10 +39,54 @@ const injectBaseHref = (html, baseHref) => {
   return `${tag}${html}`;
 };
 
+const isExecutableScript = (type) => {
+  const normalized = String(type || '').trim().toLowerCase();
+  return !normalized || normalized === 'text/javascript' || normalized === 'application/javascript' || normalized === 'module';
+};
+
+const bootScene = async (iframe, preparedHtml) => {
+  const win = iframe.contentWindow;
+  if (!win) throw new Error('AMHFX scene window is unavailable');
+  const doc = win.document;
+  const parsed = new DOMParser().parseFromString(preparedHtml, 'text/html');
+  const scripts = [];
+
+  for (const node of [...parsed.querySelectorAll('script')]) {
+    if (!isExecutableScript(node.getAttribute('type'))) continue;
+    scripts.push({
+      attrs: [...node.attributes].map((attr) => [attr.name, attr.value]),
+      text: node.textContent || '',
+    });
+    node.remove();
+  }
+
+  doc.open();
+  doc.write(`<!doctype html>${parsed.documentElement.outerHTML}`);
+  doc.close();
+
+  for (const descriptor of scripts) {
+    await new Promise((resolve, reject) => {
+      const script = doc.createElement('script');
+      for (const [name, value] of descriptor.attrs) script.setAttribute(name, value);
+      const src = script.getAttribute('src');
+      const type = (script.getAttribute('type') || '').toLowerCase();
+
+      if (src || type === 'module') {
+        script.addEventListener('load', resolve, {once: true});
+        script.addEventListener('error', () => reject(new Error(`Failed to load scene script: ${src || '[inline module]'}`)), {once: true});
+      }
+      if (!src) script.textContent = descriptor.text;
+      (doc.body || doc.head || doc.documentElement).appendChild(script);
+      if (!src && type !== 'module') resolve();
+    });
+  }
+};
+
 const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
+  const bootPromiseRef = useRef(null);
   const handle = useMemo(
     () => delayRender(`AMHFX OPENER frame ${frame}`),
     [frame],
@@ -54,10 +98,17 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
     return injectBaseHref(sceneHtml, baseHref);
   }, [sceneBase, sceneHtml]);
 
+  useLayoutEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    bootPromiseRef.current = bootScene(iframe, preparedHtml);
+  }, [preparedHtml]);
+
   useEffect(() => {
     let active = true;
 
     const renderFrame = async () => {
+      await bootPromiseRef.current;
       const iframe = iframeRef.current;
       if (!iframe) throw new Error('AMHFX scene iframe is unavailable');
       const win = iframe.contentWindow;
@@ -73,7 +124,7 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
             readyState = win.document?.readyState || 'unknown';
             href = win.location?.href || 'unknown';
           } catch {
-            // srcDoc inherits the parent origin unless sandboxed; diagnostics remain best effort.
+            // Same-origin iframe diagnostics remain best effort.
           }
           return `frame=${frame}, readyState=${readyState}, href=${href}, opener=${Boolean(win.OPENER)}, gsap=${Boolean(win.gsap)}`;
         },
@@ -105,7 +156,6 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
     {style: {backgroundColor: '#000'}},
     React.createElement('iframe', {
       ref: iframeRef,
-      srcDoc: preparedHtml,
       title: 'AMHFX scene',
       style: {
         width: '100%',
