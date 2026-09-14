@@ -35,7 +35,7 @@ jobs:
   pr-smoke:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,32 +52,45 @@ jobs:
         run: npm ci
       - name: Run code and skill checks
         run: npm run check
-      - name: Render lightweight PR smoke
+      - name: Render 10s UHD color wheel greenscreen
         run: |
           mkdir -p output
-          env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
-            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-pr.mp4 npm run render:ffmpeg
-      - name: Verify PR smoke contract
+          /usr/bin/time -v -o output/benchmark-color-wheel-4k.txt \
+            env INDEX=assets/starter.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
+            CRF=16 PRESET=medium OUT_VIDEO=output/color-wheel-greenscreen-4k.mp4 npm run render:ffmpeg
+      - name: Verify 4K 10s render contract
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
+          const r = JSON.parse(fs.readFileSync('output/color-wheel-greenscreen-4k.verify.json', 'utf8'));
           if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
-          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
-          if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
+          if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.08) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('greenscreen render unexpectedly contains audio');
           NODE
-      - name: Extract PR visual evidence
+      - name: Extract visual evidence
         run: |
-          ffmpeg -y -i output/e2e-pr.mp4 \
-            -vf "select='eq(n,0)+eq(n,45)+eq(n,89)'" -fps_mode vfr output/pr-frame-%02d.png
+          ffmpeg -y -i output/color-wheel-greenscreen-4k.mp4 \
+            -vf "select='eq(n,0)+eq(n,75)+eq(n,150)+eq(n,225)+eq(n,299)'" \
+            -fps_mode vfr output/color-wheel-frame-%02d.png
+      - name: Record artifact hash
+        run: |
+          stat -c '%n %s bytes' output/color-wheel-greenscreen-4k.mp4 output/color-wheel-greenscreen-4k.verify.json > output/color-wheel-artifact-size.txt
+          sha256sum output/color-wheel-greenscreen-4k.mp4 output/color-wheel-frame-*.png > output/color-wheel-sha256.txt
+          cat output/color-wheel-artifact-size.txt
+          cat output/color-wheel-sha256.txt
+          cat output/benchmark-color-wheel-4k.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: motion-v3.9.4-pr-smoke
+          name: color-wheel-greenscreen-4k-10s
           path: |
-            output/e2e-pr.mp4
-            output/e2e-pr.verify.json
-            output/pr-frame-*.png
+            output/color-wheel-greenscreen-4k.mp4
+            output/color-wheel-greenscreen-4k.verify.json
+            output/color-wheel-frame-*.png
+            output/color-wheel-artifact-size.txt
+            output/color-wheel-sha256.txt
+            output/benchmark-color-wheel-4k.txt
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
