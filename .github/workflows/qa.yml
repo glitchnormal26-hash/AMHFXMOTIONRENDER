@@ -28,8 +28,7 @@ jobs:
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Audit production dependencies
-        continue-on-error: true
-        run: npm audit --omit=dev
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run check
       - run: python -m py_compile scripts/serve.py
       - name: Enforce renderer and repository hygiene
