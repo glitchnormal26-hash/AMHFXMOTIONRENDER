@@ -52,6 +52,11 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Cache locked Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
       - name: Install locked dependencies
         run: npm ci
       - name: Run code and skill checks
@@ -61,7 +66,8 @@ jobs:
       - name: Render lightweight PR smoke
         run: |
           mkdir -p output
-          env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
+          /usr/bin/time -v -o output/benchmark-pr.txt \
+            env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
             CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-pr.mp4 npm run render:ffmpeg
       - name: Verify PR smoke contract
         run: |
@@ -84,6 +90,7 @@ jobs:
             output/e2e-pr.mp4
             output/e2e-pr.verify.json
             output/pr-frame-*.png
+            output/benchmark-pr.txt
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
@@ -104,6 +111,11 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Cache locked Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
       - name: Install locked dependencies
         run: npm ci
       - name: Run code and skill checks

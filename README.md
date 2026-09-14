@@ -126,3 +126,16 @@ libraries and a working sandbox. Do not disable the sandbox as a default fix.
 The exporter fails explicitly when Chromium cannot launch; it does not silently
 produce a placeholder video. Existing output remains intact. CI runs the browser
 smoke test before expensive renders so environment failures surface early.
+
+## Measured acceptance checks
+
+PR CI verifies shared capture, exact snapshot/frame agreement, separate frame
+folders, 4K encoding, audio mixing/padding, the legacy ENCODE entry point, failure
+cleanup, and preservation of existing output. A short 4K fixture keeps PR checks
+small; full-duration 4K regression remains on main/manual dispatch. Chromium is
+cached by OS, architecture and lockfile to reuse the matching installed browser.
+
+`benchmark-pr.txt` records wall time and peak process memory for the 720p starter.
+The JSON report records renderer elapsed time and frame count. Compare identical
+scenes, FPS, quality and runner hardware before claiming a speedup. These technical
+checks do not replace encoded playback inspection or creative quality review.

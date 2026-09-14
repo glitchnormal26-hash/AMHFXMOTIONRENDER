@@ -39,6 +39,36 @@ test('real browser/FFmpeg pipeline: streaming, frames, snapshots, failure cleanu
     assert.equal(snap.code, 0, snap.log);
     assert.deepEqual(await fs.readFile(path.join(dir, 'snap/t-0_2.png')),
       await fs.readFile(path.join(report.frames_directory, 'f000002.png')));
+    // A short 4K clip catches memory/codec regressions without a full production render.
+    const fourK = await run('scripts/export-mp4.mjs', { ...env, FPS: '30', WIDTH: '3840', HEIGHT: '2160',
+      QUALITY: 'final', FRAMES_DIR: '', KEEP_FRAMES: '0', OUT_VIDEO: path.join(dir, '4k.mp4') });
+    assert.equal(fourK.code, 0, fourK.log);
+    const high = JSON.parse(await fs.readFile(path.join(dir, '4k.verify.json')));
+    assert.equal(high.frame_count, 12);
+    assert.equal(high.video.width, 3840);
+    assert.equal(high.video.height, 2160);
+    assert.equal(high.frames_directory, null);
+    console.log(`4K smoke: ${high.elapsed_seconds.toFixed(2)}s for ${high.frame_count} frames`);
+
+    // Silent PCM is a technical mux fixture, not a generated creative audio asset.
+    const wav = Buffer.alloc(44 + 4800 * 2);
+    wav.write('RIFF', 0); wav.writeUInt32LE(wav.length - 8, 4); wav.write('WAVEfmt ', 8);
+    wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
+    wav.writeUInt32LE(48000, 24); wav.writeUInt32LE(96000, 28);
+    wav.writeUInt16LE(2, 32); wav.writeUInt16LE(16, 34);
+    wav.write('data', 36); wav.writeUInt32LE(wav.length - 44, 40);
+    const audio = path.join(dir, 'silence.wav');
+    await fs.writeFile(audio, wav);
+    // Exercise mixed tracks, explicit zero gain and padding a short source.
+    const mixed = await run('scripts/export-frames.mjs', { ...env, ENCODE: '1',
+      VOICEOVER: audio, SFX: audio, SFX_GAIN: '0', REQUIRE_AUDIO: '1', REQUIRE_VO: '1',
+      OUT_VIDEO: path.join(dir, 'audio.mp4') });
+    assert.equal(mixed.code, 0, mixed.log);
+    const mux = JSON.parse(await fs.readFile(path.join(dir, 'audio.verify.json')));
+    assert.equal(mux.audio.codec_name, 'aac');
+    assert.equal(mux.frame_count, 4);
+    assert.ok(Math.abs(mux.duration - 0.4) < 0.1);
+
     const original = await fs.readFile(env.OUT_VIDEO);
     await fs.writeFile(scene, '<script>throw new Error("fixture failure")</script>');
     const failed = await run('scripts/export-mp4.mjs', { ...env, FRAMES_DIR: '', KEEP_FRAMES: '0' });
