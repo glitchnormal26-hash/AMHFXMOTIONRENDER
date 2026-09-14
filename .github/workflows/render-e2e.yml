@@ -7,8 +7,8 @@ on:
       - 'index.html'
       - 'assets/**'
       - 'runtime/**'
-      - 'scripts/export-mp4.mjs'
-      - 'scripts/export-frames.mjs'
+      - 'remotion/**'
+      - 'scripts/export*.mjs'
       - 'scripts/lib/**'
       - 'tests/**'
       - 'package.json'
@@ -20,8 +20,8 @@ on:
       - 'index.html'
       - 'assets/**'
       - 'runtime/**'
-      - 'scripts/export-mp4.mjs'
-      - 'scripts/export-frames.mjs'
+      - 'remotion/**'
+      - 'scripts/export*.mjs'
       - 'scripts/lib/**'
       - 'tests/**'
       - 'package.json'
@@ -39,58 +39,120 @@ jobs:
   pr-smoke:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Install FFmpeg
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends ffmpeg
+
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
       - name: Cache locked Chromium
         uses: actions/cache@v4
         with:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
-      - name: Install locked dependencies
+
+      - name: Cache isolated Remotion engine
+        id: remotion-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            remotion/node_modules
+            remotion/package-lock.json
+          key: remotion-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json') }}
+
+      - name: Install locked base dependencies
         run: npm ci
+
+      - name: Install pinned Remotion engine
+        if: steps.remotion-cache.outputs.cache-hit != 'true'
+        run: npm run remotion:setup
+
       - name: Run code and skill checks
         run: npm run check
-      - name: Verify shared capture and failure handling
+
+      - name: Verify legacy capture and failure handling
         run: npm run test:e2e
-      - name: Render lightweight PR smoke
+
+      - name: Benchmark legacy engine
         run: |
           mkdir -p output
-          /usr/bin/time -v -o output/benchmark-pr.txt \
-            env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
-            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-pr.mp4 npm run render:ffmpeg
-      - name: Verify PR smoke contract
+          /usr/bin/time -v -o output/benchmark-legacy.txt \
+            env INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=1280 HEIGHT=720 \
+            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-legacy.mp4 npm run render:ffmpeg
+
+      - name: Benchmark auto-selected Remotion engine
+        run: |
+          /usr/bin/time -v -o output/benchmark-remotion.txt \
+            env RENDER_ENGINE=auto INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=1280 HEIGHT=720 \
+            CRF=20 PRESET=veryfast REMOTION_IMAGE_FORMAT=png REMOTION_CONCURRENCY=75% \
+            OUT_VIDEO=output/e2e-remotion.mp4 npm run export:mp4
+
+      - name: Verify cross-engine contracts
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
-          if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
-          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
-          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
-          if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
+          for (const [name, expectedPipeline] of [
+            ['legacy', 'png-pipe-ffmpeg'],
+            ['remotion', 'remotion-opener-bridge'],
+          ]) {
+            const r = JSON.parse(fs.readFileSync(`output/e2e-${name}.verify.json`, 'utf8'));
+            if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`${name}: status=${r.status}`);
+            if (r.video?.codec_name !== 'h264') throw new Error(`${name}: codec=${r.video?.codec_name}`);
+            if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`${name}: size=${r.video?.width}x${r.video?.height}`);
+            if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`${name}: duration=${r.duration}`);
+            if (r.frame_count !== 54) throw new Error(`${name}: frame_count=${r.frame_count}`);
+            if (r.pipeline !== expectedPipeline) throw new Error(`${name}: pipeline=${r.pipeline}`);
+          }
           NODE
-      - name: Extract PR visual evidence
+
+      - name: Compare visual output
         run: |
-          ffmpeg -y -i output/e2e-pr.mp4 \
-            -vf "select='eq(n,0)+eq(n,45)+eq(n,89)'" -fps_mode vfr output/pr-frame-%02d.png
+          ffmpeg -hide_banner -i output/e2e-legacy.mp4 -i output/e2e-remotion.mp4 \
+            -lavfi "[0:v][1:v]ssim=stats_file=output/ssim.log" -f null - \
+            2> output/ssim-summary.txt
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const summary = fs.readFileSync('output/ssim-summary.txt', 'utf8');
+          const matches = [...summary.matchAll(/All:([0-9.]+)/g)];
+          if (!matches.length) throw new Error('No SSIM result found');
+          const score = Number(matches.at(-1)[1]);
+          fs.writeFileSync('output/ssim-score.txt', `SSIM All=${score}\n`);
+          if (score < 0.985) throw new Error(`Cross-engine SSIM too low: ${score}`);
+          console.log(`Cross-engine SSIM: ${score}`);
+          NODE
+
+      - name: Extract visual evidence
+        run: |
+          for engine in legacy remotion; do
+            ffmpeg -hide_banner -loglevel error -y -i "output/e2e-${engine}.mp4" \
+              -vf "select='eq(n,0)+eq(n,27)+eq(n,53)'" -fps_mode vfr "output/${engine}-frame-%02d.png"
+          done
+
       - uses: actions/upload-artifact@v4
         with:
-          name: motion-v3.9.4-pr-smoke
+          name: motion-v3.9.4-engine-benchmark
           path: |
-            output/e2e-pr.mp4
-            output/e2e-pr.verify.json
-            output/pr-frame-*.png
-            output/benchmark-pr.txt
+            output/e2e-legacy.mp4
+            output/e2e-legacy.verify.json
+            output/e2e-remotion.mp4
+            output/e2e-remotion.verify.json
+            output/legacy-frame-*.png
+            output/remotion-frame-*.png
+            output/benchmark-legacy.txt
+            output/benchmark-remotion.txt
+            output/ssim.log
+            output/ssim-summary.txt
+            output/ssim-score.txt
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
@@ -105,89 +167,119 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
       - name: Install FFmpeg
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends ffmpeg
+
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
       - name: Cache locked Chromium
         uses: actions/cache@v4
         with:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
-      - name: Install locked dependencies
+
+      - name: Cache isolated Remotion engine
+        id: remotion-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            remotion/node_modules
+            remotion/package-lock.json
+          key: remotion-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json') }}
+
+      - name: Install locked base dependencies
         run: npm ci
+
+      - name: Install pinned Remotion engine
+        if: steps.remotion-cache.outputs.cache-hit != 'true'
+        run: npm run remotion:setup
+
       - name: Run code and skill checks
         run: npm run check
-      - name: Verify shared capture and failure handling
+
+      - name: Verify legacy capture and failure handling
         run: npm run test:e2e
+
       - name: Prepare deterministic audio fixture
         run: |
           mkdir -p audio output
-          ffmpeg -y -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
+          ffmpeg -hide_banner -loglevel error -y \
+            -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
             -c:a pcm_s16le audio/test-voice.wav
-      - name: Render 9s 4K CI sample
+
+      - name: Render 9s 4K Remotion CI sample
         run: |
-          # CI validates the 4K path, duration, codec and representative visual frames.
-          # Production exports can still use QUALITY=final/FPS=30/PRESET=medium.
-          /usr/bin/time -v -o output/benchmark-4k.txt \
-            env INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=3840 HEIGHT=2160 \
-            CRF=18 PRESET=veryfast OUT_VIDEO=output/e2e-4k.mp4 npm run render:ffmpeg
+          /usr/bin/time -v -o output/benchmark-4k-remotion.txt \
+            env RENDER_ENGINE=auto INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=3840 HEIGHT=2160 \
+            CRF=18 PRESET=veryfast REMOTION_IMAGE_FORMAT=jpeg REMOTION_JPEG_QUALITY=95 \
+            REMOTION_CONCURRENCY=75% OUT_VIDEO=output/e2e-4k.mp4 npm run export:mp4
+
       - name: Verify 4K render contract
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-4k.verify.json', 'utf8'));
           if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.pipeline !== 'remotion-opener-bridge') throw new Error(`pipeline=${r.pipeline}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (r.frame_count !== 54) throw new Error(`frame_count=${r.frame_count}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
           if (r.audio !== null) throw new Error('4K baseline unexpectedly contains audio');
           NODE
-      - name: Render audio and VO mux smoke test
+
+      - name: Render Remotion audio and VO mux smoke
         run: |
-          /usr/bin/time -v -o output/benchmark-audio.txt \
-            env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 CRF=18 PRESET=veryfast \
+          /usr/bin/time -v -o output/benchmark-audio-remotion.txt \
+            env RENDER_ENGINE=remotion INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
+            CRF=18 PRESET=veryfast REMOTION_IMAGE_FORMAT=jpeg REMOTION_JPEG_QUALITY=95 \
             REQUIRE_AUDIO=1 REQUIRE_VO=1 VOICEOVER=audio/test-voice.wav \
-            OUT_VIDEO=output/e2e-audio.mp4 npm run render:ffmpeg
+            OUT_VIDEO=output/e2e-audio.mp4 npm run export:mp4
+
       - name: Verify audio render contract
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-audio.verify.json', 'utf8'));
           if (r.status !== 'TECHNICALLY_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.pipeline !== 'remotion-opener-bridge') throw new Error(`pipeline=${r.pipeline}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
           if (!r.audio_sources?.voiceover?.endsWith('audio/test-voice.wav')) throw new Error('voiceover fixture was not used');
           NODE
+
       - name: Extract visual QA frames
         run: |
-          ffmpeg -y -i output/e2e-4k.mp4 \
+          ffmpeg -hide_banner -loglevel error -y -i output/e2e-4k.mp4 \
             -vf "select='eq(n,0)+eq(n,27)+eq(n,53)'" -fps_mode vfr output/qa-frame-%02d.png
+
       - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
           sha256sum output/*.mp4 output/qa-frame-*.png > output/sha256.txt
           cat output/artifact-sizes.txt
-          cat output/sha256.txt
-          echo '--- 4K benchmark ---'
-          cat output/benchmark-4k.txt
-          echo '--- audio benchmark ---'
-          cat output/benchmark-audio.txt
+          echo '--- 4K Remotion benchmark ---'
+          cat output/benchmark-4k-remotion.txt
+          echo '--- audio Remotion benchmark ---'
+          cat output/benchmark-audio-remotion.txt
+
       - name: Upload E2E evidence
         uses: actions/upload-artifact@v4
         with:
-          name: motion-v3.9.4-e2e-qa
+          name: motion-v3.9.4-remotion-e2e-qa
           path: |
             output/e2e-4k.mp4
             output/e2e-4k.verify.json
             output/e2e-audio.mp4
             output/e2e-audio.verify.json
-            output/benchmark-4k.txt
-            output/benchmark-audio.txt
+            output/benchmark-4k-remotion.txt
+            output/benchmark-audio-remotion.txt
             output/artifact-sizes.txt
             output/sha256.txt
             output/qa-frame-*.png

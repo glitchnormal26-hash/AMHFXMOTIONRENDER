@@ -46,11 +46,17 @@ jobs:
             git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256'
             exit 1
           fi
-          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || p.scripts['render:motra']) process.exit(1)"
+          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || !p.scripts['render:remotion'] || p.scripts['render:motra']) process.exit(1)"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const lock = JSON.parse(fs.readFileSync('package-lock.json'));
           if (Object.keys(lock.packages).some(p => /node_modules\/(?:@remotion\/|remotion(?:\/|$))/.test(p))) {
-            throw new Error('Remotion dependencies must not be reintroduced');
+            throw new Error('Remotion must stay isolated from the root package-lock; use remotion/package.json');
+          }
+          const optional = JSON.parse(fs.readFileSync('remotion/package.json'));
+          for (const name of ['remotion', '@remotion/renderer', '@remotion/bundler']) {
+            if (optional.dependencies?.[name] !== '4.0.524') {
+              throw new Error(`${name} must be pinned to 4.0.524`);
+            }
           }
           NODE
