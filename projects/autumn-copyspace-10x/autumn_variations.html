@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Autumn Landscape Copyspace — 10 Seamless Three.js Loops</title>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#d9b17d}canvas{display:block;width:100vw;height:100vh}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+const q=new URLSearchParams(location.search),V=Math.max(1,Math.min(10,+(q.get('v')||1))),W=+(q.get('w')||1920),H=+(q.get('h')||1080),D=10,T=Math.PI*2;
+const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#c'),antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(W,H,false);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(42,W/H,.1,200),root=new THREE.Group(),moving=[];scene.add(root);
+const C=x=>new THREE.Color(x),M=(x,r=.85)=>new THREE.MeshStandardMaterial({color:x,roughness:r}),add=o=>(root.add(o),o),mesh=(g,m,x=0,y=0,z=0)=>{const o=add(new THREE.Mesh(g,m));o.position.set(x,y,z);return o};
+function trunk(x,z,h=5,r=.18,col=0x5b3421){return mesh(new THREE.CylinderGeometry(r*.8,r,h,8),M(col),x,h/2-1,z)}
+function crown(x,y,z,s=1,col=0xd86e2f){const cs=[col,0xe79b38,0xb95328,0xf0b94e];for(let i=0;i<8;i++)mesh(new THREE.IcosahedronGeometry(.65*s,1),M(cs[i%4]),x+(i%3-1)*.48*s,y+((i*7)%4)*.25*s,z+((i*5)%3-1)*.42*s)}
+function tree(x,z,h=5,s=1,col=0xd86e2f){trunk(x,z,h,.16*s);crown(x,h-.2,z,s,col)}
+function leaf(seed,span=16){const cs=[0xcf5b2d,0xe99032,0xf1b34a,0xa84224],o=mesh(new THREE.SphereGeometry(.1+(seed%3)*.025,5,4),M(cs[seed%4]));o.scale.set(1.6,.32,1);o.userData={seed,span};moving.push(o);return o}
+function leaves(n,s=16){for(let i=0;i<n;i++)leaf(i,s)}
+function ground(x=0x9b6b35){const g=mesh(new THREE.PlaneGeometry(80,60),M(x),0,-1,-12);g.rotation.x=-Math.PI/2}
+function hill(x,y,z,sx,sy,col){const h=mesh(new THREE.SphereGeometry(5,32,12),M(col),x,y,z);h.scale.set(sx,sy,.7)}
+function lake(){const l=mesh(new THREE.PlaneGeometry(50,35),new THREE.MeshStandardMaterial({color:0x718d87,roughness:.28}),0,-.85,-10);l.rotation.x=-Math.PI/2;return l}
+function branch(x,y,z,r=0){const b=mesh(new THREE.CylinderGeometry(.08,.16,5,7),M(0x57311f),x,y,z);b.rotation.z=r;return b}
+function light(bg){scene.background=C(bg);scene.fog=new THREE.Fog(C(bg),14,50);scene.add(new THREE.HemisphereLight(0xffe3bd,0x4a3324,2.2));const s=new THREE.DirectionalLight(0xffd29a,3);s.position.set(-8,12,8);scene.add(s)}
+function build(v){
+ if(v===1){light(0xd6af82);ground(0x8e6538);for(let i=0;i<8;i++){tree(-6-i*.45,-4-i*3,5+i%3,1.1);tree(6+i*.35,-5-i*3,5.5+i%2,1,0xe29a37)}leaves(70,15);camera.position.set(0,2.3,14)}
+ if(v===2){light(0xe6c696);lake();hill(-8,1,-25,2.3,.85,0x7b6c47);hill(-2,.6,-29,2.7,.8,0x9a7948);for(let i=0;i<5;i++)tree(-8+i*1.1,-12-i*.7,4.4,.9);leaves(35,17);camera.position.set(1,2.5,15)}
+ if(v===3){light(0xe8c48d);ground(0xb98445);hill(-9,-.2,-24,3.4,.65,0xc89150);hill(4,-.5,-28,4,.6,0xa97040);for(let i=0;i<5;i++)tree(-8+i*.8,-10-i,4.2,.9);leaves(40,18);camera.position.set(1.5,2.8,16)}
+ if(v===4){light(0xc98c58);ground(0x795131);for(let i=0;i<6;i++){branch(-6+i*.3,4-i*.15,-5-i*2,-.7);branch(6-i*.3,4-i*.1,-5-i*2,.7)}leaves(120,13);camera.position.set(0,2.2,13)}
+ if(v===5){light(0xd4b17d);ground(0x89613b);const r=lake();r.scale.x=.48;r.rotation.z=.09;for(let i=0;i<7;i++)tree(-7+i*.5,-6-i*2.2,5,.95);leaves(55,16);camera.position.set(1.2,2.6,15)}
+ if(v===6){light(0xe0c59b);ground(0xa47a49);for(let i=0;i<18;i++){const x=(i%2?-1:1)*(4+(i%5)*1.25),z=-4-Math.floor(i/2)*2.5;trunk(x,z,6.2,.15,0xe8dfcc);crown(x,5.2,z,.72,i%3?0xe89a35:0xd45f2c)}leaves(50,17);camera.position.set(0,2.8,15)}
+ if(v===7){light(0xe3bf81);ground(0xa67338);tree(-7,-12,5.5,1.25,0xc95a2d);for(let i=0;i<12;i++){const p=mesh(new THREE.SphereGeometry(.38+(i%3)*.06,12,8),M(0xd86a24),-4+i*.8,-.6,-2-(i%4)*1.2);p.scale.y=.72}leaves(30,16);camera.position.set(1.3,2.7,15)}
+ if(v===8){light(0xe7c697);ground(0x6f5138);hill(-6,.2,-28,2.4,1.2,0x765d49);hill(3,-.5,-32,3.8,1,0x92724f);tree(-8,-8,4.6,.9);leaves(28,18);camera.position.set(2,3,16)}
+ if(v===9){light(0xe8c887);ground(0xb78a43);tree(-7,-13,6,1.45,0xd66a2c);for(let i=0;i<90;i++){const x=-11+(i%30)*.75,z=-4-Math.floor(i/30)*3.6,s=mesh(new THREE.CylinderGeometry(.018,.03,1.3,4),M(i%3?0xc79b4b:0xd6ad58),x,-.35,z);s.userData={grass:true,phase:(i*1.73)%T};moving.push(s)}leaves(22,18);camera.position.set(1.8,2.8,15)}
+ if(v===10){light(0xd0a06e);ground(0x8a5d38);for(let i=0;i<150;i++){const o=leaf(i,18);o.userData.vortex=true}camera.position.set(1.4,2.4,15)}
+}
+build(V);
+function renderAt(sec){const u=(((sec%D)+D)%D)/D,a=T*u;moving.forEach((o,i)=>{const d=o.userData;if(d.grass){o.rotation.z=Math.sin(a+d.phase)*.12;return}if(d.vortex){const r=2.2+(i%9)*.28,ang=a*(1+(i%5)*.07)+i*2.399;o.position.set(-2+Math.cos(ang)*r,2.2+Math.sin(ang*1.3)*1.9,-2-(i%11)*.45);o.rotation.set(ang*.7,ang,ang*1.3);return}const p=(d.seed*.61803398875)%1,yy=5.7-((u*(.8+(d.seed%7)*.08)+p)%1)*8.2,xx=((d.seed*37)%100)/100*d.span-d.span/2+Math.sin(a+d.seed*.73)*.7,zz=-1-((d.seed*19)%100)/100*18;o.position.set(xx,yy,zz);o.rotation.set(a*.3+d.seed,a*.3+d.seed*.2,a*.5+d.seed*.1)});const bx=[0,0,1,1.5,0,1.2,0,1.3,2,1.8,1.4][V];camera.position.x=bx+Math.sin(a)*.22;camera.position.y=(V===4?2.2:2.6)+Math.sin(a*2+.8)*.08;camera.position.z=(V===4?13:15)+Math.cos(a)*.28;camera.lookAt(V===10?-1.6:0,1.2,-8);renderer.render(scene,camera)}
+window.renderAt=renderAt;window.__AUTUMN_READY__=true;const start=performance.now();(function tick(now){renderAt((now-start)/1000);requestAnimationFrame(tick)})(start);
+</script>
+</body>
+</html>
