@@ -23,16 +23,21 @@ test('auto dispatcher rejects unknown engines before doing render work', async (
   assert.match(source, /remotionReady \? 'remotion' : 'ffmpeg'/);
 });
 
-test('Remotion bridge boots OPENER with srcDoc and an absolute same-origin base', async () => {
+test('Remotion bridge boots OPENER by explicitly replaying scene scripts inside an isolated iframe', async () => {
   const bridge = await fs.readFile('remotion/src/index.js', 'utf8');
   const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
 
-  assert.match(bridge, /srcDoc:\s*preparedHtml/);
+  assert.match(bridge, /const bootScene = async/);
+  assert.match(bridge, /new DOMParser\(\)\.parseFromString/);
+  assert.match(bridge, /querySelectorAll\('script'\)/);
+  assert.match(bridge, /node\.remove\(\)/);
+  assert.match(bridge, /doc\.write/);
+  assert.match(bridge, /appendChild\(script\)/);
+  assert.match(bridge, /await bootPromiseRef\.current/);
   assert.match(bridge, /injectBaseHref/);
   assert.match(bridge, /window\.location\.origin/);
   assert.doesNotMatch(bridge, /history\.replaceState/);
-  assert.doesNotMatch(bridge, /doc\.open\(\)/);
-  assert.doesNotMatch(bridge, /src:\s*sceneUrl/);
+  assert.doesNotMatch(bridge, /srcDoc:/);
   assert.match(bridge, /readyState=.*opener=.*gsap=/s);
 
   assert.match(exporter, /sceneHtml,\n\s*sceneBase,\n\s*width/);
