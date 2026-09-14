@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS KPI Pulse — Final 15s</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b13}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#080b13}
+</style>
+</head>
+<body>
+<iframe id="motion" src="index.html?clean=1" title="SaaS KPI motion"></iframe>
+<script>
+const frame=document.querySelector('#motion');
+const DURATION=15;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const easeOutCubic=p=>1-Math.pow(1-p,3);
+const lerp=(a,b,p)=>a+(b-a)*p;
+let inner=null, gsap=null, baseSeek=null;
+
+function patch(t){
+  if(!inner||!gsap)return;
+  const d=inner.document;
+  const hero=d.querySelector('#heroValue');
+  const netNew=d.querySelector('#netNew');
+  const chart=d.querySelector('#chartShell');
+  const route=d.querySelector('#routePath');
+  const routeGhost=d.querySelector('#routeGhost');
+  const finalLabel=d.querySelector('#finalLabel');
+  const camera=d.querySelector('#camera');
+
+  // One brand owner: keep the lens-space caption, remove duplicate world branding.
+  const worldBrand=d.querySelector('.brand');
+  if(worldBrand) worldBrand.style.display='none';
+
+  // Clean handoffs: prior heroes become memory, not accidental edge clutter.
+  if(t>=3.10 && t<11.36){
+    const p=clamp((t-3.10)/.36,0,1);
+    gsap.set(hero,{opacity:lerp(1,.035,p),x:lerp(0,-70,p)});
+  }
+  if(t>=6.26){ gsap.set(netNew,{opacity:0}); }
+  if(t>=8.68 && t<11.36){ gsap.set(chart,{opacity:.40}); }
+
+  // Let the continuity route remain visible but subordinate at payoff.
+  if(t>=11.50){
+    gsap.set(route,{opacity:.52});
+    gsap.set(routeGhost,{opacity:.42});
+  }
+
+  // Revised payoff camera: fill the frame, recover left safe area, reduce dead stage.
+  if(t>=11.42){
+    const p=easeOutCubic(clamp((t-11.42)/1.22,0,1));
+    gsap.set(camera,{
+      x:lerp(-720,35,p),
+      y:lerp(-490,-15,p),
+      scale:lerp(1.24,.92,p),
+      rotation:.001
+    });
+  }
+
+  // Keep the payoff statement clear of the lower KPI cards.
+  if(t>=12.02){ gsap.set(finalLabel,{x:-72,y:-42}); }
+}
+
+function boot(){
+  const w=frame.contentWindow;
+  if(!w||!w.OPENER||w.OPENER.ready!==true){setTimeout(boot,25);return;}
+  inner=w;
+  gsap=w.gsap;
+  baseSeek=w.OPENER.seek.bind(w.OPENER);
+  window.OPENER={
+    W:1920,H:1080,DURATION,tl:w.OPENER.tl,ready:true,
+    seek(t){const x=clamp(Number(t)||0,0,DURATION);baseSeek(x);patch(x);},
+    play(){w.OPENER.play();}
+  };
+  gsap.ticker.add(()=>patch(w.OPENER.tl.time()));
+  patch(0);
+}
+frame.addEventListener('load',boot,{once:true});
+</script>
+</body>
+</html>
