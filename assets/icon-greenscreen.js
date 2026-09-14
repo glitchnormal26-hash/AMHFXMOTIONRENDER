@@ -145,13 +145,13 @@ const modelBox=new THREE.Box3().setFromObject(heroModel), modelSize=new THREE.Ve
 modelBox.getSize(modelSize); modelBox.getCenter(modelCenter);
 const maxDim=Math.max(modelSize.x,modelSize.y,modelSize.z);
 heroModel.position.copy(modelCenter).multiplyScalar(-1);
-heroModel.scale.setScalar(4.7/maxDim);
+heroModel.scale.setScalar(4.25/maxDim);
 const hero=new THREE.Group(); hero.add(heroModel); scene.add(hero);
 
 function makeShard(i){
   const s=new THREE.Shape(); const w=.54 + (i%3)*.12, h=1.25 + (i%2)*.34;
   s.moveTo(-w*.48,-h*.5); s.quadraticCurveTo(-w*.72,0,-w*.24,h*.5); s.lineTo(w*.38,h*.33); s.quadraticCurveTo(w*.58,0,w*.31,-h*.42); s.closePath();
-  const m=mats.detail.clone(); m.transparent=true; m.opacity=.78;
+  const m=(i%2 ? mats.back : mats.front).clone(); m.transparent=true; m.opacity=.76;
   const mesh=ex(s,m,.16,.05); mesh.scale.setScalar(.5 + (i%4)*.07); return mesh;
 }
 const shards=new THREE.Group();
@@ -192,11 +192,11 @@ function renderAt(rawT){
 
   // Camera signatures: attack/push -> tracking arc -> pullback reveal -> intentional lock -> payoff reframe.
   let cx,cy,cz,fov;
-  if(t<1.55){ const p=seg(t,0,1.55,powOut); cx=mix(-1.9*spin,-.55*spin,p); cy=mix(.72,.14,p); cz=mix(10.7,7.15,p); fov=mix(39,31,p); }
-  else if(t<3.55){ const p=seg(t,1.55,3.55,sm); cx=mix(-.55*spin,1.35*spin,p); cy=mix(.14,-.28,p); cz=mix(7.15,6.45,p); fov=mix(31,33,p); }
-  else if(t<5.0){ const p=seg(t,3.55,5.0,powOut); cx=mix(1.35*spin,-1.05*spin,p); cy=mix(-.28,.48,p); cz=mix(6.45,8.15,p); fov=mix(33,37,p); }
-  else if(t<5.75){ cx=-1.05*spin; cy=.48; cz=8.15; fov=37; }
-  else { const p=seg(t,5.75,8,powOut); cx=mix(-1.05*spin,.16*spin,p); cy=mix(.48,.03,p); cz=mix(8.15,6.75,p); fov=mix(37,32,p); }
+  if(t<1.55){ const p=seg(t,0,1.55,powOut); cx=mix(-1.9*spin,-.55*spin,p); cy=mix(.72,.14,p); cz=mix(11.7,8.9,p); fov=mix(40,34,p); }
+  else if(t<3.55){ const p=seg(t,1.55,3.55,sm); cx=mix(-.55*spin,1.35*spin,p); cy=mix(.14,-.28,p); cz=mix(8.9,8.45,p); fov=mix(34,36,p); }
+  else if(t<5.0){ const p=seg(t,3.55,5.0,powOut); cx=mix(1.35*spin,-1.05*spin,p); cy=mix(-.28,.48,p); cz=mix(8.45,10.2,p); fov=mix(36,38,p); }
+  else if(t<5.75){ cx=-1.05*spin; cy=.48; cz=10.2; fov=38; }
+  else { const p=seg(t,5.75,8,powOut); cx=mix(-1.05*spin,.16*spin,p); cy=mix(.48,.03,p); cz=mix(10.2,9.0,p); fov=mix(38,35,p); }
 
   camera.position.set(cx,cy,cz);
   camera.fov=fov; camera.updateProjectionMatrix();
