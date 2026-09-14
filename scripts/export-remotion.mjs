@@ -283,6 +283,8 @@ try {
   );
   const inputProps = {
     sceneFile,
+    sceneHtml,
+    sceneBase,
     width,
     height,
     fps,
