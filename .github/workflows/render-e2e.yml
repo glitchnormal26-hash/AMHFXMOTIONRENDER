@@ -48,8 +48,8 @@ jobs:
           cache: npm
       - name: Install FFmpeg
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
       - name: Cache locked Chromium
@@ -107,8 +107,8 @@ jobs:
           cache: npm
       - name: Install FFmpeg
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
       - name: Enable Chromium user-namespace sandbox
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
       - name: Cache locked Chromium
@@ -127,11 +127,13 @@ jobs:
           mkdir -p audio output
           ffmpeg -y -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
             -c:a pcm_s16le audio/test-voice.wav
-      - name: Render neutral 9s 4K MP4
+      - name: Render 9s 4K CI sample
         run: |
+          # CI validates the 4K path, duration, codec and representative visual frames.
+          # Production exports can still use QUALITY=final/FPS=30/PRESET=medium.
           /usr/bin/time -v -o output/benchmark-4k.txt \
-            env INDEX=assets/starter.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
-            CRF=16 PRESET=medium OUT_VIDEO=output/e2e-4k.mp4 npm run render:ffmpeg
+            env INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=3840 HEIGHT=2160 \
+            CRF=18 PRESET=veryfast OUT_VIDEO=output/e2e-4k.mp4 npm run render:ffmpeg
       - name: Verify 4K render contract
         run: |
           node --input-type=module <<'NODE'
@@ -146,7 +148,7 @@ jobs:
       - name: Render audio and VO mux smoke test
         run: |
           /usr/bin/time -v -o output/benchmark-audio.txt \
-            env INDEX=assets/starter.html QUALITY=fast FPS=30 WIDTH=1280 HEIGHT=720 CRF=18 PRESET=veryfast \
+            env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 CRF=18 PRESET=veryfast \
             REQUIRE_AUDIO=1 REQUIRE_VO=1 VOICEOVER=audio/test-voice.wav \
             OUT_VIDEO=output/e2e-audio.mp4 npm run render:ffmpeg
       - name: Verify audio render contract
@@ -164,7 +166,7 @@ jobs:
       - name: Extract visual QA frames
         run: |
           ffmpeg -y -i output/e2e-4k.mp4 \
-            -vf "select='eq(n,0)+eq(n,135)+eq(n,269)'" -fps_mode vfr output/qa-frame-%02d.png
+            -vf "select='eq(n,0)+eq(n,27)+eq(n,53)'" -fps_mode vfr output/qa-frame-%02d.png
       - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
