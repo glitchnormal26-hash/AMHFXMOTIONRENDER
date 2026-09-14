@@ -1,0 +1,39 @@
+name: Snapshot SaaS KPI 15s
+
+on:
+  push:
+    branches:
+      - 'render/saas-kpi-15s'
+    paths:
+      - '.github/workflows/snap-saas-kpi.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install dependencies
+        run: npm ci
+      - name: Capture authored keyframes
+        run: |
+          URL="file://${GITHUB_WORKSPACE}/projects/saas-kpi-15s/index.html?clean=1" \
+          TIMES="0.5,2.5,5.5,7.5,10,12.5,14.5" WIDTH=1920 HEIGHT=1080 OUT=output/snaps \
+          npm run snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saas-kpi-snapshots
+          path: output/snaps
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
