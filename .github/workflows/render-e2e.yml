@@ -42,6 +42,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Install FFmpeg
         run: |
           sudo apt-get update
@@ -55,8 +58,19 @@ jobs:
       - name: Render Gemini SaaS explainer playback proof
         run: |
           mkdir -p output
-          env INDEX=assets/gemini-saas-explainer.html QUALITY=fast FPS=30 WIDTH=1920 HEIGHT=1080 \
-            CRF=18 PRESET=veryfast OUT_VIDEO=output/gemini-saas-explainer.mp4 npm run render:ffmpeg
+          python scripts/serve.py 8000 > output/serve.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/assets/gemini-saas-explainer.html >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8000/assets/gemini-saas-explainer.html >/dev/null
+          env URL='http://127.0.0.1:8000/assets/gemini-saas-explainer.html?clean=1' \
+            QUALITY=fast FPS=30 WIDTH=1920 HEIGHT=1080 CRF=18 PRESET=veryfast \
+            OUT_VIDEO=output/gemini-saas-explainer.mp4 npm run render:ffmpeg
       - name: Verify Gemini render contract
         run: |
           node --input-type=module <<'NODE'
@@ -85,6 +99,7 @@ jobs:
             output/gemini-saas-explainer.verify.json
             output/gemini-frame-*.png
             output/gemini-sha256.txt
+            output/serve.log
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
