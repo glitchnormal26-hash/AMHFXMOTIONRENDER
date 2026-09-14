@@ -26,8 +26,8 @@ const chunks = sources.map(([relative, expected]) => {
 });
 
 const combined = Buffer.concat(chunks).toString("utf8");
-if (!combined.includes("version: 3.9-modular.2-strict-antippt")) {
-  throw new Error("Motion Skill v3.9 version marker is missing.");
+if (!combined.includes("version: 3.9.3-motion-depth-gates")) {
+  throw new Error("Canonical Motion Skill source version marker is missing.");
 }
 
 for (const relative of [
@@ -46,4 +46,4 @@ for (const relative of [
   }
 }
 
-console.log("Motion Designer v3.9.4 unified integration verified.");
+console.log("Motion Designer v3.9.4 integration and canonical source verified.");
