@@ -14,17 +14,19 @@ There is one active skill path:
 
 `assets/starter.html` is the neutral OPENER-compatible smoke-test/starter scene used for generic renderer QA. The root `index.html` is only a lightweight launcher to that starter so the standard commands work without shipping a sample project.
 
+This repository intentionally keeps project-specific video productions out of `main`. Build one-off scenes on a temporary branch or in a separate project repository and point `INDEX` at that scene when rendering.
+
 ## FFmpeg-first renderer
 
 The production render path is browser frame capture followed by **FFmpeg** encoding/muxing and **ffprobe** verification. FFmpeg does not execute HTML/SVG/JavaScript itself, so Puppeteer remains the deterministic rasterization layer while FFmpeg is the only media encoder/muxer.
 
-Render the root starter or set `INDEX` to any OPENER-compatible HTML scene:
+Render the root starter or set `INDEX` to another OPENER-compatible HTML scene:
 
 ```bash
 npm ci
 npm run render:ffmpeg
 QUALITY=final npm run render:ffmpeg
-INDEX=delivery/example/index.html OUT_VIDEO=output/example.mp4 npm run render:ffmpeg
+INDEX=assets/starter-full-runtime.html OUT_VIDEO=output/example.mp4 npm run render:ffmpeg
 ```
 
 Generated media belongs under `output/` (or another ignored local path) and must not be committed to `main`.
@@ -55,7 +57,7 @@ npm run render:ffmpeg:final
 - `scripts/export-mp4.mjs` — deterministic browser-capture + FFmpeg MP4 renderer
 - `scripts/snap.mjs` — snapshot QA
 - `assets/` — neutral starter architectures and allowed SFX assets
-- `.github/workflows/qa.yml` — fast source/runtime QA
+- `.github/workflows/qa.yml` — fast source/runtime QA and repository hygiene
 - `.github/workflows/render-e2e.yml` — project-agnostic FFmpeg render QA
 - `MANAGE.md` — branch, cleanup, output, and repository ownership rules
 
