@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemini — SaaS Explainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<style>
+:root{
+  --ink:#17181b;
+  --muted:#72757d;
+  --line:rgba(26,29,36,.12);
+  --panel:rgba(255,255,255,.82);
+  --blue:#4d7cff;
+  --violet:#8a5cff;
+  --pink:#ee63aa;
+  --cyan:#48bff4;
+  --green:#62c98b;
+  --red:#ff766d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#e9eaf0;font-family:Inter,system-ui,sans-serif;color:var(--ink)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(1);overflow:hidden;background:#f8f8fb}
+#world{position:absolute;left:0;top:0;width:3600px;height:1800px;transform-origin:0 0;will-change:transform;background:
+radial-gradient(900px 760px at 24% 28%,rgba(87,136,255,.12),transparent 62%),
+radial-gradient(1000px 780px at 72% 30%,rgba(151,92,255,.12),transparent 65%),
+radial-gradient(760px 640px at 64% 78%,rgba(239,99,170,.10),transparent 66%),
+linear-gradient(180deg,#fbfbfd 0%,#f3f4f8 100%)}
+#world:before{content:"";position:absolute;inset:0;opacity:.32;background-image:linear-gradient(rgba(30,33,42,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(30,33,42,.055) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 48%,black,transparent 78%)}
+#flowSvg{position:absolute;inset:0;width:3600px;height:1800px;overflow:visible;pointer-events:none}
+#flowPathBase{fill:none;stroke:rgba(74,86,112,.10);stroke-width:5;stroke-linecap:round}
+#flowPath{fill:none;stroke:url(#routeGrad);stroke-width:7;stroke-linecap:round;filter:drop-shadow(0 8px 18px rgba(94,105,236,.18))}
+#pulsePath{fill:none;stroke:rgba(255,255,255,.86);stroke-width:2.5;stroke-linecap:round;opacity:.8}
+.eyebrow{font:600 22px/1 Manrope,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#646872}
+.hook{position:absolute;left:280px;top:300px;width:1320px;z-index:8}
+.hook h1{margin:24px 0 0;font:600 124px/.96 Manrope,sans-serif;letter-spacing:-.065em;max-width:1240px}
+.hook .line{display:block;overflow:hidden;padding-bottom:.08em}
+.hook .accent{display:inline-block;background:linear-gradient(100deg,var(--blue),var(--violet) 48%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hook p{margin:34px 0 0;font-size:31px;line-height:1.4;color:var(--muted);max-width:720px}
+.gem-star{position:absolute;left:875px;top:455px;width:170px;height:170px;z-index:15;filter:drop-shadow(0 26px 48px rgba(83,90,214,.26));transform-origin:50% 50%}
+.gem-star svg{width:100%;height:100%;display:block}
+.star-ring{position:absolute;inset:-28px;border:1px solid rgba(96,100,180,.18);border-radius:50%;opacity:0}
+.star-ring.r2{inset:-58px}
+.prompt-pill{position:absolute;left:1185px;top:635px;width:520px;height:86px;padding:0 28px;display:flex;align-items:center;gap:14px;border-radius:28px;background:rgba(255,255,255,.9);border:1px solid rgba(26,29,36,.10);box-shadow:0 30px 90px rgba(46,50,74,.12);font-size:24px;color:#343741;z-index:7;opacity:0}
+.prompt-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--pink));flex:0 0 auto}
+.cluster{position:absolute;z-index:5}
+.cluster-title{font:600 76px/.98 Manrope,sans-serif;letter-spacing:-.05em;margin:0}
+.cluster-sub{font-size:26px;line-height:1.45;color:var(--muted);margin-top:18px;max-width:610px}
+#research{left:1690px;top:190px;width:1040px;height:690px}
+#research .cluster-copy{position:absolute;left:0;top:0;width:660px}
+.source{position:absolute;width:244px;height:150px;padding:22px;border-radius:28px;background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 70px rgba(40,44,68,.10);backdrop-filter:blur(14px);opacity:0}
+.source .icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font:700 17px Manrope;background:#f1f2f6;color:#575b66;margin-bottom:18px}
+.source b{display:block;font:600 20px Manrope;margin-bottom:7px}.source span{font-size:16px;color:var(--muted)}
+.s1{left:56px;top:390px}.s2{left:330px;top:420px}.s3{left:610px;top:360px}
+.report{position:absolute;left:520px;top:98px;width:500px;height:330px;padding:34px 34px 26px;border-radius:34px;background:#fff;border:1px solid rgba(27,30,36,.10);box-shadow:0 35px 90px rgba(33,38,61,.14);opacity:0;overflow:hidden}
+.report:after{content:"";position:absolute;left:0;top:0;width:8px;height:100%;background:linear-gradient(var(--blue),var(--violet),var(--pink))}
+.report .r-kicker{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#888c96}.report h3{font:600 34px/1.08 Manrope;margin:18px 0 22px;letter-spacing:-.03em}.report .bar{height:11px;border-radius:999px;background:#eceef3;margin-top:14px;overflow:hidden}.report .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--violet))}
+#canvasZone{left:1950px;top:940px;width:1080px;height:680px}
+#canvasZone .cluster-copy{position:absolute;left:570px;top:70px;width:510px}
+.canvas-card{position:absolute;left:0;top:0;width:560px;height:500px;border-radius:38px;background:#fff;border:1px solid var(--line);box-shadow:0 36px 100px rgba(44,48,70,.15);overflow:hidden;opacity:0;transform-origin:20% 8%}
+.canvas-top{height:74px;border-bottom:1px solid #eceef3;display:flex;align-items:center;padding:0 24px;gap:10px}.canvas-top i{width:10px;height:10px;border-radius:50%;background:#d8dae1}.canvas-top span{margin-left:12px;font:600 17px Manrope;color:#5f636d}
+.canvas-body{padding:34px}.canvas-body h3{font:600 34px/1.08 Manrope;margin:0 0 18px;letter-spacing:-.035em}.canvas-body p{font-size:17px;line-height:1.55;color:#686c75}.code-window{margin-top:28px;border:1px solid #e7e8ec;background:#f7f8fb;border-radius:22px;padding:20px;font:500 15px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#474b55}.code-window .k{color:#7558dc}.code-window .s{color:#0f8d6a}.cursor{display:inline-block;width:8px;height:18px;background:#5e64db;vertical-align:-3px;margin-left:3px;opacity:0}
+.file-row{position:absolute;left:40px;top:530px;display:flex;gap:16px}.file-chip{width:120px;height:104px;border-radius:24px;background:#fff;border:1px solid var(--line);box-shadow:0 20px 60px rgba(42,45,64,.10);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:16px 18px;opacity:0}.file-chip b{font:700 16px Manrope}.file-chip span{font-size:13px;color:#8b8e96;margin-top:6px}.file-chip.doc b{color:#3978e9}.file-chip.sheet b{color:#2c9d66}.file-chip.slide b{color:#d78a2c}.file-chip.pdf b{color:#db5555}
+#gemZone{left:530px;top:1015px;width:1080px;height:600px}
+#gemZone .cluster-copy{position:absolute;left:0;top:40px;width:580px}
+.gem-card{position:absolute;left:610px;top:0;width:430px;height:500px;border-radius:42px;background:linear-gradient(180deg,#fff,#f8f8fc);border:1px solid var(--line);box-shadow:0 38px 100px rgba(44,48,70,.14);opacity:0;overflow:hidden}.gem-card .head{height:120px;padding:28px 30px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #ebedf2}.mini-star{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#5d83ff,#8d62ff 50%,#ef70ad);position:relative}.mini-star:after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:31px}.gem-card h3{font:600 25px Manrope;margin:0}.gem-card small{display:block;color:#888c95;margin-top:3px;font-size:13px}.instructions{padding:28px 30px}.rule{height:64px;border-radius:18px;border:1px solid #e7e9ee;background:#fff;display:flex;align-items:center;padding:0 18px;margin-bottom:12px;gap:12px;opacity:0}.rule i{width:10px;height:10px;border-radius:50%;background:#8a67f5}.rule span{font-size:15px;color:#555963}.save-pill{position:absolute;right:28px;bottom:28px;padding:13px 20px;border-radius:16px;background:#202126;color:#fff;font:600 14px Manrope;opacity:0}
+.final-copy{position:absolute;left:370px;top:260px;width:1220px;text-align:center;opacity:0;z-index:10}.final-copy .brand{font:600 30px Manrope;color:#646872;margin-bottom:24px}.final-copy h2{font:600 104px/.98 Manrope;letter-spacing:-.06em;margin:0 auto;max-width:1180px}.final-copy h2 .grad{background:linear-gradient(100deg,var(--blue),var(--violet) 48%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}.final-copy p{font-size:27px;color:var(--muted);margin:28px auto 0}.final-copy .note{margin-top:18px;font-size:15px;color:#9a9da5}
+.corner-label{position:absolute;left:54px;bottom:42px;font:600 14px Manrope;letter-spacing:.08em;text-transform:uppercase;color:#9a9da5;z-index:30}.gate-debug{display:none;position:fixed;right:20px;top:20px;z-index:100;padding:12px 14px;border-radius:14px;background:rgba(20,21,25,.9);color:#f4f5f7;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}.gate-debug.on{display:block}.scrub-ui{display:none;position:fixed;left:50%;bottom:22px;translate:-50% 0;z-index:100;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:rgba(20,21,25,.88);color:#fff;font:13px Inter}.scrub-ui.on{display:flex}.scrub-ui input{width:380px}.scrub-ui button{border:0;border-radius:9px;padding:7px 11px}.scrub-ui span{font-variant-numeric:tabular-nums;min-width:68px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <svg id="flowSvg" viewBox="0 0 3600 1800" aria-hidden="true">
+      <defs>
+        <linearGradient id="routeGrad" x1="0" x2="1">
+          <stop offset="0" stop-color="#4d7cff"/><stop offset=".48" stop-color="#8a5cff"/><stop offset="1" stop-color="#ee63aa"/>
+        </linearGradient>
+      </defs>
+      <path id="flowPathBase" d="M960 540 C1380 400 1680 390 2180 510 C2740 650 2860 1030 2460 1280 C2050 1530 1530 1510 1100 1270 C720 1055 610 760 960 540"/>
+      <path id="flowPath" d="M960 540 C1380 400 1680 390 2180 510 C2740 650 2860 1030 2460 1280 C2050 1530 1530 1510 1100 1270 C720 1055 610 760 960 540"/>
+      <path id="pulsePath" d="M960 540 C1380 400 1680 390 2180 510 C2740 650 2860 1030 2460 1280 C2050 1530 1530 1510 1100 1270 C720 1055 610 760 960 540"/>
+    </svg>
+
+    <div class="hook">
+      <div class="eyebrow" id="hookEye">Meet Gemini</div>
+      <h1>
+        <span class="line" id="hookLine1"><span>One prompt.</span></span>
+        <span class="line" id="hookLine2"><span>A whole <span class="accent">workflow.</span></span></span>
+      </h1>
+      <p id="hookSub">Move from question to research, creation, and reusable expertise in one continuous workspace.</p>
+    </div>
+
+    <div class="gem-star" id="star">
+      <div class="star-ring"></div><div class="star-ring r2"></div>
+      <svg viewBox="0 0 100 100" role="img" aria-label="Gemini-inspired star">
+        <defs><linearGradient id="starGrad" x1="8" y1="10" x2="92" y2="90" gradientUnits="userSpaceOnUse"><stop stop-color="#4d7cff"/><stop offset=".46" stop-color="#8a5cff"/><stop offset="1" stop-color="#ee63aa"/></linearGradient></defs>
+        <path fill="url(#starGrad)" d="M50 3C55.8 29.3 70.7 44.2 97 50 70.7 55.8 55.8 70.7 50 97 44.2 70.7 29.3 55.8 3 50 29.3 44.2 44.2 29.3 50 3Z"/>
+      </svg>
+    </div>
+    <div class="prompt-pill" id="prompt"><i class="prompt-dot"></i><span>Turn this brief into a launch plan.</span></div>
+
+    <section class="cluster" id="research">
+      <div class="cluster-copy">
+        <div class="eyebrow">01 · Deep Research</div>
+        <h2 class="cluster-title">Research beyond the first answer.</h2>
+        <p class="cluster-sub">Explore sources, synthesize findings, and turn the trail into a structured report.</p>
+      </div>
+      <div class="source s1"><div class="icon">W</div><b>Web sources</b><span>Fresh context</span></div>
+      <div class="source s2"><div class="icon">F</div><b>Files</b><span>Your own context</span></div>
+      <div class="source s3"><div class="icon">D</div><b>Drive</b><span>Connected work</span></div>
+      <div class="report" id="report">
+        <div class="r-kicker">Research report</div><h3>Launch plan: signals, risks, next moves</h3>
+        <div class="bar"><i></i></div><div class="bar"><i></i></div><div class="bar"><i></i></div><div class="bar"><i></i></div>
+      </div>
+    </section>
+
+    <section class="cluster" id="canvasZone">
+      <div class="canvas-card" id="canvasCard">
+        <div class="canvas-top"><i></i><i></i><i></i><span>Canvas</span></div>
+        <div class="canvas-body">
+          <h3>Campaign brief</h3>
+          <p>Turn the research into a working doc, refine the message, then shape the next asset without leaving the flow.</p>
+          <div class="code-window"><span class="k">const</span> launch = {<br>&nbsp;&nbsp;audience: <span class="s">"design teams"</span>,<br>&nbsp;&nbsp;goal: <span class="s">"ship faster"</span><br>};<span class="cursor"></span></div>
+        </div>
+      </div>
+      <div class="file-row">
+        <div class="file-chip doc"><b>DOC</b><span>Brief</span></div>
+        <div class="file-chip sheet"><b>XLS</b><span>Plan</span></div>
+        <div class="file-chip slide"><b>SLIDES</b><span>Pitch</span></div>
+        <div class="file-chip pdf"><b>PDF</b><span>Share</span></div>
+      </div>
+      <div class="cluster-copy">
+        <div class="eyebrow">02 · Canvas + files</div>
+        <h2 class="cluster-title">Create where the thinking happens.</h2>
+        <p class="cluster-sub">Draft, edit, prototype, and turn the result into shareable files.</p>
+      </div>
+    </section>
+
+    <section class="cluster" id="gemZone">
+      <div class="cluster-copy">
+        <div class="eyebrow">03 · Gems</div>
+        <h2 class="cluster-title">Save the workflow, not just the output.</h2>
+        <p class="cluster-sub">Package repeatable instructions into a custom Gem, ready for the next task.</p>
+      </div>
+      <div class="gem-card" id="gemCard">
+        <div class="head"><div class="mini-star"></div><div><h3>Launch Strategist</h3><small>Custom Gem</small></div></div>
+        <div class="instructions">
+          <div class="rule"><i></i><span>Use the brand voice guide</span></div>
+          <div class="rule"><i></i><span>Lead with evidence</span></div>
+          <div class="rule"><i></i><span>End with the next action</span></div>
+        </div>
+        <div class="save-pill">Ready to reuse</div>
+      </div>
+    </section>
+
+    <div class="final-copy" id="finalCopy">
+      <div class="brand">Gemini</div>
+      <h2>From question to <span class="grad">finished work.</span></h2>
+      <p>Research. Create. Reuse what works.</p>
+      <div class="note">Concept explainer · feature availability can vary by plan, account, and region.</div>
+    </div>
+  </div>
+  <div class="corner-label">Gemini SaaS explainer · 28s · silent</div>
+</div>
+
+<div class="gate-debug" id="gateDebug">STATUS=DRAFT
+SKILL_USAGE_GATE=UNVERIFIED
+PLAYBACK_GATE=UNVERIFIED
+CAMERA_GATE=UNVERIFIED
+CAMERA_ENERGY_GATE=UNVERIFIED
+COMPOSITION_GATE=UNVERIFIED
+KINETIC_GATE=UNVERIFIED
+ANTI_PPT_GATE=UNVERIFIED
+SFX_MODE=NONE</div>
+<div class="scrub-ui" id="scrubUi"><button id="playBtn">Play</button><input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0.00s</span></div>
+
+<script type="module">
+import { $, fitFixedStage, createWorldCamera } from "../runtime/index.js";
+
+const W=1920,H=1080,DURATION=28;
+const stage=$("#stage"), world=$("#world");
+fitFixedStage(stage,W,H);
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+const camera=createWorldCamera(tl,world,{stageWidth:W,stageHeight:H});
+
+const star=$("#star");
+const flowPath=$("#flowPath");
+const pulsePath=$("#pulsePath");
+const totalLen=flowPath.getTotalLength();
+const traveler={p:0};
+const pointAt=(p)=>flowPath.getPointAtLength(Math.max(0,Math.min(1,p))*totalLen);
+const moveStar=()=>{const pt=pointAt(traveler.p); gsap.set(star,{left:pt.x-85,top:pt.y-85});};
+
+flowPath.style.strokeDasharray=String(totalLen);
+flowPath.style.strokeDashoffset=String(totalLen);
+pulsePath.style.strokeDasharray=`${Math.round(totalLen*.06)} ${Math.round(totalLen*.94)}`;
+pulsePath.style.strokeDashoffset=String(totalLen*.12);
+
+// Opening: kinetic hook owns the frame.
+tl.set(["#hookEye","#hookLine1>span","#hookLine2>span","#hookSub"],{opacity:0},0);
+tl.set("#hookLine1>span",{y:118},0); tl.set("#hookLine2>span",{y:126,scaleX:.92,transformOrigin:"0 50%"},0);
+tl.to("#hookEye",{opacity:1,duration:.35,ease:"power2.out"},.2);
+tl.to("#hookLine1>span",{opacity:1,y:0,duration:.72,ease:"power4.out"},.46);
+tl.to("#hookLine2>span",{opacity:1,y:0,scaleX:1,duration:.82,ease:"back.out(1.12)"},1.02);
+tl.to("#hookSub",{opacity:1,y:-8,duration:.62,ease:"power3.out"},1.74);
+tl.fromTo(star,{scale:.18,rotation:-22,opacity:0},{scale:1,rotation:0,opacity:1,duration:.82,ease:"back.out(1.7)"},1.08);
+tl.to(".star-ring",{opacity:.68,scale:1.18,duration:.72,ease:"power2.out",stagger:.12},1.64);
+tl.to(".star-ring",{opacity:0,scale:1.7,duration:.86,ease:"power2.in",stagger:.12},2.16);
+tl.to("#prompt",{opacity:1,y:-12,duration:.62,ease:"power3.out"},2.08);
+tl.to(flowPath,{strokeDashoffset:0,duration:2.2,ease:"power1.inOut"},2.55);
+tl.to(pulsePath,{strokeDashoffset:-totalLen*.72,duration:7.8,ease:"none",repeat:2},2.7);
+
+// Transition 1: the Gemini star becomes the continuity carrier; camera chases it into research.
+tl.to([".hook","#prompt"],{opacity:0,duration:.34,ease:"power2.in"},4.1);
+tl.to(traveler,{p:.28,duration:1.25,ease:"power3.inOut",onUpdate:moveStar},3.82);
+tl.to(star,{scale:.72,duration:.46,ease:"power2.inOut"},4.02);
+camera.rampToPoint(4.05,2180,510,1.06,1.2,{offsetX:-130,offsetY:40,attack:.15,travel:.62,settle:.23,overshoot:.045});
+
+// Research: source cards orbit into a report, with distinct stagger directions.
+tl.set("#research",{opacity:1},4.55);
+tl.fromTo("#research .cluster-copy",{opacity:0,x:-80},{opacity:1,x:0,duration:.7,ease:"power3.out"},4.72);
+tl.fromTo("#research .s1",{opacity:0,x:-90,y:36,rotation:-7},{opacity:1,x:0,y:0,rotation:0,duration:.64,ease:"power3.out"},5.22);
+tl.fromTo("#research .s2",{opacity:0,y:100,scale:.88},{opacity:1,y:0,scale:1,duration:.72,ease:"back.out(1.3)"},5.42);
+tl.fromTo("#research .s3",{opacity:0,x:92,y:-28,rotation:6},{opacity:1,x:0,y:0,rotation:0,duration:.64,ease:"power3.out"},5.62);
+tl.fromTo("#report",{opacity:0,scale:.88,rotation:3,y:40},{opacity:1,scale:1,rotation:0,y:0,duration:.82,ease:"back.out(1.1)"},6.2);
+tl.to("#report .bar i",{width:"86%",duration:.9,ease:"power2.out",stagger:.14},6.78);
+camera.look(7.42,-1500,-70,1.13,.8,{rotation:-.35,origin:"0 0",ease:"power2.inOut"});
+tl.to(star,{scale:.44,opacity:.85,duration:.45},7.55);
+
+// Transition 2: report becomes a work surface; camera handoff moves down into Canvas.
+tl.to("#report",{scale:1.13,rotation:-2,y:60,duration:.34,ease:"power2.in"},8.6);
+tl.to("#research .source",{opacity:0,scale:.84,duration:.28,stagger:.05,ease:"power2.in"},8.72);
+tl.to(traveler,{p:.53,duration:1.35,ease:"power2.inOut",onUpdate:moveStar},8.72);
+camera.speedRampTo(8.78,{x:-1425,y:-690,scale:.98,rotation:.3},1.25,{attack:.23,travel:.48,settle:.29,attackDistance:.08,overshoot:.026});
+tl.to("#research",{opacity:0,duration:.38},9.18);
+
+// Canvas: the report's visual role resolves as the editable canvas.
+tl.fromTo("#canvasCard",{opacity:0,scale:.72,rotation:-7,x:-80,y:-80},{opacity:1,scale:1,rotation:0,x:0,y:0,duration:.9,ease:"back.out(1.18)"},9.2);
+tl.fromTo("#canvasZone .cluster-copy",{opacity:0,y:70},{opacity:1,y:0,duration:.72,ease:"power3.out"},9.72);
+tl.to(".cursor",{opacity:1,duration:.16,repeat:9,yoyo:true,ease:"none"},10.2);
+tl.fromTo(".code-window",{clipPath:"inset(0 100% 0 0)"},{clipPath:"inset(0 0% 0 0)",duration:1.1,ease:"power3.inOut"},10.08);
+
+// File creation: each format exits with its own direction, then gathers back into the carrier.
+tl.fromTo(".file-chip.doc",{opacity:0,x:-80,y:-12,rotation:-8},{opacity:1,x:0,y:0,rotation:0,duration:.55,ease:"back.out(1.3)"},11.7);
+tl.fromTo(".file-chip.sheet",{opacity:0,y:90,scale:.8},{opacity:1,y:0,scale:1,duration:.58,ease:"back.out(1.35)"},11.92);
+tl.fromTo(".file-chip.slide",{opacity:0,y:-70,rotation:7},{opacity:1,y:0,rotation:0,duration:.54,ease:"power3.out"},12.16);
+tl.fromTo(".file-chip.pdf",{opacity:0,x:90,rotation:8},{opacity:1,x:0,rotation:0,duration:.54,ease:"power3.out"},12.38);
+camera.look(13.0,-1330,-740,.91,.82,{rotation:0,origin:"0 0",ease:"power3.inOut"});
+tl.to(".file-chip",{y:-16,duration:.25,ease:"power2.out",stagger:.045},13.58).to(".file-chip",{y:0,duration:.32,ease:"bounce.out",stagger:.045},13.84);
+
+// Transition 3: file tiles converge, the star follows them, and the camera reframes around a saved workflow.
+tl.to(".file-chip",{x:(i)=>[380,250,120,-20][i],y:(i)=>[-50,-80,-40,-70][i],scale:.55,opacity:0,duration:.62,ease:"power3.in",stagger:.035},15.0);
+tl.to("#canvasCard",{scale:.72,opacity:0,rotation:4,duration:.62,ease:"power2.in"},15.18);
+tl.to("#canvasZone .cluster-copy",{opacity:0,x:70,duration:.4,ease:"power2.in"},15.18);
+tl.to(traveler,{p:.77,duration:1.42,ease:"power3.inOut",onUpdate:moveStar},15.1);
+camera.rampToPoint(15.18,1100,1270,1.05,1.35,{offsetX:70,offsetY:-10,attack:.18,travel:.55,settle:.27,overshoot:.038});
+
+// Gems: reuse becomes the semantic payoff of the working sequence.
+tl.fromTo("#gemZone .cluster-copy",{opacity:0,x:-80},{opacity:1,x:0,duration:.72,ease:"power3.out"},16.0);
+tl.fromTo("#gemCard",{opacity:0,scale:.82,rotationY:-12,x:90},{opacity:1,scale:1,rotationY:0,x:0,duration:.82,ease:"back.out(1.08)"},16.18);
+tl.fromTo("#gemCard .rule",{opacity:0,x:55},{opacity:1,x:0,duration:.48,ease:"power3.out",stagger:.16},16.94);
+tl.fromTo("#gemCard .save-pill",{opacity:0,scale:.7},{opacity:1,scale:1,duration:.52,ease:"back.out(1.45)"},17.72);
+tl.to(star,{scale:.52,rotation:12,duration:.46,ease:"power2.out"},17.25);
+tl.to(star,{rotation:0,duration:.68,ease:"elastic.out(1,.45)"},17.66);
+camera.look(18.6,-230,-840,1.08,.9,{rotation:.25,origin:"0 0",ease:"power2.inOut"});
+
+// Breath hold, then the entire journey resolves back to the starting hero mark.
+tl.to({}, {duration:.01},20.0);
+tl.to("#gemZone",{opacity:.25,duration:.44,ease:"power2.in"},20.35);
+tl.to(traveler,{p:1,duration:2.05,ease:"power2.inOut",onUpdate:moveStar},20.35);
+camera.speedRampTo(20.42,{x:0,y:0,scale:1,rotation:0},1.85,{attack:.11,travel:.61,settle:.28,attackDistance:.12,overshoot:.02,attackEase:"power2.in",travelEase:"power2.in",settleEase:"power4.out"});
+tl.to(star,{scale:1.04,opacity:1,duration:1.28,ease:"power3.out"},21.0);
+tl.to(["#research","#canvasZone","#gemZone"],{opacity:0,duration:.5,ease:"power2.in"},21.55);
+tl.to([flowPath,pulsePath],{opacity:.22,duration:.7,ease:"power2.out"},21.7);
+
+// Final lock: persistent star stays in-world while the final phrase lands around it.
+tl.set(star,{left:875,top:455},22.45);
+tl.to(star,{scale:.58,y:-190,duration:.72,ease:"power3.out"},22.6);
+tl.fromTo("#finalCopy",{opacity:0,scale:.94,y:80},{opacity:1,scale:1,y:0,duration:.92,ease:"power4.out"},22.9);
+tl.fromTo("#finalCopy h2",{clipPath:"inset(0 0 100% 0)",y:50},{clipPath:"inset(0 0 0% 0)",y:0,duration:1.0,ease:"power4.out"},23.08);
+tl.fromTo("#finalCopy p",{opacity:0,letterSpacing:".08em"},{opacity:1,letterSpacing:"0em",duration:.8,ease:"power3.out"},24.0);
+tl.fromTo("#finalCopy .note",{opacity:0},{opacity:1,duration:.5,ease:"power2.out"},24.6);
+tl.to(star,{scale:.62,duration:.8,ease:"sine.inOut",repeat:1,yoyo:true},25.3);
+tl.to({}, {duration:.01},DURATION);
+
+const render=(t)=>{
+  const wave=Math.sin(t*.8)*.5+.5;
+  gsap.set("#world",{"--wave":wave});
+};
+gsap.ticker.add(()=>render(tl.time()));
+
+const q=new URLSearchParams(location.search);
+const scrubUi=$("#scrubUi"), gateDebug=$("#gateDebug"), scrub=$("#scrub"), clock=$("#clock"), playBtn=$("#playBtn");
+if(q.has("debug")){scrubUi.classList.add("on");gateDebug.classList.add("on")}
+let dragging=false;
+gsap.ticker.add(()=>{const t=tl.time(); clock.textContent=t.toFixed(2)+"s"; if(!dragging)scrub.value=String(t/DURATION*1000); playBtn.textContent=tl.paused()?"Play":"Pause"});
+scrub.onpointerdown=()=>{dragging=true;tl.pause()}; addEventListener("pointerup",()=>dragging=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+playBtn.onclick=()=>tl.paused()?tl.play():tl.pause();
+addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();tl.paused()?tl.play():tl.pause()}if(e.key.toLowerCase()==="r")tl.play(0)});
+tl.eventCallback("onComplete",()=>{if(!q.has("clean"))tl.play(0)});
+
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  STATUS:"DRAFT",
+  SFX_MODE:"NONE",
+  seek(t){const x=Math.max(0,Math.min(DURATION,Number(t)||0));tl.pause();tl.time(x,false);moveStar();render(x)},
+  play(){tl.play()}
+};
+await document.fonts.ready;
+window.OPENER.ready=true;
+moveStar();render(0);
+if(!q.has("clean"))tl.play(0);
+</script>
+</body>
+</html>
