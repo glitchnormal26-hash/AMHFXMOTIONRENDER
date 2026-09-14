@@ -2,54 +2,116 @@ name: Render E2E QA
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     paths:
       - 'index.html'
       - 'assets/**'
       - 'runtime/**'
-      - 'scripts/**'
+      - 'scripts/export-mp4.mjs'
+      - 'scripts/export-frames.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/render-e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'scripts/export-frames.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: render-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  render:
+  pr-smoke:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Install ffmpeg
+      - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-
       - name: Enable Chromium user-namespace sandbox
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
       - name: Install locked dependencies
         run: npm ci
-
       - name: Run code and skill checks
         run: npm run check
+      - name: Render lightweight PR smoke
+        run: |
+          mkdir -p output
+          env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
+            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-pr.mp4 npm run render:ffmpeg
+      - name: Verify PR smoke contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
+          NODE
+      - name: Extract PR visual evidence
+        run: |
+          ffmpeg -y -i output/e2e-pr.mp4 \
+            -vf "select='eq(n,0)+eq(n,45)+eq(n,89)'" -fps_mode vfr output/pr-frame-%02d.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: motion-v3.9.4-pr-smoke
+          path: |
+            output/e2e-pr.mp4
+            output/e2e-pr.verify.json
+            output/pr-frame-*.png
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
 
+  full-regression:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run code and skill checks
+        run: npm run check
       - name: Prepare deterministic audio fixture
         run: |
           mkdir -p audio output
           ffmpeg -y -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
             -c:a pcm_s16le audio/test-voice.wav
-
       - name: Render neutral 9s 4K MP4
         run: |
           /usr/bin/time -v -o output/benchmark-4k.txt \
             env INDEX=assets/starter.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
-            CRF=16 PRESET=medium OUT_VIDEO=output/e2e-4k.mp4 npm run export:mp4
-
+            CRF=16 PRESET=medium OUT_VIDEO=output/e2e-4k.mp4 npm run render:ffmpeg
       - name: Verify 4K render contract
         run: |
           node --input-type=module <<'NODE'
@@ -61,14 +123,12 @@ jobs:
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
           if (r.audio !== null) throw new Error('4K baseline unexpectedly contains audio');
           NODE
-
       - name: Render audio and VO mux smoke test
         run: |
           /usr/bin/time -v -o output/benchmark-audio.txt \
             env INDEX=assets/starter.html QUALITY=fast FPS=30 WIDTH=1280 HEIGHT=720 CRF=18 PRESET=veryfast \
             REQUIRE_AUDIO=1 REQUIRE_VO=1 VOICEOVER=audio/test-voice.wav \
-            OUT_VIDEO=output/e2e-audio.mp4 npm run export:mp4
-
+            OUT_VIDEO=output/e2e-audio.mp4 npm run render:ffmpeg
       - name: Verify audio render contract
         run: |
           node --input-type=module <<'NODE'
@@ -81,12 +141,10 @@ jobs:
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
           if (!r.audio_sources?.voiceover?.endsWith('audio/test-voice.wav')) throw new Error('voiceover fixture was not used');
           NODE
-
       - name: Extract visual QA frames
         run: |
           ffmpeg -y -i output/e2e-4k.mp4 \
-            -vf "select='eq(n,0)+eq(n,135)+eq(n,269)'" -vsync 0 output/qa-frame-%02d.png
-
+            -vf "select='eq(n,0)+eq(n,135)+eq(n,269)'" -fps_mode vfr output/qa-frame-%02d.png
       - name: Record artifact sizes and hashes
         run: |
           stat -c '%n %s bytes' output/*.mp4 output/*.verify.json > output/artifact-sizes.txt
@@ -97,11 +155,10 @@ jobs:
           cat output/benchmark-4k.txt
           echo '--- audio benchmark ---'
           cat output/benchmark-audio.txt
-
       - name: Upload E2E evidence
         uses: actions/upload-artifact@v4
         with:
-          name: motion-v3.9-e2e-qa
+          name: motion-v3.9.4-e2e-qa
           path: |
             output/e2e-4k.mp4
             output/e2e-4k.verify.json
@@ -114,3 +171,4 @@ jobs:
             output/qa-frame-*.png
           if-no-files-found: error
           retention-days: 14
+          compression-level: 0
