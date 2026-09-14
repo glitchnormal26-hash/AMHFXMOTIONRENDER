@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {
   AbsoluteFill,
   Composition,
@@ -28,63 +28,37 @@ const waitForPaint = (win) =>
     win.requestAnimationFrame(() => win.requestAnimationFrame(resolve));
   });
 
-const escapeAttribute = (value) =>
-  String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;');
-
-const injectBaseHref = (html, baseHref) => {
-  const tag = `<base href="${escapeAttribute(baseHref)}">`;
-  if (/<base\b[^>]*>/i.test(html)) return html.replace(/<base\b[^>]*>/i, tag);
-  const head = /<head(?:\s[^>]*)?>/i;
-  if (head.test(html)) return html.replace(head, (match) => `${match}${tag}`);
-  return `${tag}${html}`;
-};
-
-const SceneBridge = ({sceneFile, sceneHtml, sceneBase, sceneTimeoutMs}) => {
+const SceneBridge = ({sceneFile, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
-  const bootErrorRef = useRef(null);
   const handle = useMemo(
     () => delayRender(`AMHFX OPENER frame ${frame}`),
     [frame],
   );
-  const preparedHtml = useMemo(() => {
-    const baseHref = sceneBase
-      ? `${window.location.origin}/${String(sceneBase).replace(/^\/+/, '')}`
-      : `${window.location.origin}/`;
-    return injectBaseHref(sceneHtml, baseHref);
-  }, [sceneBase, sceneHtml]);
-
-  useLayoutEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-
-    try {
-      const win = iframe.contentWindow;
-      if (!win) throw new Error('AMHFX scene window is unavailable');
-      const normalized = String(sceneFile || 'amhfx-scene/index.html').replace(/^\/+/, '');
-      win.history.replaceState(null, '', `/${normalized}?clean=1`);
-      const doc = win.document;
-      doc.open();
-      doc.write(preparedHtml);
-      doc.close();
-    } catch (error) {
-      bootErrorRef.current = error;
-    }
-  }, [preparedHtml, sceneFile]);
+  const sceneUrl = useMemo(() => {
+    const normalized = String(sceneFile || 'amhfx-scene/index.html').replace(/^\/+/, '');
+    return `/${normalized}?clean=1`;
+  }, [sceneFile]);
 
   useEffect(() => {
     let active = true;
 
     const renderFrame = async () => {
-      if (bootErrorRef.current) throw bootErrorRef.current;
       const iframe = iframeRef.current;
       if (!iframe) throw new Error('AMHFX scene iframe is unavailable');
       const win = iframe.contentWindow;
       if (!win) throw new Error('AMHFX scene window is unavailable');
 
       await waitFor(
-        () => win.OPENER?.ready === true && typeof win.OPENER?.seek === 'function',
+        () => {
+          try {
+            return win.location?.pathname !== 'about:blank' &&
+              win.OPENER?.ready === true && typeof win.OPENER?.seek === 'function';
+          } catch {
+            return false;
+          }
+        },
         sceneTimeoutMs,
         () => {
           let readyState = 'unknown';
@@ -125,6 +99,7 @@ const SceneBridge = ({sceneFile, sceneHtml, sceneBase, sceneTimeoutMs}) => {
     {style: {backgroundColor: '#000'}},
     React.createElement('iframe', {
       ref: iframeRef,
+      src: sceneUrl,
       title: 'AMHFX scene',
       style: {
         width: '100%',
