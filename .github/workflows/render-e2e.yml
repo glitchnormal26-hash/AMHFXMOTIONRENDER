@@ -35,7 +35,7 @@ jobs:
   pr-smoke:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,32 +52,39 @@ jobs:
         run: npm ci
       - name: Run code and skill checks
         run: npm run check
-      - name: Render lightweight PR smoke
+      - name: Render Gemini SaaS explainer playback proof
         run: |
           mkdir -p output
-          env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
-            CRF=20 PRESET=veryfast OUT_VIDEO=output/e2e-pr.mp4 npm run render:ffmpeg
-      - name: Verify PR smoke contract
+          env INDEX=assets/gemini-saas-explainer.html QUALITY=fast FPS=30 WIDTH=1920 HEIGHT=1080 \
+            CRF=18 PRESET=veryfast OUT_VIDEO=output/gemini-saas-explainer.mp4 npm run render:ffmpeg
+      - name: Verify Gemini render contract
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
+          const r = JSON.parse(fs.readFileSync('output/gemini-saas-explainer.verify.json', 'utf8'));
           if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
-          if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
-          if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
+          if (r.video?.width !== 1920 || r.video?.height !== 1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 28) > 0.25) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('silent explainer unexpectedly contains audio');
           NODE
-      - name: Extract PR visual evidence
+      - name: Extract Gemini visual evidence
         run: |
-          ffmpeg -y -i output/e2e-pr.mp4 \
-            -vf "select='eq(n,0)+eq(n,45)+eq(n,89)'" -fps_mode vfr output/pr-frame-%02d.png
+          ffmpeg -y -i output/gemini-saas-explainer.mp4 \
+            -vf "select='eq(n,0)+eq(n,210)+eq(n,420)+eq(n,630)+eq(n,839)'" \
+            -fps_mode vfr output/gemini-frame-%02d.png
+      - name: Record Gemini artifact hash
+        run: |
+          sha256sum output/gemini-saas-explainer.mp4 output/gemini-frame-*.png > output/gemini-sha256.txt
+          cat output/gemini-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: motion-v3.9.4-pr-smoke
+          name: gemini-saas-explainer-playback-proof
           path: |
-            output/e2e-pr.mp4
-            output/e2e-pr.verify.json
-            output/pr-frame-*.png
+            output/gemini-saas-explainer.mp4
+            output/gemini-saas-explainer.verify.json
+            output/gemini-frame-*.png
+            output/gemini-sha256.txt
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
