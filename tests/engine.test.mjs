@@ -22,3 +22,14 @@ test('auto dispatcher rejects unknown engines before doing render work', async (
   assert.match(source, /RENDER_ENGINE must be auto, remotion, or ffmpeg/);
   assert.match(source, /remotionReady \? 'remotion' : 'ffmpeg'/);
 });
+
+test('Remotion bridge embeds local OPENER HTML same-origin and rewrites vendor paths', async () => {
+  const bridge = await fs.readFile('remotion/src/index.js', 'utf8');
+  const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
+  assert.match(bridge, /srcDoc/);
+  assert.match(bridge, /injectBaseHref/);
+  assert.doesNotMatch(bridge, /src:\s*`\$\{staticFile/);
+  assert.match(exporter, /amhfx-vendor\/gsap/);
+  assert.match(exporter, /publicPath:\s*'\/'/);
+  assert.match(exporter, /timeoutInMilliseconds:\s*remotionTimeoutMs/);
+});

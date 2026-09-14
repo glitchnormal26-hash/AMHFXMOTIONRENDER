@@ -12,6 +12,9 @@ import {verifyMedia} from './lib/verify.mjs';
 const env = process.env;
 const quality = (env.QUALITY || 'fast').toLowerCase();
 if (!['fast', 'final'].includes(quality)) throw new Error('QUALITY must be fast or final');
+if (env.URL) {
+  throw new Error('Remotion currently requires a repository-local INDEX. Use RENDER_ENGINE=ffmpeg for URL= scenes.');
+}
 
 const options = captureOptions(env, quality === 'final' ? 60 : 30);
 const {fps, width, height} = options;
@@ -35,6 +38,12 @@ const concurrency = env.REMOTION_CONCURRENCY || '75%';
 if (!/^\d+%$/.test(concurrency) && !(Number.isSafeInteger(Number(concurrency)) && Number(concurrency) > 0)) {
   throw new Error('REMOTION_CONCURRENCY must be a positive integer or percentage such as 75%');
 }
+
+const sceneTimeoutMs = Number(env.REMOTION_SCENE_TIMEOUT_MS || 30000);
+if (!Number.isSafeInteger(sceneTimeoutMs) || sceneTimeoutMs < 1000) {
+  throw new Error('REMOTION_SCENE_TIMEOUT_MS must be an integer >= 1000');
+}
+const remotionTimeoutMs = Math.max(30000, sceneTimeoutMs + 5000);
 
 const hardwareAcceleration = (env.REMOTION_HARDWARE_ACCELERATION || 'disabled').toLowerCase();
 if (!['disabled', 'if-possible', 'required'].includes(hardwareAcceleration)) {
@@ -116,6 +125,13 @@ async function linkOrCopy(source, destination) {
   }
 }
 
+function rewriteBundledVendors(html) {
+  return html.replace(
+    /(src\s*=\s*["'])(?:(?:\.\.\/)+|\.\/|\/)?node_modules\/gsap\//gi,
+    '$1/amhfx-vendor/gsap/',
+  );
+}
+
 async function preparePublicDir(publicDir) {
   const root = process.cwd();
   const indexFile = path.resolve(env.INDEX || 'index.html');
@@ -123,22 +139,27 @@ async function preparePublicDir(publicDir) {
     throw new Error(`INDEX file not found: ${indexFile}`);
   }
 
+  const relative = path.relative(root, indexFile);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error('Remotion INDEX must be inside the repository. Use RENDER_ENGINE=ffmpeg for external scenes.');
+  }
+  const scenePath = relative.split(path.sep).join('/');
+  const sceneDir = path.posix.dirname(scenePath);
+  const sceneBase = sceneDir === '.' ? '' : `${sceneDir}/`;
+
   await fsp.mkdir(publicDir, {recursive: true});
   await linkOrCopy(path.join(root, 'assets'), path.join(publicDir, 'assets'));
   await linkOrCopy(path.join(root, 'runtime'), path.join(publicDir, 'runtime'));
   await linkOrCopy(path.join(root, 'index.html'), path.join(publicDir, 'index.html'));
-  await linkOrCopy(path.join(root, 'node_modules/gsap'), path.join(publicDir, 'node_modules/gsap'));
+  await linkOrCopy(path.join(root, 'node_modules/gsap'), path.join(publicDir, 'amhfx-vendor/gsap'));
 
-  const relative = path.relative(root, indexFile);
-  const scenePath = relative.startsWith('..') || path.isAbsolute(relative)
-    ? 'external-scene.html'
-    : relative.split(path.sep).join('/');
-
-  if (!['index.html'].includes(scenePath) && !scenePath.startsWith('assets/')) {
-    await linkOrCopy(indexFile, path.join(publicDir, ...scenePath.split('/')));
+  const firstSegment = scenePath.split('/')[0];
+  if (firstSegment && !['assets', 'runtime', 'index.html'].includes(firstSegment)) {
+    await linkOrCopy(path.join(root, firstSegment), path.join(publicDir, firstSegment));
   }
 
-  return scenePath;
+  const sceneHtml = rewriteBundledVendors(await fsp.readFile(indexFile, 'utf8'));
+  return {sceneHtml, sceneBase};
 }
 
 function muxAudio(videoInput, output, encodedDuration) {
@@ -168,7 +189,7 @@ const stagedVideo = path.join(workDir, 'render.mp4');
 const started = performance.now();
 
 try {
-  const scenePath = await preparePublicDir(publicDir);
+  const {sceneHtml, sceneBase} = await preparePublicDir(publicDir);
 
   let duration;
   await withCapture({...options, width: Math.min(width, 1280), height: Math.min(height, 720)}, async (capture) => {
@@ -179,12 +200,13 @@ try {
   const frameCount = Math.ceil(duration * fps);
   const encodedDuration = frameCount / fps;
   const inputProps = {
-    scenePath,
+    sceneHtml,
+    sceneBase,
     width,
     height,
     fps,
     durationInFrames: frameCount,
-    sceneTimeoutMs: Number(env.REMOTION_SCENE_TIMEOUT_MS || 30000),
+    sceneTimeoutMs,
   };
 
   console.log(
@@ -197,11 +219,17 @@ try {
     rootDir: remotionRoot,
     publicDir,
     outDir: bundleDir,
+    publicPath: '/',
     enableCaching: true,
     onProgress: (progress) => {
       if (progress === 100 || progress % 25 === 0) console.log(`Bundle ${progress}%`);
     },
   });
+
+  const bundledGsap = path.join(serveUrl, 'amhfx-vendor/gsap/dist/gsap.min.js');
+  if (!fs.existsSync(bundledGsap)) {
+    throw new Error('Remotion public bundle is missing the GSAP runtime');
+  }
 
   const browserExecutable = env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath();
   const composition = await selectComposition({
@@ -209,6 +237,7 @@ try {
     id: 'AMHFXBridge',
     inputProps,
     browserExecutable,
+    timeoutInMilliseconds: remotionTimeoutMs,
   });
 
   let lastProgress = -1;
@@ -223,6 +252,7 @@ try {
     pixelFormat: 'yuv420p',
     browserExecutable,
     hardwareAcceleration,
+    timeoutInMilliseconds: remotionTimeoutMs,
     muted: true,
     overwrite: true,
     onProgress: ({progress}) => {

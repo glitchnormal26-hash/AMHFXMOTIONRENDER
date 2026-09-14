@@ -28,7 +28,17 @@ const waitForPaint = (win) =>
     win.requestAnimationFrame(() => win.requestAnimationFrame(resolve));
   });
 
-const SceneBridge = ({scenePath, sceneTimeoutMs}) => {
+const escapeAttribute = (value) =>
+  value.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+
+const injectBaseHref = (html, baseHref) => {
+  const tag = `<base href="${escapeAttribute(baseHref)}">`;
+  const head = /<head(?:\s[^>]*)?>/i;
+  if (head.test(html)) return html.replace(head, (match) => `${match}${tag}`);
+  return `${tag}${html}`;
+};
+
+const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
@@ -36,6 +46,10 @@ const SceneBridge = ({scenePath, sceneTimeoutMs}) => {
     () => delayRender(`AMHFX OPENER frame ${frame}`),
     [frame],
   );
+  const srcDoc = useMemo(() => {
+    const baseHref = sceneBase ? staticFile(sceneBase) : '/';
+    return injectBaseHref(sceneHtml, baseHref);
+  }, [sceneBase, sceneHtml]);
 
   useEffect(() => {
     let active = true;
@@ -72,15 +86,12 @@ const SceneBridge = ({scenePath, sceneTimeoutMs}) => {
     };
   }, [frame, fps, handle, sceneTimeoutMs]);
 
-  const separator = scenePath.includes('?') ? '&' : '?';
-  const src = `${staticFile(scenePath)}${separator}clean=1`;
-
   return React.createElement(
     AbsoluteFill,
     {style: {backgroundColor: '#000'}},
     React.createElement('iframe', {
       ref: iframeRef,
-      src,
+      srcDoc,
       title: 'AMHFX scene',
       style: {
         width: '100%',
@@ -94,7 +105,8 @@ const SceneBridge = ({scenePath, sceneTimeoutMs}) => {
 };
 
 const defaults = {
-  scenePath: 'index.html',
+  sceneHtml: '<!doctype html><html><head></head><body></body></html>',
+  sceneBase: '',
   width: 1920,
   height: 1080,
   fps: 30,
