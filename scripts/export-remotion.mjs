@@ -295,7 +295,11 @@ try {
     `concurrency=${concurrency}, image=${imageFormat}, preset=${preset}`,
   );
 
-  const browserExecutable = env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath();
+  const browserExecutable = env.PUPPETEER_EXECUTABLE_PATH ||
+    await Promise.resolve(puppeteer.executablePath());
+  if (!browserExecutable || !fs.existsSync(browserExecutable)) {
+    throw new Error(`Puppeteer browser executable not found: ${browserExecutable || 'empty path'}`);
+  }
   const composition = await selectComposition({
     serveUrl: serveDir,
     id: 'AMHFXBridge',
