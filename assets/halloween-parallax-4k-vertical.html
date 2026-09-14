@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halloween Parallax — 4K Vertical 15s Loop</title>
+<style>
+:root{
+  --ink:#080610;
+  --violet:#211438;
+  --violet2:#3b2450;
+  --orange:#ff8b2c;
+  --amber:#ffc56a;
+  --mist:#b8a9ce;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05040a}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{position:fixed;left:50%;top:50%;width:2160px;height:3840px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:#07050e}
+#sky{position:absolute;inset:0;background:
+  radial-gradient(ellipse at 68% 24%,rgba(95,57,122,.50) 0%,rgba(32,20,55,.34) 28%,transparent 54%),
+  radial-gradient(ellipse at 28% 58%,rgba(77,45,102,.25) 0%,transparent 45%),
+  linear-gradient(180deg,#0b0815 0%,#160d28 39%,#2d1538 70%,#120b18 100%)}
+#sky:after{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 7px),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.008) 0 1px,transparent 1px 11px);mix-blend-mode:overlay;opacity:.6}
+#stars{position:absolute;inset:0}
+.star{position:absolute;width:5px;height:5px;border-radius:50%;background:#efe8ff;box-shadow:0 0 16px rgba(225,211,255,.62);opacity:.45;will-change:opacity,transform}
+#camera{position:absolute;inset:-260px;transform-origin:50% 50%;will-change:transform}
+.layer{position:absolute;inset:0;will-change:transform}
+#moonLayer{z-index:3}
+#moon{position:absolute;left:1260px;top:510px;width:1060px;height:1060px;border-radius:50%;background:
+  radial-gradient(circle at 35% 28%,rgba(255,246,220,.22) 0 3%,transparent 4%),
+  radial-gradient(circle at 68% 43%,rgba(90,62,92,.22) 0 7%,transparent 8%),
+  radial-gradient(circle at 48% 68%,rgba(107,72,103,.18) 0 9%,transparent 10%),
+  radial-gradient(circle at 26% 58%,rgba(118,82,112,.18) 0 5%,transparent 6%),
+  radial-gradient(circle at 60% 19%,rgba(116,86,117,.13) 0 4%,transparent 5%),
+  radial-gradient(circle at 40% 40%,#fff4cf 0%,#f1cf9c 44%,#d89b74 72%,#9f5d62 100%);
+  box-shadow:0 0 45px rgba(255,181,105,.24),0 0 160px rgba(255,118,66,.18),0 0 360px rgba(113,55,126,.20);filter:saturate(.88);will-change:transform,filter}
+#moon:before{content:"";position:absolute;inset:-35px;border-radius:50%;border:18px solid rgba(255,116,54,.08);filter:blur(18px)}
+#eclipse{position:absolute;left:1540px;top:430px;width:990px;height:990px;border-radius:50%;background:#110b1e;box-shadow:-90px 20px 120px rgba(255,144,74,.12);opacity:.91}
+#cloudBack{z-index:4;opacity:.34;filter:blur(5px)}
+.cloud{position:absolute;height:210px;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(173,145,194,.35),rgba(72,48,95,.20) 55%,transparent 73%);will-change:transform}
+#cloud1{left:-480px;top:990px;width:2200px}
+#cloud2{left:680px;top:1520px;width:2250px;height:260px;opacity:.72}
+#cloud3{left:-280px;top:2050px;width:1900px;height:230px;opacity:.45}
+#ridgeFar{z-index:5}
+#ridgeFar svg,#ridgeMid svg,#foreground svg,#branches svg{width:100%;height:100%;display:block}
+#ridgeMid{z-index:7}
+#hauntedHouse{position:absolute;left:190px;top:2200px;width:760px;height:760px;filter:drop-shadow(0 45px 40px rgba(0,0,0,.38));will-change:transform}
+#hauntedHouse .window{fill:#ff9a3d;filter:drop-shadow(0 0 15px rgba(255,120,48,.75))}
+#cemetery{position:absolute;inset:0;z-index:8}
+.tomb{position:absolute;background:linear-gradient(180deg,#33263d,#17131f);border-radius:30px 30px 5px 5px;box-shadow:inset 8px 0 0 rgba(255,255,255,.025),0 18px 30px rgba(0,0,0,.35);transform-origin:50% 100%}
+.tomb:before{content:"";position:absolute;left:50%;top:-45px;width:90%;height:90px;translate:-50% 0;border-radius:50%;background:inherit}
+.tomb:after{content:"";position:absolute;left:18%;right:18%;top:31%;height:4px;border-radius:2px;background:rgba(178,148,183,.16);box-shadow:0 30px 0 rgba(178,148,183,.08)}
+#fogBack{z-index:9;filter:blur(18px);opacity:.44}
+#fogFront{z-index:12;filter:blur(25px);opacity:.62}
+.fogBand{position:absolute;width:3200px;height:520px;border-radius:50%;background:
+  radial-gradient(ellipse at 18% 45%,rgba(211,198,221,.42) 0 12%,transparent 28%),
+  radial-gradient(ellipse at 42% 55%,rgba(182,166,203,.38) 0 13%,transparent 31%),
+  radial-gradient(ellipse at 67% 38%,rgba(223,210,229,.34) 0 12%,transparent 28%),
+  radial-gradient(ellipse at 86% 60%,rgba(175,158,195,.28) 0 12%,transparent 27%)}
+#fogA{left:-600px;top:2480px}
+#fogB{left:-720px;top:3020px;height:650px;opacity:.95}
+#bats{z-index:10;pointer-events:none}
+.bat{position:absolute;width:120px;height:70px;transform-origin:50% 50%;will-change:transform,opacity}
+.bat svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 12px 10px rgba(0,0,0,.26))}
+#sparks{z-index:11;pointer-events:none}
+.spark{position:absolute;width:8px;height:8px;border-radius:50%;background:#ffae5d;box-shadow:0 0 15px rgba(255,113,42,.8);opacity:.28;will-change:transform,opacity}
+#foreground{z-index:13}
+#pumpkinPatch{position:absolute;left:-40px;right:-40px;bottom:-20px;height:920px;z-index:14;pointer-events:none}
+.pumpkin{position:absolute;bottom:95px;width:430px;height:340px;will-change:transform}
+.pumpkin .body{position:absolute;inset:0;border-radius:46% 46% 44% 44%;background:
+  radial-gradient(ellipse at 50% 48%,rgba(255,188,65,.13) 0 22%,transparent 24%),
+  linear-gradient(90deg,#7a2a19 0%,#bf4d1d 18%,#ef7627 47%,#b83d19 78%,#6a2418 100%);box-shadow:inset 0 -55px 60px rgba(63,15,21,.42),0 35px 80px rgba(0,0,0,.45)}
+.pumpkin .body:before,.pumpkin .body:after{content:"";position:absolute;top:7%;bottom:8%;width:28%;border-radius:50%;border-left:8px solid rgba(83,22,20,.34);border-right:8px solid rgba(255,160,58,.09)}
+.pumpkin .body:before{left:20%}.pumpkin .body:after{right:20%}
+.pumpkin .stem{position:absolute;left:48%;top:-78px;width:62px;height:115px;border-radius:45% 20% 30% 25%;background:linear-gradient(90deg,#342215,#6c4b28,#2e1c12);rotate:8deg}
+.face{position:absolute;inset:0}
+.eye{position:absolute;top:33%;width:72px;height:58px;background:#100711;clip-path:polygon(0 0,100% 42%,12% 100%)}
+.eye.left{left:23%;rotate:-4deg}.eye.right{right:23%;scale:-1 1;rotate:4deg}
+.mouth{position:absolute;left:21%;right:21%;top:59%;height:86px;background:#100711;clip-path:polygon(0 5%,17% 28%,31% 8%,49% 36%,67% 8%,84% 30%,100% 5%,93% 73%,73% 63%,55% 88%,34% 62%,12% 76%)}
+.glow{position:absolute;inset:22% 16% 12%;border-radius:40%;background:radial-gradient(ellipse at 50% 55%,rgba(255,207,95,.58),rgba(255,102,27,.22) 42%,transparent 68%);filter:blur(20px);mix-blend-mode:screen;will-change:opacity}
+#p1{left:80px;scale:.92;rotate:-5deg}#p2{left:690px;bottom:15px;scale:1.18;rotate:3deg}#p3{right:55px;bottom:120px;scale:.82;rotate:7deg}
+#branches{position:absolute;inset:0;z-index:15;pointer-events:none;will-change:transform}
+#vignette{position:absolute;inset:0;z-index:20;pointer-events:none;background:radial-gradient(ellipse at 52% 43%,transparent 38%,rgba(4,3,8,.12) 66%,rgba(2,1,5,.70) 100%);box-shadow:inset 0 0 280px rgba(0,0,0,.45)}
+#debug{display:none;position:fixed;left:50%;bottom:28px;translate:-50% 0;z-index:30;padding:12px 18px;border-radius:10px;background:rgba(0,0,0,.75);color:white;font:20px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sky"><div id="stars"></div></div>
+  <div id="camera">
+    <div class="layer" id="moonLayer">
+      <div id="moon"></div><div id="eclipse"></div>
+    </div>
+    <div class="layer" id="cloudBack"><div id="cloud1" class="cloud"></div><div id="cloud2" class="cloud"></div><div id="cloud3" class="cloud"></div></div>
+    <div class="layer" id="ridgeFar">
+      <svg viewBox="0 0 2680 4360" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 2680 C260 2540 440 2570 670 2400 C890 2235 1020 2320 1190 2200 C1430 2020 1630 2240 1840 2100 C2050 1960 2240 2130 2680 1980 L2680 4360 L0 4360Z" fill="#1a1025"/>
+        <path d="M0 2890 C390 2660 700 2840 1000 2570 C1250 2350 1550 2580 1790 2430 C2050 2270 2290 2500 2680 2250 L2680 4360 L0 4360Z" fill="#110c18" opacity=".92"/>
+      </svg>
+    </div>
+    <div class="layer" id="ridgeMid">
+      <svg viewBox="0 0 2680 4360" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 3100 C240 3000 470 3020 710 2870 C930 2740 1130 2880 1360 2740 C1620 2580 1910 2820 2150 2670 C2350 2550 2500 2580 2680 2500 L2680 4360 L0 4360Z" fill="#0b0910"/>
+        <path d="M138 3010 l70 -215 85 186 54 -250 90 235 60 -163 80 198z" fill="#08070d" opacity=".92"/>
+        <path d="M1810 2795 l70 -185 80 170 65 -235 88 227 58 -154 88 185z" fill="#08070d" opacity=".92"/>
+      </svg>
+      <svg id="hauntedHouse" viewBox="0 0 760 760" aria-hidden="true">
+        <g fill="#09070d">
+          <path d="M120 690V305l112-72 40-152 56 126 84-52 86 58 51-128 49 156 79 64v385z"/>
+          <path d="M76 329l162-125 72 30-186 154zM420 250l104-91 158 158-55 26-110-105-65 60z"/>
+          <rect x="183" y="356" width="88" height="120"/><rect x="468" y="360" width="92" height="122"/>
+        </g>
+        <g class="window"><path d="M205 372h46v84h-46z"/><path d="M490 377h48v84h-48z"/><path d="M336 478h58v88h-58z"/></g>
+        <g stroke="#09070d" stroke-width="26" stroke-linecap="round"><path d="M142 302L65 184M594 249l92-102M267 214L216 92"/></g>
+      </svg>
+    </div>
+    <div id="cemetery"></div>
+    <div class="layer" id="fogBack"><div class="fogBand" id="fogA"></div></div>
+    <div class="layer" id="bats"></div>
+    <div class="layer" id="sparks"></div>
+    <div class="layer" id="fogFront"><div class="fogBand" id="fogB"></div></div>
+    <div class="layer" id="foreground">
+      <svg viewBox="0 0 2680 4360" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 3540 C360 3450 650 3550 930 3430 C1190 3320 1430 3420 1690 3330 C1980 3230 2300 3380 2680 3250 L2680 4360 L0 4360Z" fill="#07060a"/>
+        <path d="M0 3780 C450 3650 730 3790 1120 3670 C1450 3570 1850 3700 2200 3590 C2380 3530 2540 3550 2680 3490 L2680 4360 L0 4360Z" fill="#050408"/>
+      </svg>
+    </div>
+    <div id="pumpkinPatch">
+      <div class="pumpkin" id="p1"><div class="stem"></div><div class="body"><div class="glow"></div><div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div></div></div>
+      <div class="pumpkin" id="p2"><div class="stem"></div><div class="body"><div class="glow"></div><div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div></div></div>
+      <div class="pumpkin" id="p3"><div class="stem"></div><div class="body"><div class="glow"></div><div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div></div></div>
+    </div>
+    <div id="branches">
+      <svg viewBox="0 0 2680 4360" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke="#050408" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M-180 850 C160 820 315 690 470 430 C600 210 770 100 930 -60" stroke-width="126"/>
+          <path d="M235 720 C340 525 345 345 300 175" stroke-width="66"/>
+          <path d="M430 485 C590 480 760 390 860 255" stroke-width="58"/>
+          <path d="M2450 -120 C2390 190 2240 390 2040 540 C1890 650 1800 760 1735 925" stroke-width="118"/>
+          <path d="M2220 350 C2395 430 2525 560 2650 760" stroke-width="64"/>
+          <path d="M2030 555 C1970 370 1955 235 2010 95" stroke-width="56"/>
+          <path d="M2570 3220 C2390 3150 2290 3065 2200 2930" stroke-width="82"/>
+          <path d="M2500 3180 C2530 2960 2590 2830 2710 2720" stroke-width="48"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div id="vignette"></div>
+</div>
+<div id="debug">0.00s</div>
+<script>
+const W=2160,H=3840,DURATION=15;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const TAU=Math.PI*2;
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeInOutCubic=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const easeOutQuart=t=>1-Math.pow(1-t,4);
+const easeInOutSine=t=>-(Math.cos(Math.PI*t)-1)/2;
+const easeOutBack=t=>{const c1=1.2,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)};
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+// Deterministic authored world. All cyclical functions use integer harmonics of the 15s loop.
+const stars=[];
+for(let i=0;i<86;i++){
+  const e=document.createElement('i');e.className='star';
+  const x=(i*173+91)%2080+40; const y=(i*337+47)%2600+35;
+  const size=3+(i%4)*1.3;e.style.left=x+'px';e.style.top=y+'px';e.style.width=size+'px';e.style.height=size+'px';
+  document.querySelector('#stars').appendChild(e);stars.push(e);
+}
+const tombs=[];
+const tombSpec=[
+  [210,2875,170,260,-7],[470,3000,128,205,5],[760,2810,155,245,-3],[1050,3070,140,210,8],
+  [1320,2910,180,275,-5],[1610,3050,138,220,4],[1850,2780,175,280,7],[2120,3010,150,235,-6],[2325,2860,122,205,3]
+];
+for(const [x,y,w,h,r] of tombSpec){const e=document.createElement('div');e.className='tomb';Object.assign(e.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',rotate:r+'deg'});document.querySelector('#cemetery').appendChild(e);tombs.push(e)}
+const bats=[];
+for(let i=0;i<14;i++){
+  const e=document.createElement('div');e.className='bat';
+  e.innerHTML='<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M60 37 C49 18 32 10 8 13 C19 21 20 32 12 48 C28 39 43 42 60 60 C77 42 92 39 108 48 C100 32 101 21 112 13 C88 10 71 18 60 37Z" fill="#07050b"/><path d="M53 31l7-12 7 12" fill="#07050b"/></svg>';
+  document.querySelector('#bats').appendChild(e);bats.push(e);
+}
+const sparks=[];
+for(let i=0;i<34;i++){
+  const e=document.createElement('i');e.className='spark';document.querySelector('#sparks').appendChild(e);sparks.push(e)
+}
+
+const camKeys=[
+  {t:0.00,x:0,y:0,s:1.035,r:-.18,e:easeInOutSine},
+  {t:0.22,x:-92,y:125,s:1.105,r:.24,e:easeOutQuart},
+  {t:0.39,x:78,y:-95,s:1.175,r:-.36,e:easeInOutCubic},
+  {t:0.58,x:142,y:55,s:1.065,r:.16,e:easeOutBack},
+  {t:0.76,x:-118,y:-36,s:1.145,r:-.25,e:easeInOutCubic},
+  {t:1.00,x:0,y:0,s:1.035,r:-.18,e:easeInOutSine}
+];
+function sampleCam(p){
+  let i=0;while(i<camKeys.length-2 && p>camKeys[i+1].t)i++;
+  const a=camKeys[i],b=camKeys[i+1];const u=clamp((p-a.t)/(b.t-a.t));const e=b.e?b.e(u):u;
+  return {x:lerp(a.x,b.x,e),y:lerp(a.y,b.y,e),s:lerp(a.s,b.s,e),r:lerp(a.r,b.r,e)};
+}
+function setLayer(id,x,y,s=1,r=0){document.querySelector(id).style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) scale(${s.toFixed(5)}) rotate(${r.toFixed(3)}deg)`}
+function renderAt(time){
+  const t=((time%DURATION)+DURATION)%DURATION;const p=t/DURATION;const a=TAU*p;const cam=sampleCam(p);
+  camera.style.transform=`translate3d(${cam.x.toFixed(2)}px,${cam.y.toFixed(2)}px,0) scale(${cam.s.toFixed(5)}) rotate(${cam.r.toFixed(3)}deg)`;
+
+  // Distinct depth planes: sky/moon < ridges < cemetery < fog < foreground.
+  setLayer('#moonLayer',-cam.x*.08+Math.sin(a)*18,-cam.y*.05+Math.cos(a*2)*10,1+Math.sin(a)*.004);
+  setLayer('#cloudBack',-cam.x*.12+Math.sin(a)*58,-cam.y*.08+Math.sin(a*2+1.2)*18,1.02);
+  setLayer('#ridgeFar',-cam.x*.18+Math.sin(a)*20,-cam.y*.14,1.01);
+  setLayer('#ridgeMid',-cam.x*.28+Math.sin(a*2+.8)*24,-cam.y*.20,1.015);
+  setLayer('#cemetery',-cam.x*.40+Math.sin(a*2)*18,-cam.y*.27,1.02);
+  setLayer('#fogBack',-cam.x*.45+Math.sin(a)*85,-cam.y*.25+Math.cos(a*2)*25,1.04);
+  setLayer('#bats',-cam.x*.30,-cam.y*.12,1);
+  setLayer('#sparks',-cam.x*.50,-cam.y*.30,1);
+  setLayer('#fogFront',-cam.x*.65+Math.sin(a*2+.6)*130,-cam.y*.42+Math.cos(a)*30,1.06);
+  setLayer('#foreground',-cam.x*.78,-cam.y*.52,1.04);
+  document.querySelector('#branches').style.transform=`translate3d(${(-cam.x*.95+Math.sin(a)*34).toFixed(2)}px,${(-cam.y*.72+Math.cos(a*2)*18).toFixed(2)}px,0) scale(1.055)`;
+  document.querySelector('#pumpkinPatch').style.transform=`translate3d(${(-cam.x*.88+Math.sin(a*2)*22).toFixed(2)}px,${(-cam.y*.61+Math.cos(a)*15).toFixed(2)}px,0) scale(1.03)`;
+
+  document.querySelector('#moon').style.transform=`translate3d(${(Math.sin(a*2)*10).toFixed(1)}px,${(Math.cos(a)*13).toFixed(1)}px,0) scale(${(1+.009*Math.sin(a)).toFixed(4)})`;
+  document.querySelector('#eclipse').style.transform=`translate3d(${(Math.sin(a)*18).toFixed(1)}px,${(Math.cos(a*2)*9).toFixed(1)}px,0)`;
+  document.querySelector('#hauntedHouse').style.transform=`translate3d(${(Math.sin(a*2+.7)*14).toFixed(1)}px,${(Math.cos(a)*8).toFixed(1)}px,0) rotate(${(.35*Math.sin(a)).toFixed(2)}deg)`;
+
+  document.querySelector('#fogA').style.transform=`translate3d(${(Math.sin(a)*180).toFixed(1)}px,${(Math.cos(a*2)*35).toFixed(1)}px,0) scaleX(${(1.05+.025*Math.sin(a*2)).toFixed(4)})`;
+  document.querySelector('#fogB').style.transform=`translate3d(${(Math.sin(a*2+1.1)*240).toFixed(1)}px,${(Math.cos(a)*40).toFixed(1)}px,0) scaleX(${(1.08+.035*Math.cos(a)).toFixed(4)})`;
+
+  stars.forEach((e,i)=>{const tw=.30+.55*(.5+.5*Math.sin(a*(2+i%4)+i*.77));e.style.opacity=tw.toFixed(3);e.style.transform=`scale(${(.65+.45*(.5+.5*Math.sin(a*(3+i%3)+i))).toFixed(3)})`});
+  bats.forEach((e,i)=>{
+    const orbit=1+(i%3);const ph=i*.73;const x=220+((i*151)%1730)+Math.sin(a*orbit+ph)*(110+18*(i%4));
+    const y=690+((i*257)%1440)+Math.cos(a*(orbit+1)+ph)*(80+20*(i%3));
+    const wing=.72+.30*Math.sin(a*(8+(i%3))+ph);const rot=10*Math.sin(a*(orbit+1)+ph+.4);
+    e.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) rotate(${rot.toFixed(1)}deg) scale(${(.62+(i%5)*.07).toFixed(2)}) scaleY(${wing.toFixed(3)})`;
+    e.style.opacity=(.42+(i%4)*.12).toFixed(2);
+  });
+  sparks.forEach((e,i)=>{
+    const ph=i*.91;const x=180+((i*227)%1880)+Math.sin(a*(1+i%3)+ph)*70;
+    const y=2620+((i*149)%900)+Math.sin(a*(2+i%4)+ph)*110;
+    const o=.10+.34*(.5+.5*Math.sin(a*(3+i%4)+ph));
+    e.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) scale(${(.55+.65*o).toFixed(3)})`;e.style.opacity=o.toFixed(3)
+  });
+  tombs.forEach((e,i)=>{e.style.translate=`0 ${(Math.sin(a*2+i*.6)*3).toFixed(1)}px`});
+  document.querySelectorAll('.glow').forEach((e,i)=>{e.style.opacity=(.44+.38*(.5+.5*Math.sin(a*(4+i)+i*1.4))).toFixed(3)});
+  document.querySelector('#p1').style.translate=`0 ${(Math.sin(a*2)*8).toFixed(1)}px`;
+  document.querySelector('#p2').style.translate=`0 ${(Math.sin(a*2+1.5)*12).toFixed(1)}px`;
+  document.querySelector('#p3').style.translate=`0 ${(Math.sin(a*2+2.7)*7).toFixed(1)}px`;
+  debug.textContent=t.toFixed(2)+'s';
+}
+
+const q=new URLSearchParams(location.search);if(q.has('debug'))debug.classList.add('on');
+let playing=!q.has('clean'),start=performance.now();
+function tick(now){if(playing)renderAt(((now-start)/1000)%DURATION);requestAnimationFrame(tick)}
+requestAnimationFrame(tick);renderAt(0);
+window.OPENER={
+  W,H,DURATION,ready:true,
+  seek(t){playing=false;renderAt(t)},
+  play(){start=performance.now();playing=true},
+  tl:{pause(){playing=false;return this},time(t){if(typeof t==='number')renderAt(t);return this}}
+};
+</script>
+</body>
+</html>
