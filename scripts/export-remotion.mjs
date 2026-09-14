@@ -134,6 +134,18 @@ function rewriteBundledVendors(html) {
   );
 }
 
+function escapeAttribute(value) {
+  return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+}
+
+function injectBaseHref(html, baseHref) {
+  const tag = `<base href="${escapeAttribute(baseHref)}">`;
+  if (/<base\b[^>]*>/i.test(html)) return html.replace(/<base\b[^>]*>/i, tag);
+  const head = /<head(?:\s[^>]*)?>/i;
+  if (head.test(html)) return html.replace(head, (match) => `${match}${tag}`);
+  return `${tag}${html}`;
+}
+
 async function prepareScene() {
   const root = process.cwd();
   const indexFile = path.resolve(env.INDEX || 'index.html');
@@ -200,7 +212,7 @@ async function buildCachedBundle() {
   return {cached, key, cacheHit: false};
 }
 
-async function materializeServeDir(cachedBundle, serveDir, scenePath) {
+async function materializeServeDir(cachedBundle, serveDir, scenePath, sceneHtml, sceneBase) {
   await fsp.cp(cachedBundle, serveDir, {recursive: true, force: true});
 
   const root = process.cwd();
@@ -215,6 +227,14 @@ async function materializeServeDir(cachedBundle, serveDir, scenePath) {
 
   const gsap = path.join(serveDir, 'amhfx-vendor/gsap/dist/gsap.min.js');
   if (!fs.existsSync(gsap)) throw new Error('Remotion serve directory is missing the GSAP runtime');
+
+  const sceneFile = 'amhfx-scene/index.html';
+  const baseHref = sceneBase ? `/${sceneBase}` : '/';
+  const isolatedHtml = injectBaseHref(sceneHtml, baseHref);
+  const isolatedPath = path.join(serveDir, sceneFile);
+  await fsp.mkdir(path.dirname(isolatedPath), {recursive: true});
+  await fsp.writeFile(isolatedPath, isolatedHtml);
+  return sceneFile;
 }
 
 function muxAudio(videoInput, output, encodedDuration) {
@@ -253,18 +273,22 @@ try {
 
   const frameCount = Math.ceil(duration * fps);
   const encodedDuration = frameCount / fps;
-  const inputProps = {
+  const bundleInfo = await buildCachedBundle();
+  const sceneFile = await materializeServeDir(
+    bundleInfo.cached,
+    serveDir,
+    scenePath,
     sceneHtml,
     sceneBase,
+  );
+  const inputProps = {
+    sceneFile,
     width,
     height,
     fps,
     durationInFrames: frameCount,
     sceneTimeoutMs,
   };
-
-  const bundleInfo = await buildCachedBundle();
-  await materializeServeDir(bundleInfo.cached, serveDir, scenePath);
 
   console.log(
     `remotion ${remotionVersion}: ${width}x${height} ${fps}fps, ${frameCount} frames, ` +
@@ -347,6 +371,7 @@ try {
     video_bitrate: hardwareAcceleration === 'disabled' ? null : videoBitrate,
     bundle_cache_key: bundleInfo.key,
     bundle_cache_hit: bundleInfo.cacheHit,
+    scene_path: scenePath,
     cpu_threads: availableParallelism(),
     elapsed_seconds: (performance.now() - started) / 1000,
     frames_directory: null,
