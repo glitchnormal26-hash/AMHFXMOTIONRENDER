@@ -1,0 +1,65 @@
+name: Render Gift Box Playback Proof
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gift-box-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render Gift Box Deluxe 4K proof
+        run: |
+          mkdir -p output
+          env INDEX=index.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
+            CRF=16 PRESET=medium OUT_VIDEO=output/gift-box-deluxe.mp4 npm run export:mp4
+      - name: Verify delivery contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/gift-box-deluxe.verify.json', 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.25) throw new Error(`duration=${r.duration}`);
+          NODE
+      - name: Extract visual evidence
+        run: |
+          ffmpeg -y -i output/gift-box-deluxe.mp4 \
+            -vf "select='eq(n,0)+eq(n,75)+eq(n,150)+eq(n,225)+eq(n,299)'" \
+            -fps_mode vfr output/gift-box-frame-%02d.png
+          sha256sum output/gift-box-deluxe.mp4 output/gift-box-frame-*.png > output/gift-box-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gift-box-deluxe-playback-proof
+          path: |
+            output/gift-box-deluxe.mp4
+            output/gift-box-deluxe.verify.json
+            output/gift-box-frame-*.png
+            output/gift-box-sha256.txt
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
