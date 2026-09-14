@@ -23,17 +23,16 @@ test('auto dispatcher rejects unknown engines before doing render work', async (
   assert.match(source, /remotionReady \? 'remotion' : 'ffmpeg'/);
 });
 
-test('Remotion bridge boots OPENER directly in a same-origin iframe', async () => {
+test('Remotion bridge loads the materialized OPENER scene through a same-origin URL', async () => {
   const bridge = await fs.readFile('remotion/src/index.js', 'utf8');
   const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
 
-  assert.match(bridge, /useLayoutEffect/);
-  assert.match(bridge, /win\.history\.replaceState\(null, '', `\/\$\{normalized\}\?clean=1`\)/);
-  assert.match(bridge, /doc\.open\(\)/);
-  assert.match(bridge, /doc\.write\(preparedHtml\)/);
-  assert.match(bridge, /doc\.close\(\)/);
+  assert.match(bridge, /const sceneUrl = useMemo/);
+  assert.match(bridge, /return `\/\$\{normalized\}\?clean=1`/);
+  assert.match(bridge, /src:\s*sceneUrl/);
+  assert.doesNotMatch(bridge, /history\.replaceState/);
+  assert.doesNotMatch(bridge, /doc\.open\(\)/);
   assert.doesNotMatch(bridge, /srcDoc/);
-  assert.doesNotMatch(bridge, /src:\s*sceneUrl/);
   assert.match(bridge, /readyState=.*opener=.*gsap=/s);
 
   assert.match(exporter, /sceneHtml,\n\s*sceneBase,\n\s*width/);
