@@ -1,0 +1,100 @@
+name: UI Greenscreen 10-Pack Render
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'projects/ui-greenscreen/**'
+      - '.github/workflows/ui-greenscreen-render.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-greenscreen-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        scene:
+          - scene-01-command-palette
+          - scene-02-notifications
+          - scene-03-analytics
+          - scene-04-media-player
+          - scene-05-team-chat
+          - scene-06-security-scan
+          - scene-07-climate-control
+          - scene-08-checkout
+          - scene-09-motion-timeline
+          - scene-10-navigation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Validate renderer source
+        run: npm run check
+      - name: Render native 4K 10s MP4
+        env:
+          URL: "file://${{ github.workspace }}/projects/ui-greenscreen/index.html?scene=${{ matrix.scene }}&clean=1"
+          QUALITY: fast
+          FPS: '30'
+          WIDTH: '3840'
+          HEIGHT: '2160'
+          CRF: '17'
+          PRESET: veryfast
+          OUT_VIDEO: output/${{ matrix.scene }}/${{ matrix.scene }}-4k.mp4
+        run: npm run render:ffmpeg
+      - name: Derive 1080p delivery
+        run: |
+          ffmpeg -y -i output/${{ matrix.scene }}/${{ matrix.scene }}-4k.mp4 \
+            -vf "scale=1920:1080:flags=lanczos" -an -c:v libx264 -preset veryfast -crf 17 \
+            -pix_fmt yuv420p -movflags +faststart \
+            output/${{ matrix.scene }}/${{ matrix.scene }}-1080p.mp4
+      - name: Verify dimensions duration and streams
+        run: |
+          ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate \
+            -of json output/${{ matrix.scene }}/${{ matrix.scene }}-4k.mp4 > output/${{ matrix.scene }}/probe-4k.json
+          ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate \
+            -of json output/${{ matrix.scene }}/${{ matrix.scene }}-1080p.mp4 > output/${{ matrix.scene }}/probe-1080p.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const scene=process.env.SCENE;
+          for (const [file,w,h] of [[`output/${scene}/probe-4k.json`,3840,2160],[`output/${scene}/probe-1080p.json`,1920,1080]]) {
+            const r=JSON.parse(fs.readFileSync(file,'utf8')); const v=r.streams.find(s=>s.codec_type==='video');
+            if (!v || v.codec_name!=='h264' || v.width!==w || v.height!==h) throw new Error(`bad video ${file}`);
+            if (Math.abs(Number(r.format.duration)-10)>0.2) throw new Error(`bad duration ${r.format.duration}`);
+          }
+          NODE
+        env:
+          SCENE: ${{ matrix.scene }}
+      - name: Extract QA frames
+        run: |
+          ffmpeg -y -i output/${{ matrix.scene }}/${{ matrix.scene }}-1080p.mp4 \
+            -vf "select='eq(n,0)+eq(n,45)+eq(n,90)+eq(n,150)+eq(n,210)+eq(n,270)+eq(n,299)'" \
+            -fps_mode vfr output/${{ matrix.scene }}/qa-%02d.png
+      - name: Hash delivery
+        run: sha256sum output/${{ matrix.scene }}/*.mp4 > output/${{ matrix.scene }}/sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-greenscreen-${{ matrix.scene }}
+          path: output/${{ matrix.scene }}/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
