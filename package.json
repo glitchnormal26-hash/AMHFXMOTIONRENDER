@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "gsap": "^3.13.0",
-    "puppeteer": "^24.0.0"
+    "puppeteer": "^25.10.0"
   },
   "description": "Browser motion renderer with deterministic OPENER capture, optional concurrent Remotion rendering, FFmpeg audio muxing, and ffprobe verification.",
   "repository": {
