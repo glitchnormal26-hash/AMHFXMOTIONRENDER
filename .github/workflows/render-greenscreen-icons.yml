@@ -1,0 +1,71 @@
+name: Render Greenscreen Icons
+
+on:
+  pull_request:
+    paths:
+      - 'assets/greenscreen-icons.html'
+      - '.github/workflows/render-greenscreen-icons.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: greenscreen-icons-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: AMHFX checks
+        run: npm run check
+      - name: Render 1080p MP4
+        run: |
+          mkdir -p output
+          env INDEX=assets/greenscreen-icons.html QUALITY=final FPS=30 WIDTH=1920 HEIGHT=1080 \
+            CRF=16 PRESET=medium OUT_VIDEO=output/greenscreen-icons-1080p.mp4 npm run render:ffmpeg
+      - name: Render 4K MP4
+        run: |
+          env INDEX=assets/greenscreen-icons.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
+            CRF=16 PRESET=medium OUT_VIDEO=output/greenscreen-icons-4k.mp4 npm run render:ffmpeg
+      - name: Verify dimensions and streams
+        run: |
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate \
+            -of default=noprint_wrappers=1 output/greenscreen-icons-1080p.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate \
+            -of default=noprint_wrappers=1 output/greenscreen-icons-4k.mp4
+          test -f output/greenscreen-icons-1080p.verify.json
+          test -f output/greenscreen-icons-4k.verify.json
+      - name: Create preview frames
+        run: |
+          ffmpeg -y -ss 2.1 -i output/greenscreen-icons-1080p.mp4 -frames:v 1 output/preview-1080p.png
+          ffmpeg -y -ss 2.1 -i output/greenscreen-icons-4k.mp4 -frames:v 1 output/preview-4k.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: amhfx-greenscreen-icons
+          path: |
+            assets/greenscreen-icons.html
+            output/greenscreen-icons-1080p.mp4
+            output/greenscreen-icons-1080p.verify.json
+            output/greenscreen-icons-4k.mp4
+            output/greenscreen-icons-4k.verify.json
+            output/preview-1080p.png
+            output/preview-4k.png
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

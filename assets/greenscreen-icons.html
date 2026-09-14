@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMHFX · 10 Three.js Greenscreen Icons</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#00ff00}
+  canvas{display:block;width:100%;height:100%;background:#00ff00}
+  #badge{position:fixed;left:22px;bottom:18px;padding:9px 12px;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font:12px/1.2 ui-monospace,monospace;letter-spacing:.05em;display:none}
+  #badge.on{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas><div id="badge">AMHFX · Three.js · greenscreen</div>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
+const W=1920,H=1080,DURATION=4;
+const q=new URLSearchParams(location.search);
+const canvas=document.querySelector('#c');
+const badge=document.querySelector('#badge');
+if(q.has('debug')) badge.classList.add('on');
+
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.NoToneMapping;
+renderer.setClearColor(0x00ff00,1);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x00ff00);
+const camera=new THREE.PerspectiveCamera(39,16/9,.1,100);
+camera.position.set(0,0,20);
+camera.lookAt(0,0,0);
+
+const hemi=new THREE.HemisphereLight(0xffffff,0x8aa0b6,2.4);scene.add(hemi);
+const key=new THREE.DirectionalLight(0xffffff,5.8);key.position.set(-5,8,10);scene.add(key);
+const rim=new THREE.DirectionalLight(0xbcd8ff,3.0);rim.position.set(6,-4,8);scene.add(rim);
+
+const white=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.24,metalness:.32});
+const whiteSoft=new THREE.MeshStandardMaterial({color:0xf7f9ff,roughness:.38,metalness:.12});
+const green=new THREE.MeshBasicMaterial({color:0x00ff00});
+const ringMatBase={color:0xffffff,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending};
+
+function mesh(g,m=white){const x=new THREE.Mesh(g,m);return x}
+function add(g,...items){items.forEach(x=>g.add(x));return g}
+function box(w,h,d,m=white){return mesh(new THREE.BoxGeometry(w,h,d,4,4,2),m)}
+function sphere(r,m=white){return mesh(new THREE.SphereGeometry(r,40,24),m)}
+function cyl(r,h,m=white){return mesh(new THREE.CylinderGeometry(r,r,h,40,1,false),m)}
+function torus(R,r,m=white){return mesh(new THREE.TorusGeometry(R,r,18,72),m)}
+function extrude(shape,depth=.34,m=white){
+  const g=new THREE.ExtrudeGeometry(shape,{depth,steps:1,bevelEnabled:true,bevelSegments:4,bevelSize:.075,bevelThickness:.075});
+  g.center();return mesh(g,m);
+}
+function triShape(points){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();return s}
+
+function iconPlay(){
+  const g=new THREE.Group();
+  const p=triShape([[-.58,-.72],[-.58,.72],[.72,0]]);add(g,extrude(p,.42));return g;
+}
+function iconHeart(){
+  const s=new THREE.Shape();
+  s.moveTo(0,-.72);s.bezierCurveTo(-1.15,-.05,-.98,.86,-.38,.88);s.bezierCurveTo(-.10,.89,0,.64,0,.51);
+  s.bezierCurveTo(0,.64,.10,.89,.38,.88);s.bezierCurveTo(.98,.86,1.15,-.05,0,-.72);s.closePath();
+  const g=new THREE.Group();const h=extrude(s,.34);h.rotation.z=Math.PI;g.add(h);return g;
+}
+function iconStar(){
+  const s=new THREE.Shape();const n=10;
+  for(let i=0;i<n;i++){const a=-Math.PI/2+i*Math.PI/5;const r=i%2===0?.82:.36;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?s.lineTo(x,y):s.moveTo(x,y)}
+  s.closePath();const g=new THREE.Group();g.add(extrude(s,.35));return g;
+}
+function iconBell(){
+  const g=new THREE.Group();
+  const dome=mesh(new THREE.SphereGeometry(.68,48,24,0,Math.PI*2,0,Math.PI*.62),whiteSoft);dome.scale.y=.95;dome.position.y=.18;
+  const skirt=cyl(.67,.48,whiteSoft);skirt.position.y=-.22;
+  const lip=torus(.67,.09,white);lip.rotation.x=Math.PI/2;lip.position.y=-.48;
+  const knob=sphere(.14,white);knob.position.y=.82;
+  const clapper=sphere(.14,white);clapper.position.y=-.67;
+  add(g,dome,skirt,lip,knob,clapper);return g;
+}
+function iconCheck(){
+  const g=new THREE.Group();
+  const a=box(.30,1.00,.36);a.position.set(-.28,-.16,0);a.rotation.z=-.72;
+  const b=box(.30,1.58,.36);b.position.set(.35,.05,0);b.rotation.z=.72;
+  add(g,a,b);g.rotation.z=-.10;g.scale.setScalar(.9);return g;
+}
+function iconPin(){
+  const g=new THREE.Group();
+  const head=sphere(.68,whiteSoft);head.scale.y=.92;head.position.y=.28;
+  const cone=mesh(new THREE.ConeGeometry(.46,1.22,48),whiteSoft);cone.rotation.z=Math.PI;cone.position.y=-.58;
+  const hole=sphere(.25,green);hole.position.set(0,.30,.61);hole.scale.z=.30;
+  add(g,cone,head,hole);return g;
+}
+function iconCamera(){
+  const g=new THREE.Group();
+  const body=box(1.45,.92,.48,whiteSoft);
+  const top=box(.46,.22,.44,white);top.position.set(-.36,.56,0);
+  const lens=mesh(new THREE.CylinderGeometry(.38,.38,.35,48),white);lens.rotation.x=Math.PI/2;lens.position.z=.38;
+  const glass=mesh(new THREE.CylinderGeometry(.22,.22,.04,48),green);glass.rotation.x=Math.PI/2;glass.position.z=.575;
+  add(g,body,top,lens,glass);return g;
+}
+function iconMessage(){
+  const g=new THREE.Group();
+  const body=box(1.45,.94,.38,whiteSoft);body.position.y=.10;
+  const t=triShape([[-.48,-.18],[-.02,-.18],[-.44,-.72]]);const tail=extrude(t,.30,whiteSoft);tail.position.set(-.25,-.37,0);
+  add(g,body,tail);return g;
+}
+function iconMusic(){
+  const g=new THREE.Group();
+  const stem=box(.20,1.30,.30);stem.position.set(.28,.12,0);
+  const beam=box(.72,.20,.30);beam.position.set(-.02,.70,0);beam.rotation.z=-.14;
+  const n1=sphere(.30,whiteSoft);n1.position.set(.29,-.57,0);
+  const n2=sphere(.30,whiteSoft);n2.position.set(-.44,-.39,0);
+  const stem2=box(.20,1.08,.30);stem2.position.set(-.42,.08,0);
+  add(g,stem,beam,n1,n2,stem2);return g;
+}
+function iconBolt(){
+  const s=triShape([[-.18,.92],[.52,.92],[.06,.18],[.55,.18],[-.34,-.92],[-.08,-.12],[-.52,-.12]]);
+  const g=new THREE.Group();g.add(extrude(s,.38));return g;
+}
+
+const makers=[iconPlay,iconHeart,iconStar,iconBell,iconCheck,iconPin,iconCamera,iconMessage,iconMusic,iconBolt];
+const icons=[];
+for(let i=0;i<10;i++){
+  const root=new THREE.Group();const art=makers[i]();root.add(art);
+  const ring=torus(1.02,.035,new THREE.MeshBasicMaterial({...ringMatBase}));ring.position.z=-.05;root.add(ring);
+  const c=i%5,r=Math.floor(i/5);root.userData.base=new THREE.Vector3((c-2)*3.02,(.5-r)*3.28,0);root.userData.ring=ring;root.userData.art=art;
+  scene.add(root);icons.push(root);
+}
+
+const clamp=x=>Math.max(0,Math.min(1,x));
+const smooth=x=>{x=clamp(x);return x*x*(3-2*x)};
+const backOut=x=>{x=clamp(x);const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const bell=x=>Math.exp(-x*x);
+
+function renderAt(t){
+  t=Math.max(0,Math.min(DURATION,t));
+  camera.position.x=Math.sin(t*.56)*.22;
+  camera.position.y=Math.cos(t*.48)*.10;
+  camera.lookAt(0,0,0);
+  icons.forEach((g,i)=>{
+    const start=.12+i*.055;
+    const e=backOut((t-start)/.52);
+    const x=smooth((t-3.42+i*.012)/.42);
+    const alive=e*(1-x);
+    const b=g.userData.base;
+    g.visible=alive>.001;
+    g.scale.setScalar(Math.max(.001,alive*(1+.045*Math.sin(t*4.6+i*.8))));
+    g.position.set(b.x,b.y+.10*Math.sin(t*2.1+i*.73),b.z+.08*Math.sin(t*1.7+i*.35));
+    g.rotation.x=(1-e)*(-.55)+.08*Math.sin(t*1.6+i);
+    g.rotation.y=(1-e)*(.9*(i%2?-1:1))+.16*Math.sin(t*1.25+i*.45)+x*(i%2?-1.15:1.15);
+    g.rotation.z=.055*Math.sin(t*2.3+i*.6)+x*.35;
+    const pulse=bell((t-(2.12+i*.035))/.16);
+    const ring=g.userData.ring;
+    ring.scale.setScalar(.75+pulse*1.85);
+    ring.material.opacity=.52*pulse*alive;
+    g.userData.art.rotation.z+=0;
+  });
+  renderer.render(scene,camera);
+}
+
+function resize(){
+  const w=Math.max(1,innerWidth),h=Math.max(1,innerHeight);
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();renderAt(currentTime);
+}
+let currentTime=0,raf=0,playStart=0;
+function seek(t){currentTime=Math.max(0,Math.min(DURATION,Number(t)||0));renderAt(currentTime)}
+function play(){cancelAnimationFrame(raf);playStart=performance.now()-currentTime*1000;const loop=now=>{const t=((now-playStart)/1000)%DURATION;seek(t);raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop)}
+addEventListener('resize',resize);resize();
+
+window.OPENER={W,H,DURATION,ready:false,seek,play};
+seek(0);window.OPENER.ready=true;
+if(!q.has('clean'))play();
+</script>
+</body>
+</html>
