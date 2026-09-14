@@ -61,9 +61,9 @@ jobs:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache isolated Remotion engine
+      - name: Restore isolated Remotion engine
         id: remotion-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             remotion/node_modules
@@ -76,6 +76,22 @@ jobs:
       - name: Install pinned Remotion engine
         if: steps.remotion-cache.outputs.cache-hit != 'true'
         run: npm run remotion:setup
+
+      - name: Save isolated Remotion engine
+        if: steps.remotion-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            remotion/node_modules
+            remotion/package-lock.json
+          key: remotion-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json') }}
+
+      - name: Restore Remotion bundle cache
+        id: remotion-bundle-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: remotion/.cache/bundles
+          key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
 
       - name: Run code and skill checks
         run: npm run check
@@ -96,6 +112,13 @@ jobs:
             env RENDER_ENGINE=auto INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=1280 HEIGHT=720 \
             CRF=20 PRESET=veryfast REMOTION_IMAGE_FORMAT=png REMOTION_CONCURRENCY=75% \
             OUT_VIDEO=output/e2e-remotion.mp4 npm run export:mp4
+
+      - name: Save Remotion bundle cache
+        if: always() && steps.remotion-bundle-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: remotion/.cache/bundles
+          key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
 
       - name: Verify cross-engine contracts
         run: |
@@ -182,9 +205,9 @@ jobs:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache isolated Remotion engine
+      - name: Restore isolated Remotion engine
         id: remotion-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             remotion/node_modules
@@ -197,6 +220,22 @@ jobs:
       - name: Install pinned Remotion engine
         if: steps.remotion-cache.outputs.cache-hit != 'true'
         run: npm run remotion:setup
+
+      - name: Save isolated Remotion engine
+        if: steps.remotion-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            remotion/node_modules
+            remotion/package-lock.json
+          key: remotion-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json') }}
+
+      - name: Restore Remotion bundle cache
+        id: remotion-bundle-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: remotion/.cache/bundles
+          key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
 
       - name: Run code and skill checks
         run: npm run check
@@ -217,6 +256,13 @@ jobs:
             env RENDER_ENGINE=auto INDEX=assets/starter.html QUALITY=fast FPS=6 WIDTH=3840 HEIGHT=2160 \
             CRF=18 PRESET=veryfast REMOTION_IMAGE_FORMAT=jpeg REMOTION_JPEG_QUALITY=95 \
             REMOTION_CONCURRENCY=75% OUT_VIDEO=output/e2e-4k.mp4 npm run export:mp4
+
+      - name: Save Remotion bundle cache
+        if: always() && steps.remotion-bundle-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: remotion/.cache/bundles
+          key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
 
       - name: Verify 4K render contract
         run: |

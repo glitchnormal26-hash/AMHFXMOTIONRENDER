@@ -33,3 +33,15 @@ test('Remotion bridge embeds local OPENER HTML same-origin and rewrites vendor p
   assert.match(exporter, /publicPath:\s*'\/'/);
   assert.match(exporter, /timeoutInMilliseconds:\s*remotionTimeoutMs/);
 });
+
+test('Remotion bundle cache is source-keyed and scene assets are materialized after bundling', async () => {
+  const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
+  const gitignore = await fs.readFile('.gitignore', 'utf8');
+
+  assert.match(exporter, /function bundleKey\(\)/);
+  assert.match(exporter, /Remotion bundle cache hit/);
+  assert.match(exporter, /materializeServeDir/);
+  assert.match(exporter, /await materializeServeDir\(bundleInfo\.cached, serveDir, scenePath\)/);
+  assert.doesNotMatch(exporter, /\bpublicDir,\n\s*outDir:/);
+  assert.match(gitignore, /^remotion\/\.cache\/$/m);
+});

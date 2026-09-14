@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {createRequire} from 'node:module';
 import {availableParallelism} from 'node:os';
 import {spawnSync} from 'node:child_process';
@@ -118,6 +119,7 @@ for (const {file} of tracks) {
 async function linkOrCopy(source, destination) {
   if (!fs.existsSync(source)) return;
   await fsp.mkdir(path.dirname(destination), {recursive: true});
+  await fsp.rm(destination, {recursive: true, force: true});
   try {
     await fsp.symlink(source, destination, fs.statSync(source).isDirectory() ? 'dir' : 'file');
   } catch {
@@ -132,7 +134,7 @@ function rewriteBundledVendors(html) {
   );
 }
 
-async function preparePublicDir(publicDir) {
+async function prepareScene() {
   const root = process.cwd();
   const indexFile = path.resolve(env.INDEX || 'index.html');
   if (!fs.existsSync(indexFile) || !fs.statSync(indexFile).isFile()) {
@@ -146,20 +148,73 @@ async function preparePublicDir(publicDir) {
   const scenePath = relative.split(path.sep).join('/');
   const sceneDir = path.posix.dirname(scenePath);
   const sceneBase = sceneDir === '.' ? '' : `${sceneDir}/`;
+  const sceneHtml = rewriteBundledVendors(await fsp.readFile(indexFile, 'utf8'));
+  return {sceneHtml, sceneBase, scenePath};
+}
 
-  await fsp.mkdir(publicDir, {recursive: true});
-  await linkOrCopy(path.join(root, 'assets'), path.join(publicDir, 'assets'));
-  await linkOrCopy(path.join(root, 'runtime'), path.join(publicDir, 'runtime'));
-  await linkOrCopy(path.join(root, 'index.html'), path.join(publicDir, 'index.html'));
-  await linkOrCopy(path.join(root, 'node_modules/gsap'), path.join(publicDir, 'amhfx-vendor/gsap'));
+function bundleKey() {
+  const hash = crypto.createHash('sha256');
+  for (const file of ['package.json', 'src/index.js']) {
+    hash.update(fs.readFileSync(path.join(remotionRoot, file)));
+  }
+  hash.update(`node-${process.versions.node.split('.')[0]}`);
+  hash.update(`${process.platform}-${process.arch}`);
+  return hash.digest('hex').slice(0, 24);
+}
+
+async function buildCachedBundle() {
+  const cacheRoot = path.resolve(env.REMOTION_BUNDLE_CACHE_DIR || 'remotion/.cache/bundles');
+  const key = bundleKey();
+  const cached = path.join(cacheRoot, key);
+  const marker = path.join(cached, '.amhfx-bundle-ready');
+
+  if (fs.existsSync(marker)) {
+    console.log(`Remotion bundle cache hit: ${key}`);
+    return {cached, key, cacheHit: true};
+  }
+
+  await fsp.mkdir(cacheRoot, {recursive: true});
+  const buildDir = path.join(cacheRoot, `.build-${key}-${process.pid}-${Date.now()}`);
+  await fsp.rm(buildDir, {recursive: true, force: true});
+
+  console.log(`Remotion bundle cache miss: ${key}`);
+  const built = await bundle({
+    entryPoint: path.join(remotionRoot, 'src/index.js'),
+    rootDir: remotionRoot,
+    outDir: buildDir,
+    publicPath: '/',
+    enableCaching: true,
+    onProgress: (progress) => {
+      if (progress === 100 || progress % 25 === 0) console.log(`Bundle ${progress}%`);
+    },
+  });
+  await fsp.writeFile(path.join(built, '.amhfx-bundle-ready'), `${key}\n`);
+
+  try {
+    await fsp.rename(built, cached);
+  } catch (error) {
+    if (!fs.existsSync(marker)) throw error;
+    await fsp.rm(built, {recursive: true, force: true});
+  }
+
+  return {cached, key, cacheHit: false};
+}
+
+async function materializeServeDir(cachedBundle, serveDir, scenePath) {
+  await fsp.cp(cachedBundle, serveDir, {recursive: true, force: true});
+
+  const root = process.cwd();
+  await linkOrCopy(path.join(root, 'assets'), path.join(serveDir, 'assets'));
+  await linkOrCopy(path.join(root, 'runtime'), path.join(serveDir, 'runtime'));
+  await linkOrCopy(path.join(root, 'node_modules/gsap'), path.join(serveDir, 'amhfx-vendor/gsap'));
 
   const firstSegment = scenePath.split('/')[0];
   if (firstSegment && !['assets', 'runtime', 'index.html'].includes(firstSegment)) {
-    await linkOrCopy(path.join(root, firstSegment), path.join(publicDir, firstSegment));
+    await linkOrCopy(path.join(root, firstSegment), path.join(serveDir, firstSegment));
   }
 
-  const sceneHtml = rewriteBundledVendors(await fsp.readFile(indexFile, 'utf8'));
-  return {sceneHtml, sceneBase};
+  const gsap = path.join(serveDir, 'amhfx-vendor/gsap/dist/gsap.min.js');
+  if (!fs.existsSync(gsap)) throw new Error('Remotion serve directory is missing the GSAP runtime');
 }
 
 function muxAudio(videoInput, output, encodedDuration) {
@@ -182,14 +237,13 @@ function muxAudio(videoInput, output, encodedDuration) {
 
 await fsp.mkdir(path.dirname(outVideo), {recursive: true});
 const workDir = await fsp.mkdtemp(path.join(path.dirname(outVideo), '.remotion-'));
-const publicDir = path.join(workDir, 'public');
-const bundleDir = path.join(workDir, 'bundle');
+const serveDir = path.join(workDir, 'serve');
 const rawVideo = path.join(workDir, 'video-only.mp4');
 const stagedVideo = path.join(workDir, 'render.mp4');
 const started = performance.now();
 
 try {
-  const {sceneHtml, sceneBase} = await preparePublicDir(publicDir);
+  const {sceneHtml, sceneBase, scenePath} = await prepareScene();
 
   let duration;
   await withCapture({...options, width: Math.min(width, 1280), height: Math.min(height, 720)}, async (capture) => {
@@ -209,31 +263,17 @@ try {
     sceneTimeoutMs,
   };
 
+  const bundleInfo = await buildCachedBundle();
+  await materializeServeDir(bundleInfo.cached, serveDir, scenePath);
+
   console.log(
     `remotion ${remotionVersion}: ${width}x${height} ${fps}fps, ${frameCount} frames, ` +
     `concurrency=${concurrency}, image=${imageFormat}, preset=${preset}`,
   );
 
-  const serveUrl = await bundle({
-    entryPoint: path.join(remotionRoot, 'src/index.js'),
-    rootDir: remotionRoot,
-    publicDir,
-    outDir: bundleDir,
-    publicPath: '/',
-    enableCaching: true,
-    onProgress: (progress) => {
-      if (progress === 100 || progress % 25 === 0) console.log(`Bundle ${progress}%`);
-    },
-  });
-
-  const bundledGsap = path.join(serveUrl, 'amhfx-vendor/gsap/dist/gsap.min.js');
-  if (!fs.existsSync(bundledGsap)) {
-    throw new Error('Remotion public bundle is missing the GSAP runtime');
-  }
-
   const browserExecutable = env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath();
   const composition = await selectComposition({
-    serveUrl,
+    serveUrl: serveDir,
     id: 'AMHFXBridge',
     inputProps,
     browserExecutable,
@@ -243,7 +283,7 @@ try {
   let lastProgress = -1;
   const renderOptions = {
     composition,
-    serveUrl,
+    serveUrl: serveDir,
     codec: 'h264',
     outputLocation: rawVideo,
     inputProps,
@@ -305,6 +345,8 @@ try {
     x264_preset: preset,
     crf: hardwareAcceleration === 'disabled' ? crf : null,
     video_bitrate: hardwareAcceleration === 'disabled' ? null : videoBitrate,
+    bundle_cache_key: bundleInfo.key,
+    bundle_cache_hit: bundleInfo.cacheHit,
     cpu_threads: availableParallelism(),
     elapsed_seconds: (performance.now() - started) / 1000,
     frames_directory: null,
