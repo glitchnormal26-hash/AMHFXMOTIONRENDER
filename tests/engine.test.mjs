@@ -33,11 +33,15 @@ test('Remotion bridge boots OPENER by explicitly replaying scene scripts inside 
   assert.match(bridge, /node\.remove\(\)/);
   assert.match(bridge, /doc\.write/);
   assert.match(bridge, /appendChild\(script\)/);
-  assert.match(bridge, /await bootPromiseRef\.current/);
+  assert.match(bridge, /await bootScene\(iframe, preparedHtml, sceneTimeoutMs\)/);
+  assert.match(bridge, /const handle = delayRender\(`AMHFX OPENER frame \$\{frame\}`\)/);
+  assert.match(bridge, /const clearHandle = \(\) =>/);
+  assert.match(bridge, /withTimeout/);
   assert.match(bridge, /injectBaseHref/);
   assert.match(bridge, /window\.location\.origin/);
   assert.doesNotMatch(bridge, /history\.replaceState/);
   assert.doesNotMatch(bridge, /srcDoc:/);
+  assert.doesNotMatch(bridge, /useMemo\(\s*\(\) => delayRender/);
   assert.match(bridge, /readyState=.*opener=.*gsap=/s);
 
   assert.match(exporter, /sceneHtml,\n\s*sceneBase,\n\s*width/);
