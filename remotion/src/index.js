@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useMemo, useRef} from 'react';
+import React, {useLayoutEffect, useMemo, useRef} from 'react';
 import {
   AbsoluteFill,
   Composition,
@@ -23,6 +23,20 @@ const waitFor = async (predicate, timeoutMs, describe) => {
   }
 };
 
+const withTimeout = async (promise, timeoutMs, label) => {
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Timed out during ${label} after ${timeoutMs}ms`)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 const waitForPaint = (win) =>
   new Promise((resolve) => {
     win.requestAnimationFrame(() => win.requestAnimationFrame(resolve));
@@ -44,7 +58,7 @@ const isExecutableScript = (type) => {
   return !normalized || normalized === 'text/javascript' || normalized === 'application/javascript' || normalized === 'module';
 };
 
-const bootScene = async (iframe, preparedHtml) => {
+const bootScene = async (iframe, preparedHtml, timeoutMs) => {
   const win = iframe.contentWindow;
   if (!win) throw new Error('AMHFX scene window is unavailable');
   const doc = win.document;
@@ -65,7 +79,7 @@ const bootScene = async (iframe, preparedHtml) => {
   doc.close();
 
   for (const descriptor of scripts) {
-    await new Promise((resolve, reject) => {
+    await withTimeout(new Promise((resolve, reject) => {
       const script = doc.createElement('script');
       for (const [name, value] of descriptor.attrs) script.setAttribute(name, value);
       const src = script.getAttribute('src');
@@ -78,7 +92,7 @@ const bootScene = async (iframe, preparedHtml) => {
       if (!src) script.textContent = descriptor.text;
       (doc.body || doc.head || doc.documentElement).appendChild(script);
       if (!src && type !== 'module') resolve();
-    });
+    }), timeoutMs, `scene script ${descriptor.attrs.find(([name]) => name === 'src')?.[1] || '[inline]'}`);
   }
 };
 
@@ -86,11 +100,6 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const iframeRef = useRef(null);
-  const bootPromiseRef = useRef(null);
-  const handle = useMemo(
-    () => delayRender(`AMHFX OPENER frame ${frame}`),
-    [frame],
-  );
   const preparedHtml = useMemo(() => {
     const baseHref = sceneBase
       ? `${window.location.origin}/${String(sceneBase).replace(/^\/+/, '')}`
@@ -99,21 +108,27 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
   }, [sceneBase, sceneHtml]);
 
   useLayoutEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    bootPromiseRef.current = bootScene(iframe, preparedHtml);
-  }, [preparedHtml]);
-
-  useEffect(() => {
     let active = true;
+    let cleared = false;
+    const handle = delayRender(`AMHFX OPENER frame ${frame}`);
+    const clearHandle = () => {
+      if (cleared) return;
+      cleared = true;
+      try {
+        continueRender(handle);
+      } catch {
+        // A cancelled render or renderer teardown may invalidate the handle.
+      }
+    };
 
     const renderFrame = async () => {
-      await bootPromiseRef.current;
       const iframe = iframeRef.current;
       if (!iframe) throw new Error('AMHFX scene iframe is unavailable');
+      await bootScene(iframe, preparedHtml, sceneTimeoutMs);
+      if (!active) return;
+
       const win = iframe.contentWindow;
       if (!win) throw new Error('AMHFX scene window is unavailable');
-
       await waitFor(
         () => win.OPENER?.ready === true && typeof win.OPENER?.seek === 'function',
         sceneTimeoutMs,
@@ -133,23 +148,20 @@ const SceneBridge = ({sceneHtml, sceneBase, sceneTimeoutMs}) => {
       await win.OPENER.seek(frame / fps);
       win.gsap?.ticker?.tick();
       await waitForPaint(win);
-
-      if (active) continueRender(handle);
+      if (active) clearHandle();
     };
 
     renderFrame().catch((error) => {
-      if (active) cancelRender(error);
+      if (!active) return;
+      cleared = true;
+      cancelRender(error);
     });
 
     return () => {
       active = false;
-      try {
-        continueRender(handle);
-      } catch {
-        // The handle may already have been continued for the captured frame.
-      }
+      clearHandle();
     };
-  }, [frame, fps, handle, sceneTimeoutMs]);
+  }, [frame, fps, preparedHtml, sceneTimeoutMs]);
 
   return React.createElement(
     AbsoluteFill,
