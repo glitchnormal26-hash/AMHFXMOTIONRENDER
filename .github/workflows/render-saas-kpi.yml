@@ -1,0 +1,75 @@
+name: Render SaaS KPI 15s
+
+on:
+  push:
+    branches:
+      - 'render/saas-kpi-15s'
+    paths:
+      - 'projects/saas-kpi-15s/**'
+      - '.github/workflows/render-saas-kpi.yml'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run AMHFX checks
+        run: npm run check
+      - name: Render 15s 1080p MP4
+        run: |
+          mkdir -p output
+          env INDEX=projects/saas-kpi-15s/index.html QUALITY=fast FPS=30 WIDTH=1920 HEIGHT=1080 \
+            CRF=18 PRESET=veryfast OUT_VIDEO=output/saas-kpi-15s-1080p.mp4 npm run render:ffmpeg
+      - name: Verify delivery contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/saas-kpi-15s-1080p.verify.json','utf8'));
+          if (r.video?.codec_name !== 'h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1920 || r.video?.height !== 1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration)-15) > 0.12) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Expected silent asset-only render with no audio stream');
+          NODE
+      - name: Extract QA frames
+        run: |
+          for spec in '015 opening' '075 mrr-impact' '165 chart-land' '225 nrr' '300 churn-expansion' '375 pullback' '435 final'; do
+            set -- $spec
+            ffmpeg -y -i output/saas-kpi-15s-1080p.mp4 -vf "select='eq(n,$1)'" -fps_mode vfr -frames:v 1 "output/qa-$2.png"
+          done
+          ffmpeg -y -i output/saas-kpi-15s-1080p.mp4 \
+            -vf "select='eq(n,15)+eq(n,75)+eq(n,165)+eq(n,225)+eq(n,300)+eq(n,375)+eq(n,435)',scale=480:270,tile=4x2:padding=8:margin=8" \
+            -frames:v 1 output/qa-contact-sheet.png
+      - name: Hash deliverables
+        run: sha256sum output/saas-kpi-15s-1080p.mp4 output/qa-*.png > output/sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saas-kpi-15s-1080p
+          path: |
+            output/saas-kpi-15s-1080p.mp4
+            output/saas-kpi-15s-1080p.verify.json
+            output/qa-*.png
+            output/sha256.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
