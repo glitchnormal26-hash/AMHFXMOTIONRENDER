@@ -27,12 +27,12 @@ jobs:
         run: npm ci
       - name: Capture authored keyframes
         run: |
-          URL="file://${GITHUB_WORKSPACE}/projects/saas-kpi-15s/index.html?clean=1" \
+          URL="file://${GITHUB_WORKSPACE}/projects/saas-kpi-15s/final.html?clean=1" \
           TIMES="0.5,2.5,5.5,7.5,10,12.5,14.5" WIDTH=1920 HEIGHT=1080 OUT=output/snaps \
           npm run snap
       - uses: actions/upload-artifact@v4
         with:
-          name: saas-kpi-snapshots
+          name: saas-kpi-snapshots-final
           path: output/snaps
           if-no-files-found: error
           retention-days: 3
