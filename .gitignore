@@ -1,6 +1,7 @@
 node_modules/
 output/
 frames/
+motra-output/
 *.mp4
 *.mov
 *.webm
@@ -8,6 +9,8 @@ frames/
 *.mp3
 *.m4a
 *.aac
+*.sha256
+*.verify.json
 .DS_Store
 __pycache__/
 *.pyc

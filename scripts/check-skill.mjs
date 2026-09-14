@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sources = [
-  ["skill-source/part-01.md", "04b0902dfaa531a6d902e0452c4dd4ade763f8d1"],
-  ["skill-source/part-02.md", "25fcacce3028c55d923862ed46361611a229e46d"],
+  ["skill-source/part-01.md", "1545e682a980b0ed74dc5363ea2dddf2039efef0"],
+  ["skill-source/part-02.md", "1132d7eaa60f69a9be5f85d1e795f7ab110ab205"],
 ];
 
 const gitBlobSha = data => crypto
@@ -26,15 +26,17 @@ const chunks = sources.map(([relative, expected]) => {
 });
 
 const combined = Buffer.concat(chunks).toString("utf8");
-if (!combined.includes("version: 3.9-modular.2-strict-antippt")) {
-  throw new Error("Motion Skill v3.9 version marker is missing.");
+if (!combined.includes("version: 3.9.3-motion-depth-gates")) {
+  throw new Error("Canonical Motion Skill source version marker is missing.");
 }
 
 for (const relative of [
   "SKILL.md",
   "references/anti-ppt.md",
   "references/architecture.md",
+  "references/camera-motion.md",
   "references/explainer.md",
+  "references/failure-gates.md",
   "references/full-runtime.md",
   "references/techniques.md",
   "scripts/export-mp4.mjs",
@@ -44,4 +46,4 @@ for (const relative of [
   }
 }
 
-console.log("Motion Designer v3.9 unified integration verified.");
+console.log("Motion Designer v3.9.4 integration and canonical source verified.");

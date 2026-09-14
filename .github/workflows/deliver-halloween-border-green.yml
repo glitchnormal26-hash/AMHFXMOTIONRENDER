@@ -9,45 +9,42 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: deliver-halloween-border-green-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  render-and-publish:
+  render:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
       - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-
-      - name: Install isolated Remotion dependencies
+      - name: Install isolated legacy delivery dependencies
         working-directory: delivery/halloween-border-green
         run: npm install
-
-      - name: Render delivery mirror
+      - name: Render isolated legacy delivery
         working-directory: delivery/halloween-border-green
         run: |
-          mkdir -p ../../motra-output
-          npx remotion render remotion/index.ts HalloweenBorderGreen ../../motra-output/halloween-border-green-16x9-10s.mp4 \
+          mkdir -p ../../output
+          npx remotion render remotion/index.ts HalloweenBorderGreen ../../output/halloween-border-green-16x9-10s.mp4 \
             --codec=h264 \
             --crf=15 \
             --pixel-format=yuv420p \
             --concurrency=2
-
       - name: ffprobe QA
         shell: bash
         run: |
           set -euo pipefail
-          FILE='motra-output/halloween-border-green-16x9-10s.mp4'
+          FILE='output/halloween-border-green-16x9-10s.mp4'
           test -s "$FILE"
           CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$FILE")
           WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$FILE")
@@ -62,12 +59,14 @@ jobs:
           test "$FPS" = '30/1'
           case "$PIX" in yuv420p|yuvj420p) ;; *) exit 1 ;; esac
           awk -v d="$DURATION" 'BEGIN { if (d < 9.95 || d > 10.05) exit 1 }'
-          sha256sum "$FILE" > motra-output/halloween-border-green-16x9-10s.sha256
-
-      - name: Publish MP4 to public motra-output
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f motra-output/halloween-border-green-16x9-10s.mp4 motra-output/halloween-border-green-16x9-10s.sha256
-          git commit -m 'Publish Halloween border green MP4' || exit 0
-          git push origin HEAD:main
+          sha256sum "$FILE" > output/halloween-border-green-16x9-10s.sha256
+      - name: Upload verified delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-border-green-16x9-10s
+          path: |
+            output/halloween-border-green-16x9-10s.mp4
+            output/halloween-border-green-16x9-10s.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
