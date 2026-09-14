@@ -41,8 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -56,14 +56,14 @@ jobs:
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
 
       - name: Cache locked Chromium
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
 
       - name: Restore isolated Remotion engine
         id: remotion-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             remotion/node_modules
@@ -79,7 +79,7 @@ jobs:
 
       - name: Save isolated Remotion engine
         if: steps.remotion-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             remotion/node_modules
@@ -88,7 +88,7 @@ jobs:
 
       - name: Restore Remotion bundle cache
         id: remotion-bundle-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: remotion/.cache/bundles
           key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Save Remotion bundle cache
         if: always() && steps.remotion-bundle-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: remotion/.cache/bundles
           key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
@@ -161,7 +161,7 @@ jobs:
               -vf "select='eq(n,0)+eq(n,27)+eq(n,53)'" -fps_mode vfr "output/${engine}-frame-%02d.png"
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: motion-v3.9.4-engine-benchmark
           path: |
@@ -185,8 +185,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -200,14 +200,14 @@ jobs:
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
 
       - name: Cache locked Chromium
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/puppeteer
           key: chromium-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
 
       - name: Restore isolated Remotion engine
         id: remotion-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             remotion/node_modules
@@ -223,7 +223,7 @@ jobs:
 
       - name: Save isolated Remotion engine
         if: steps.remotion-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             remotion/node_modules
@@ -232,7 +232,7 @@ jobs:
 
       - name: Restore Remotion bundle cache
         id: remotion-bundle-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: remotion/.cache/bundles
           key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
@@ -259,7 +259,7 @@ jobs:
 
       - name: Save Remotion bundle cache
         if: always() && steps.remotion-bundle-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: remotion/.cache/bundles
           key: remotion-bundle-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('remotion/package.json', 'remotion/src/**') }}
@@ -316,7 +316,7 @@ jobs:
           cat output/benchmark-audio-remotion.txt
 
       - name: Upload E2E evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: motion-v3.9.4-remotion-e2e-qa
           path: |
