@@ -1,7 +1,15 @@
 name: Render Gift Box Playback Proof
 
 on:
-  pull_request:
+  push:
+    branches: [feat/gift-box-deluxe]
+    paths:
+      - 'index.html'
+      - 'GIFT-BOX.md'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/render-gift-box-proof.yml'
   workflow_dispatch:
 
 permissions:
