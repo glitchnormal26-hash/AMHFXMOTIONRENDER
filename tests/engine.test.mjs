@@ -40,6 +40,13 @@ test('Remotion bridge loads an isolated same-origin scene URL in clean mode', as
   assert.match(exporter, /timeoutInMilliseconds:\s*remotionTimeoutMs/);
 });
 
+test('Remotion resolves async Puppeteer executable paths before renderer startup', async () => {
+  const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
+  assert.match(exporter, /await Promise\.resolve\(puppeteer\.executablePath\(\)\)/);
+  assert.match(exporter, /Puppeteer browser executable not found/);
+  assert.match(exporter, /fs\.existsSync\(browserExecutable\)/);
+});
+
 test('Remotion bundle cache is source-keyed and scene assets are materialized after bundling', async () => {
   const exporter = await fs.readFile('scripts/export-remotion.mjs', 'utf8');
   const gitignore = await fs.readFile('.gitignore', 'utf8');
