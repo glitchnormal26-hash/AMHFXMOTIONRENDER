@@ -1,0 +1,50 @@
+name: Preview SaaS KPI 15s
+
+on:
+  push:
+    branches:
+      - 'render/saas-kpi-15s'
+    paths:
+      - '.github/workflows/render-saas-kpi-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install dependencies
+        run: npm ci
+      - name: Render lightweight preview
+        run: |
+          mkdir -p output
+          env INDEX=projects/saas-kpi-15s/index.html QUALITY=fast FPS=8 WIDTH=960 HEIGHT=540 \
+            CRF=24 PRESET=ultrafast OUT_VIDEO=output/saas-kpi-preview.mp4 npm run render:ffmpeg
+      - name: Extract preview contact sheet
+        run: |
+          ffmpeg -y -i output/saas-kpi-preview.mp4 \
+            -vf "select='eq(n,4)+eq(n,20)+eq(n,44)+eq(n,60)+eq(n,80)+eq(n,100)+eq(n,116)',scale=480:270,tile=4x2:padding=8:margin=8" \
+            -frames:v 1 output/preview-contact-sheet.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saas-kpi-preview
+          path: |
+            output/saas-kpi-preview.mp4
+            output/preview-contact-sheet.png
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
