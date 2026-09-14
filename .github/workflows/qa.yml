@@ -16,15 +16,19 @@ jobs:
   syntax:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run check
       - run: python -m py_compile scripts/serve.py
       - name: Enforce renderer and repository hygiene
@@ -44,4 +48,21 @@ jobs:
             git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256'
             exit 1
           fi
-          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || p.scripts['render:motra']) process.exit(1)"
+          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || !p.scripts['render:remotion'] || p.scripts['render:motra']) process.exit(1)"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json'));
+          if (lock.version !== pkg.version || lock.packages?.['']?.version !== pkg.version) {
+            throw new Error(`package-lock root version must match package.json (${pkg.version})`);
+          }
+          if (Object.keys(lock.packages).some(p => /node_modules\/(?:@remotion\/|remotion(?:\/|$))/.test(p))) {
+            throw new Error('Remotion must stay isolated from the root package-lock; use remotion/package.json');
+          }
+          const optional = JSON.parse(fs.readFileSync('remotion/package.json'));
+          for (const name of ['remotion', '@remotion/renderer', '@remotion/bundler']) {
+            if (optional.dependencies?.[name] !== '4.0.524') {
+              throw new Error(`${name} must be pinned to 4.0.524`);
+            }
+          }
+          NODE

@@ -23,3 +23,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Optional Remotion engine
+
+The optional renderer under `remotion/` depends on Remotion packages, currently
+pinned to version 4.0.524. Remotion is distributed under the Remotion License,
+not the MIT license above. Eligibility for free use depends on the user or
+organization; other organizations may require a Company License.
+
+Review the license shipped by Remotion before enabling this engine:
+https://github.com/remotion-dev/remotion/blob/main/LICENSE.md

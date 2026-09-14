@@ -7,18 +7,24 @@
     "serve": "python scripts/serve.py",
     "snap": "node scripts/snap.mjs",
     "export:frames": "node scripts/export-frames.mjs",
-    "export:mp4": "node scripts/export-mp4.mjs",
-    "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
+    "export:mp4": "node scripts/export.mjs",
+    "export:mp4:final": "QUALITY=final node scripts/export.mjs",
+    "render:auto": "node scripts/export.mjs",
     "render:ffmpeg": "node scripts/export-mp4.mjs",
     "render:ffmpeg:final": "QUALITY=final node scripts/export-mp4.mjs",
+    "render:remotion": "node scripts/export-remotion.mjs",
+    "render:remotion:final": "QUALITY=final node scripts/export-remotion.mjs",
+    "remotion:setup": "npm install --prefix remotion --omit=dev --no-audit --no-fund",
     "check:skill": "node scripts/check-skill.mjs",
-    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
+    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/export.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-remotion.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js && node --check scripts/lib/capture.mjs && node --check scripts/lib/verify.mjs && node --check remotion/src/index.js && npm test",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "node --test tests/*.e2e.mjs"
   },
   "dependencies": {
     "gsap": "^3.13.0",
-    "puppeteer": "^24.0.0"
+    "puppeteer": "^25.10.0"
   },
-  "description": "Browser motion renderer with deterministic frame capture and FFmpeg H.264/AAC encoding, muxing, and verification.",
+  "description": "Browser motion renderer with deterministic OPENER capture, optional concurrent Remotion rendering, FFmpeg audio muxing, and ffprobe verification.",
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
