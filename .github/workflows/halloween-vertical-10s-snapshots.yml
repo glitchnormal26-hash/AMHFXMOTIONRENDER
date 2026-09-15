@@ -1,0 +1,43 @@
+name: Halloween Vertical 10s Snapshot QA
+
+on:
+  push:
+    branches:
+      - render/halloween-vertical-10s-1080p
+    paths:
+      - '.github/workflows/halloween-vertical-10s-snapshots.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: halloween-vertical-10s-snapshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Capture six QA frames
+        run: |
+          env URL="file://${GITHUB_WORKSPACE}/projects/halloween-vertical-10s/scene.html?clean=1" \
+            WIDTH=1080 HEIGHT=1920 TIMES="0,2,4,6,8,9.96" \
+            OUT=output/halloween-vertical-10s-snapshots \
+            npm run snap
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-vertical-10s-snapshots
+          path: output/halloween-vertical-10s-snapshots
+          if-no-files-found: error
+          retention-days: 7
