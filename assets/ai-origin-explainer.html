@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Awal Mula A.I — Vertical Explainer</title>
+<style>
+:root{
+  --ink:#070B12;--navy:#0D1522;--cream:#F4EBDD;--muted:#AAB7C8;
+  --cyan:#64E8E1;--amber:#FFB44C;--coral:#FF6B5C;--line:rgba(244,235,221,.13);
+}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020409}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#viewport-fit{position:fixed;left:50%;top:50%;width:1080px;height:1920px;transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center;overflow:hidden;background:var(--ink);color:var(--cream)}
+#camera,#world{position:absolute;inset:0;width:1080px;height:1920px;transform-origin:540px 960px;will-change:transform}
+#world{overflow:hidden;background:
+  radial-gradient(700px 900px at 80% 18%,rgba(100,232,225,.11),transparent 64%),
+  radial-gradient(700px 900px at 12% 78%,rgba(255,180,76,.10),transparent 68%),
+  linear-gradient(180deg,#07101B 0%,#080B13 62%,#05070C 100%)}
+.grid{position:absolute;inset:-80px;opacity:.25;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at 50% 45%,#000 25%,transparent 78%)}
+.vignette{position:absolute;inset:0;box-shadow:inset 0 0 190px rgba(0,0,0,.70);pointer-events:none;z-index:20}
+.noise{position:absolute;inset:0;opacity:.07;mix-blend-mode:screen;pointer-events:none;z-index:19;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.36'/%3E%3C/svg%3E")}
+.kicker{font-size:24px;letter-spacing:.22em;text-transform:uppercase;font-weight:750;color:var(--cyan)}
+.hero{font-size:112px;line-height:.88;letter-spacing:-.075em;font-weight:900;margin:24px 0 0;max-width:920px}
+.hero .accent{color:var(--amber)}
+.copy{font-size:31px;line-height:1.35;color:var(--muted);font-weight:560}
+#hook{position:absolute;left:72px;top:128px;width:936px;z-index:8}
+#hookCopy{margin-top:30px;width:690px}
+#networkWrap{position:absolute;left:65px;top:570px;width:950px;height:900px;z-index:5;filter:drop-shadow(0 26px 70px rgba(0,0,0,.38))}
+#network{width:100%;height:100%;overflow:visible}
+.edge{stroke:rgba(170,183,200,.22);stroke-width:3;fill:none}.edge.hot{stroke:url(#g);stroke-width:7;filter:url(#glow)}
+.node{fill:#101A29;stroke:rgba(244,235,221,.28);stroke-width:3}.node.hot{fill:rgba(100,232,225,.22);stroke:var(--cyan);filter:url(#glow)}
+.signal{fill:var(--amber);filter:url(#glow2)}
+#year1943,#year1950,#year1956,#payoff{position:absolute;inset:0;z-index:9;pointer-events:none}
+#year1943 .card{position:absolute;left:74px;top:610px;width:790px;padding:44px 46px 48px;border:1px solid rgba(244,235,221,.16);border-radius:32px;background:linear-gradient(155deg,rgba(20,31,47,.91),rgba(10,15,24,.82));box-shadow:0 42px 100px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.04);backdrop-filter:blur(16px)}
+.year{font-size:174px;line-height:.78;letter-spacing:-.08em;font-weight:900;color:var(--amber)}
+.label{margin-top:26px;font-size:42px;line-height:1.05;letter-spacing:-.035em;font-weight:800}
+.detail{margin-top:18px;font-size:26px;line-height:1.4;color:var(--muted);max-width:680px}
+.logic{display:flex;align-items:center;gap:18px;margin-top:34px}.pill{padding:15px 20px;border-radius:999px;border:1px solid rgba(100,232,225,.34);background:rgba(100,232,225,.08);font-size:22px;font-weight:760;color:var(--cyan)}
+.arrow{height:2px;flex:1;background:linear-gradient(90deg,var(--cyan),rgba(100,232,225,.1));position:relative}.arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:9px solid var(--cyan);border-top:6px solid transparent;border-bottom:6px solid transparent}
+#year1950 .quoteWrap{position:absolute;left:76px;top:390px;width:920px}
+#year1950 .yearline{display:flex;align-items:center;gap:28px}.miniYear{font-size:54px;font-weight:850;color:var(--coral);letter-spacing:-.04em}.rule{height:1px;flex:1;background:rgba(244,235,221,.18)}
+.quote{margin-top:70px;font-size:122px;line-height:.91;letter-spacing:-.07em;font-weight:900;max-width:900px}.quote em{font-style:normal;color:var(--cyan)}
+.credit{margin-top:36px;font-size:26px;color:var(--muted);font-weight:650}
+#year1956 .dartmouth{position:absolute;left:70px;top:274px;width:940px}
+#year1956 .bigAI{font-size:390px;line-height:.76;letter-spacing:-.11em;font-weight:950;color:transparent;-webkit-text-stroke:3px rgba(244,235,221,.72);position:absolute;left:40px;top:720px}
+#year1956 .bigAI span{color:var(--cream);-webkit-text-stroke:0;color:var(--cream);text-shadow:0 0 80px rgba(100,232,225,.12)}
+#year1956 .tag{display:inline-flex;align-items:center;gap:12px;padding:14px 18px;border-radius:999px;background:rgba(255,180,76,.10);border:1px solid rgba(255,180,76,.32);color:var(--amber);font-size:22px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+#year1956 h2{margin:34px 0 18px;font-size:72px;line-height:.96;letter-spacing:-.055em;max-width:900px}.sub{font-size:28px;line-height:1.35;color:var(--muted);max-width:770px}
+#timeline{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:7;pointer-events:none}
+#timelineLine{stroke:rgba(244,235,221,.18);stroke-width:4;fill:none;stroke-linecap:round}.timelineHot{stroke:url(#g2);stroke-width:9;fill:none;stroke-linecap:round;filter:url(#glow)}
+.milestoneDot{fill:#101621;stroke:rgba(244,235,221,.3);stroke-width:3}.milestoneDot.active{fill:var(--amber);stroke:#FFD59A;filter:url(#glow2)}
+#payoff .finish{position:absolute;left:72px;top:340px;width:930px}#payoff .finish h2{font-size:104px;line-height:.9;letter-spacing:-.07em;margin:0;max-width:920px}#payoff .finish h2 b{color:var(--cyan)}
+#payoff .finish p{font-size:31px;line-height:1.4;color:var(--muted);width:770px;margin-top:32px}
+#payoff .route{position:absolute;left:72px;bottom:170px;width:936px;display:flex;justify-content:space-between;align-items:center;font-size:24px;font-weight:820;color:var(--muted)}
+#payoff .route b{color:var(--cream)}.routeLine{height:2px;flex:1;margin:0 22px;background:linear-gradient(90deg,var(--cyan),var(--amber),var(--coral))}
+#corner{position:absolute;right:48px;top:52px;z-index:18;font-size:17px;letter-spacing:.18em;text-transform:uppercase;color:rgba(244,235,221,.34);font-weight:750}
+</style>
+</head>
+<body>
+<div id="viewport-fit">
+  <div id="camera"><div id="world">
+    <div class="grid"></div>
+    <div id="hook"><div class="kicker">Awal mula A.I.</div><h1 class="hero">Sebelum A.I.<br>punya <span class="accent">nama.</span></h1><div id="hookCopy" class="copy">Manusia lebih dulu mencoba menjelaskan cara pikiran bekerja — lalu menerjemahkannya menjadi logika mesin.</div></div>
+
+    <div id="networkWrap"><svg id="network" viewBox="0 0 950 900" aria-hidden="true">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1"><stop stop-color="#64E8E1"/><stop offset="1" stop-color="#FFB44C"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#64E8E1"/><stop offset=".6" stop-color="#FFB44C"/><stop offset="1" stop-color="#FF6B5C"/></linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow2"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path class="edge" d="M96 364 C210 220 294 214 376 302 S560 418 678 260 S810 194 882 286"/>
+      <path class="edge" d="M102 548 C236 454 302 496 402 582 S606 694 742 560 S820 480 888 512"/>
+      <path class="edge" d="M226 168 C276 260 284 398 220 510 S272 710 400 748 S650 778 788 694"/>
+      <path id="hotPath" class="edge hot" d="M86 450 C178 344 286 340 384 416 S566 548 678 414 S812 320 892 388"/>
+      <circle class="node hot" cx="86" cy="450" r="28"/><circle class="node" cx="226" cy="168" r="22"/><circle class="node" cx="220" cy="510" r="24"/><circle class="node hot" cx="384" cy="416" r="29"/><circle class="node" cx="402" cy="582" r="20"/><circle class="node" cx="400" cy="748" r="25"/><circle class="node hot" cx="678" cy="414" r="30"/><circle class="node" cx="742" cy="560" r="22"/><circle class="node" cx="788" cy="694" r="25"/><circle class="node hot" cx="892" cy="388" r="28"/>
+      <circle id="signal" class="signal" cx="86" cy="450" r="15"/>
+    </svg></div>
+
+    <svg id="timeline" viewBox="0 0 1080 1920" aria-hidden="true"><defs><linearGradient id="g2b" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#64E8E1"/><stop offset=".55" stop-color="#FFB44C"/><stop offset="1" stop-color="#FF6B5C"/></linearGradient></defs><path id="timelineLine" d="M875 320 C840 650 880 880 740 1110 S520 1420 316 1660"/><path id="timelineHot" class="timelineHot" d="M875 320 C840 650 880 880 740 1110 S520 1420 316 1660"/><circle id="m43" class="milestoneDot" cx="838" cy="690" r="18"/><circle id="m50" class="milestoneDot" cx="710" cy="1160" r="18"/><circle id="m56" class="milestoneDot" cx="390" cy="1570" r="18"/></svg>
+
+    <section id="year1943"><div class="card"><div class="year">1943</div><div class="label">Neuron menjadi model logika.</div><div class="detail">Warren McCulloch & Walter Pitts menunjukkan bahwa jaringan neuron sederhana bisa direpresentasikan sebagai aturan komputasi.</div><div class="logic"><span class="pill">INPUT</span><div class="arrow"></div><span class="pill">LOGIC</span><div class="arrow"></div><span class="pill">OUTPUT</span></div></div></section>
+
+    <section id="year1950"><div class="quoteWrap"><div class="yearline"><div class="miniYear">1950</div><div class="rule"></div></div><div class="quote">“Can machines<br><em>think?</em>”</div><div class="credit">Alan Turing · Computing Machinery and Intelligence</div></div></section>
+
+    <section id="year1956"><div class="dartmouth"><div class="tag">Dartmouth Workshop · 1956</div><h2>Satu nama untuk ambisi baru.</h2><div class="sub">John McCarthy dan rekan-rekannya mempopulerkan istilah <b>Artificial Intelligence</b> untuk bidang yang ingin membuat mesin menunjukkan kecerdasan.</div></div><div class="bigAI"><span>A</span>I</div></section>
+
+    <section id="payoff"><div class="finish"><div class="kicker">Jadi, A.I. bermula dari...</div><h2>ide untuk <b>memodelkan kecerdasan</b> — lalu membuatnya bisa dihitung.</h2><p>Dari neuron, pertanyaan tentang mesin berpikir, hingga lahirnya bidang “Artificial Intelligence”.</p></div><div class="route"><b>1943</b><div class="routeLine"></div><b>1950</b><div class="routeLine"></div><b>1956</b></div></section>
+
+    <div id="corner">AMHFX · Motion Designer v3.9.4</div><div class="noise"></div><div class="vignette"></div>
+  </div></div>
+</div>
+<script>
+const W=1080,H=1920,DURATION=13.2;
+const $=s=>document.querySelector(s);const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;const smooth=t=>{t=clamp(t);return t*t*(3-2*t)};const easeOut=t=>1-Math.pow(1-clamp(t),3);
+const range=(t,a,b)=>clamp((t-a)/(b-a));
+const viewport=$("#viewport-fit"),camera=$("#camera");
+function fit(){viewport.style.setProperty("--fit",Math.min(innerWidth/W,innerHeight/H))}addEventListener("resize",fit);fit();
+const hotPath=$("#hotPath"),signal=$("#signal"),tlHot=$("#timelineHot");
+const hotLen=hotPath.getTotalLength(),tlLen=tlHot.getTotalLength();hotPath.style.strokeDasharray=hotLen;tlHot.style.strokeDasharray=tlLen;
+function op(el,v){el.style.opacity=clamp(v)}function tr(el,x,y,s=1,r=0){el.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)`}
+function cameraState(t){
+  const keys=[
+    {t:0,x:0,y:105,s:1.08,r:0},
+    {t:2.5,x:-48,y:35,s:1.16,r:-.4},
+    {t:4.7,x:78,y:-74,s:1.00,r:.3},
+    {t:7.2,x:-96,y:-150,s:1.19,r:-.55},
+    {t:9.7,x:60,y:80,s:.93,r:.35},
+    {t:11.2,x:0,y:0,s:1.07,r:0},
+    {t:13.2,x:0,y:0,s:1.00,r:0}
+  ];let a=keys[0],b=keys[keys.length-1];for(let i=0;i<keys.length-1;i++){if(t>=keys[i].t&&t<=keys[i+1].t){a=keys[i];b=keys[i+1];break}}
+  let q=smooth((t-a.t)/(b.t-a.t));return {x:lerp(a.x,b.x,q),y:lerp(a.y,b.y,q),s:lerp(a.s,b.s,q),r:lerp(a.r,b.r,q)};
+}
+function render(t){
+  t=clamp(Number(t)||0,0,DURATION);const c=cameraState(t);camera.style.transform=`translate(${c.x}px,${c.y}px) scale(${c.s}) rotate(${c.r}deg)`;
+  const hookIn=easeOut(range(t,.15,.9)),hookOut=1-smooth(range(t,2.35,3.15));op($("#hook"),hookIn*hookOut);tr($("#hook"),0,lerp(28,0,hookIn)-range(t,2.35,3.15)*60,1);
+  const netIn=easeOut(range(t,.45,1.3)),netOut=1-smooth(range(t,4.1,5.0));op($("#networkWrap"),netIn*netOut);tr($("#networkWrap"),lerp(20,0,netIn)-range(t,4.1,5.0)*120,Math.sin(t*1.1)*4,lerp(.95,1,netIn));
+  const draw=clamp(range(t,.65,2.25));hotPath.style.strokeDashoffset=hotLen*(1-draw);const p=hotPath.getPointAtLength(hotLen*clamp(range(t,.45,3.75)));signal.setAttribute("cx",p.x);signal.setAttribute("cy",p.y);signal.setAttribute("r",String(12+Math.sin(t*8)*3));
+  const tlDraw=clamp(range(t,3.25,10.4));tlHot.style.strokeDashoffset=tlLen*(1-tlDraw);op($("#timeline"),smooth(range(t,2.9,3.7))*(1-smooth(range(t,11.3,12.0))));
+  const p43=smooth(range(t,3.1,3.9))*(1-smooth(range(t,5.35,6.0)));op($("#year1943"),p43);tr($("#year1943"),lerp(-70,0,easeOut(range(t,3.1,3.9))),lerp(34,0,easeOut(range(t,3.1,3.9))),1);
+  $("#m43").classList.toggle("active",t>=3.35&&t<6.0);
+  const p50=smooth(range(t,5.35,6.1))*(1-smooth(range(t,8.0,8.65)));op($("#year1950"),p50);const q50=easeOut(range(t,5.35,6.1));tr($("#year1950"),lerp(80,0,q50),lerp(60,0,q50),lerp(.96,1,q50));$("#m50").classList.toggle("active",t>=5.7&&t<8.65);
+  const p56=smooth(range(t,8.0,8.85))*(1-smooth(range(t,10.72,11.32)));op($("#year1956"),p56);const q56=easeOut(range(t,8.0,8.85));tr($("#year1956"),lerp(-54,0,q56),0,lerp(1.04,1,q56));$("#m56").classList.toggle("active",t>=8.35&&t<11.32);
+  const ai=$("#year1956 .bigAI");const aiAttack=easeOut(range(t,8.55,9.25));ai.style.clipPath=`inset(${lerp(100,0,aiAttack)}% 0 0 0)`;ai.style.transform=`translateY(${lerp(120,0,aiAttack)}px) scale(${lerp(.92,1,aiAttack)})`;
+  const payoff=smooth(range(t,10.78,11.55));op($("#payoff"),payoff);tr($("#payoff"),0,lerp(70,0,easeOut(range(t,10.78,11.55))),1);
+  op($("#corner"),.45*(1-smooth(range(t,11.2,12.2))));
+  $(".grid").style.transform=`translate(${Math.sin(t*.34)*8}px,${Math.cos(t*.29)*10}px)`;
+}
+window.OPENER={W,H,DURATION,ready:true,seek(t){render(t)},play(){}};render(0);
+const clean=new URLSearchParams(location.search).has("clean");if(!clean){let start=performance.now();function loop(now){render(((now-start)/1000)%DURATION);requestAnimationFrame(loop)}requestAnimationFrame(loop)}
+</script>
+</body></html>
