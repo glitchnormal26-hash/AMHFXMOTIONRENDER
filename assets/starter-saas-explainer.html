@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<!--
+SaaS explainer starter for AMHFXMOTIONRENDER.
+Demonstrates the task-specific creative-direction profile + authored camera pairing.
+This is an architecture reference, not a visual template. Replace copy, geometry,
+palette choice, camera path, timing, and hierarchy for every real project.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS Explainer — Direction + Camera</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<style>
+:root{
+  /* Midnight Violet — one named palette only. */
+  --bg:#0B0D17;
+  --accent-1:#7C5CFF;
+  --accent-2:#38E1C6;
+  --fg:#F7F8FC;
+  --muted:#A8ADBD;
+  --panel:rgba(255,255,255,.055);
+  --panel-strong:rgba(255,255,255,.085);
+  --hairline:rgba(255,255,255,.10);
+  --shadow:rgba(0,0,0,.30);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05060b}
+body{font-family:Inter,"Space Grotesk",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#viewport-fit{
+  position:fixed;left:50%;top:50%;width:1920px;height:1080px;
+  transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center;
+  overflow:hidden;background:var(--bg);color:var(--fg)
+}
+#camera,#world{position:absolute;inset:0;width:1920px;height:1080px;transform-origin:960px 540px}
+#world{overflow:hidden}
+.layer{position:absolute;inset:0;pointer-events:none}
+#background{z-index:0;background:var(--bg)}
+#midground{z-index:2}
+#foreground{z-index:4}
+.grid{
+  position:absolute;inset:0;opacity:.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:96px 96px;
+  mask-image:linear-gradient(to bottom,transparent 2%,#000 22%,#000 78%,transparent 98%)
+}
+.blob{position:absolute;filter:blur(28px);opacity:.24;will-change:transform}
+#blobA{
+  width:520px;height:430px;left:1180px;top:70px;
+  border-radius:42% 58% 61% 39%/55% 45% 55% 45%;
+  background:linear-gradient(38deg,rgba(124,92,255,.95),rgba(124,92,255,.12))
+}
+#blobB{
+  width:350px;height:300px;left:90px;top:720px;opacity:.12;
+  border-radius:63% 37% 46% 54%/39% 61% 39% 61%;
+  background:linear-gradient(32deg,rgba(56,225,198,.72),rgba(56,225,198,.08))
+}
+.safe-copy{
+  position:absolute;left:122px;top:222px;width:600px;pointer-events:none
+}
+.eyebrow{font-size:22px;line-height:1;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-2);opacity:.92}
+.hero-line{
+  margin:28px 0 24px;font-size:92px;line-height:.94;letter-spacing:-.055em;
+  font-weight:800;max-width:590px
+}
+.subline{font-size:27px;line-height:1.35;color:var(--muted);max-width:470px;font-weight:500}
+#heroFloat{position:absolute;left:846px;top:167px;width:850px;height:708px;will-change:transform}
+#heroPanel{
+  position:absolute;inset:0;border:1px solid var(--hairline);border-radius:16px;
+  background:rgba(15,18,32,.86);box-shadow:0 34px 90px var(--shadow);
+  overflow:hidden;backdrop-filter:blur(14px);opacity:0
+}
+.panel-top{height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid var(--hairline)}
+.brand{display:flex;align-items:center;gap:14px;font-size:22px;font-weight:700;letter-spacing:-.02em}
+.brand-mark{width:28px;height:28px;border-radius:9px;background:linear-gradient(35deg,var(--accent-1),rgba(124,92,255,.38));box-shadow:0 0 28px rgba(124,92,255,.28)}
+.status{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--hairline);border-radius:999px;color:var(--muted);font-size:16px}
+#statusDot{width:9px;height:9px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 18px rgba(56,225,198,.55)}
+.panel-body{display:grid;grid-template-columns:1.3fr .8fr;gap:22px;padding:28px;height:630px}
+.card{border:1px solid var(--hairline);border-radius:14px;background:var(--panel);box-shadow:0 18px 54px rgba(0,0,0,.18)}
+.chart-card{padding:30px 30px 24px;position:relative;overflow:hidden}
+.card-title{font-size:18px;color:var(--muted);font-weight:600}
+.metric{font-size:66px;letter-spacing:-.055em;font-weight:800;margin-top:12px}
+.metric small{font-size:22px;color:var(--accent-2);letter-spacing:-.02em;margin-left:12px}
+.bars{position:absolute;left:30px;right:30px;bottom:42px;height:300px;display:flex;align-items:flex-end;gap:18px;border-bottom:1px solid var(--hairline)}
+.metric-bar{flex:1;border-radius:10px 10px 4px 4px;transform-origin:bottom;background:rgba(124,92,255,.42);border:1px solid rgba(124,92,255,.28)}
+.metric-bar.hot{background:linear-gradient(25deg,rgba(124,92,255,.82),rgba(124,92,255,.28));box-shadow:0 0 32px rgba(124,92,255,.20)}
+.side-stack{display:grid;grid-template-rows:1fr 1fr;gap:22px}
+.mini-card{padding:26px;position:relative;overflow:hidden}
+.mini-label{font-size:16px;color:var(--muted);font-weight:600}
+.mini-value{font-size:42px;font-weight:800;letter-spacing:-.045em;margin-top:12px}
+.flow{position:absolute;left:26px;right:26px;bottom:31px;height:102px}
+.flow-line{position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(255,255,255,.09)}
+.flow-accent{position:absolute;left:0;top:50%;height:2px;width:74%;transform-origin:left;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));box-shadow:0 0 18px rgba(56,225,198,.23)}
+.node{position:absolute;top:39px;width:24px;height:24px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:#151827}
+.node.a{left:0}.node.b{left:44%;background:rgba(124,92,255,.34);border-color:rgba(124,92,255,.56)}.node.c{right:0;background:rgba(56,225,198,.18);border-color:rgba(56,225,198,.38)}
+.pulse-ring{position:absolute;right:22px;bottom:23px;width:120px;height:120px;border-radius:38% 62% 55% 45%/44% 46% 54% 56%;border:1px solid rgba(56,225,198,.22)}
+.pulse-ring::after{content:"";position:absolute;inset:19px;border-radius:58% 42% 47% 53%/40% 60% 40% 60%;border:1px solid rgba(56,225,198,.42)}
+#featureRail{position:absolute;left:790px;top:835px;display:flex;gap:16px;z-index:5}
+.feature-chip{
+  opacity:0;display:flex;align-items:center;gap:12px;padding:15px 18px;border-radius:14px;
+  border:1px solid var(--hairline);background:rgba(13,16,29,.92);box-shadow:0 18px 48px rgba(0,0,0,.22);
+  color:var(--fg);font-size:18px;font-weight:650;white-space:nowrap
+}
+.iconbox{width:34px;height:34px;border-radius:10px;border:1px solid rgba(124,92,255,.34);display:grid;place-items:center;color:var(--accent-1);background:rgba(124,92,255,.09)}
+.iconbox.teal{color:var(--accent-2);border-color:rgba(56,225,198,.32);background:rgba(56,225,198,.07)}
+.iconbox svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#cursorChip{
+  position:absolute;left:1545px;top:270px;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(11,13,23,.9);font-size:15px;color:var(--muted);box-shadow:0 14px 36px rgba(0,0,0,.2)
+}
+#cursorChip::before{content:"";position:absolute;left:-12px;top:18px;border-width:7px 12px 7px 0;border-style:solid;border-color:transparent rgba(255,255,255,.12) transparent transparent}
+#finalTag{position:absolute;right:112px;bottom:82px;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.42);opacity:0}
+#debug{
+  display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:20;
+  align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(5,6,11,.92);
+  border:1px solid rgba(255,255,255,.12);color:#fff;font:13px system-ui
+}
+#debug.on{display:flex}#debug input{width:350px}#clock{min-width:6ch;font-variant-numeric:tabular-nums}#beat{min-width:95px;color:#aeb4c7}
+.safe-outline{display:none;position:absolute;left:80px;top:80px;width:1760px;height:920px;border:1px dashed rgba(56,225,198,.28);z-index:30;pointer-events:none}
+#debug.on~#viewport-fit .safe-outline{display:block}
+</style>
+</head>
+<body>
+<div id="debug">
+  <button id="play">Play</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="clock">0.00s</span>
+  <span id="beat">HOOK</span>
+</div>
+<div id="viewport-fit">
+  <div class="safe-outline"></div>
+  <div id="camera">
+    <div id="world">
+      <div id="background" class="layer">
+        <div class="grid"></div>
+        <div id="blobA" class="blob"></div>
+        <div id="blobB" class="blob"></div>
+      </div>
+
+      <div id="midground" class="layer">
+        <section class="safe-copy">
+          <div id="eyebrow" class="eyebrow">Workflow intelligence</div>
+          <h1 id="headline" class="hero-line">Move work forward</h1>
+          <div id="subline" class="subline">A focused product moment, one visual argument, and room to read.</div>
+        </section>
+
+        <div id="heroFloat">
+          <div id="heroPanel">
+            <div class="panel-top">
+              <div class="brand"><span class="brand-mark"></span>Flowboard</div>
+              <div class="status"><span id="statusDot"></span>Live workspace</div>
+            </div>
+            <div class="panel-body">
+              <div class="card chart-card">
+                <div class="card-title">Weekly throughput</div>
+                <div class="metric">84<small>+18%</small></div>
+                <div class="bars">
+                  <div class="metric-bar" style="height:31%"></div>
+                  <div class="metric-bar" style="height:48%"></div>
+                  <div class="metric-bar" style="height:43%"></div>
+                  <div class="metric-bar hot" style="height:69%"></div>
+                  <div class="metric-bar hot" style="height:82%"></div>
+                  <div class="metric-bar" style="height:74%"></div>
+                </div>
+              </div>
+              <div class="side-stack">
+                <div class="card mini-card">
+                  <div class="mini-label">Automations</div>
+                  <div class="mini-value">12 active</div>
+                  <div class="flow">
+                    <div class="flow-line"></div><div id="flowAccent" class="flow-accent"></div>
+                    <div class="node a"></div><div class="node b"></div><div class="node c"></div>
+                  </div>
+                </div>
+                <div class="card mini-card">
+                  <div class="mini-label">Response time</div>
+                  <div class="mini-value">2.4 min</div>
+                  <div class="pulse-ring"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="featureRail">
+          <div class="feature-chip">
+            <span class="iconbox">
+              <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+            Smart routing
+          </div>
+          <div class="feature-chip">
+            <span class="iconbox teal">
+              <svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>
+            </span>
+            Live sync
+          </div>
+        </div>
+      </div>
+
+      <div id="foreground" class="layer">
+        <div id="cursorChip">handoff complete</div>
+        <div id="finalTag">settle / loop point</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const W=1920,H=1080,DURATION=8;
+const $=s=>document.querySelector(s);
+const viewport=$("#viewport-fit"),camera=$("#camera");
+const fit=()=>viewport.style.setProperty("--fit",Math.min(innerWidth/W,innerHeight/H));
+addEventListener("resize",fit);fit();
+
+// Critical hidden states exist before playback so frame zero is deterministic.
+gsap.set(["#eyebrow","#headline","#subline","#cursorChip","#finalTag"],{autoAlpha:0});
+gsap.set(".metric-bar",{scaleY:.08,transformOrigin:"50% 100%"});
+gsap.set("#flowAccent",{scaleX:0,transformOrigin:"0 50%"});
+gsap.set(camera,{x:0,y:0,scale:.985,rotation:0});
+
+const tl=gsap.timeline({paused:true});
+tl.addLabel("hook",0)
+  .fromTo("#heroPanel",{autoAlpha:0,y:46,scale:.965},{autoAlpha:1,y:0,scale:1,duration:.55,ease:"power2.out",immediateRender:false},.42)
+  .to(camera,{x:-38,y:-10,scale:1.04,duration:1.18,ease:"power2.inOut"},.58)
+  .to("#eyebrow",{autoAlpha:1,duration:.42,ease:"power2.out"},.78)
+  .fromTo("#headline",{autoAlpha:0,y:28},{autoAlpha:1,y:0,duration:.52,ease:"power2.out",immediateRender:false},.92)
+  .fromTo("#subline",{autoAlpha:0,y:18},{autoAlpha:1,y:0,duration:.48,ease:"power2.out",immediateRender:false},1.12)
+  .to(".metric-bar",{scaleY:1,duration:.52,ease:"power2.out",stagger:.075},1.18)
+  .to("#flowAccent",{scaleX:1,duration:.62,ease:"power2.out"},1.42)
+
+  // Readable hold: ~2.0–3.1s. One hero action has landed before the next beat.
+  .addLabel("highlight",3.08)
+  .to(camera,{x:52,y:14,scale:1.065,duration:1.0,ease:"power2.inOut"},3.08)
+  .fromTo(".feature-chip",{autoAlpha:0,y:22,scale:.97},{autoAlpha:1,y:0,scale:1,duration:.48,ease:"power2.out",stagger:.085,immediateRender:false},3.22)
+  .fromTo("#cursorChip",{autoAlpha:0,x:26,y:-8},{autoAlpha:1,x:0,y:0,duration:.46,ease:"power2.out",immediateRender:false},3.58)
+  .fromTo("#statusDot",{scale:.72},{scale:1.35,duration:.28,ease:"back.out(1.4)"},3.92)
+  .to("#statusDot",{scale:1,duration:.24,ease:"power1.inOut"},4.20)
+
+  // Second readable hold: ~4.45–6.15s.
+  .addLabel("settle",6.12)
+  .to(camera,{x:0,y:0,scale:1,duration:.86,ease:"power1.inOut"},6.12)
+  .to("#cursorChip",{autoAlpha:0,y:-12,duration:.34,ease:"power2.out"},6.16)
+  .to("#finalTag",{autoAlpha:1,duration:.42,ease:"power2.out"},6.52)
+  .to({}, {duration:.01},DURATION);
+
+function render(t){
+  // Deterministic ambient support only: low amplitude, no realtime accumulation.
+  $("#blobA").style.transform=`translate(${Math.sin(t*.72)*10}px,${Math.cos(t*.54)*7}px) rotate(${Math.sin(t*.31)*1.2}deg)`;
+  $("#blobB").style.transform=`translate(${Math.cos(t*.66)*7}px,${Math.sin(t*.47)*8}px) rotate(${Math.cos(t*.28)*1.1}deg)`;
+  $("#heroFloat").style.transform=`translate(${Math.sin(t*.78)*2.8}px,${Math.cos(t*.70)*2.3}px)`;
+  $("#featureRail").style.transform=`translateY(${Math.sin(t*.83)*1.8}px)`;
+}
+
+gsap.ticker.add(()=>render(tl.time()));
+
+const q=new URLSearchParams(location.search);
+const debug=$("#debug"),scrub=$("#scrub"),clock=$("#clock"),beat=$("#beat"),play=$("#play");
+if(q.has("debug"))debug.classList.add("on");
+let dragging=false;
+const beatName=t=>t<3.08?"HOOK / REVEAL":t<6.12?"HIGHLIGHT":"SETTLE";
+gsap.ticker.add(()=>{
+  const t=tl.time();clock.textContent=t.toFixed(2)+"s";beat.textContent=beatName(t);
+  play.textContent=tl.paused()?"Play":"Pause";
+  if(!dragging)scrub.value=String(Math.round(t/DURATION*1000));
+});
+scrub.onpointerdown=()=>{dragging=true;tl.pause()};
+addEventListener("pointerup",()=>dragging=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+play.onclick=()=>tl.paused()?tl.play():tl.pause();
+tl.eventCallback("onComplete",()=>{if(!q.has("clean"))tl.play(0)});
+
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  seek(t){
+    const clamped=Math.max(0,Math.min(DURATION,Number(t)||0));
+    tl.pause();tl.time(clamped,false);render(clamped);
+  },
+  play(){tl.play()}
+};
+
+const ready=()=>{
+  window.OPENER.ready=true;render(0);
+  if(!q.has("clean"))tl.play(0);
+};
+if(document.fonts?.ready)document.fonts.ready.then(ready);else ready();
+</script>
+</body>
+</html>

@@ -30,20 +30,93 @@ if (!combined.includes("version: 3.9.3-motion-depth-gates")) {
   throw new Error("Canonical Motion Skill source version marker is missing.");
 }
 
-for (const relative of [
+const requiredFiles = [
   "SKILL.md",
   "references/anti-ppt.md",
   "references/architecture.md",
   "references/camera-motion.md",
+  "references/camera-movement.md",
   "references/explainer.md",
   "references/failure-gates.md",
   "references/full-runtime.md",
+  "references/saas-motion-explainer-direction.md",
   "references/techniques.md",
+  "references/visual-quality.md",
+  "assets/starter-saas-explainer.html",
+  "runtime/camera-rig.js",
+  "runtime/explainer-helpers.js",
   "scripts/export-mp4.mjs",
-]) {
+];
+
+for (const relative of requiredFiles) {
   if (!fs.existsSync(path.join(root, relative))) {
     throw new Error(`Required integration file missing: ${relative}`);
   }
 }
 
-console.log("Motion Designer v3.9.4 integration and canonical source verified.");
+const read = relative => fs.readFileSync(path.join(root, relative), "utf8");
+const skill = read("SKILL.md");
+const saasDirection = read("references/saas-motion-explainer-direction.md");
+const explainer = read("references/explainer.md");
+const agentRules = read("AGENTS.md");
+const starter = read("assets/starter-saas-explainer.html");
+
+for (const marker of [
+  "references/saas-motion-explainer-direction.md",
+  "references/visual-quality.md",
+  "SAAS_DIRECTION_GATE=PASS|NOT_REQUIRED",
+  "ANTI_PRIMITIVE_GATE=PASS",
+  "PLAYBACK_GATE=PASS",
+]) {
+  if (!skill.includes(marker)) {
+    throw new Error(`Active SKILL.md is missing required integration marker: ${marker}`);
+  }
+}
+
+for (const marker of [
+  "Midnight Violet",
+  "Electric Teal",
+  "Warm Neutral",
+  "Indigo Cloud",
+  "ONE_NAMED_PALETTE=PASS",
+  "TYPE_FRAGMENT_GATE=PASS",
+  "STAGGER_HOLD_GATE=PASS",
+  "references/camera-movement.md",
+]) {
+  if (!saasDirection.includes(marker)) {
+    throw new Error(`SaaS direction module is missing required marker: ${marker}`);
+  }
+}
+
+for (const [relative, body, markers] of [
+  ["references/explainer.md", explainer, ["starter-saas-explainer.html", "SAAS_DIRECTION_GATE"]],
+  ["AGENTS.md", agentRules, ["saas-motion-explainer-direction.md", "SAAS_DIRECTION_GATE"]],
+]) {
+  for (const marker of markers) {
+    if (!body.includes(marker)) {
+      throw new Error(`${relative} is missing SaaS integration marker: ${marker}`);
+    }
+  }
+}
+
+for (const marker of [
+  "--bg:#0B0D17",
+  "--accent-1:#7C5CFF",
+  "--accent-2:#38E1C6",
+  "id=\"viewport-fit\"",
+  "id=\"camera\"",
+  "id=\"world\"",
+  "power2.inOut",
+  "back.out(1.4)",
+  "window.OPENER",
+]) {
+  if (!starter.includes(marker)) {
+    throw new Error(`SaaS starter is missing required direction/runtime marker: ${marker}`);
+  }
+}
+
+if (starter.includes("Math.random(")) {
+  throw new Error("SaaS starter must remain deterministic; unseeded Math.random() is forbidden.");
+}
+
+console.log("Motion Designer v3.9.4 integration, visual gates, camera module, and SaaS direction profile verified.");

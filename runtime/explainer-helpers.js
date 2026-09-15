@@ -1,5 +1,5 @@
 /**
- * Motion Designer v3.8 — continuous-world explainer choreography helpers.
+ * Motion Designer v3.9.4 — continuous-world explainer choreography helpers.
  */
 
 const SVG_NS = "http://www.w3.org/2000/svg";
