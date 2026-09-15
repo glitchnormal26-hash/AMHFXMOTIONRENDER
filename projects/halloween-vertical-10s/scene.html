@@ -8,7 +8,7 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020207}
 #stage{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:#020207}
 iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#020207}
-#grade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 35%,transparent 0 48%,rgba(0,0,0,.10) 74%,rgba(0,0,0,.30) 100%);mix-blend-mode:multiply}
+#grade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 35%,transparent 0 48%,rgba(0,0,0,.08) 72%,rgba(0,0,0,.26) 100%);mix-blend-mode:multiply}
 </style>
 </head>
 <body>
@@ -26,6 +26,22 @@ let playStart=0;
 function mappedTime(t){
   const clamped=Math.max(0,Math.min(DURATION,Number(t)||0));
   return (clamped/DURATION)*SOURCE_DURATION;
+}
+
+function applyTenSecondArtDirection(win){
+  const doc=win.document;
+  if(doc.querySelector('#ten-second-vertical-overrides')) return;
+  const style=doc.createElement('style');
+  style.id='ten-second-vertical-overrides';
+  style.textContent=`
+    /* Put the opaque sky behind the authored negative-Z moon/cloud bands. */
+    #sky{transform:translateZ(-520px) scale(1.40)!important;transform-origin:50% 45%!important}
+    /* Keep the carved foreground readable while retaining edge crop/occlusion. */
+    #pumpkinPatch{bottom:35px!important}
+    /* Slightly increase moon separation after restoring its depth layer. */
+    #moonWrap{filter:drop-shadow(0 0 82px rgba(231,207,169,.25))!important}
+  `;
+  doc.head.appendChild(style);
 }
 
 window.OPENER={
@@ -48,8 +64,10 @@ window.OPENER={
 
 function bindChild(){
   try{
-    const candidate=frame.contentWindow?.OPENER;
+    const win=frame.contentWindow;
+    const candidate=win?.OPENER;
     if(candidate?.ready){
+      applyTenSecondArtDirection(win);
       child=candidate;
       child.seek(0);
       window.OPENER.ready=true;
