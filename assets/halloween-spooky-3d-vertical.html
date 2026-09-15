@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halloween Spooky 3D Vertical Background</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --night-0:#05040b;
+  --night-1:#0b0715;
+  --night-2:#160b20;
+  --violet:#2b1238;
+  --moon:#f4dfba;
+  --ember:#ff8c32;
+  --ember2:#ffc45a;
+  --fog:#bca9ca;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020207}
+body{font-family:Georgia,"Times New Roman",serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:1080px;height:1920px;
+  transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;
+  perspective:1450px;background:var(--night-0);isolation:isolate;
+}
+#camera{position:absolute;inset:-130px;transform-style:preserve-3d;transform-origin:50% 52%;will-change:transform}
+.layer{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+#sky{inset:-220px;background:
+  radial-gradient(ellipse at 50% 25%,rgba(86,40,100,.28) 0%,rgba(28,13,42,.12) 34%,transparent 62%),
+  linear-gradient(180deg,#0b0716 0%,#0b0713 43%,#120817 72%,#07050b 100%)}
+#sky::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.18) 70%,rgba(0,0,0,.72) 100%);mix-blend-mode:multiply}
+.star{position:absolute;width:3px;height:3px;background:#f7e9cf;box-shadow:0 0 9px rgba(244,223,186,.7);opacity:.45;transform:rotate(45deg)}
+.star.big{width:5px;height:5px;box-shadow:0 0 15px rgba(244,223,186,.8)}
+#moonWrap{position:absolute;left:189px;top:188px;width:720px;height:720px;transform:translateZ(-165px);filter:drop-shadow(0 0 70px rgba(231,207,169,.18))}
+#moonHalo{position:absolute;inset:-130px;border-radius:46% 54% 49% 51% / 54% 47% 53% 46%;background:radial-gradient(circle,rgba(240,220,190,.20),rgba(201,166,203,.08) 38%,transparent 70%);filter:blur(18px);opacity:.9}
+#moon{position:absolute;left:79px;top:76px;width:562px;height:562px;overflow:hidden;clip-path:path('M 277 6 C 375 10 471 61 528 142 C 581 219 570 335 522 419 C 469 511 361 565 257 553 C 159 542 70 481 28 391 C -12 304 1 202 50 124 C 100 45 184 -1 277 6 Z');background:
+  radial-gradient(circle at 36% 30%,rgba(255,250,224,.98) 0 10%,rgba(232,211,177,.92) 31%,rgba(188,160,154,.87) 72%,rgba(139,111,133,.84) 100%);
+  box-shadow:inset -42px -34px 80px rgba(68,40,75,.44),inset 24px 18px 56px rgba(255,248,217,.18),0 0 65px rgba(241,220,188,.38)}
+.crater{position:absolute;border-radius:50%;background:radial-gradient(circle at 62% 35%,rgba(115,88,111,.08),rgba(87,57,89,.28) 55%,rgba(255,247,217,.08) 58%,transparent 71%);filter:blur(.2px)}
+.c1{width:112px;height:86px;left:110px;top:115px;transform:rotate(-18deg)}
+.c2{width:150px;height:120px;left:316px;top:225px;transform:rotate(22deg)}
+.c3{width:86px;height:70px;left:202px;top:360px;transform:rotate(10deg)}
+.c4{width:65px;height:52px;left:378px;top:88px}
+#cloudBack,#cloudFront{position:absolute;inset:0;transform:translateZ(-80px);opacity:.5;filter:blur(1px)}
+#cloudFront{transform:translateZ(30px);opacity:.27;filter:blur(5px)}
+.cloud{position:absolute;height:180px;width:940px;background:
+  radial-gradient(ellipse at 20% 55%,rgba(117,85,127,.2),transparent 48%),
+  radial-gradient(ellipse at 53% 45%,rgba(165,132,169,.14),transparent 52%),
+  radial-gradient(ellipse at 82% 60%,rgba(117,85,127,.17),transparent 48%);
+  filter:blur(24px)}
+#ridge{position:absolute;left:-150px;bottom:380px;width:1380px;height:760px;transform:translateZ(-20px);filter:drop-shadow(0 -16px 28px rgba(0,0,0,.5))}
+#cemetery{position:absolute;left:-90px;bottom:160px;width:1260px;height:620px;transform:translateZ(75px)}
+#manor{position:absolute;left:105px;top:645px;width:870px;height:880px;transform:translateZ(130px);filter:drop-shadow(0 48px 60px rgba(0,0,0,.62))}
+#manor .stone{fill:url(#stoneGrad)}
+.window{fill:#ffb542;filter:url(#windowGlow)}
+.window.dim{fill:#ba6336;opacity:.5}
+#treesBack{position:absolute;inset:0;transform:translateZ(25px);opacity:.86}
+#treeLeft{position:absolute;left:-215px;top:530px;width:650px;height:1200px;filter:drop-shadow(28px 40px 38px rgba(0,0,0,.45))}
+#treeRight{position:absolute;right:-290px;top:610px;width:660px;height:1170px;transform:scaleX(-1);filter:drop-shadow(28px 40px 38px rgba(0,0,0,.48))}
+#fogBack{position:absolute;inset:-140px;transform:translateZ(145px);opacity:.55;filter:blur(22px)}
+#fogMid{position:absolute;inset:-180px;transform:translateZ(255px);opacity:.52;filter:blur(30px)}
+#fogFront{position:absolute;inset:-220px;transform:translateZ(430px);opacity:.50;filter:blur(42px)}
+.fogband{position:absolute;width:1500px;height:260px;border-radius:48% 52% 45% 55% / 62% 55% 45% 38%;background:
+  radial-gradient(ellipse at 18% 60%,rgba(208,193,216,.28),transparent 44%),
+  radial-gradient(ellipse at 52% 48%,rgba(174,151,187,.25),transparent 50%),
+  radial-gradient(ellipse at 84% 56%,rgba(209,194,218,.18),transparent 43%)}
+#foreground{position:absolute;inset:0;transform:translateZ(390px)}
+#pumpkinPatch{position:absolute;left:10px;bottom:-44px;width:1040px;height:590px;filter:drop-shadow(0 55px 45px rgba(0,0,0,.58))}
+.pumpkinGlow{filter:url(#pumpkinGlow)}
+#branchTop{position:absolute;left:-70px;top:-120px;width:1220px;height:520px;transform:translateZ(500px);opacity:.84;filter:drop-shadow(0 24px 22px rgba(0,0,0,.45))}
+#bats{position:absolute;inset:0;transform:translateZ(210px)}
+.bat{position:absolute;width:94px;height:58px;filter:drop-shadow(0 9px 10px rgba(0,0,0,.52));will-change:transform,opacity}
+.bat svg{width:100%;height:100%;overflow:visible}
+.bat path{fill:#100a16}
+#lightning{position:absolute;inset:0;background:radial-gradient(ellipse at 65% 20%,rgba(230,219,255,.34),rgba(112,78,141,.18) 35%,transparent 70%);opacity:0;mix-blend-mode:screen;transform:translateZ(520px)}
+#vignette{position:absolute;inset:-2px;box-shadow:inset 0 0 150px 60px rgba(0,0,0,.7),inset 0 -230px 230px rgba(0,0,0,.48);transform:translateZ(600px)}
+#grain{position:absolute;inset:-50%;opacity:.055;transform:translateZ(610px);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+#debug{display:none;position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:20;padding:9px 14px;border-radius:12px;background:#050308;color:#fff;font:14px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camera">
+    <div id="sky" class="layer"><div id="stars"></div></div>
+
+    <div id="moonWrap" class="layer">
+      <div id="moonHalo"></div>
+      <div id="moon">
+        <div class="crater c1"></div><div class="crater c2"></div><div class="crater c3"></div><div class="crater c4"></div>
+      </div>
+    </div>
+
+    <div id="cloudBack" class="layer">
+      <div class="cloud" style="left:-360px;top:370px"></div>
+      <div class="cloud" style="left:460px;top:520px;transform:scale(.82)"></div>
+      <div class="cloud" style="left:-80px;top:770px;transform:scale(1.1)"></div>
+    </div>
+    <div id="cloudFront" class="layer">
+      <div class="cloud" style="left:-300px;top:625px;transform:scale(1.35)"></div>
+      <div class="cloud" style="left:430px;top:960px;transform:scale(1.0)"></div>
+    </div>
+
+    <svg id="ridge" viewBox="0 0 1380 760" aria-hidden="true">
+      <defs>
+        <linearGradient id="ridgeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17101e"/><stop offset="1" stop-color="#08070c"/></linearGradient>
+      </defs>
+      <path fill="url(#ridgeGrad)" d="M0 525 C110 458 173 471 264 428 C347 390 393 325 483 338 C559 349 614 402 702 390 C812 375 860 298 947 316 C1048 337 1086 421 1182 430 C1263 439 1328 401 1380 371 L1380 760 L0 760 Z"/>
+      <path fill="#0b0810" opacity=".72" d="M0 602 C174 550 330 556 492 538 C690 516 834 488 1006 515 C1133 535 1260 524 1380 490 L1380 760 L0 760 Z"/>
+    </svg>
+
+    <svg id="cemetery" viewBox="0 0 1260 620" aria-hidden="true">
+      <path fill="#09070d" d="M0 430 C182 386 327 414 475 385 C629 356 777 367 945 390 C1055 404 1167 398 1260 370 L1260 620 L0 620 Z"/>
+      <g fill="#0d0a11" stroke="#17101c" stroke-width="8">
+        <path d="M116 420 L124 248 Q133 199 175 202 Q216 205 224 252 L230 420 Z"/>
+        <path d="M307 406 L316 292 Q323 254 355 253 Q388 253 397 294 L406 406 Z"/>
+        <path d="M888 418 L896 232 Q903 192 942 190 Q983 192 990 235 L999 418 Z"/>
+        <path d="M1067 409 L1075 300 Q1082 262 1117 260 Q1152 261 1161 303 L1168 409 Z"/>
+      </g>
+      <g fill="#0c0910">
+        <path d="M575 424 L581 302 L557 302 L557 268 L581 268 L581 225 L620 225 L620 268 L650 268 L650 302 L620 302 L627 424 Z"/>
+        <path d="M742 430 L748 334 L727 334 L727 306 L749 306 L750 269 L782 269 L782 306 L808 306 L808 334 L783 334 L790 430 Z"/>
+      </g>
+      <path d="M0 458 C230 424 391 450 594 428 C811 405 1037 441 1260 408" fill="none" stroke="#241626" stroke-width="9" opacity=".38"/>
+    </svg>
+
+    <svg id="manor" viewBox="0 0 870 880" aria-hidden="true">
+      <defs>
+        <linearGradient id="stoneGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#201625"/><stop offset=".5" stop-color="#120e17"/><stop offset="1" stop-color="#08070c"/></linearGradient>
+        <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18101d"/><stop offset="1" stop-color="#08070c"/></linearGradient>
+        <filter id="windowGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path class="stone" d="M202 785 L202 380 L289 380 L289 231 L347 231 L347 152 L399 152 L399 95 L436 46 L473 95 L473 152 L528 152 L528 231 L582 231 L582 380 L670 380 L670 785 Z"/>
+      <path fill="url(#roofGrad)" d="M154 389 L252 276 L332 378 L269 402 Z M537 378 L620 274 L716 389 L602 402 Z M324 244 L438 98 L548 244 Z"/>
+      <path fill="#0a080e" d="M376 784 L376 606 Q379 554 437 552 Q495 554 498 606 L498 784 Z"/>
+      <path fill="#1a111f" opacity=".62" d="M232 418 L326 418 L326 785 L232 785 Z M546 418 L640 418 L640 785 L546 785 Z"/>
+      <g class="window">
+        <path d="M271 475 Q300 442 329 475 L329 574 L271 574 Z"/>
+        <path d="M547 475 Q576 442 605 475 L605 574 L547 574 Z"/>
+        <path d="M402 282 Q437 243 472 282 L472 405 L402 405 Z"/>
+        <path d="M408 480 Q437 445 466 480 L466 547 L408 547 Z"/>
+      </g>
+      <g class="window dim">
+        <path d="M271 629 Q300 600 329 629 L329 699 L271 699 Z"/>
+        <path d="M547 629 Q576 600 605 629 L605 699 L547 699 Z"/>
+      </g>
+      <g stroke="#5b3c37" stroke-width="6" opacity=".6">
+        <path d="M300 447 L300 575 M270 514 L330 514 M576 447 L576 575 M546 514 L606 514 M437 251 L437 405 M401 337 L473 337"/>
+      </g>
+      <path d="M191 785 C260 746 318 758 374 744 C434 730 492 734 557 752 C597 763 638 755 687 783 L687 821 L191 821 Z" fill="#07060a"/>
+      <g fill="#120d16" opacity=".58">
+        <path d="M257 540 h45 v16 h-45z M566 538 h49 v16 h-49z M368 428 h136 v14 h-136z M220 694 h112 v15 h-112z M542 694 h110 v15 h-110z"/>
+      </g>
+    </svg>
+
+    <div id="treesBack" class="layer">
+      <svg id="treeLeft" viewBox="0 0 650 1200" aria-hidden="true">
+        <path fill="#09070d" d="M134 1180 C164 1040 179 925 188 802 C194 724 183 638 215 554 C233 506 232 451 205 399 C178 346 139 305 104 261 C173 299 218 338 252 386 C264 319 288 262 332 204 C316 278 318 340 329 399 C366 338 414 298 484 260 C423 330 390 397 379 468 C423 429 479 410 553 408 C478 447 430 487 396 548 C432 544 477 553 526 581 C472 575 430 587 393 611 C380 700 384 797 402 895 C416 980 442 1075 470 1180 Z"/>
+        <path fill="#0b0810" d="M188 804 C115 727 67 673 18 596 C84 635 145 664 202 694 Z M390 642 C467 603 531 589 624 602 C545 632 478 678 402 737 Z M266 486 C226 403 193 348 141 292 C201 333 249 371 295 430 Z"/>
+      </svg>
+      <svg id="treeRight" viewBox="0 0 650 1200" aria-hidden="true">
+        <path fill="#07060a" d="M134 1180 C164 1040 179 925 188 802 C194 724 183 638 215 554 C233 506 232 451 205 399 C178 346 139 305 104 261 C173 299 218 338 252 386 C264 319 288 262 332 204 C316 278 318 340 329 399 C366 338 414 298 484 260 C423 330 390 397 379 468 C423 429 479 410 553 408 C478 447 430 487 396 548 C432 544 477 553 526 581 C472 575 430 587 393 611 C380 700 384 797 402 895 C416 980 442 1075 470 1180 Z"/>
+      </svg>
+    </div>
+
+    <div id="fogBack" class="layer">
+      <div class="fogband" style="left:-360px;top:1020px"></div>
+      <div class="fogband" style="left:-90px;top:1280px;transform:scale(.86)"></div>
+    </div>
+    <div id="fogMid" class="layer">
+      <div class="fogband" style="left:-480px;top:1280px;transform:scale(1.25)"></div>
+      <div class="fogband" style="left:100px;top:1460px;transform:scale(.96)"></div>
+    </div>
+
+    <div id="bats" class="layer"></div>
+
+    <div id="foreground" class="layer">
+      <svg id="pumpkinPatch" viewBox="0 0 1040 590" aria-hidden="true">
+        <defs>
+          <radialGradient id="pumpkinBody" cx="42%" cy="30%" r="70%"><stop offset="0" stop-color="#c85b24"/><stop offset=".55" stop-color="#713018"/><stop offset="1" stop-color="#2e1311"/></radialGradient>
+          <linearGradient id="stemGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#44311d"/><stop offset="1" stop-color="#17100d"/></linearGradient>
+          <filter id="pumpkinGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="11" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <g id="p1" transform="translate(110 98) scale(1.18)">
+          <path fill="url(#stemGrad)" d="M225 94 C211 48 224 16 262 0 C248 35 258 72 282 105 Z"/>
+          <path fill="url(#pumpkinBody)" d="M48 220 C41 116 118 62 209 75 C277 46 385 79 421 165 C467 279 388 390 257 404 C124 419 57 347 48 220 Z"/>
+          <path d="M149 93 C110 184 115 306 162 385 M242 74 C208 166 209 321 238 405 M332 89 C366 178 363 301 326 386" fill="none" stroke="#351614" stroke-width="14" opacity=".55"/>
+          <g class="pumpkinGlow" fill="#ffbd4f">
+            <path d="M131 199 L195 164 L183 232 Z"/><path d="M305 164 L365 201 L311 232 Z"/>
+            <path d="M147 284 C202 325 289 327 357 279 C328 352 185 369 147 284 Z"/>
+          </g>
+          <path d="M166 300 L184 330 L207 309 L232 338 L258 311 L282 338 L307 310 L331 326 L345 295" fill="none" stroke="#411a12" stroke-width="18" stroke-linejoin="round"/>
+        </g>
+        <g id="p2" transform="translate(585 240) scale(.72)">
+          <path fill="url(#stemGrad)" d="M218 85 C209 43 225 20 251 7 C246 39 258 63 275 92 Z"/>
+          <path fill="url(#pumpkinBody)" d="M52 215 C54 121 118 68 205 79 C278 54 376 86 412 168 C454 271 382 369 261 389 C141 410 51 332 52 215 Z"/>
+          <path d="M152 92 C118 173 119 302 163 373 M242 78 C215 172 216 310 241 391 M328 91 C359 181 357 293 326 373" fill="none" stroke="#351614" stroke-width="13" opacity=".52"/>
+          <g class="pumpkinGlow" fill="#ffad43"><path d="M132 201 L192 169 L178 231 Z"/><path d="M302 171 L358 203 L308 232 Z"/><path d="M164 286 C217 315 281 316 338 284 C307 341 200 348 164 286 Z"/></g>
+        </g>
+        <g id="p3" transform="translate(760 72) scale(.56)">
+          <path fill="url(#stemGrad)" d="M218 85 C209 43 225 20 251 7 C246 39 258 63 275 92 Z"/>
+          <path fill="url(#pumpkinBody)" d="M52 215 C54 121 118 68 205 79 C278 54 376 86 412 168 C454 271 382 369 261 389 C141 410 51 332 52 215 Z"/>
+          <g class="pumpkinGlow" fill="#ff9e35"><path d="M133 202 L192 171 L178 230 Z"/><path d="M302 171 L356 204 L307 231 Z"/></g>
+        </g>
+      </svg>
+    </div>
+
+    <div id="fogFront" class="layer">
+      <div class="fogband" style="left:-520px;top:1510px;transform:scale(1.45)"></div>
+      <div class="fogband" style="left:230px;top:1660px;transform:scale(1.08)"></div>
+    </div>
+
+    <svg id="branchTop" viewBox="0 0 1220 520" aria-hidden="true">
+      <path d="M-20 94 C179 151 296 131 430 194 C545 248 625 307 744 304 C898 301 1023 188 1247 169" fill="none" stroke="#08060a" stroke-width="44" stroke-linecap="round"/>
+      <path d="M251 153 C195 90 168 40 126 -28 M436 198 C406 112 389 72 362 18 M701 302 C729 209 762 148 821 88 M902 255 C953 201 1009 166 1085 140" fill="none" stroke="#09070b" stroke-width="25" stroke-linecap="round"/>
+      <path d="M167 88 C131 82 98 88 65 112 M395 121 C427 99 456 91 494 96 M780 166 C813 141 842 132 879 135 M999 175 C1038 185 1069 201 1099 227" fill="none" stroke="#0a070c" stroke-width="15" stroke-linecap="round"/>
+    </svg>
+
+    <div id="lightning" class="layer"></div>
+    <div id="vignette" class="layer"></div>
+    <div id="grain" class="layer"></div>
+  </div>
+</div>
+<div id="debug">0.00s</div>
+<script>
+const W=1080,H=1920,DURATION=15;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+// Deterministic star field.
+const stars=document.querySelector('#stars');
+for(let i=0;i<92;i++){
+  const x=(i*137.3+73)%1080;
+  const y=(i*i*17.7+i*39.1+41)%1040;
+  const s=document.createElement('i');
+  s.className='star'+(i%13===0?' big':'');
+  s.style.left=x+'px';s.style.top=y+'px';s.style.opacity=(.18+((i*29)%61)/100).toFixed(2);
+  stars.appendChild(s);
+}
+
+// Custom bat silhouettes, duplicated with intentional scale/angle variation.
+const bats=document.querySelector('#bats');
+const batData=[
+  [95,680,.72,-8],[220,520,.46,12],[770,490,.58,-4],[860,640,.38,15],[640,790,.84,-11],
+  [360,720,.34,8],[915,865,.52,-16],[126,880,.43,13],[532,610,.30,-3]
+];
+batData.forEach((b,i)=>{
+  const el=document.createElement('div');el.className='bat';el.id='bat'+i;
+  el.style.left=b[0]+'px';el.style.top=b[1]+'px';el.style.transform=`scale(${b[2]}) rotate(${b[3]}deg)`;
+  el.innerHTML='<svg viewBox="0 0 120 72"><path d="M59 39 C46 19 33 14 14 19 C23 26 20 35 5 42 C28 42 42 49 59 62 C76 49 90 42 115 42 C99 34 97 26 106 18 C84 14 72 21 61 39 C61 39 60 40 59 39 Z"/><path d="M53 38 C56 29 64 29 68 37 C64 37 62 41 61 45 C58 42 57 40 53 38 Z"/></svg>';
+  bats.appendChild(el);
+});
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+
+// Opening: slow crane/push establishes the manor, layered moon and foreground silhouettes.
+tl.set(camera,{x:0,y:72,scale:.92,rotation:-.35,transformOrigin:'50% 52%'});
+tl.fromTo('#moonWrap',{opacity:.55,scale:.93},{opacity:1,scale:1,duration:2.4,ease:'sine.out'},0);
+tl.fromTo('#manor',{y:44,opacity:.82},{y:0,opacity:1,duration:2.1,ease:'power2.out'},0);
+tl.to(camera,{x:-18,y:14,scale:1.00,rotation:0,duration:2.8,ease:'power2.inOut'},0);
+tl.to('#cloudBack',{x:115,duration:4.4,ease:'sine.inOut'},0);
+tl.to('#cloudFront',{x:-150,duration:4.0,ease:'sine.inOut'},0);
+
+// Fog flows at different depth speeds to create real parallax.
+tl.fromTo('#fogBack',{x:-130},{x:90,duration:6.4,ease:'sine.inOut'},0);
+tl.fromTo('#fogMid',{x:150},{x:-140,duration:5.6,ease:'sine.inOut'},0);
+tl.fromTo('#fogFront',{x:-210},{x:145,duration:4.8,ease:'sine.inOut'},0);
+
+// Camera catches the glowing foreground pumpkins, then settles.
+tl.to(camera,{x:-76,y:-168,scale:1.16,rotation:.38,duration:1.3,ease:'power3.inOut'},3.0);
+tl.to('#pumpkinPatch',{y:-26,scale:1.035,duration:1.1,ease:'power3.out'},3.15);
+tl.to('#moonWrap',{x:34,y:-12,scale:1.03,duration:1.5,ease:'power2.inOut'},3.0);
+tl.to({}, {duration:.5},4.3);
+
+// Carved glow breath is authored, not random flicker.
+tl.to('.pumpkinGlow',{opacity:.62,duration:.16,ease:'power2.inOut'},4.15);
+tl.to('.pumpkinGlow',{opacity:1,duration:.28,ease:'power2.out'},4.31);
+tl.to('.pumpkinGlow',{opacity:.78,duration:.2,ease:'power2.inOut'},4.75);
+tl.to('.pumpkinGlow',{opacity:1,duration:.42,ease:'sine.out'},4.95);
+
+// Tracking handoff from pumpkin warmth to manor windows / moon.
+tl.to(camera,{x:42,y:26,scale:1.075,rotation:-.25,duration:1.7,ease:'expo.inOut'},5.15);
+tl.to('#manor',{scale:1.035,y:-12,duration:1.55,ease:'power3.out'},5.3);
+tl.to('.window',{opacity:.58,duration:.12,ease:'power2.inOut'},6.35);
+tl.to('.window',{opacity:1,duration:.22,ease:'power2.out'},6.47);
+
+// Bat swarm crosses the lens; each path uses different energy and scale.
+batData.forEach((b,i)=>{
+  const dir=i%2?1:-1;
+  tl.fromTo('#bat'+i,
+    {x:dir*260,y:150+(i%3)*60,opacity:0,scale:b[2]*.72,rotation:b[3]-18*dir},
+    {x:-dir*(420+i*22),y:-170-(i%4)*95,opacity:.92,scale:b[2]*(1.05+(i%3)*.12),rotation:b[3]+24*dir,duration:1.55+(i%4)*.16,ease:'power2.inOut'},
+    6.55+i*.075
+  );
+});
+
+// Brief lightning reveal: silhouette detail spikes, then returns to candle/moon lighting.
+tl.to('#lightning',{opacity:.78,duration:.055,ease:'power4.out'},8.08);
+tl.to('#lightning',{opacity:.08,duration:.13,ease:'power4.in'},8.135);
+tl.to('#lightning',{opacity:.46,duration:.045,ease:'power4.out'},8.32);
+tl.to('#lightning',{opacity:0,duration:.24,ease:'power3.in'},8.365);
+tl.to('#manor',{filter:'drop-shadow(0 48px 60px rgba(0,0,0,.35)) brightness(1.14)',duration:.08,ease:'none'},8.08);
+tl.to('#manor',{filter:'drop-shadow(0 48px 60px rgba(0,0,0,.62)) brightness(1)',duration:.4,ease:'power2.out'},8.48);
+
+// Push toward the manor/moon through foreground atmosphere.
+tl.to(camera,{x:-20,y:108,scale:1.24,rotation:.28,duration:1.0,ease:'power3.in'},8.72);
+tl.to(camera,{x:-52,y:52,scale:1.18,rotation:.06,duration:.82,ease:'power3.out'},9.72);
+tl.to('#branchTop',{y:78,x:-32,duration:1.55,ease:'power2.inOut'},8.8);
+tl.to('#fogFront',{x:-160,y:-48,opacity:.66,duration:1.4,ease:'power2.inOut'},8.8);
+
+// Atmospheric breath; moon drifts against the manor for a dimensional hold.
+tl.to('#moonWrap',{x:-22,y:25,scale:1.065,duration:1.8,ease:'sine.inOut'},10.45);
+tl.to('#cloudBack',{x:-40,y:10,duration:2.1,ease:'sine.inOut'},10.25);
+tl.to('#cloudFront',{x:55,y:-20,duration:1.9,ease:'sine.inOut'},10.25);
+tl.to(camera,{x:4,y:34,scale:1.13,rotation:-.16,duration:1.7,ease:'sine.inOut'},10.55);
+
+// Final pull-back reveal reconnects all depth bands and lands on a strong background frame.
+tl.to(camera,{x:0,y:56,scale:.965,rotation:0,duration:2.1,ease:'power3.inOut'},12.35);
+tl.to('#branchTop',{x:18,y:-26,duration:2.0,ease:'power2.inOut'},12.4);
+tl.to('#fogBack',{x:-40,opacity:.5,duration:2.2,ease:'sine.inOut'},12.2);
+tl.to('#fogMid',{x:65,opacity:.46,duration:2.0,ease:'sine.inOut'},12.3);
+tl.to('#fogFront',{x:90,y:4,opacity:.42,duration:2.1,ease:'sine.inOut'},12.3);
+tl.to('#pumpkinPatch',{y:4,scale:.985,duration:1.8,ease:'power2.out'},12.45);
+tl.to('#moonHalo',{opacity:.68,scale:1.05,duration:1.8,ease:'sine.inOut'},12.4);
+tl.to({}, {duration:.01},14.99);
+
+const q=new URLSearchParams(location.search);
+if(q.has('debug'))debug.classList.add('on');
+gsap.ticker.add(()=>{debug.textContent=tl.time().toFixed(2)+'s';});
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
