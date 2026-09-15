@@ -6,14 +6,15 @@ For every substantial motion-design, animation, explainer, runtime, or render/ex
 
 1. read `SKILL.md`;
 2. load `skill-source/part-01.md` then `skill-source/part-02.md`;
-3. always load `references/camera-motion.md`, `references/anti-ppt.md`, `references/techniques.md`, `references/failure-gates.md`, and `references/visual-quality.md`;
+3. always load `references/camera-motion.md`, `references/camera-movement.md`, `references/anti-ppt.md`, `references/techniques.md`, `references/failure-gates.md`, and `references/visual-quality.md`;
 4. treat `references/visual-quality.md` as a **global mandatory visual gate** for every visible scene, regardless of theme, including Three.js, DOM/SVG, Canvas, WebGL, R3F, backgrounds, particles, decorations, product visuals, environments, and still frames;
-5. load task-specific references from the module map in `SKILL.md`;
-6. use the existing `runtime/`, `assets/`, and `scripts/` paths relative to the repository root;
-7. run `npm run check` after source, runtime, or render-script changes;
-8. inspect representative still frames at full size and thumbnail size before export; reject recognizable default primitives, symbolic geometry shortcuts, generic particle-demo visuals, weak materials, flat fake shadows, or scenes that read as developer art;
-9. watch the actual encoded video at normal speed before final approval; contact sheets alone are insufficient;
-10. do not mark substantial motion final unless all applicable skill-usage, playback, camera, camera-energy, hero-authority, composition, kinetic, kinetic-causality, continuity-material, screen-swap, payoff, anti-PPT, audio-mix, **anti-primitive, still-frame, hero-visual, material, depth, art-direction, thumbnail, and copyspace** gates pass.
+5. use `references/camera-movement.md` whenever camera choreography involves Three.js + GSAP, including push/pull, pan/tilt, capped orbit, truck/pedestal, parallax, crane, whip-pan transitions, micro-drift, follow/tracking, `lookAt` synchronization, or chroma-key-aware camera motion;
+6. load task-specific references from the module map in `SKILL.md`;
+7. use the existing `runtime/`, `assets/`, and `scripts/` paths relative to the repository root;
+8. run `npm run check` after source, runtime, or render-script changes;
+9. inspect representative still frames at full size and thumbnail size before export; reject recognizable default primitives, symbolic geometry shortcuts, generic particle-demo visuals, weak materials, flat fake shadows, or scenes that read as developer art;
+10. watch the actual encoded video at normal speed before final approval; contact sheets alone are insufficient;
+11. do not mark substantial motion final unless all applicable skill-usage, playback, camera, camera-energy, hero-authority, composition, kinetic, kinetic-causality, continuity-material, screen-swap, payoff, anti-PPT, audio-mix, **anti-primitive, still-frame, hero-visual, material, depth, art-direction, thumbnail, and copyspace** gates pass.
 
 Global visible-visual verification must truthfully include:
 
