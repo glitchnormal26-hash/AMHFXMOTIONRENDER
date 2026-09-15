@@ -128,7 +128,98 @@ During each major transfer:
 - use foreground/background parallax only when it strengthens depth and hierarchy;
 - inspect the transition midpoint, not only the landing.
 
-## 9. Camera QA
+## 9. SaaS / product explainer camera profile
+
+For SaaS, dashboard, workflow, automation, AI-product, CRM, analytics, fintech, and
+business-software explainers, **camera-driven UI exploration is the default**.
+A SaaS render must not rely on cards, counters, charts, cursors, or panels animating
+inside a materially static master frame and then call that cinematic motion.
+
+The intended feeling is that the viewer is being guided **through the interface and the
+system**, not watching a presentation about it.
+
+### Required SaaS camera vocabulary
+
+Use a meaningful subset of these according to the story:
+
+- **dashboard push-in / dolly-in** — enter the primary product surface or hero metric;
+- **horizontal or vertical pan** — follow a workflow across modules, columns, stages,
+  timelines, kanban lanes, tables, or automation nodes;
+- **detail zoom / inspection move** — move into a KPI, trigger, field, notification,
+  chart point, AI decision, or control that matters to the narration;
+- **parallax travel** — separate foreground chrome, hero UI, floating annotations, and
+  background system layers so camera travel creates real depth;
+- **perspective reframe / light tilt** — use subtle 2.5D perspective when it clarifies
+  hierarchy or makes UI feel spatial rather than flat;
+- **handoff pan** — transfer attention from one module or process owner to the next
+  without resetting the world;
+- **push-through transition** — travel through a panel, chart, node, modal, word, or
+  system boundary to reveal the next state;
+- **pull-back system reveal** — move from a local action to the larger automated flow,
+  architecture, team, or business outcome;
+- **continuous camera path** — preserve directional and spatial continuity across beats
+  instead of treating each product screen as a new slide.
+
+### SaaS framing contract
+
+For a substantial SaaS explainer:
+
+1. Establish a clear hero product surface or system world.
+2. Move the camera when attention changes between meaningful product areas.
+3. Use at least one close inspection state and one wider system/context state.
+4. Let important UI actions cause reframing, tracking, or camera handoff when possible.
+5. Preserve enough settle time after fast moves for labels, values, and product states
+   to be read.
+6. Use depth/parallax when it helps hierarchy, but never distort UI until it becomes
+   difficult to understand.
+7. Keep the product world spatially coherent: if the camera moves right into a workflow,
+   do not arbitrarily reset left on the next beat without a motivated transition.
+8. Prefer camera continuity over full-screen card swaps, title-card resets, or repeated
+   center-frame screenshots.
+
+### SaaS failure conditions
+
+A SaaS/product explainer fails `CAMERA_GATE` when any of these dominate the piece:
+
+- the camera is effectively static while only UI cards animate;
+- every beat is a centered dashboard screenshot with new copy;
+- zoom is simulated only by scaling one card while the world framing stays unchanged;
+- transitions are mostly fade/slide/opacity swaps between unrelated screens;
+- camera motion is only decorative drift and does not transfer attention;
+- the same push-in ease is repeated mechanically for every product feature;
+- perspective/parallax is present but no semantic target or hierarchy changes;
+- camera movement makes UI unreadable, crops critical controls, or exposes dead canvas;
+- the final reveal does not visually connect local product actions to the larger system
+  or business result.
+
+### SaaS minimum camera choreography
+
+Unless the concept explicitly requires a locked presentation-style shot, a SaaS
+explainer long enough to show multiple features should normally include:
+
+- one **establishing/reveal** framing state;
+- one **push-in or tracking inspection** move;
+- one **pan/handoff** between meaningful modules or workflow stages;
+- one **pull-back, push-through, or wider payoff reveal**;
+- at least one intentional **settle/read hold** between active moves.
+
+For short SaaS product films, aim for a perceptible framing change every 2–4 seconds,
+not continuous restless motion. Camera movement exists to guide comprehension first,
+then add cinematic energy.
+
+Use these additional truth labels for SaaS work:
+
+```text
+SAAS_CAMERA_PROFILE = ACTIVE | NOT_APPLICABLE
+SAAS_UI_EXPLORATION = PASS | FAIL
+SAAS_CAMERA_CONTINUITY = PASS | FAIL
+SAAS_DETAIL_TO_SYSTEM_REVEAL = USED | NOT_REQUIRED | FAIL
+```
+
+When `SAAS_CAMERA_PROFILE=ACTIVE`, `FINAL_VERIFIED` requires
+`SAAS_UI_EXPLORATION=PASS` and `SAAS_CAMERA_CONTINUITY=PASS`.
+
+## 10. Camera QA
 
 Before `FINAL_VERIFIED`, inspect:
 
