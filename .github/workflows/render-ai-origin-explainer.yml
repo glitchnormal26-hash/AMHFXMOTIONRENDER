@@ -1,0 +1,86 @@
+name: Render AI Origin Explainer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'render/ai-origin-explainer'
+    paths:
+      - 'assets/ai-origin-explainer.html'
+      - '.github/workflows/render-ai-origin-explainer.yml'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-ai-origin-explainer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render 90s AI origin explainer
+        run: |
+          mkdir -p output
+          env INDEX=assets/ai-origin-explainer.html \
+            QUALITY=final FPS=24 WIDTH=1920 HEIGHT=1080 CRF=18 PRESET=medium \
+            OUT_VIDEO=output/ai-origin-explainer-1080p.mp4 \
+            npm run render:ffmpeg
+      - name: Verify render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p = 'output/ai-origin-explainer-1080p.verify.json';
+          const r = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1920 || r.video?.height !== 1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 90) > 0.25) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Render unexpectedly contains audio');
+          NODE
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/ai-origin-explainer-1080p.mp4 \
+            -vf "select='eq(n,0)+eq(n,192)+eq(n,480)+eq(n,744)+eq(n,1056)+eq(n,1368)+eq(n,1632)+eq(n,1944)+eq(n,2159)'" \
+            -fps_mode vfr output/ai-origin-frame-%02d.png
+      - name: Record artifact hash
+        run: |
+          stat -c '%n %s bytes' output/ai-origin-explainer-1080p.mp4 output/ai-origin-explainer-1080p.verify.json > output/artifact-info.txt
+          sha256sum output/ai-origin-explainer-1080p.mp4 > output/sha256.txt
+          cat output/artifact-info.txt
+          cat output/sha256.txt
+      - name: Upload AI origin render
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-origin-explainer-1080p
+          path: |
+            output/ai-origin-explainer-1080p.mp4
+            output/ai-origin-explainer-1080p.verify.json
+            output/ai-origin-frame-*.png
+            output/artifact-info.txt
+            output/sha256.txt
+            assets/ai-origin-explainer.html
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
