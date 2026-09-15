@@ -1,0 +1,81 @@
+name: Preview Halloween Vertical 10s 1080p
+
+on:
+  push:
+    branches:
+      - render/halloween-vertical-10s-1080p
+    paths:
+      - 'projects/halloween-vertical-10s/**'
+      - '.github/workflows/render-halloween-vertical-10s-preview.yml'
+      - 'assets/halloween-spooky-3d-vertical.html'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-halloween-vertical-10s-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render preview 10s 9x16 1080p
+        run: |
+          mkdir -p output
+          env INDEX=projects/halloween-vertical-10s/scene.html \
+            FPS=24 WIDTH=1080 HEIGHT=1920 CRF=20 PRESET=veryfast \
+            OUT_VIDEO=output/halloween-spooky-3d-vertical-10s-preview.mp4 \
+            npm run render:ffmpeg
+      - name: Verify preview contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/halloween-spooky-3d-vertical-10s-preview.verify.json', 'utf8'));
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1080 || r.video?.height !== 1920) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Preview unexpectedly contains audio');
+          NODE
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/halloween-spooky-3d-vertical-10s-preview.mp4 \
+            -vf "select='eq(n,0)+eq(n,48)+eq(n,96)+eq(n,144)+eq(n,192)+eq(n,239)'" \
+            -fps_mode vfr output/halloween-preview-frame-%02d.png
+      - name: Record preview hash
+        run: |
+          sha256sum output/halloween-spooky-3d-vertical-10s-preview.mp4 > output/sha256.txt
+          stat -c '%n %s bytes' output/halloween-spooky-3d-vertical-10s-preview.mp4 > output/artifact-info.txt
+      - name: Upload preview QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-spooky-3d-vertical-10s-preview
+          path: |
+            output/halloween-spooky-3d-vertical-10s-preview.mp4
+            output/halloween-spooky-3d-vertical-10s-preview.verify.json
+            output/halloween-preview-frame-*.png
+            output/sha256.txt
+            output/artifact-info.txt
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
