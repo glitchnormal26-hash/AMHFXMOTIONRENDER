@@ -9,6 +9,8 @@ on:
       - 'runtime/**'
       - 'scripts/export-mp4.mjs'
       - 'scripts/export-frames.mjs'
+      - 'scripts/render-production.mjs'
+      - 'scripts/finalize-verification.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
@@ -20,6 +22,8 @@ on:
       - 'runtime/**'
       - 'scripts/export-mp4.mjs'
       - 'scripts/export-frames.mjs'
+      - 'scripts/render-production.mjs'
+      - 'scripts/finalize-verification.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/render-e2e.yml'
@@ -52,7 +56,7 @@ jobs:
         run: npm ci
       - name: Run code and skill checks
         run: npm run check
-      - name: Render lightweight PR smoke
+      - name: Render lightweight PR smoke via streaming transport
         run: |
           mkdir -p output
           env INDEX=assets/starter.html QUALITY=fast FPS=10 WIDTH=1280 HEIGHT=720 \
@@ -62,7 +66,8 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-pr.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.frame_transport !== 'stream') throw new Error(`transport=${r.frame_transport}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (Math.abs(Number(r.duration) - 9) > 0.25) throw new Error(`duration=${r.duration}`);
@@ -107,7 +112,7 @@ jobs:
           mkdir -p audio output
           ffmpeg -y -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
             -c:a pcm_s16le audio/test-voice.wav
-      - name: Render neutral 9s 4K MP4
+      - name: Render neutral 9s 4K MP4 via streaming transport
         run: |
           /usr/bin/time -v -o output/benchmark-4k.txt \
             env INDEX=assets/starter.html QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 \
@@ -117,7 +122,8 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-4k.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.frame_transport !== 'stream') throw new Error(`transport=${r.frame_transport}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
@@ -134,12 +140,27 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r = JSON.parse(fs.readFileSync('output/e2e-audio.verify.json', 'utf8'));
-          if (r.status !== 'FINAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.frame_transport !== 'stream') throw new Error(`transport=${r.frame_transport}`);
           if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           if (r.video?.width !== 1280 || r.video?.height !== 720) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
           if (r.audio?.codec_name !== 'aac') throw new Error(`audio codec=${r.audio?.codec_name}`);
           if (Math.abs(Number(r.duration) - 9) > 0.2) throw new Error(`duration=${r.duration}`);
           if (!r.audio_sources?.voiceover?.endsWith('audio/test-voice.wav')) throw new Error('voiceover fixture was not used');
+          NODE
+      - name: Render file-transport compatibility smoke
+        run: |
+          env INDEX=assets/starter.html QUALITY=fast FPS=5 WIDTH=640 HEIGHT=360 \
+            FRAME_TRANSPORT=files CRF=22 PRESET=veryfast \
+            OUT_VIDEO=output/e2e-files.mp4 npm run render:ffmpeg
+      - name: Verify file-transport fallback
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/e2e-files.verify.json', 'utf8'));
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.frame_transport !== 'files') throw new Error(`transport=${r.frame_transport}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
           NODE
       - name: Extract visual QA frames
         run: |
@@ -164,6 +185,8 @@ jobs:
             output/e2e-4k.verify.json
             output/e2e-audio.mp4
             output/e2e-audio.verify.json
+            output/e2e-files.mp4
+            output/e2e-files.verify.json
             output/benchmark-4k.txt
             output/benchmark-audio.txt
             output/artifact-sizes.txt
