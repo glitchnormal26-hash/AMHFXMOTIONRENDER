@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import fsp from "node:fs/promises";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -19,7 +18,7 @@ if (!fs.existsSync(manifestPath)) {
 }
 
 const outVideo = path.resolve(process.env.OUT_VIDEO || "output/final.mp4");
-const legacyVerifyPath = outVideo.replace(/\.mp4$/i, ".verify.json");
+const technicalReport = outVideo.replace(/\.mp4$/i, ".verify.json");
 const creativeReport = path.resolve(
   process.env.CREATIVE_REPORT || manifestPath.replace(/\.json$/i, ".creative.verify.json")
 );
@@ -45,29 +44,17 @@ run("CREATIVE GATE", ["scripts/check-creative-gates.mjs", manifestPath], {
 
 run("TECHNICAL RENDER", ["scripts/export-mp4.mjs"]);
 
-if (!fs.existsSync(legacyVerifyPath)) {
-  console.error(`Technical renderer did not create verification report: ${legacyVerifyPath}`);
+if (!fs.existsSync(technicalReport)) {
+  console.error(`Technical renderer did not create verification report: ${technicalReport}`);
   process.exit(3);
 }
 
-// export-mp4.mjs historically emitted FINAL_VERIFIED for stream correctness alone.
-// In the production path we immediately normalize that legacy report: stream/codec/
-// duration success is TECHNICAL_VERIFIED and remains DRAFT until creative verification
-// is combined below.
-const technical = JSON.parse(await fsp.readFile(legacyVerifyPath, "utf8"));
-technical.status = "DRAFT";
-technical.technical_status = "TECHNICAL_VERIFIED";
-technical.creative_status = "NOT_COMBINED";
-technical.verification_model = "creative+technical-v1";
-technical.note = "Technical render passed. FINAL_VERIFIED requires the separate creative report and final combiner.";
-await fsp.writeFile(legacyVerifyPath, JSON.stringify(technical, null, 2));
-
-run("FINAL VERIFICATION", ["scripts/finalize-verification.mjs", legacyVerifyPath, creativeReport], {
+run("FINAL VERIFICATION", ["scripts/finalize-verification.mjs", technicalReport, creativeReport], {
   FINAL_REPORT: finalReport
 });
 
 console.log("\nFINAL_VERIFIED");
 console.log(`MP4: ${outVideo}`);
-console.log(`technical: ${legacyVerifyPath}`);
+console.log(`technical: ${technicalReport}`);
 console.log(`creative: ${creativeReport}`);
 console.log(`final: ${finalReport}`);
