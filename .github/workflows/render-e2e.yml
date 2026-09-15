@@ -33,6 +33,13 @@ jobs:
         run: npm ci
       - name: Run repository checks
         run: npm run check
+      - name: Apply vertical safe-framing correction
+        run: |
+          sed -i 's/{t:0,x:0,y:105,s:1.08,r:0}/{t:0,x:0,y:90,s:1.03,r:0}/' assets/ai-origin-explainer.html
+          sed -i 's/{t:2.5,x:-48,y:35,s:1.16,r:-.4}/{t:2.5,x:18,y:30,s:1.06,r:-.25}/' assets/ai-origin-explainer.html
+          sed -i 's/{t:4.7,x:78,y:-74,s:1.00,r:.3}/{t:4.7,x:68,y:-50,s:1.00,r:.2}/' assets/ai-origin-explainer.html
+          sed -i 's/{t:7.2,x:-96,y:-150,s:1.19,r:-.55}/{t:7.2,x:20,y:-95,s:1.06,r:-.3}/' assets/ai-origin-explainer.html
+          sed -i 's/{t:11.2,x:0,y:0,s:1.07,r:0}/{t:11.2,x:0,y:0,s:1.04,r:0}/' assets/ai-origin-explainer.html
       - name: Render 9:16 final MP4
         run: |
           mkdir -p output
