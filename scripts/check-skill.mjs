@@ -39,12 +39,17 @@ const requiredFiles = [
   "references/explainer.md",
   "references/failure-gates.md",
   "references/full-runtime.md",
+  "references/production-verification.md",
+  "references/production-manifest.example.json",
   "references/saas-motion-explainer-direction.md",
   "references/techniques.md",
   "references/visual-quality.md",
   "assets/starter-saas-explainer.html",
   "runtime/camera-rig.js",
   "runtime/explainer-helpers.js",
+  "scripts/check-creative-gates.mjs",
+  "scripts/finalize-verification.mjs",
+  "scripts/render-production.mjs",
   "scripts/export-mp4.mjs",
 ];
 
@@ -60,6 +65,9 @@ const saasDirection = read("references/saas-motion-explainer-direction.md");
 const explainer = read("references/explainer.md");
 const agentRules = read("AGENTS.md");
 const starter = read("assets/starter-saas-explainer.html");
+const productionVerification = read("references/production-verification.md");
+const creativeChecker = read("scripts/check-creative-gates.mjs");
+const productionRenderer = read("scripts/render-production.mjs");
 
 for (const marker of [
   "references/saas-motion-explainer-direction.md",
@@ -91,10 +99,13 @@ for (const marker of [
 for (const [relative, body, markers] of [
   ["references/explainer.md", explainer, ["starter-saas-explainer.html", "SAAS_DIRECTION_GATE"]],
   ["AGENTS.md", agentRules, ["saas-motion-explainer-direction.md", "SAAS_DIRECTION_GATE"]],
+  ["references/production-verification.md", productionVerification, ["TECHNICAL_VERIFIED", "CREATIVE_VERIFIED", "FINAL_VERIFIED", "render:production", "production-manifest.example.json"]],
+  ["scripts/check-creative-gates.mjs", creativeChecker, ["CREATIVE_VERIFIED", "CONTINUITY_MATERIAL_GATE", "STILL_FRAME_GATE", "ART_DIRECTION_GATE"]],
+  ["scripts/render-production.mjs", productionRenderer, ["CREATIVE GATE", "TECHNICAL RENDER", "FINAL VERIFICATION", "technical_status"]],
 ]) {
   for (const marker of markers) {
     if (!body.includes(marker)) {
-      throw new Error(`${relative} is missing SaaS integration marker: ${marker}`);
+      throw new Error(`${relative} is missing required integration marker: ${marker}`);
     }
   }
 }
@@ -119,4 +130,4 @@ if (starter.includes("Math.random(")) {
   throw new Error("SaaS starter must remain deterministic; unseeded Math.random() is forbidden.");
 }
 
-console.log("Motion Designer v3.9.4 integration, visual gates, camera module, and SaaS direction profile verified.");
+console.log("Motion Designer v3.9.4 integration, creative+technical verification, visual gates, camera module, and SaaS direction profile verified.");

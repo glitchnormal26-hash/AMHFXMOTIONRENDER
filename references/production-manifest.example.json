@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "project": "Example Motion Project",
+  "creative_intent": "A continuous cinematic visual argument with one persistent material carrier and authored camera energy.",
+  "visual_language": "Frosted acrylic editorial with sculpted luminous surfaces, deep atmospheric layers, and restrained kinetic type.",
+  "continuity_carrier": "A luminous route ribbon that physically transforms into the structural material of each subsequent beat.",
+  "styleframes": [
+    {
+      "beat": "opening",
+      "hero": "Primary attention owner and opening visual thesis",
+      "composition": "Asymmetric close detail with designed copyspace and foreground occlusion",
+      "quality_note": "Hero silhouette, material response, depth separation, and thumbnail authority inspected"
+    },
+    {
+      "beat": "hero impact",
+      "hero": "Persistent carrier in transformed state",
+      "composition": "Medium push-in with strong foreground/background separation",
+      "quality_note": "Still frame remains production-ready without relying on motion"
+    },
+    {
+      "beat": "transition midpoint",
+      "hero": "Carrier during material handoff",
+      "composition": "Camera passes through the transforming hero instead of loading a new screen",
+      "quality_note": "Transition preserves readable hierarchy at peak speed"
+    },
+    {
+      "beat": "middle settle",
+      "hero": "Second semantic state",
+      "composition": "Readable landing with intentionally different framing from the opening",
+      "quality_note": "No primitive shortcuts, generic cards, or empty dead stage"
+    },
+    {
+      "beat": "final payoff",
+      "hero": "Persistent carrier resolved into final statement",
+      "composition": "Large-scale lock with visual memory of the entire journey",
+      "quality_note": "Final frame has equal or greater authority than the build-up"
+    }
+  ],
+  "proof_of_motion": {
+    "status": "PASS",
+    "duration_seconds": 12,
+    "scope": "The most difficult camera push-through and continuity transformation",
+    "playback_note": "Reviewed at normal speed and reduced speed; acceleration, impact, readability, and settle remain clear"
+  },
+  "scenes": [
+    {
+      "id": "beat-01",
+      "purpose": "Establish the visual thesis",
+      "hero": "Persistent material carrier",
+      "camera_mode": "MOVING",
+      "depth_plan": "Foreground occluder, sculpted hero midground, atmospheric background",
+      "type_role": "Hero phrase participates in framing and transition causality",
+      "transition_to_next": {
+        "cause": "The hero phrase compresses into the persistent carrier",
+        "action": "Carrier gains depth and camera accelerates through its surface",
+        "result": "The same surface becomes the environment of beat 02",
+        "continuity": "Material identity, camera velocity, and light direction remain continuous"
+      }
+    },
+    {
+      "id": "beat-02",
+      "purpose": "Resolve the first transformation into a readable semantic state",
+      "hero": "Same carrier in a new structural role",
+      "camera_mode": "REFRAME",
+      "depth_plan": "Hero occupies dominant midground with shallow foreground parallax and restrained atmosphere",
+      "type_role": "Short annotation locks to the transformed hero rather than floating independently"
+    }
+  ],
+  "gates": {
+    "SKILL_USAGE_GATE": "PASS",
+    "PLAYBACK_GATE": "PASS",
+    "CAMERA_GATE": "PASS",
+    "CAMERA_ENERGY_GATE": "PASS",
+    "HERO_AUTHORITY_GATE": "PASS",
+    "COMPOSITION_GATE": "PASS",
+    "KINETIC_GATE": "PASS",
+    "KINETIC_CAUSALITY_GATE": "PASS",
+    "ANTI_PPT_GATE": "PASS",
+    "CONTINUITY_MATERIAL_GATE": "PASS",
+    "SCREEN_SWAP_GATE": "PASS",
+    "PAYOFF_GATE": "PASS",
+    "ANTI_PRIMITIVE_GATE": "PASS",
+    "STILL_FRAME_GATE": "PASS",
+    "HERO_VISUAL_GATE": "PASS",
+    "MATERIAL_GATE": "PASS",
+    "DEPTH_GATE": "PASS",
+    "ART_DIRECTION_GATE": "PASS",
+    "THUMBNAIL_GATE": "PASS",
+    "COPYSPACE_GATE": "PASS",
+    "SPEED_RAMP": "ACTIVE",
+    "CAMERA_FOLLOW": "NOT_REQUIRED",
+    "SFX_MODE": "NONE",
+    "AUDIO_MIX_GATE": "NOT_REQUIRED",
+    "SAAS_DIRECTION_GATE": "NOT_REQUIRED"
+  },
+  "review": {
+    "summary": "Representative stills and the proof-of-motion section were reviewed before final rendering; the piece reads as one evolving visual world rather than a sequence of screens.",
+    "rejected_shortcuts": [
+      "Repeated card-based scene layouts",
+      "Generic primitive stand-ins for hero objects"
+    ],
+    "representative_frames": [
+      "opening",
+      "hero impact",
+      "transition midpoint",
+      "middle settle",
+      "final payoff"
+    ]
+  }
+}
