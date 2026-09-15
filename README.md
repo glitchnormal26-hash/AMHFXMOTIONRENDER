@@ -48,7 +48,8 @@ npm run render:ffmpeg:final
 
 - `SKILL.md` — Motion Designer v3.9.4 integration/router and hard quality gates
 - `skill-source/` — canonical active rule source
-- `references/camera-motion.md` — camera choreography and framing gate
+- `references/camera-motion.md` — camera choreography, framing, continuity, follow, and speed-ramp gate
+- `references/camera-movement.md` — concrete Three.js + GSAP camera move vocabulary, easing/timing, `lookAt` synchronization, follow damping, loop motion, and chroma-key constraints
 - `references/anti-ppt.md` — continuity / anti-presentation verification
 - `references/techniques.md` — kinetic and transition techniques
 - `references/failure-gates.md` — playback-first rejection gates

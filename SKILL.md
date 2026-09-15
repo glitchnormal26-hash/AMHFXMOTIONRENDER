@@ -18,9 +18,10 @@ Load these files in order as one continuous rulebook for every substantial motio
 1. `skill-source/part-01.md`
 2. `skill-source/part-02.md`
 3. `references/camera-motion.md`
-4. `references/anti-ppt.md`
-5. `references/techniques.md`
-6. `references/failure-gates.md`
+4. `references/camera-movement.md`
+5. `references/anti-ppt.md`
+6. `references/techniques.md`
+7. `references/failure-gates.md`
 
 Then load task-specific modules only when needed:
 
@@ -33,7 +34,7 @@ versions if they are ever needed for archaeology.
 
 ## Repository module map
 
-- camera / spatial / 3D → `references/camera-motion.md`, `references/full-runtime.md`, `references/architecture.md`, `runtime/camera-rig.js`, `runtime/three-scene.js`
+- camera / spatial / 3D → `references/camera-motion.md`, `references/camera-movement.md`, `references/full-runtime.md`, `references/architecture.md`, `runtime/camera-rig.js`, `runtime/three-scene.js`
 - kinetic typography / anti-PPT → `references/techniques.md`, `references/anti-ppt.md`
 - composition / SaaS / brand → `references/architecture.md`, `references/anti-ppt.md`
 - playback / failure rejection → `references/failure-gates.md`
@@ -217,6 +218,9 @@ Use `runtime/camera-rig.js` for deterministic camera operations including look,
 tracking, follow-point moves, push-throughs, settles, and speed-ramped transfers.
 
 For Three.js/R3F, animate the real render camera or a dedicated camera parent rig.
+For concrete Three.js + GSAP camera move selection, easing/timing, `lookAt` synchronization,
+follow damping, loop-friendly drift, and chroma-key constraints, use
+`references/camera-movement.md` together with `references/camera-motion.md`.
 
 ## Verification
 
