@@ -27,6 +27,28 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: python -m py_compile scripts/serve.py
+      - name: Verify creative-gate example
+        run: |
+          CREATIVE_REPORT=/tmp/example.creative.verify.json \
+            node scripts/check-creative-gates.mjs references/production-manifest.example.json
+          node -e "const r=require('/tmp/example.creative.verify.json'); if(r.status!=='CREATIVE_VERIFIED') process.exit(1)"
+      - name: Verify final-status combiner
+        run: |
+          cat > /tmp/example.technical.verify.json <<'JSON'
+          {
+            "status": "DRAFT",
+            "technical_status": "TECHNICAL_VERIFIED",
+            "output": "/tmp/example.mp4",
+            "duration": 10,
+            "video": {"codec_name":"h264","width":1920,"height":1080},
+            "audio": null
+          }
+          JSON
+          FINAL_REPORT=/tmp/example.final.verify.json \
+            node scripts/finalize-verification.mjs \
+              /tmp/example.technical.verify.json \
+              /tmp/example.creative.verify.json
+          node -e "const r=require('/tmp/example.final.verify.json'); if(r.status!=='FINAL_VERIFIED'||r.technical_status!=='TECHNICAL_VERIFIED'||r.creative_status!=='CREATIVE_VERIFIED') process.exit(1)"
       - name: Enforce renderer and repository hygiene
         shell: bash
         run: |
@@ -44,4 +66,4 @@ jobs:
             git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256'
             exit 1
           fi
-          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || p.scripts['render:motra']) process.exit(1)"
+          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || !p.scripts['render:production'] || !p.scripts['check:creative'] || p.scripts['render:motra']) process.exit(1)"
