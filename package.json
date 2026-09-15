@@ -11,6 +11,7 @@
     "export:mp4:final": "QUALITY=final node scripts/export-mp4.mjs",
     "render:ffmpeg": "node scripts/export-mp4.mjs",
     "render:ffmpeg:final": "QUALITY=final node scripts/export-mp4.mjs",
+    "render:ffmpeg:files": "FRAME_TRANSPORT=files node scripts/export-mp4.mjs",
     "render:production": "node scripts/render-production.mjs",
     "check:skill": "node scripts/check-skill.mjs",
     "check:creative": "node scripts/check-creative-gates.mjs",
@@ -21,7 +22,7 @@
     "gsap": "^3.13.0",
     "puppeteer": "^24.0.0"
   },
-  "description": "Browser motion renderer with deterministic frame capture, creative verification gates, and FFmpeg H.264/AAC encoding.",
+  "description": "Browser motion renderer with deterministic Chromium-to-FFmpeg frame streaming, creative verification gates, and H.264/AAC encoding.",
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
