@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber Security Shield — 10s 1080p</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --bg0:#03070e;--bg1:#071420;--bg2:#0b2230;
+  --cyan:#67f7ff;--cyan2:#10bfd4;--ice:#d9fbff;--green:#79ffb4;
+  --red:#ff486d;--amber:#ffc85c;--ink:#effcff;--muted:#79a8b4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02050a}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:radial-gradient(ellipse at 48% 46%,#0d2636 0,#07141f 34%,#03070e 72%,#010307 100%)}
+#camera{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#world{position:absolute;inset:0;overflow:hidden}
+#world:before{content:"";position:absolute;inset:-120px;background:
+  linear-gradient(rgba(75,218,231,.045) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(75,218,231,.045) 1px,transparent 1px);
+  background-size:78px 78px;transform:perspective(900px) rotateX(59deg) scale(1.32) translateY(345px);transform-origin:50% 50%;opacity:.9}
+#world:after{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 20% 22%,rgba(31,213,231,.10),transparent 28%),
+  radial-gradient(circle at 86% 70%,rgba(121,255,180,.07),transparent 30%),
+  linear-gradient(115deg,transparent 0 43%,rgba(72,241,255,.025) 46%,transparent 49% 100%);pointer-events:none}
+.atmo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen}
+.atmo .wash{position:absolute;filter:blur(70px);opacity:.35;border-radius:44% 56% 61% 39% / 45% 42% 58% 55%}
+.wash.a{width:540px;height:310px;left:180px;top:105px;background:linear-gradient(120deg,rgba(35,215,237,.42),rgba(39,76,126,.03));transform:rotate(-18deg)}
+.wash.b{width:620px;height:360px;right:120px;bottom:62px;background:linear-gradient(130deg,rgba(62,255,185,.13),rgba(32,173,255,.04));transform:rotate(16deg)}
+
+#network{position:absolute;inset:0;opacity:.62}
+.netline{fill:none;stroke:rgba(92,226,238,.14);stroke-width:2}
+.netline.hot{stroke:rgba(255,72,109,.26)}
+.node{fill:#071922;stroke:rgba(108,237,244,.35);stroke-width:2}
+.node.hot{stroke:rgba(255,72,109,.66);fill:#1a0a12}
+
+#hero-zone{position:absolute;left:50%;top:49%;width:660px;height:760px;transform:translate(-50%,-50%);filter:drop-shadow(0 44px 70px rgba(0,0,0,.42));will-change:transform,opacity}
+#shield-svg{width:100%;height:100%;overflow:visible}
+.shield-outline{fill:url(#shieldOuter);stroke:url(#edgeStroke);stroke-width:7;filter:url(#softGlow)}
+.shield-bevel{fill:url(#shieldInner);stroke:rgba(173,249,255,.26);stroke-width:2}
+.shield-core{fill:url(#shieldCore);stroke:rgba(132,248,255,.3);stroke-width:2}
+.shield-highlight{fill:none;stroke:rgba(255,255,255,.40);stroke-width:4;stroke-linecap:round;opacity:.72}
+.shield-rim{fill:none;stroke:rgba(95,248,255,.58);stroke-width:3;stroke-dasharray:3 15;stroke-linecap:round;opacity:.7}
+.circuit{fill:none;stroke:rgba(103,247,255,.62);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:url(#lineGlow)}
+.circuit.faint{stroke:rgba(121,255,180,.25);stroke-width:3}
+.circuit-dot{fill:#d9fbff;filter:url(#lineGlow)}
+#scan{fill:url(#scanGrad);opacity:0}
+#lockGroup{opacity:0;transform-origin:330px 380px}
+#lockBody{fill:url(#lockFill);stroke:rgba(219,251,255,.55);stroke-width:3;filter:url(#lineGlow)}
+#lockArc{fill:none;stroke:#bffaff;stroke-width:22;stroke-linecap:round;filter:url(#lineGlow)}
+#lockKey{fill:#061118;stroke:#8dfff2;stroke-width:2}
+
+.ring{position:absolute;left:50%;top:49%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.ring.one{width:720px;height:720px;border:1px solid rgba(103,247,255,.18);box-shadow:inset 0 0 46px rgba(32,217,235,.04)}
+.ring.two{width:880px;height:880px;border:1px dashed rgba(90,221,237,.10)}
+.ring.three{width:1040px;height:1040px;border:1px solid rgba(90,221,237,.055)}
+
+.packet{position:absolute;width:86px;height:42px;opacity:0;will-change:transform,opacity}
+.packet svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 10px rgba(255,72,109,.35))}
+.packet path{fill:rgba(66,7,23,.78);stroke:var(--red);stroke-width:2.5}
+.packet i{position:absolute;left:22px;top:12px;width:34px;height:4px;background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,72,109,.2));box-shadow:0 9px 0 rgba(255,145,163,.35);opacity:.7}
+.p1{left:90px;top:220px;transform:rotate(12deg)}
+.p2{left:170px;top:765px;transform:rotate(-8deg)}
+.p3{right:115px;top:185px;transform:rotate(174deg)}
+.p4{right:145px;top:690px;transform:rotate(190deg)}
+.p5{left:640px;top:68px;transform:rotate(78deg)}
+.p6{right:585px;bottom:32px;transform:rotate(-94deg)}
+
+.arc{position:absolute;height:2px;transform-origin:left center;opacity:0;background:linear-gradient(90deg,rgba(255,72,109,.02),rgba(255,72,109,.95) 55%,rgba(255,180,191,.9));box-shadow:0 0 12px rgba(255,72,109,.65)}
+.arc:after{content:"";position:absolute;right:-4px;top:-3px;width:9px;height:9px;background:#ff8ba1;transform:rotate(45deg);box-shadow:0 0 16px rgba(255,72,109,.7)}
+#a1{left:270px;top:300px;width:515px;transform:rotate(18deg)}
+#a2{left:300px;top:760px;width:510px;transform:rotate(-20deg)}
+#a3{right:285px;top:272px;width:500px;transform-origin:right center;transform:rotate(-162deg)}
+#a4{right:300px;top:720px;width:520px;transform-origin:right center;transform:rotate(160deg)}
+
+.block-wave{position:absolute;left:50%;top:49%;width:610px;height:610px;border:3px solid rgba(103,247,255,.85);border-radius:44% 56% 52% 48% / 48% 43% 57% 52%;transform:translate(-50%,-50%) scale(.5);opacity:0;box-shadow:0 0 50px rgba(103,247,255,.16),inset 0 0 40px rgba(103,247,255,.08);pointer-events:none}
+
+#left-copy{position:absolute;left:122px;top:160px;width:520px;z-index:4}
+.eyebrow{font-size:22px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#73dce7;opacity:0;transform:translateY(20px)}
+.title{margin-top:24px;font-size:92px;line-height:.88;letter-spacing:-.05em;font-weight:760;max-width:570px;opacity:0;transform:translateY(44px)}
+.title .danger{color:#ff617f;text-shadow:0 0 26px rgba(255,72,109,.18)}
+.sub{margin-top:28px;font-size:26px;line-height:1.4;color:#8db8c2;max-width:460px;opacity:0;transform:translateY(24px)}
+
+#status-rail{position:absolute;right:118px;top:170px;width:390px;z-index:5}
+.status{position:relative;margin-bottom:14px;padding:18px 20px 18px 54px;border:1px solid rgba(114,229,238,.14);border-radius:16px;background:linear-gradient(120deg,rgba(11,33,44,.82),rgba(6,17,25,.58));backdrop-filter:blur(12px);font-size:18px;letter-spacing:.06em;color:#9cc8d2;opacity:0;transform:translateX(42px)}
+.status:before{content:"";position:absolute;left:20px;top:50%;width:13px;height:13px;transform:translateY(-50%) rotate(45deg);background:#3e6971;border:1px solid rgba(255,255,255,.12)}
+.status.hot{border-color:rgba(255,72,109,.25);color:#ffc0cc}
+.status.hot:before{background:#ff486d;box-shadow:0 0 14px rgba(255,72,109,.55)}
+.status.safe{border-color:rgba(121,255,180,.25);color:#c8ffe0}
+.status.safe:before{background:#79ffb4;box-shadow:0 0 14px rgba(121,255,180,.45)}
+
+#blocked{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.78);font-size:188px;line-height:.8;font-weight:850;letter-spacing:-.065em;color:rgba(225,252,255,.96);text-shadow:0 0 34px rgba(79,235,244,.24);opacity:0;z-index:2;white-space:nowrap}
+#blocked span{display:inline-block;clip-path:inset(0 100% 0 0)}
+#final-copy{position:absolute;left:50%;bottom:98px;transform:translateX(-50%);width:1000px;text-align:center;z-index:6;opacity:0}
+#final-copy .kicker{font-size:21px;font-weight:800;letter-spacing:.28em;color:#7de6ef;text-transform:uppercase}
+#final-copy .hero-final{margin-top:12px;font-size:74px;line-height:.92;font-weight:780;letter-spacing:-.04em}
+#final-copy .hero-final em{font-style:normal;color:#9effc8}
+
+.lens{position:absolute;inset:0;pointer-events:none;z-index:20;background:radial-gradient(circle at 52% 43%,transparent 0 41%,rgba(0,0,0,.12) 72%,rgba(0,0,0,.46) 100%)}
+.lens:after{content:"";position:absolute;inset:0;opacity:.13;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 4px);mix-blend-mode:soft-light}
+#flash{position:absolute;inset:0;z-index:19;background:radial-gradient(circle at 50% 48%,rgba(123,250,255,.52),rgba(20,174,196,.12) 28%,transparent 57%);opacity:0;pointer-events:none}
+#debug{display:none;position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99;background:#02080d;color:#c8faff;padding:8px 12px;border-radius:8px;font:13px ui-monospace,monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camera">
+    <div id="world">
+      <svg id="network" viewBox="0 0 1920 1080" aria-hidden="true">
+        <path class="netline" d="M0 250 C260 100 480 380 740 250 S1210 165 1460 310 S1740 390 1920 245"/>
+        <path class="netline hot" d="M-20 810 C245 710 430 930 700 800 S1130 650 1390 790 S1710 950 1940 765"/>
+        <path class="netline" d="M340 -40 C470 210 620 250 790 510 S1190 780 1420 1090"/>
+        <path class="netline" d="M1550 -50 C1410 210 1250 330 1120 520 S820 790 660 1100"/>
+        <g>
+          <rect class="node" x="172" y="192" width="24" height="24" rx="5" transform="rotate(9 184 204)"/>
+          <rect class="node hot" x="355" y="752" width="24" height="24" rx="5" transform="rotate(-11 367 764)"/>
+          <rect class="node" x="1500" y="220" width="24" height="24" rx="5" transform="rotate(15 1512 232)"/>
+          <rect class="node hot" x="1645" y="790" width="24" height="24" rx="5" transform="rotate(-8 1657 802)"/>
+          <rect class="node" x="865" y="125" width="20" height="20" rx="4" transform="rotate(22 875 135)"/>
+          <rect class="node" x="1040" y="905" width="20" height="20" rx="4" transform="rotate(-18 1050 915)"/>
+        </g>
+      </svg>
+      <div class="atmo"><div class="wash a"></div><div class="wash b"></div></div>
+      <div class="ring three"></div><div class="ring two"></div><div class="ring one"></div>
+      <div class="block-wave" id="wave"></div>
+      <div id="blocked"><span>BLOCKED</span></div>
+
+      <div id="hero-zone">
+        <svg id="shield-svg" viewBox="0 0 660 760" aria-label="Cyber security shield">
+          <defs>
+            <linearGradient id="shieldOuter" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#d7fdff" stop-opacity=".95"/>
+              <stop offset=".18" stop-color="#46e7f5" stop-opacity=".88"/>
+              <stop offset=".52" stop-color="#0d6f87" stop-opacity=".92"/>
+              <stop offset=".82" stop-color="#064253" stop-opacity=".98"/>
+              <stop offset="1" stop-color="#b9fff0" stop-opacity=".78"/>
+            </linearGradient>
+            <linearGradient id="shieldInner" x1=".1" y1="0" x2=".85" y2="1">
+              <stop offset="0" stop-color="#102d3d" stop-opacity=".94"/>
+              <stop offset=".45" stop-color="#07141f" stop-opacity=".94"/>
+              <stop offset="1" stop-color="#0a2028" stop-opacity=".96"/>
+            </linearGradient>
+            <radialGradient id="shieldCore" cx="44%" cy="34%" r="74%">
+              <stop offset="0" stop-color="#175166" stop-opacity=".9"/>
+              <stop offset=".42" stop-color="#0a2430" stop-opacity=".95"/>
+              <stop offset="1" stop-color="#041018" stop-opacity="1"/>
+            </radialGradient>
+            <linearGradient id="edgeStroke" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f0ffff"/><stop offset=".28" stop-color="#42ecf8"/><stop offset=".65" stop-color="#0aa4bb"/><stop offset="1" stop-color="#7effbd"/>
+            </linearGradient>
+            <linearGradient id="scanGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#74f7ff" stop-opacity="0"/><stop offset=".48" stop-color="#9cffff" stop-opacity=".24"/><stop offset=".52" stop-color="#d9ffff" stop-opacity=".62"/><stop offset="1" stop-color="#74f7ff" stop-opacity="0"/></linearGradient>
+            <linearGradient id="lockFill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c7ffff"/><stop offset=".35" stop-color="#4fe4ec"/><stop offset="1" stop-color="#1d8d9f"/></linearGradient>
+            <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="lineGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <clipPath id="shieldClip"><path d="M330 38 C423 94 518 111 590 125 C590 377 546 562 330 706 C114 562 70 377 70 125 C142 111 237 94 330 38 Z"/></clipPath>
+          </defs>
+          <path class="shield-outline" d="M330 38 C423 94 518 111 590 125 C590 377 546 562 330 706 C114 562 70 377 70 125 C142 111 237 94 330 38 Z"/>
+          <path class="shield-bevel" d="M330 66 C413 116 501 130 560 143 C555 366 510 530 330 666 C150 530 105 366 100 143 C159 130 247 116 330 66 Z"/>
+          <path class="shield-core" d="M330 96 C396 134 472 150 528 159 C518 353 475 492 330 617 C185 492 142 353 132 159 C188 150 264 134 330 96 Z"/>
+          <path class="shield-highlight" d="M181 165 C223 151 281 139 330 111 C382 141 432 151 477 163"/>
+          <path class="shield-rim" d="M330 78 C409 124 487 137 548 151 C538 353 494 514 330 647 C166 514 122 353 112 151 C173 137 251 124 330 78 Z"/>
+          <g clip-path="url(#shieldClip)">
+            <path class="circuit" d="M146 238 H242 L282 278 H384 L423 239 H523"/>
+            <path class="circuit faint" d="M156 425 H231 L270 386 H389 L430 427 H516"/>
+            <path class="circuit" d="M219 531 V478 L270 429 M439 529 V480 L390 430"/>
+            <circle class="circuit-dot" cx="244" cy="238" r="6"/><circle class="circuit-dot" cx="423" cy="239" r="6"/>
+            <circle class="circuit-dot" cx="231" cy="425" r="5"/><circle class="circuit-dot" cx="430" cy="427" r="5"/>
+            <rect id="scan" x="100" y="110" width="460" height="86" rx="30"/>
+          </g>
+          <g id="lockGroup">
+            <path id="lockArc" d="M270 355 V320 C270 245 390 245 390 320 V355"/>
+            <path id="lockBody" d="M238 350 Q238 332 256 332 H404 Q422 332 422 350 V468 Q422 486 404 486 H256 Q238 486 238 468 Z"/>
+            <path id="lockKey" d="M330 381 C310 381 294 397 294 417 C294 430 301 442 312 449 L308 470 H352 L348 449 C359 442 366 430 366 417 C366 397 350 381 330 381 Z"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="packet p1"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="packet p2"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="packet p3"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="packet p4"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="packet p5"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="packet p6"><svg viewBox="0 0 86 42"><path d="M8 4 H58 L80 21 L58 38 H8 L20 21 Z"/></svg><i></i></div>
+      <div class="arc" id="a1"></div><div class="arc" id="a2"></div><div class="arc" id="a3"></div><div class="arc" id="a4"></div>
+
+      <div id="left-copy">
+        <div class="eyebrow">Realtime threat defense</div>
+        <div class="title">Stop attacks<br><span class="danger">before impact.</span></div>
+        <div class="sub">Adaptive protection isolates malicious traffic and keeps critical systems online.</div>
+      </div>
+      <div id="status-rail">
+        <div class="status hot s1">INTRUSION ATTEMPT</div>
+        <div class="status hot s2">MALICIOUS PAYLOAD</div>
+        <div class="status s3">ANALYZING TRAFFIC</div>
+        <div class="status safe s4">THREAT CONTAINED</div>
+      </div>
+      <div id="final-copy"><div class="kicker">Cyber security</div><div class="hero-final">SYSTEM <em>PROTECTED</em></div></div>
+    </div>
+  </div>
+  <div id="flash"></div><div class="lens"></div>
+</div>
+<div id="debug">0.00s</div>
+<script>
+const W=1920,H=1080,DURATION=10;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+const q=new URLSearchParams(location.search);if(q.has('debug'))debug.classList.add('on');
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:'auto'}});
+gsap.set(camera,{scale:.92,x:0,y:14,transformOrigin:'50% 50%'});
+gsap.set('#hero-zone',{opacity:0,scale:.72,rotation:-2,transformOrigin:'50% 50%'});
+gsap.set('.ring',{opacity:0,scale:.72});
+gsap.set('#network',{opacity:.2});
+gsap.set('#blocked',{opacity:0});
+
+// Beat 1 — incomplete network world, threats appear, shield assembles.
+tl.to('#network',{opacity:.66,duration:.9,ease:'power2.out'},0.05)
+  .to('.eyebrow',{opacity:1,y:0,duration:.55,ease:'power3.out'},.28)
+  .to('.title',{opacity:1,y:0,duration:.72,ease:'power4.out'},.5)
+  .to('.sub',{opacity:1,y:0,duration:.52,ease:'power3.out'},.9)
+  .to('.packet',{opacity:1,duration:.2,stagger:.07,ease:'power1.out'},.95)
+  .to('.ring.one',{opacity:.62,scale:1,duration:.9,ease:'power3.out'},.78)
+  .to('.ring.two',{opacity:.34,scale:1,duration:1.05,ease:'power2.out'},.86)
+  .to('.ring.three',{opacity:.2,scale:1,duration:1.2,ease:'power2.out'},.94)
+  .to('#hero-zone',{opacity:1,scale:1,rotation:0,duration:.92,ease:'back.out(1.22)'},1.0)
+  .fromTo('.shield-outline,.shield-bevel,.shield-core',{opacity:0},{opacity:1,duration:.45,stagger:.08,ease:'power2.out'},1.02)
+  .fromTo('.circuit',{strokeDasharray:520,strokeDashoffset:520},{strokeDashoffset:0,duration:1.05,stagger:.06,ease:'power2.out'},1.18);
+
+// Camera push-in: curiosity -> threat focus.
+tl.to(camera,{scale:1.1,x:92,y:8,duration:1.15,ease:'power3.inOut'},1.5)
+  .to('.s1',{opacity:1,x:0,duration:.45,ease:'power3.out'},1.66)
+  .to('.s2',{opacity:1,x:0,duration:.45,ease:'power3.out'},1.92)
+  .to('#scan',{opacity:.85,y:390,duration:1.15,ease:'power2.inOut'},1.65);
+
+// Beat 2 — attacks converge, impact, the shield absorbs them.
+tl.to('.p1',{x:610,y:195,duration:.72,ease:'expo.in'},2.38)
+  .to('.p2',{x:545,y:-245,duration:.78,ease:'expo.in'},2.42)
+  .to('.p3',{x:-610,y:230,duration:.7,ease:'expo.in'},2.44)
+  .to('.p4',{x:-575,y:-205,duration:.74,ease:'expo.in'},2.48)
+  .to('.p5',{x:295,y:310,duration:.75,ease:'expo.in'},2.5)
+  .to('.p6',{x:-300,y:-275,duration:.77,ease:'expo.in'},2.52)
+  .to('.arc',{opacity:1,duration:.12,stagger:.025,ease:'none'},2.72)
+  .to('#flash',{opacity:.95,duration:.09,ease:'power4.out'},3.08)
+  .to('#flash',{opacity:0,duration:.28,ease:'power2.out'},3.17)
+  .to('#wave',{opacity:.85,scale:1.15,duration:.5,ease:'power3.out'},3.05)
+  .to('#wave',{opacity:0,scale:1.62,duration:.48,ease:'power2.in'},3.42)
+  .to('#hero-zone',{scale:1.055,duration:.12,ease:'power4.out'},3.08)
+  .to('#hero-zone',{scale:1,duration:.42,ease:'elastic.out(1,.48)'},3.2)
+  .to(camera,{x:70,y:-4,scale:1.16,duration:.12,ease:'power4.out'},3.08)
+  .to(camera,{x:92,y:8,scale:1.1,duration:.38,ease:'power3.out'},3.2)
+  .to('.packet,.arc',{opacity:0,duration:.26,ease:'power2.out'},3.23);
+
+// Beat 3 — semantic handoff: copy clears, camera tracks the surviving shield.
+tl.to('#left-copy',{opacity:0,x:-110,duration:.5,ease:'power2.in'},3.55)
+  .to('.s1,.s2',{opacity:0,x:58,duration:.32,stagger:.04,ease:'power2.in'},3.58)
+  .to('.s3',{opacity:1,x:0,duration:.48,ease:'power3.out'},3.75)
+  .to(camera,{scale:1.19,x:-190,y:-20,duration:1.1,ease:'expo.inOut'},3.72)
+  .to('#hero-zone',{x:-92,y:20,rotation:1.2,duration:1.02,ease:'power3.inOut'},3.78)
+  .to('.ring.two',{rotation:42,duration:1.1,ease:'sine.inOut'},3.78)
+  .to('.ring.one',{rotation:-28,duration:1.1,ease:'sine.inOut'},3.78)
+  .to('#scan',{y:35,opacity:.5,duration:.72,ease:'power2.inOut'},4.05);
+
+// Beat 4 — lock forms; BLOCKED becomes a transition plane and drives the reframe.
+tl.to('#lockGroup',{opacity:1,scale:1,duration:.64,ease:'back.out(1.35)'},4.72)
+  .to('.s3',{opacity:0,x:44,duration:.28,ease:'power2.in'},4.96)
+  .to('.s4',{opacity:1,x:0,duration:.48,ease:'power3.out'},5.06)
+  .to('#blocked',{opacity:.18,scale:1,duration:.22,ease:'power4.out'},5.18)
+  .to('#blocked span',{clipPath:'inset(0 0% 0 0)',duration:.58,ease:'power4.inOut'},5.2)
+  .to('#blocked',{opacity:.92,duration:.22,ease:'power2.out'},5.34)
+  .to(camera,{scale:1.06,x:170,y:10,duration:.78,ease:'power4.inOut'},5.28)
+  .to('#hero-zone',{x:72,y:-8,rotation:-1,duration:.76,ease:'power3.inOut'},5.3)
+  .to('#blocked',{x:-380,opacity:.28,duration:.58,ease:'power3.in'},5.9)
+  .to('#blocked',{opacity:0,duration:.25,ease:'power2.in'},6.18);
+
+// Beat 5 — pull back to reveal the protected system; persistent shield remains hero.
+tl.to('#status-rail',{opacity:0,x:90,duration:.48,ease:'power2.in'},6.28)
+  .to(camera,{scale:.94,x:0,y:0,duration:1.28,ease:'power2.inOut'},6.35)
+  .to('#hero-zone',{x:0,y:-20,scale:.9,rotation:0,duration:1.12,ease:'power3.inOut'},6.4)
+  .to('#network',{opacity:.82,duration:.62,ease:'power2.out'},6.6)
+  .to('.node.hot',{fill:'#071d19',stroke:'rgba(121,255,180,.7)',duration:.48,ease:'power2.out'},6.68)
+  .to('.netline.hot',{stroke:'rgba(121,255,180,.25)',duration:.55,ease:'power2.out'},6.72)
+  .to('.ring.one',{borderColor:'rgba(121,255,180,.22)',duration:.6},6.75)
+  .to('.ring.two',{opacity:.42,scale:1.06,duration:.8,ease:'sine.out'},6.86)
+  .to('.ring.three',{opacity:.28,scale:1.03,duration:.8,ease:'sine.out'},6.92)
+  .to('#final-copy',{opacity:1,y:-6,duration:.7,ease:'power3.out'},7.18)
+  .to('#hero-zone',{y:-28,scale:.92,duration:.75,ease:'sine.inOut'},7.75)
+  .to('.ring.one',{scale:1.025,duration:.75,ease:'sine.inOut'},7.75)
+  .to('#hero-zone',{y:-20,scale:.9,duration:.75,ease:'sine.inOut'},8.5)
+  .to('.ring.one',{scale:1,duration:.75,ease:'sine.inOut'},8.5)
+  .to('#shield-svg',{filter:'drop-shadow(0 0 32px rgba(121,255,180,.22))',duration:.6,ease:'power2.out'},8.76)
+  .to({},{duration:.01},9.99);
+
+// Deterministic seek contract used by repository renderer.
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+gsap.ticker.add(()=>{debug.textContent=tl.time().toFixed(2)+'s';});
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.pause(DURATION);});
+</script>
+</body>
+</html>
