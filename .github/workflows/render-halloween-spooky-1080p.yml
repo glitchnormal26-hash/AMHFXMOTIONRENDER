@@ -1,0 +1,84 @@
+name: Render Halloween Spooky 1080p 10s
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'render/halloween-spooky-1080p-10s'
+    paths:
+      - 'assets/halloween-spooky-1080p-10s.html'
+      - '.github/workflows/render-halloween-spooky-1080p.yml'
+      - 'runtime/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-halloween-spooky-1080p-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render 10s Halloween 1080p
+        run: |
+          mkdir -p output
+          env INDEX=assets/halloween-spooky-1080p-10s.html \
+            QUALITY=final FPS=30 WIDTH=1920 HEIGHT=1080 CRF=17 PRESET=medium \
+            OUT_VIDEO=output/halloween-spooky-1080p-10s.mp4 \
+            npm run render:ffmpeg
+      - name: Verify render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/halloween-spooky-1080p-10s.verify.json', 'utf8'));
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1920 || r.video?.height !== 1080) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 10) > 0.15) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Halloween background unexpectedly contains audio');
+          NODE
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/halloween-spooky-1080p-10s.mp4 \
+            -vf "select='eq(n,0)+eq(n,60)+eq(n,120)+eq(n,165)+eq(n,210)+eq(n,299)'" \
+            -fps_mode vfr output/halloween-frame-%02d.png
+      - name: Record artifact hash
+        run: |
+          stat -c '%n %s bytes' output/halloween-spooky-1080p-10s.mp4 output/halloween-spooky-1080p-10s.verify.json > output/artifact-info.txt
+          sha256sum output/halloween-spooky-1080p-10s.mp4 > output/sha256.txt
+          cat output/artifact-info.txt
+          cat output/sha256.txt
+      - name: Upload Halloween render
+        uses: actions/upload-artifact@v4
+        with:
+          name: halloween-spooky-1080p-10s
+          path: |
+            output/halloween-spooky-1080p-10s.mp4
+            output/halloween-spooky-1080p-10s.verify.json
+            output/halloween-frame-*.png
+            output/artifact-info.txt
+            output/sha256.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
