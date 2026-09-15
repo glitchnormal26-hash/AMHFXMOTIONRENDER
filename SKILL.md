@@ -1,6 +1,6 @@
 ---
 name: amhfxmotionrender
-description: Motion Designer v3.9.4 unified browser-motion skill for authored camera choreography, composition, kinetic typography, spatial continuity, playback-first QA, deterministic speed ramps, frame-accurate capture, and MP4 export.
+description: Motion Designer v3.9.4 unified browser-motion skill for authored camera choreography, composition, kinetic typography, spatial continuity, playback-first QA, deterministic speed ramps, frame-accurate capture, MP4 export, and task-specific SaaS explainer art direction.
 ---
 
 # Motion Designer v3.9.4 — Playback-First Motion Depth Gate
@@ -9,7 +9,9 @@ This repository has one active motion-skill integration: **Motion Designer v3.9.
 
 The v3.9 modular source remains the canonical creative rulebook. v3.9.4 adds hard
 production gates for **camera choreography, composition, hero authority, kinetic depth,
-continuity material, actual skill usage, playback-first verification, and asset-only SFX**.
+continuity material, actual skill usage, playback-first verification, visual quality,
+and asset-only SFX**. Task-specific visual profiles, such as the SaaS explainer
+direction module, refine that global rulebook without creating a parallel skill tree.
 
 ## Canonical source
 
@@ -22,12 +24,21 @@ Load these files in order as one continuous rulebook for every substantial motio
 5. `references/anti-ppt.md`
 6. `references/techniques.md`
 7. `references/failure-gates.md`
+8. `references/visual-quality.md`
 
 Then load task-specific modules only when needed:
 
 - `references/architecture.md` for SaaS/product/composition/runtime structure;
 - `references/explainer.md` for explainer-specific visual planning;
+- `references/saas-motion-explainer-direction.md` for SaaS-style motion explainers,
+  microstock/product concepts, palette/type/surface rules, shot vocabulary, and
+  beat-level art direction;
 - `references/full-runtime.md` for browser/runtime implementation details.
+
+For SaaS explainer work, load `references/saas-motion-explainer-direction.md` together
+with `references/explainer.md`, `references/camera-motion.md`, and
+`references/camera-movement.md`. The SaaS module governs **what is built and how it is
+styled/paced**; the camera modules govern **how it is shot and reframed**.
 
 Do not load or reconstruct any retired v3.8 rulebook. Git history preserves retired
 versions if they are ever needed for archaeology.
@@ -36,11 +47,13 @@ versions if they are ever needed for archaeology.
 
 - camera / spatial / 3D → `references/camera-motion.md`, `references/camera-movement.md`, `references/full-runtime.md`, `references/architecture.md`, `runtime/camera-rig.js`, `runtime/three-scene.js`
 - kinetic typography / anti-PPT → `references/techniques.md`, `references/anti-ppt.md`
-- composition / SaaS / brand → `references/architecture.md`, `references/anti-ppt.md`
+- composition / SaaS / brand → `references/architecture.md`, `references/visual-quality.md`, `references/saas-motion-explainer-direction.md`, `references/anti-ppt.md`
 - playback / failure rejection → `references/failure-gates.md`
+- visual quality / art direction → `references/visual-quality.md`
 - visual transitions → `references/techniques.md`, `references/architecture.md`
 - browser runtime → `references/full-runtime.md`, `runtime/`, `scripts/`
 - explainer → `references/explainer.md`, `runtime/explainer-helpers.js`
+- SaaS explainer → `references/saas-motion-explainer-direction.md`, `references/explainer.md`, `assets/starter-saas-explainer.html`
 - SFX → repository/user-provided files under `assets/` only
 - QA / export → `scripts/snap.mjs`, `scripts/export-frames.mjs`, `scripts/export-mp4.mjs`
 
@@ -167,6 +180,39 @@ into the final payoff.
 
 Use `PAYOFF_GATE=PASS|FAIL`.
 
+### 8. Visual quality gate
+
+`references/visual-quality.md` is globally mandatory for visible output. Motion quality
+does not excuse developer art, default materials, weak still frames, flat fake shadows,
+unresolved depth, or accidental visual-language mixtures.
+
+Inspect representative stills at full size, reduced scale, and thumbnail size. Use the
+visual-quality gate fields truthfully, including anti-primitive, still-frame,
+hero-visual, material, depth, art-direction, thumbnail, and copyspace checks.
+
+Task-specific modules may define an intentional visual dialect. For example, the SaaS
+profile permits simple abstract geometry when it is clearly art-directed graphic
+language; it does **not** permit raw tutorial primitives or primitive stand-ins for
+real-world objects.
+
+### 9. SaaS direction gate — conditional
+
+When a project explicitly uses the SaaS explainer profile, it must visibly follow
+`references/saas-motion-explainer-direction.md` rather than merely claiming a SaaS
+look.
+
+Require:
+
+- one named palette and tokenized color use;
+- fragmentary hero/feature typography, not animated explanatory paragraphs;
+- authored hierarchy and intentional depth layering when depth supports the concept;
+- one hero motion per shot with staggered secondary motion and readable holds;
+- scene/shot choice that carries the product argument rather than generic filler;
+- deliberate pairing between beat purpose and camera behavior;
+- no unstyled Three.js/demo geometry or unrelated flying-object filler.
+
+Use `SAAS_DIRECTION_GATE=PASS|FAIL|NOT_REQUIRED` truthfully.
+
 ## Motion execution contract
 
 - use the simplest capable runtime: DOM/SVG/GSAP first, true 3D only when it adds meaning;
@@ -239,7 +285,9 @@ For substantial motion, visually inspect:
 - transition landing;
 - one hero follow/handoff moment when applicable;
 - final framing;
-- typography/object collision during the fastest move.
+- typography/object collision during the fastest move;
+- full-resolution, reduced-scale, and thumbnail still-frame quality;
+- SaaS palette/type/depth/hold compliance when the SaaS profile is active.
 
 Then watch the **actual encoded video from start to finish at normal speed**. Contact
 sheets are necessary but not sufficient. The encoded playback is the final visual
@@ -260,6 +308,15 @@ ANTI_PPT_GATE=PASS
 CONTINUITY_MATERIAL_GATE=PASS
 SCREEN_SWAP_GATE=PASS
 PAYOFF_GATE=PASS
+ANTI_PRIMITIVE_GATE=PASS
+STILL_FRAME_GATE=PASS
+HERO_VISUAL_GATE=PASS
+MATERIAL_GATE=PASS
+DEPTH_GATE=PASS
+ART_DIRECTION_GATE=PASS
+THUMBNAIL_GATE=PASS
+COPYSPACE_GATE=PASS|NOT_REQUIRED
+SAAS_DIRECTION_GATE=PASS|NOT_REQUIRED
 SPEED_RAMP=ACTIVE|NOT_REQUIRED
 CAMERA_FOLLOW=USED|NOT_REQUIRED
 SFX_MODE=ASSET_ONLY|NONE
