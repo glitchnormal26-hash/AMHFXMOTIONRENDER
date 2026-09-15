@@ -28,7 +28,7 @@ This repository intentionally keeps project-specific video productions out of `m
 
 ## Creative + technical production verification
 
-A technically valid MP4 is not automatically a creatively approved motion piece. Substantial final work now uses two independent verification states:
+A technically valid MP4 is not automatically a creatively approved motion piece. Substantial final work uses two independent verification states:
 
 - `TECHNICAL_VERIFIED` — deterministic capture, requested dimensions/FPS, codec/stream verification, duration, and required audio presence when applicable.
 - `CREATIVE_VERIFIED` — styleframes, proof-of-motion, authored camera energy, hero authority, continuity material, anti-PPT, still-frame quality, art direction, payoff, and other creative gates were explicitly reviewed.
@@ -53,23 +53,30 @@ QUALITY=final \
 npm run render:production
 ```
 
-The production renderer first runs creative verification, then renders the MP4, normalizes technical verification to `DRAFT + TECHNICAL_VERIFIED`, and finally combines the technical and creative reports. See `references/production-verification.md`.
+The production renderer first runs creative verification, then a technical MP4 render, then combines both reports. `finalize-verification.mjs` is the only layer that may emit `FINAL_VERIFIED`. See `references/production-verification.md`.
 
-Direct `render:ffmpeg` / `export:mp4` commands remain useful for smoke tests, previews, and technical diagnostics. A successful direct encode must not be treated as creative approval for substantial final delivery.
+Direct `render:ffmpeg` / `export:mp4` commands remain useful for smoke tests, previews, and technical diagnostics. They emit `TECHNICAL_VERIFIED`, never creative approval.
 
-## FFmpeg-first renderer
+## Streaming FFmpeg renderer
 
-The production render path is browser frame capture followed by **FFmpeg** encoding/muxing and **ffprobe** verification. FFmpeg does not execute HTML/SVG/JavaScript itself, so Puppeteer remains the deterministic rasterization layer while FFmpeg is the only media encoder/muxer.
+The default export path is **Chromium frame capture streamed directly into FFmpeg**. Each deterministic PNG screenshot is written to FFmpeg stdin immediately instead of being accumulated as thousands of temporary files first. This removes most temporary-disk I/O and reduces failure risk on long or high-resolution renders.
 
-Render the root starter or set `INDEX` to another OPENER-compatible HTML scene:
+Default path:
+
+`Chromium seek → screenshot buffer → FFmpeg image2pipe → H.264/AAC → ffprobe`
+
+Use `KEEP_FRAMES=1` only when frame evidence is actually needed. A compatibility file-based transport remains available for debugging unusual environments:
 
 ```bash
 npm ci
 npm run render:ffmpeg
 QUALITY=final npm run render:ffmpeg
 INDEX=assets/starter-full-runtime.html OUT_VIDEO=output/example.mp4 npm run render:ffmpeg
-INDEX=assets/starter-saas-explainer.html OUT_VIDEO=output/saas-profile.mp4 npm run render:ffmpeg
+KEEP_FRAMES=1 FRAMES_DIR=output/frames npm run render:ffmpeg
+npm run render:ffmpeg:files
 ```
+
+`FRAME_TRANSPORT=stream` is the default. `FRAME_TRANSPORT=files` restores the older disk-backed workflow.
 
 Generated media belongs under `output/` (or another ignored local path) and must not be committed to `main`.
 
@@ -85,6 +92,7 @@ npm run export:mp4
 npm run export:mp4:final
 npm run render:ffmpeg
 npm run render:ffmpeg:final
+npm run render:ffmpeg:files
 MANIFEST=path/to/production-manifest.json npm run render:production
 npm run verify:final -- technical.verify.json creative.verify.json
 ```
@@ -107,12 +115,12 @@ npm run verify:final -- technical.verify.json creative.verify.json
 - `scripts/check-creative-gates.mjs` — blocking creative-manifest verifier
 - `scripts/render-production.mjs` — official substantial/final render entry with creative gate first
 - `scripts/finalize-verification.mjs` — combines creative and technical reports into final status
-- `scripts/export-mp4.mjs` — deterministic browser-capture + FFmpeg MP4 renderer
+- `scripts/export-mp4.mjs` — deterministic Chromium-to-FFmpeg streaming MP4 renderer
 - `scripts/snap.mjs` — snapshot QA
 - `assets/starter-saas-explainer.html` — SaaS direction + camera integration starter
 - `assets/` — neutral starter architectures and allowed SFX assets
 - `.github/workflows/qa.yml` — source/runtime/creative-verification QA and repository hygiene
-- `.github/workflows/render-e2e.yml` — project-agnostic FFmpeg render QA
+- `.github/workflows/render-e2e.yml` — project-agnostic streaming render QA
 - `MANAGE.md` — branch, cleanup, output, and repository ownership rules
 
 ## Runtime principles
