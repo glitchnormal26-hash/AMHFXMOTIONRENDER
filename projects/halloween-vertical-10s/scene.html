@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halloween Spooky 3D Vertical — 10s 1080p</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020207}
+#stage{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:#020207}
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#020207}
+#grade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 35%,transparent 0 48%,rgba(0,0,0,.10) 74%,rgba(0,0,0,.30) 100%);mix-blend-mode:multiply}
+</style>
+</head>
+<body>
+<div id="stage">
+  <iframe id="source" src="../../assets/halloween-spooky-3d-vertical.html?clean=1" title="Halloween spooky 3D scene"></iframe>
+  <div id="grade"></div>
+</div>
+<script>
+const W=1080,H=1920,DURATION=10,SOURCE_DURATION=14.99;
+const frame=document.querySelector('#source');
+let child=null;
+let raf=0;
+let playStart=0;
+
+function mappedTime(t){
+  const clamped=Math.max(0,Math.min(DURATION,Number(t)||0));
+  return (clamped/DURATION)*SOURCE_DURATION;
+}
+
+window.OPENER={
+  W,H,DURATION,ready:false,
+  seek(t){
+    if(!child) return;
+    child.seek(mappedTime(t));
+  },
+  play(){
+    cancelAnimationFrame(raf);
+    playStart=performance.now();
+    const tick=(now)=>{
+      const t=((now-playStart)/1000)%DURATION;
+      window.OPENER.seek(t);
+      raf=requestAnimationFrame(tick);
+    };
+    raf=requestAnimationFrame(tick);
+  }
+};
+
+function bindChild(){
+  try{
+    const candidate=frame.contentWindow?.OPENER;
+    if(candidate?.ready){
+      child=candidate;
+      child.seek(0);
+      window.OPENER.ready=true;
+      if(!new URLSearchParams(location.search).has('clean')) window.OPENER.play();
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+frame.addEventListener('load',()=>{
+  if(bindChild()) return;
+  const timer=setInterval(()=>{if(bindChild()) clearInterval(timer);},20);
+});
+</script>
+</body>
+</html>
