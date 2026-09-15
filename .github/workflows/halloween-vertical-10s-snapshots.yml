@@ -5,6 +5,7 @@ on:
     branches:
       - render/halloween-vertical-10s-1080p
     paths:
+      - 'projects/halloween-vertical-10s/**'
       - '.github/workflows/halloween-vertical-10s-snapshots.yml'
 
 permissions:
