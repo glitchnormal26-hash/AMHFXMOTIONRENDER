@@ -1,0 +1,61 @@
+name: Install HyperFrames core skills
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/install-hyperframes-skills.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install HyperFrames Core Skills project-locally
+        run: |
+          npx -y skills add heygen-com/hyperframes \
+            --skill hyperframes \
+            --skill hyperframes-animation \
+            --skill hyperframes-audio \
+            --skill hyperframes-cli \
+            --skill hyperframes-core \
+            --skill hyperframes-creative \
+            --skill hyperframes-keyframes \
+            --skill hyperframes-registry \
+            --skill media-use \
+            --agent universal \
+            --copy \
+            --yes
+
+      - name: Commit installed skills
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .agents/skills
+          if [ -f skills-lock.json ]; then
+            git add skills-lock.json
+          fi
+
+          if git diff --cached --quiet; then
+            echo "HyperFrames Core Skills are already current."
+            exit 0
+          fi
+
+          git commit -m "chore: install HyperFrames core skills"
+          git push
