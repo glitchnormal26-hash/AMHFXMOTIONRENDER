@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cute Spooky 3D Ghost Loop — Vertical</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --ink:#171126;
+  --night0:#17112d;
+  --night1:#261a44;
+  --night2:#493066;
+  --lav:#bca9ff;
+  --lilac:#8f7be8;
+  --cream:#fff6eb;
+  --peach:#ffad89;
+  --orange:#ff934d;
+  --mint:#9ee7d3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c0818}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:1080px;height:1920px;
+  transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;
+  perspective:1500px;background:
+    radial-gradient(ellipse at 74% 19%,rgba(225,202,255,.18) 0%,rgba(132,98,199,.08) 28%,transparent 56%),
+    linear-gradient(180deg,var(--night0) 0%,var(--night1) 44%,#33214c 72%,#160f2b 100%);
+  isolation:isolate;
+}
+#camera{position:absolute;inset:-140px;transform-style:preserve-3d;transform-origin:50% 50%;will-change:transform}
+.layer{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+#aurora{
+  inset:-260px;transform:translateZ(-360px);
+  background:
+    radial-gradient(ellipse at 14% 28%,rgba(130,223,211,.10),transparent 35%),
+    radial-gradient(ellipse at 86% 42%,rgba(255,152,181,.12),transparent 34%),
+    radial-gradient(ellipse at 44% 80%,rgba(144,112,225,.16),transparent 42%);
+  filter:blur(26px);opacity:.92;
+}
+#stars{transform:translateZ(-280px)}
+.spark{
+  position:absolute;width:14px;height:14px;opacity:.46;filter:drop-shadow(0 0 8px rgba(255,239,220,.26));
+}
+.spark::before,.spark::after{
+  content:"";position:absolute;left:50%;top:50%;background:#fff4db;border-radius:8px;transform:translate(-50%,-50%);
+}
+.spark::before{width:3px;height:14px}
+.spark::after{width:14px;height:3px}
+.spark.small{transform:scale(.55);opacity:.30}.spark.big{transform:scale(1.35);opacity:.64}
+#moonWrap{
+  position:absolute;left:585px;top:170px;width:420px;height:420px;transform:translateZ(-150px);
+  filter:drop-shadow(0 24px 60px rgba(13,8,27,.28));
+}
+#moonHalo{
+  position:absolute;inset:-120px;border-radius:48% 52% 57% 43%/45% 49% 51% 55%;
+  background:radial-gradient(circle,rgba(235,218,255,.27),rgba(179,143,238,.10) 46%,transparent 72%);
+  filter:blur(14px);
+}
+#moonSvg{width:100%;height:100%;overflow:visible}
+#cloudBack{transform:translateZ(-120px);opacity:.55;filter:blur(4px)}
+#cloudMid{transform:translateZ(30px);opacity:.44;filter:blur(10px)}
+.cloudSvg{position:absolute;width:1250px;height:400px;overflow:visible}
+#hillBack{position:absolute;left:-160px;bottom:230px;width:1420px;height:650px;transform:translateZ(0px);opacity:.92}
+#hillFront{position:absolute;left:-180px;bottom:-80px;width:1460px;height:650px;transform:translateZ(250px);filter:drop-shadow(0 -28px 45px rgba(8,5,18,.35))}
+#ghostField{transform-style:preserve-3d}
+.ghost{
+  position:absolute;transform-style:preserve-3d;will-change:transform,opacity;
+  filter:drop-shadow(0 28px 30px rgba(15,8,32,.26));
+}
+.ghost::before{
+  content:"";position:absolute;left:13%;right:13%;bottom:-24px;height:70px;
+  border-radius:52% 48% 57% 43%/58% 44% 56% 42%;
+  background:radial-gradient(ellipse at center,rgba(123,89,188,.24),rgba(44,29,74,.08) 54%,transparent 72%);
+  filter:blur(12px);transform:translateZ(-30px);
+}
+.ghost svg{display:block;width:100%;height:100%;overflow:visible}
+#ghostMain{left:315px;top:620px;width:455px;height:590px;transform:translateZ(260px)}
+#ghostOrbit{left:70px;top:780px;width:265px;height:350px;transform:translateZ(80px);opacity:.94}
+#ghostHat{left:735px;top:920px;width:275px;height:370px;transform:translateZ(150px);opacity:.98}
+#ghostPeek{left:675px;top:1438px;width:360px;height:470px;transform:translateZ(410px);opacity:.98}
+.ghost .shell{filter:url(#ghostSoft)}
+.ghost .highlight{fill:rgba(255,255,255,.36)}
+.ghost .innerShade{fill:rgba(137,119,210,.13)}
+.ghost .eye{fill:#21172e}
+.ghost .mouth{fill:none;stroke:#291a36;stroke-width:9;stroke-linecap:round}
+.ghost .cheek{fill:#ff9cb2;opacity:.54}
+.ghost .arm{fill:url(#ghostBody);filter:url(#ghostSoft)}
+.accessoryShadow{fill:#6b467f;opacity:.28}
+#mainFace,#orbitFace,#hatFace,#peekFace{transform-box:fill-box;transform-origin:center}
+#mainArm,#orbitArm,#hatArm,#peekArm{transform-box:fill-box;transform-origin:50% 15%}
+#sparkBurst{position:absolute;left:245px;top:560px;width:590px;height:650px;transform:translateZ(520px)}
+.burstStar{position:absolute;width:26px;height:26px;opacity:0;filter:drop-shadow(0 0 12px rgba(255,213,140,.38))}
+.burstStar::before,.burstStar::after{content:"";position:absolute;left:50%;top:50%;background:#ffd9a3;border-radius:10px;transform:translate(-50%,-50%)}
+.burstStar::before{width:6px;height:26px}.burstStar::after{width:26px;height:6px}
+.burstStar.mint::before,.burstStar.mint::after{background:#9fe8d5}
+.burstStar.lilac::before,.burstStar.lilac::after{background:#c7b5ff}
+#pumpkinPatch{
+  position:absolute;left:55px;bottom:-20px;width:970px;height:520px;transform:translateZ(330px);
+  filter:drop-shadow(0 34px 42px rgba(10,5,23,.38));
+}
+#candyLeft{position:absolute;left:-35px;top:1265px;width:300px;height:430px;transform:translateZ(455px);filter:drop-shadow(14px 20px 24px rgba(13,7,29,.26))}
+#candyRight{position:absolute;right:-30px;top:520px;width:250px;height:360px;transform:translateZ(375px);filter:drop-shadow(-12px 20px 24px rgba(13,7,29,.24))}
+#fogFront{inset:-160px;transform:translateZ(500px);opacity:.28;filter:blur(34px)}
+.fogBlob{
+  position:absolute;width:900px;height:240px;border-radius:44% 56% 48% 52%/62% 44% 56% 38%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(224,214,255,.30),rgba(169,145,211,.12) 55%,transparent 76%);
+}
+#vignette{inset:-4px;transform:translateZ(650px);box-shadow:inset 0 0 130px 25px rgba(15,9,31,.40),inset 0 -150px 180px rgba(11,6,23,.38)}
+#grain{
+  inset:-45%;transform:translateZ(660px);opacity:.035;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");
+}
+#debug{display:none;position:fixed;z-index:20;left:50%;bottom:18px;transform:translateX(-50%);padding:8px 12px;border-radius:12px;background:#0d0818;color:#fff;font:13px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ghostBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf8"/>
+      <stop offset=".42" stop-color="#f6f0ff"/>
+      <stop offset=".78" stop-color="#ddd4ff"/>
+      <stop offset="1" stop-color="#c9bff3"/>
+    </linearGradient>
+    <linearGradient id="ghostBodyWarm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffef7"/>
+      <stop offset=".55" stop-color="#f8edff"/>
+      <stop offset="1" stop-color="#e7cae9"/>
+    </linearGradient>
+    <linearGradient id="orangeBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb35e"/><stop offset=".5" stop-color="#ff8d43"/><stop offset="1" stop-color="#d95c42"/>
+    </linearGradient>
+    <linearGradient id="mintBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c7f7ea"/><stop offset="1" stop-color="#76cdb8"/>
+    </linearGradient>
+    <linearGradient id="moonBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff2c8"/><stop offset=".52" stop-color="#efddff"/><stop offset="1" stop-color="#b8a4e4"/>
+    </linearGradient>
+    <filter id="ghostSoft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.8" result="blur"/>
+      <feOffset dy="8" result="off"/>
+      <feFlood flood-color="#73599e" flood-opacity=".22" result="col"/>
+      <feComposite in="col" in2="off" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="pumpkinGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<div id="stage">
+  <div id="camera">
+    <div id="aurora" class="layer"></div>
+    <div id="stars" class="layer"></div>
+
+    <div id="moonWrap" class="layer">
+      <div id="moonHalo"></div>
+      <svg id="moonSvg" viewBox="0 0 420 420" aria-hidden="true">
+        <path d="M205 24 C305 21 387 99 391 199 C396 303 320 386 216 394 C112 402 29 326 24 222 C18 117 96 31 205 24 Z" fill="url(#moonBody)"/>
+        <path d="M111 95 C78 143 66 207 82 265 C103 337 172 374 238 365 C142 355 89 286 90 211 C91 155 114 116 149 84 C136 85 122 89 111 95 Z" fill="#fff6e4" opacity=".45"/>
+        <path d="M270 130 C292 139 306 157 311 180" fill="none" stroke="#9c86c2" stroke-width="11" stroke-linecap="round" opacity=".22"/>
+        <path d="M172 160 C184 151 198 151 211 160" fill="none" stroke="#3a2951" stroke-width="11" stroke-linecap="round"/>
+        <path d="M255 163 C268 153 282 154 294 164" fill="none" stroke="#3a2951" stroke-width="11" stroke-linecap="round"/>
+        <path d="M218 214 C233 228 250 228 266 213" fill="none" stroke="#4a315b" stroke-width="9" stroke-linecap="round"/>
+        <path d="M153 267 C176 281 193 281 213 268" fill="none" stroke="#b08bc0" stroke-width="9" stroke-linecap="round" opacity=".28"/>
+      </svg>
+    </div>
+
+    <div id="cloudBack" class="layer">
+      <svg class="cloudSvg" style="left:-230px;top:370px" viewBox="0 0 1250 400">
+        <path d="M-30 260 C119 194 213 218 310 191 C423 159 496 83 616 103 C713 119 759 185 857 183 C970 181 1031 114 1144 141 C1215 159 1278 218 1320 279 L1320 400 L-30 400 Z"
+          fill="#7c64a0" opacity=".19"/>
+      </svg>
+    </div>
+    <div id="cloudMid" class="layer">
+      <svg class="cloudSvg" style="left:-80px;top:960px;transform:scale(1.12)" viewBox="0 0 1250 400">
+        <path d="M-50 276 C97 209 225 229 322 194 C427 155 485 103 592 117 C703 130 754 209 863 206 C973 203 1054 139 1167 170 C1244 191 1299 239 1340 293 L1340 400 L-50 400 Z"
+          fill="#d1bde4" opacity=".12"/>
+      </svg>
+    </div>
+
+    <svg id="hillBack" viewBox="0 0 1420 650" aria-hidden="true">
+      <path d="M0 422 C165 356 291 376 417 325 C525 281 601 215 725 235 C848 255 903 324 1037 313 C1171 303 1270 252 1420 286 L1420 650 L0 650 Z" fill="#28183d"/>
+      <path d="M0 492 C174 444 333 462 501 434 C687 404 820 384 1008 416 C1170 443 1300 425 1420 396 L1420 650 L0 650 Z" fill="#1b122c" opacity=".82"/>
+    </svg>
+
+    <div id="ghostField" class="layer">
+      <div id="ghostOrbit" class="ghost">
+        <svg viewBox="0 0 320 420" aria-hidden="true">
+          <g class="shell">
+            <path class="arm" id="orbitArm" d="M64 204 C32 208 15 235 20 269 C25 297 47 309 73 297 C91 288 101 273 103 250 C104 228 89 207 64 204 Z"/>
+            <path d="M161 20 C90 18 37 71 34 149 L30 329 C30 350 42 370 61 380 C78 389 91 382 105 365 C122 389 141 400 159 374 C178 397 201 394 217 366 C234 389 254 389 273 370 C286 357 290 344 288 325 L285 151 C282 74 230 20 161 20 Z"
+              fill="url(#ghostBodyWarm)"/>
+            <path class="innerShade" d="M55 139 C61 70 111 38 160 39 C230 41 260 91 263 159 L265 318 C248 299 225 291 203 295 C182 299 170 318 158 339 C143 316 123 302 99 304 C78 306 64 315 48 329 Z"/>
+            <path class="highlight" d="M79 95 C97 62 126 46 150 43 C121 72 107 105 106 142 C105 177 93 191 74 182 C59 175 64 125 79 95 Z"/>
+          </g>
+          <g id="orbitFace">
+            <path class="eye" d="M108 172 C119 160 136 160 146 173 C140 193 115 194 108 172 Z"/>
+            <path class="eye" d="M180 172 C191 161 207 161 218 174 C211 193 187 194 180 172 Z"/>
+            <path class="mouth" d="M145 223 C158 234 173 234 186 222"/>
+            <path class="cheek" d="M78 213 C91 203 109 205 119 218 C108 231 87 231 78 213 Z"/>
+            <path class="cheek" d="M210 216 C223 204 241 207 249 221 C237 232 218 232 210 216 Z"/>
+          </g>
+          <g transform="translate(92 115)">
+            <path class="accessoryShadow" d="M-6 14 C17 -7 45 -6 68 13 L106 -5 L103 55 L67 35 C44 56 14 52 -6 33 Z"/>
+            <path d="M0 9 C22 -8 48 -7 68 12 L101 -8 L98 49 L67 32 C47 50 21 48 0 31 Z" fill="#ff9b71"/>
+            <path d="M56 17 C63 11 75 11 81 18 C86 26 83 37 73 40 C63 43 53 35 52 27 C52 23 53 20 56 17 Z" fill="#ffd0aa"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="ghostMain" class="ghost">
+        <svg viewBox="0 0 320 420" aria-hidden="true">
+          <g class="shell">
+            <path class="arm" d="M53 199 C17 197 -5 224 1 259 C7 294 36 309 65 292 C87 279 95 250 84 226 C78 212 67 202 53 199 Z"/>
+            <path class="arm" id="mainArm" d="M270 191 C305 184 328 205 325 239 C322 270 297 292 268 281 C245 272 233 247 240 222 C244 206 255 195 270 191 Z"/>
+            <path d="M161 18 C77 14 25 76 25 166 L22 327 C22 350 34 371 56 382 C76 393 93 385 107 363 C125 393 146 402 163 374 C182 401 205 397 221 365 C239 389 261 387 280 367 C291 355 298 343 296 324 L293 166 C291 76 240 20 161 18 Z"
+              fill="url(#ghostBody)"/>
+            <path class="innerShade" d="M47 157 C49 83 100 40 160 40 C232 40 269 94 271 169 L273 320 C255 294 231 286 206 293 C183 299 173 321 161 343 C145 317 123 302 97 307 C73 311 59 322 44 340 Z"/>
+            <path class="highlight" d="M72 95 C93 58 125 39 154 39 C126 63 111 101 111 143 C111 183 95 201 72 189 C53 179 53 129 72 95 Z"/>
+            <path d="M208 63 C238 76 255 103 259 138" fill="none" stroke="#ffffff" stroke-width="11" stroke-linecap="round" opacity=".22"/>
+          </g>
+          <g id="mainFace">
+            <path class="eye mainEye" d="M104 172 C118 157 137 158 149 174 C140 198 113 198 104 172 Z"/>
+            <path class="eye mainEye" d="M179 173 C191 158 211 158 224 174 C215 197 188 198 179 173 Z"/>
+            <path class="mouth" d="M145 226 C157 239 175 240 190 225"/>
+            <path class="cheek" d="M72 214 C89 202 110 206 121 223 C107 238 84 237 72 214 Z"/>
+            <path class="cheek" d="M212 217 C228 203 250 208 260 225 C246 239 223 239 212 217 Z"/>
+          </g>
+          <g id="mainStar" transform="translate(215 75) rotate(12)">
+            <path d="M45 0 L56 31 L88 32 L62 51 L70 82 L45 63 L19 82 L28 51 L2 32 L34 31 Z" fill="#ffcf76"/>
+            <path d="M45 15 L51 35 L71 36 L55 47 L60 67 L45 55 L29 67 L35 47 L19 36 L39 35 Z" fill="#fff0bc" opacity=".55"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="ghostHat" class="ghost">
+        <svg viewBox="0 0 320 420" aria-hidden="true">
+          <g class="shell">
+            <path class="arm" id="hatArm" d="M60 211 C31 211 13 231 16 261 C19 292 42 307 69 294 C93 282 103 254 92 231 C86 219 75 212 60 211 Z"/>
+            <path d="M160 30 C91 28 42 77 39 150 L36 326 C36 346 47 365 66 377 C83 388 98 381 111 364 C127 387 145 397 161 374 C179 395 199 392 216 365 C232 386 251 385 269 369 C282 357 286 342 284 326 L281 151 C279 78 229 31 160 30 Z"
+              fill="url(#ghostBodyWarm)"/>
+            <path class="innerShade" d="M57 151 C61 91 104 49 158 48 C222 48 258 96 260 163 L262 317 C244 293 222 287 201 294 C181 300 171 319 160 340 C145 318 125 305 103 308 C83 311 68 322 54 336 Z"/>
+            <path class="highlight" d="M78 103 C98 69 126 52 149 50 C126 78 114 113 114 149 C112 177 101 190 83 184 C66 178 64 130 78 103 Z"/>
+          </g>
+          <g id="hatFace">
+            <path class="eye" d="M104 181 C115 168 132 168 143 181 C136 201 112 201 104 181 Z"/>
+            <path class="eye" d="M179 181 C190 168 207 169 218 182 C211 201 187 201 179 181 Z"/>
+            <path class="mouth" d="M145 231 C158 243 173 243 186 230"/>
+            <path class="cheek" d="M78 224 C90 213 108 216 117 229 C105 241 86 240 78 224 Z"/>
+            <path class="cheek" d="M211 225 C223 214 241 216 249 231 C237 242 219 241 211 225 Z"/>
+          </g>
+          <g id="witchHat" transform="translate(62 -3) rotate(-5)">
+            <path d="M63 137 C101 125 151 125 200 138 C213 142 216 154 202 160 C158 178 103 179 54 163 C37 158 40 143 63 137 Z" fill="#48295c"/>
+            <path d="M93 135 C113 89 127 40 140 1 C166 36 183 83 180 135 Z" fill="#59356e"/>
+            <path d="M119 77 C136 88 154 90 171 80 L175 103 C156 113 135 111 115 99 Z" fill="#ff995e"/>
+            <path d="M144 17 C162 48 168 75 166 96 C151 77 136 70 124 70 C130 51 136 33 144 17 Z" fill="#7a4d91" opacity=".5"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="ghostPeek" class="ghost">
+        <svg viewBox="0 0 320 420" aria-hidden="true">
+          <g class="shell">
+            <path class="arm" id="peekArm" d="M57 207 C25 204 6 227 10 259 C14 290 39 307 67 293 C90 281 99 254 89 231 C83 218 71 209 57 207 Z"/>
+            <path d="M162 27 C82 24 31 81 30 163 L27 331 C27 351 39 369 58 381 C77 392 94 384 108 364 C125 389 145 399 162 373 C181 398 204 394 220 365 C238 388 258 386 276 369 C289 357 293 342 291 325 L289 164 C287 82 237 29 162 27 Z"
+              fill="url(#ghostBody)"/>
+            <path class="innerShade" d="M49 157 C53 87 103 48 160 48 C228 48 265 97 267 166 L269 319 C252 298 228 292 205 298 C182 304 173 322 161 344 C146 320 124 306 98 309 C75 312 61 324 46 339 Z"/>
+            <path class="highlight" d="M77 104 C98 69 128 50 154 49 C128 75 113 111 113 151 C112 181 98 196 78 188 C61 181 61 131 77 104 Z"/>
+          </g>
+          <g id="peekFace">
+            <path class="eye" d="M105 180 C117 167 135 167 146 182 C139 202 113 202 105 180 Z"/>
+            <path class="eye" d="M181 181 C193 167 211 168 222 182 C214 202 189 202 181 181 Z"/>
+            <path class="mouth" d="M145 232 C159 244 175 244 189 231"/>
+            <path class="cheek" d="M77 222 C91 210 111 214 120 230 C108 243 86 242 77 222 Z"/>
+            <path class="cheek" d="M213 224 C227 211 247 215 256 231 C244 243 222 243 213 224 Z"/>
+          </g>
+          <g transform="translate(84 98)">
+            <path d="M0 0 C24 7 47 22 64 42 C79 24 104 8 132 2 C129 35 110 63 65 75 C24 63 6 35 0 0 Z" fill="#96dfc9"/>
+            <path d="M47 29 C58 20 74 20 84 31 C92 41 87 57 75 61 C59 66 45 53 47 39 C47 35 47 32 47 29 Z" fill="#d9fff2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div id="sparkBurst" class="layer">
+      <i class="burstStar" id="bs0" style="left:255px;top:110px"></i>
+      <i class="burstStar mint" id="bs1" style="left:445px;top:170px"></i>
+      <i class="burstStar lilac" id="bs2" style="left:110px;top:260px"></i>
+      <i class="burstStar" id="bs3" style="left:500px;top:360px"></i>
+      <i class="burstStar mint" id="bs4" style="left:185px;top:500px"></i>
+      <i class="burstStar lilac" id="bs5" style="left:380px;top:540px"></i>
+    </div>
+
+    <svg id="candyLeft" viewBox="0 0 300 430" aria-hidden="true">
+      <path d="M129 413 C118 328 121 254 141 181 C161 109 199 63 250 28" fill="none" stroke="#523267" stroke-width="33" stroke-linecap="round"/>
+      <path d="M129 413 C119 331 124 260 145 190 C166 120 201 73 248 40" fill="none" stroke="#ffaf90" stroke-width="17" stroke-linecap="round"/>
+      <path d="M154 172 C186 155 220 157 249 180 C227 205 194 220 162 216 C135 212 118 195 119 178 C120 165 136 163 154 172 Z" fill="#9de6d2"/>
+      <path d="M243 180 C267 160 289 159 309 172 L301 221 C281 225 262 213 243 197 Z" fill="#bda8ff"/>
+    </svg>
+
+    <svg id="candyRight" viewBox="0 0 250 360" aria-hidden="true">
+      <path d="M75 350 C78 284 88 230 116 175 C142 125 177 88 218 49" fill="none" stroke="#5a366e" stroke-width="28" stroke-linecap="round"/>
+      <path d="M75 350 C80 286 92 232 120 181 C146 133 179 97 217 61" fill="none" stroke="#9ee7d3" stroke-width="14" stroke-linecap="round"/>
+      <path d="M117 174 C137 150 165 141 194 149 C188 182 167 206 137 217 C113 226 92 213 91 193 C90 183 101 180 117 174 Z" fill="#ff9b75"/>
+    </svg>
+
+    <svg id="pumpkinPatch" viewBox="0 0 970 520" aria-hidden="true">
+      <defs>
+        <linearGradient id="groundGlow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38224f"/><stop offset="1" stop-color="#130b24"/></linearGradient>
+      </defs>
+      <path d="M-50 388 C121 318 239 344 361 318 C503 288 608 299 755 327 C856 346 940 337 1022 308 L1022 540 L-50 540 Z" fill="url(#groundGlow)"/>
+      <g id="pumpkinA" transform="translate(77 225)">
+        <path d="M132 40 C126 10 140 -5 162 -16 C158 9 168 27 183 48 Z" fill="#6c8057"/>
+        <path d="M25 136 C32 68 84 33 143 42 C198 28 259 59 276 119 C299 202 243 263 160 268 C78 273 18 219 25 136 Z" fill="url(#orangeBody)"/>
+        <path d="M79 58 C59 120 62 199 94 252 M146 43 C127 112 130 214 147 267 M211 59 C233 127 230 205 210 250" fill="none" stroke="#c4513d" stroke-width="12" opacity=".45"/>
+        <g class="pumpkinGlow" fill="#ffe59c"><path d="M79 138 L126 112 L117 156 Z"/><path d="M184 113 L228 138 L191 157 Z"/><path d="M104 195 C136 218 179 217 209 193 C194 237 123 239 104 195 Z"/></g>
+      </g>
+      <g id="pumpkinB" transform="translate(365 278) scale(.78)">
+        <path d="M132 40 C126 10 140 -5 162 -16 C158 9 168 27 183 48 Z" fill="#6c8057"/>
+        <path d="M25 136 C32 68 84 33 143 42 C198 28 259 59 276 119 C299 202 243 263 160 268 C78 273 18 219 25 136 Z" fill="url(#orangeBody)"/>
+        <path d="M79 58 C59 120 62 199 94 252 M146 43 C127 112 130 214 147 267 M211 59 C233 127 230 205 210 250" fill="none" stroke="#c4513d" stroke-width="12" opacity=".45"/>
+        <g class="pumpkinGlow" fill="#fff0b7"><path d="M83 139 C97 124 114 123 128 140 C115 155 98 156 83 139 Z"/><path d="M183 139 C198 124 216 125 229 142 C214 155 198 156 183 139 Z"/><path d="M115 200 C143 218 172 218 201 198 C186 232 134 235 115 200 Z"/></g>
+      </g>
+      <g id="pumpkinC" transform="translate(665 195) scale(.9)">
+        <path d="M132 40 C126 10 140 -5 162 -16 C158 9 168 27 183 48 Z" fill="#6c8057"/>
+        <path d="M25 136 C32 68 84 33 143 42 C198 28 259 59 276 119 C299 202 243 263 160 268 C78 273 18 219 25 136 Z" fill="url(#orangeBody)"/>
+        <path d="M79 58 C59 120 62 199 94 252 M146 43 C127 112 130 214 147 267 M211 59 C233 127 230 205 210 250" fill="none" stroke="#c4513d" stroke-width="12" opacity=".45"/>
+        <g class="pumpkinGlow" fill="#ffe59c"><path d="M82 140 L126 116 L116 157 Z"/><path d="M185 116 L228 140 L190 159 Z"/><path d="M111 201 C138 220 177 220 204 199 C191 233 128 237 111 201 Z"/></g>
+      </g>
+    </svg>
+
+    <div id="fogFront" class="layer">
+      <div class="fogBlob" style="left:-310px;top:1460px;transform:rotate(4deg)"></div>
+      <div class="fogBlob" style="left:510px;top:1575px;transform:rotate(-7deg) scale(.82)"></div>
+    </div>
+    <div id="vignette" class="layer"></div>
+    <div id="grain" class="layer"></div>
+  </div>
+</div>
+<div id="debug">0.00s</div>
+
+<script>
+const W=1080,H=1920,DURATION=10;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+const stars=document.querySelector('#stars');
+for(let i=0;i<76;i++){
+  const e=document.createElement('i');
+  e.className='spark'+(i%17===0?' big':i%5===0?' small':'');
+  e.style.left=((i*149.7+61)%1160-40)+'px';
+  e.style.top=((i*i*21.3+i*47.1+53)%1350-20)+'px';
+  e.style.opacity=(.20+((i*31)%52)/100).toFixed(2);
+  e.style.transform=`rotate(${(i*37)%90}deg) scale(${0.55+((i*19)%42)/100})`;
+  stars.appendChild(e);
+}
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+
+// Explicit opening state — also the exact target state at t=10 for seamless looping.
+tl.set(camera,{x:0,y:42,scale:.97,rotation:-.22,transformOrigin:'50% 50%'},0);
+tl.set('#ghostMain',{x:0,y:10,scale:1,rotation:-2.4,rotationY:-5,rotationX:1.5,transformOrigin:'50% 54%'},0);
+tl.set('#ghostOrbit',{x:0,y:0,scale:.94,rotation:4.5,rotationY:8,transformOrigin:'50% 54%'},0);
+tl.set('#ghostHat',{x:0,y:0,scale:.96,rotation:-4,rotationY:-7,transformOrigin:'50% 54%'},0);
+tl.set('#ghostPeek',{x:28,y:168,scale:1.02,rotation:3.5,rotationY:5,transformOrigin:'50% 54%'},0);
+tl.set('#moonWrap',{x:0,y:0,scale:1,rotation:-1.4},0);
+tl.set('#moonHalo',{scale:1,opacity:.82},0);
+tl.set('#cloudBack',{x:-45,y:0},0);
+tl.set('#cloudMid',{x:65,y:0},0);
+tl.set('#pumpkinPatch',{x:0,y:10,rotation:0,scale:1,transformOrigin:'50% 85%'},0);
+tl.set('#candyLeft',{x:0,y:0,rotation:-2},0);
+tl.set('#candyRight',{x:0,y:0,rotation:2},0);
+tl.set('#fogFront',{x:-40,y:0,opacity:.28},0);
+tl.set('.pumpkinGlow',{opacity:.92},0);
+tl.set('.burstStar',{opacity:0,scale:.35,rotation:0,x:0,y:0},0);
+tl.set('.mainEye',{scaleY:1,transformOrigin:'50% 50%'},0);
+
+// Beat 1 — soft crane/push; the main ghost becomes the clear hero.
+tl.to(camera,{x:-38,y:-34,scale:1.055,rotation:.16,duration:2.2,ease:'power2.inOut'},0);
+tl.to('#ghostMain',{x:-18,y:-62,rotation:3.2,rotationY:4,duration:1.65,ease:'sine.inOut'},0);
+tl.to('#ghostHat',{x:-34,y:45,rotation:2.5,duration:2.0,ease:'sine.inOut'},0);
+tl.to('#moonWrap',{x:20,y:-14,scale:1.025,rotation:1.1,duration:2.2,ease:'sine.inOut'},0);
+tl.to('#cloudBack',{x:85,y:-8,duration:3.0,ease:'sine.inOut'},0);
+tl.to('#cloudMid',{x:-80,y:16,duration:2.8,ease:'sine.inOut'},0);
+tl.to('#fogFront',{x:105,y:-12,duration:2.6,ease:'sine.inOut'},0);
+
+// Orbit ghost sweeps behind the hero, giving the camera a moving attention handoff.
+tl.to('#ghostOrbit',{x:252,y:-146,scale:1.04,rotation:-7,rotationY:-4,duration:2.45,ease:'power2.inOut'},.15);
+tl.to('#orbitArm',{rotation:-34,duration:.55,ease:'power3.out'},1.15);
+tl.to('#orbitArm',{rotation:10,duration:.65,ease:'power2.inOut'},1.70);
+
+// Main ghost wave + blink + sparkle cause the second framing transfer.
+tl.to('#mainArm',{rotation:-38,duration:.42,ease:'power3.out'},1.72);
+tl.to('#mainArm',{rotation:12,duration:.55,ease:'back.out(1.3)'},2.14);
+tl.to('.mainEye',{scaleY:.12,duration:.07,ease:'power2.inOut'},2.25);
+tl.to('.mainEye',{scaleY:1,duration:.09,ease:'power2.out'},2.32);
+const burstData=[
+  ['#bs0',-78,-88],['#bs1',94,-60],['#bs2',-122,12],
+  ['#bs3',128,30],['#bs4',-82,88],['#bs5',76,108]
+];
+burstData.forEach((b,i)=>{
+  tl.to(b[0],{opacity:.94,scale:1+(i%3)*.08,x:b[1],y:b[2],rotation:35*(i%2?1:-1),duration:.32,ease:'power3.out'},2.32+i*.035);
+  tl.to(b[0],{opacity:0,scale:.55,x:b[1]*1.23,y:b[2]*1.25,duration:.58,ease:'power2.in'},2.70+i*.035);
+});
+
+// Beat 2 — camera catches the orbiting ghost, then transfers to the hat ghost.
+tl.to(camera,{x:62,y:-105,scale:1.13,rotation:-.36,duration:1.55,ease:'expo.inOut'},2.3);
+tl.to('#ghostMain',{x:58,y:-16,scale:1.02,rotation:-4.2,rotationY:-7,duration:1.45,ease:'power3.inOut'},2.4);
+tl.to('#ghostOrbit',{x:420,y:62,scale:.90,rotation:8.5,rotationY:12,duration:1.7,ease:'power2.inOut'},2.6);
+tl.to('#ghostHat',{x:-88,y:-74,scale:1.09,rotation:4.8,rotationY:5,duration:1.65,ease:'power3.inOut'},2.45);
+tl.to('#hatArm',{rotation:38,duration:.42,ease:'power3.out'},3.45);
+tl.to('#hatArm',{rotation:-9,duration:.62,ease:'back.out(1.2)'},3.87);
+tl.to('#witchHat',{rotation:8,x:8,y:-8,duration:.48,ease:'power2.out'},3.35);
+tl.to('#witchHat',{rotation:-5,x:0,y:0,duration:.62,ease:'power2.inOut'},3.83);
+
+// Candy and pumpkin accents react as secondary depth cues, not separate scenes.
+tl.to('#candyRight',{rotation:-8,x:-18,y:20,duration:.72,ease:'power2.out'},3.1);
+tl.to('#candyRight',{rotation:2,x:0,y:0,duration:.9,ease:'sine.inOut'},3.82);
+tl.to('#pumpkinPatch',{y:-8,scale:1.025,rotation:.35,duration:.8,ease:'power2.out'},4.0);
+tl.to('.pumpkinGlow',{opacity:.62,duration:.16,ease:'power2.inOut'},4.12);
+tl.to('.pumpkinGlow',{opacity:1,duration:.34,ease:'power2.out'},4.28);
+
+// Beat 3 — foreground peek ghost rises; camera follows and slightly overshoots.
+tl.to('#ghostPeek',{x:-34,y:-138,scale:1.08,rotation:-4.5,rotationY:-5,duration:1.55,ease:'power3.inOut'},4.45);
+tl.to(camera,{x:-44,y:54,scale:1.085,rotation:.23,duration:1.65,ease:'power3.inOut'},4.55);
+tl.to('#peekArm',{rotation:-42,duration:.42,ease:'power3.out'},5.15);
+tl.to('#peekArm',{rotation:9,duration:.62,ease:'back.out(1.25)'},5.57);
+tl.to('#ghostMain',{x:12,y:42,scale:.97,rotation:3.8,rotationY:5,duration:1.75,ease:'sine.inOut'},4.8);
+tl.to('#ghostHat',{x:-30,y:20,scale:.94,rotation:-3.5,rotationY:-5,duration:1.7,ease:'sine.inOut'},4.8);
+tl.to('#ghostOrbit',{x:205,y:235,scale:.86,rotation:-4,rotationY:-6,duration:1.9,ease:'power2.inOut'},4.55);
+tl.to('#moonHalo',{scale:1.08,opacity:1,duration:1.1,ease:'sine.inOut'},4.7);
+tl.to('#moonHalo',{scale:1.02,opacity:.86,duration:1.2,ease:'sine.inOut'},5.8);
+
+// Beat 4 — pull back for the ensemble payoff, then guide everything home.
+tl.to(camera,{x:-18,y:8,scale:1.025,rotation:.08,duration:1.25,ease:'power2.inOut'},6.35);
+tl.to('#ghostPeek',{x:-6,y:-70,scale:1.01,rotation:2.2,rotationY:3,duration:1.15,ease:'sine.inOut'},6.4);
+tl.to('#ghostMain',{x:-38,y:-26,scale:1.01,rotation:-2.5,rotationY:-3,duration:1.1,ease:'power2.inOut'},6.45);
+tl.to('#ghostHat',{x:34,y:-18,scale:1.00,rotation:3.2,rotationY:4,duration:1.15,ease:'power2.inOut'},6.45);
+tl.to('#ghostOrbit',{x:75,y:82,scale:.95,rotation:4.8,rotationY:8,duration:1.35,ease:'power2.inOut'},6.35);
+tl.to('#candyLeft',{rotation:7,x:22,y:-18,duration:.9,ease:'sine.inOut'},6.6);
+tl.to('#pumpkinPatch',{y:4,scale:1.01,rotation:-.18,duration:1.0,ease:'sine.inOut'},6.6);
+
+// Second tiny blink gives personality without breaking the loop.
+tl.to('.mainEye',{scaleY:.12,duration:.07,ease:'power2.inOut'},7.18);
+tl.to('.mainEye',{scaleY:1,duration:.09,ease:'power2.out'},7.25);
+
+// Return path — every persistent layer lands on the exact opening state at 10s.
+tl.to(camera,{x:0,y:42,scale:.97,rotation:-.22,duration:2.4,ease:'sine.inOut'},7.6);
+tl.to('#ghostMain',{x:0,y:10,scale:1,rotation:-2.4,rotationY:-5,rotationX:1.5,duration:2.25,ease:'sine.inOut'},7.75);
+tl.to('#ghostOrbit',{x:0,y:0,scale:.94,rotation:4.5,rotationY:8,duration:2.35,ease:'sine.inOut'},7.65);
+tl.to('#ghostHat',{x:0,y:0,scale:.96,rotation:-4,rotationY:-7,duration:2.25,ease:'sine.inOut'},7.75);
+tl.to('#ghostPeek',{x:28,y:168,scale:1.02,rotation:3.5,rotationY:5,duration:2.3,ease:'sine.inOut'},7.7);
+tl.to('#moonWrap',{x:0,y:0,scale:1,rotation:-1.4,duration:2.25,ease:'sine.inOut'},7.75);
+tl.to('#moonHalo',{scale:1,opacity:.82,duration:2.1,ease:'sine.inOut'},7.9);
+tl.to('#cloudBack',{x:-45,y:0,duration:2.35,ease:'sine.inOut'},7.65);
+tl.to('#cloudMid',{x:65,y:0,duration:2.4,ease:'sine.inOut'},7.6);
+tl.to('#fogFront',{x:-40,y:0,opacity:.28,duration:2.35,ease:'sine.inOut'},7.65);
+tl.to('#pumpkinPatch',{x:0,y:10,rotation:0,scale:1,duration:2.1,ease:'sine.inOut'},7.9);
+tl.to('#candyLeft',{x:0,y:0,rotation:-2,duration:2.1,ease:'sine.inOut'},7.9);
+tl.to('#candyRight',{x:0,y:0,rotation:2,duration:2.0,ease:'sine.inOut'},8.0);
+tl.to('.pumpkinGlow',{opacity:.92,duration:1.5,ease:'sine.inOut'},8.5);
+
+// Ensure the master timeline extends exactly to the loop boundary.
+tl.set('#stage',{willChange:'auto'},10);
+
+const q=new URLSearchParams(location.search);
+if(q.has('debug'))debug.classList.add('on');
+gsap.ticker.add(()=>{debug.textContent=tl.time().toFixed(2)+'s';});
+
+window.MOTION_META={
+  title:'Cute Spooky 3D Ghost Loop',
+  format:'1080x1920 9:16',
+  duration:10,
+  camera_states:['MOVING','TRACKING','REFRAME','MOVING'],
+  sfx_mode:'NONE',
+  loop:'SEAMLESS_TARGET'
+};
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},
+  play(){tl.play();}
+};
+Promise.resolve(document.fonts?.ready).then(()=>{
+  window.OPENER.ready=true;
+  if(!q.has('clean'))tl.play(0);
+});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
