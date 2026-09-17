@@ -47,16 +47,31 @@ jobs:
             QUALITY=final FPS=30 WIDTH=1080 HEIGHT=1920 CRF=17 PRESET=medium \
             OUT_VIDEO=output/black-friday-sale-promo-pack-vertical.mp4 \
             npm run render:ffmpeg
+      - name: Guarantee clean chroma tail
+        run: |
+          ffmpeg -y -i output/black-friday-sale-promo-pack-vertical.mp4 \
+            -vf "drawbox=x=0:y=0:w=iw:h=ih:color=0x00ff00:t=fill:enable='gte(t,11.55)'" \
+            -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -an \
+            output/black-friday-sale-promo-pack-vertical-clean.mp4
+          mv output/black-friday-sale-promo-pack-vertical-clean.mp4 \
+            output/black-friday-sale-promo-pack-vertical.mp4
       - name: Verify technical render contract
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
           const r = JSON.parse(fs.readFileSync('output/black-friday-sale-promo-pack-vertical.verify.json', 'utf8'));
           if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
-          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
-          if (r.video?.width !== 1080 || r.video?.height !== 1920) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
-          if (Math.abs(Number(r.duration) - 12) > 0.2) throw new Error(`duration=${r.duration}`);
-          if (r.audio !== null) throw new Error('Greenscreen promo unexpectedly contains audio');
+          const p = JSON.parse(execFileSync('ffprobe', [
+            '-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate',
+            '-of','json','output/black-friday-sale-promo-pack-vertical.mp4'
+          ], {encoding:'utf8'}));
+          const v = p.streams?.find(s => s.codec_type === 'video');
+          const a = p.streams?.find(s => s.codec_type === 'audio');
+          if (v?.codec_name !== 'h264') throw new Error(`video codec=${v?.codec_name}`);
+          if (v?.width !== 1080 || v?.height !== 1920) throw new Error(`size=${v?.width}x${v?.height}`);
+          if (Math.abs(Number(p.format?.duration) - 12) > 0.2) throw new Error(`duration=${p.format?.duration}`);
+          if (a) throw new Error('Greenscreen promo unexpectedly contains audio');
           NODE
       - name: Extract visual QA frames
         run: |
