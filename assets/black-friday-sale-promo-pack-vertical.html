@@ -146,39 +146,41 @@ tl.to(camera,{scale:.975,x:10,y:0,duration:.18,ease:'power2.in'},2.22);
 
 // Beat 2 — SALE tape becomes the discount proof plane.
 // Camera mode: REFRAME with attack → travel → settle.
-tl.to(camera,{scale:1.43,x:-34,y:-2,duration:.72,ease:'expo.inOut'},2.40);
+tl.to(camera,{scale:1.33,x:0,y:0,duration:.72,ease:'expo.inOut'},2.40);
 tl.to('#saleText',{y:-205,scaleY:.82,duration:.34,ease:'power3.in'},2.46);
 tl.set('#discountBlock',{visibility:'visible'},2.66);
 tl.to('#discountBlock',{clipPath:'inset(0% 0 0 0)',y:0,duration:.48,ease:'power4.out'},2.66);
 tl.to('#tape',{rotation:0,scaleX:1.04,scaleY:1.05,duration:.50,ease:'power3.out'},2.58);
 tl.to('#discountBlock .pct',{scaleX:.98,duration:.18,ease:'power2.out'},3.24);
 tl.to('#discountBlock .pct',{scaleX:.90,duration:.22,ease:'power3.out'},3.42);
-tl.to(camera,{x:-18,y:14,scale:1.39,duration:.42,ease:'power2.out'},3.60);
+tl.to(camera,{x:0,y:10,scale:1.30,duration:.42,ease:'power2.out'},3.60);
 
 // Beat 3 — the same tape stretches into a route and reveals TODAY ONLY.
 // Camera mode: TRACKING / REFRAME.
 tl.to('#discountBlock',{clipPath:'inset(0 100% 0 0)',x:130,duration:.32,ease:'power3.in'},4.46);
 tl.to('#tape',{scaleX:1.30,scaleY:.34,rotation:-7,x:-64,y:510,duration:.72,ease:'power3.inOut'},4.56);
 tl.to(camera,{scale:1.18,x:0,y:-438,duration:.86,ease:'power3.inOut'},4.60);
-tl.to('#todayMask',{clipPath:'inset(0 0% 0 0)',duration:.54,ease:'power4.inOut'},5.10);
-tl.to('#today',{x:20,duration:.24,ease:'power2.out'},5.18);
-tl.to('#today',{x:0,duration:.20,ease:'power2.out'},5.42);
-tl.to('#onlyBar',{scaleX:1,rotation:-1,duration:.48,ease:'power4.out'},5.58);
-tl.to('#onlyText',{x:0,duration:.40,ease:'power4.out'},5.76);
-tl.to('#microRow',{y:0,duration:.46,ease:'power3.out'},6.08);
-tl.to('.micro',{scale:1,duration:.34,ease:'back.out(1.7)',stagger:.08},6.18);
-tl.to('#edgeC',{x:0,duration:.42,ease:'power4.out'},6.36);
-tl.to('#edgeD',{x:0,duration:.42,ease:'power4.out'},6.44);
+tl.to('#todayMask',{clipPath:'inset(0 0% 0 0)',duration:.54,ease:'power4.inOut'},4.88);
+tl.to('#today',{x:20,duration:.24,ease:'power2.out'},4.96);
+tl.to('#today',{x:0,duration:.20,ease:'power2.out'},5.20);
+tl.to('#onlyBar',{scaleX:1,rotation:-1,duration:.48,ease:'power4.out'},5.44);
+tl.to('#onlyText',{x:0,duration:.40,ease:'power4.out'},5.60);
+tl.to('#microRow',{y:0,duration:.46,ease:'power3.out'},5.92);
+tl.to('.micro',{scale:1,duration:.34,ease:'back.out(1.7)',stagger:.08},6.02);
+tl.to('#edgeC',{x:0,duration:.42,ease:'power4.out'},6.20);
+tl.to('#edgeD',{x:0,duration:.42,ease:'power4.out'},6.28);
 
 // Beat 4 — tape becomes a transition surface, then resolves as CTA.
 // Camera mode: MOVING → pull-back reveal → LOCKED_INTENTIONAL.
+tl.to('#microRow',{y:180,duration:.26,ease:'power3.in'},7.18);
 tl.to('#tape',{scaleX:1.56,scaleY:3.65,rotation:0,x:-118,y:130,duration:.48,ease:'power3.in'},7.28);
 tl.to(camera,{scale:1.04,x:-10,y:-220,duration:.42,ease:'power3.in'},7.30);
+tl.set('#microRow',{visibility:'hidden'},7.50);
 tl.set('#discountBlock',{visibility:'hidden'},7.60);
 tl.set('#saleText',{visibility:'hidden'},7.60);
 tl.set('#shopText',{visibility:'visible',clipPath:'inset(0 100% 0 0)'},7.60);
 tl.to(camera,{scale:.92,x:0,y:-34,duration:.82,ease:'power4.out'},7.68);
-tl.to('#tape',{scaleX:1,scaleY:.64,rotation:-2,x:0,y:642,duration:.78,ease:'power4.out'},7.70);
+tl.to('#tape',{scaleX:1,scaleY:1,rotation:-2,x:0,y:820,duration:.78,ease:'power4.out'},7.70);
 tl.to('#shopText',{clipPath:'inset(0 0% 0 0)',duration:.48,ease:'power4.out'},8.10);
 tl.set('#finalDiscount',{visibility:'visible'},8.18);
 tl.to('#finalDiscount',{scale:1,rotation:7,duration:.48,ease:'back.out(1.45)'},8.18);
@@ -189,18 +191,18 @@ tl.to(camera,{scale:.92,x:0,y:-34,duration:.42,ease:'power2.inOut'},9.18);
 // Final payoff hold, then a clean matte-only tail.
 tl.to('#finalDiscount',{scale:1.055,duration:.16,ease:'power2.out'},10.22);
 tl.to('#finalDiscount',{scale:1,duration:.22,ease:'power2.out'},10.38);
-tl.to('#kicker',{x:-540,duration:.32,ease:'power3.in'},10.88);
+tl.to('#kicker',{x:-900,duration:.32,ease:'power3.in'},10.88);
 tl.to('#blackWrap',{clipPath:'inset(0 0 0 100%)',duration:.36,ease:'power3.in'},10.92);
 tl.to('#fridayWrap',{clipPath:'inset(0 100% 0 0)',duration:.36,ease:'power3.in'},11.00);
 tl.to('#todayMask',{clipPath:'inset(0 0 0 100%)',duration:.32,ease:'power3.in'},11.02);
 tl.to('#onlyBar',{scaleX:.001,duration:.30,ease:'power3.in'},11.06);
-tl.to('#microRow',{y:210,duration:.30,ease:'power3.in'},11.06);
 tl.to('#finalDiscount',{scale:.001,rotation:18,duration:.30,ease:'power3.in'},11.08);
 tl.to('#tape',{scaleX:.001,x:960,duration:.38,ease:'power4.in'},11.10);
 tl.to('#edgeA',{x:-500,duration:.24,ease:'power3.in'},11.12);
 tl.to('#edgeB',{x:500,duration:.24,ease:'power3.in'},11.12);
 tl.to('#edgeC',{x:-560,duration:.24,ease:'power3.in'},11.12);
 tl.to('#edgeD',{x:480,duration:.24,ease:'power3.in'},11.12);
+tl.set('#kicker,#microRow',{visibility:'hidden'},11.28);
 tl.to(camera,{scale:1,x:0,y:0,duration:.24,ease:'power2.out'},11.30);
 tl.to({},{duration:.01},11.99);
 
