@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Black Friday Sale Promo Pack — Greenscreen 9:16</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --key:#00ff00;
+  --ink:#050505;
+  --paper:#fff6e8;
+  --yellow:#ffd400;
+  --red:#ff3b30;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--key)}
+body{font-family:"Arial Black","Liberation Sans",Arial,Helvetica,sans-serif;color:var(--ink)}
+#stage{
+  position:fixed;left:50%;top:50%;width:1080px;height:1920px;
+  transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;
+  background:var(--key);isolation:isolate;
+}
+#camera{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#world{position:absolute;inset:0;overflow:visible}
+.type{position:absolute;font-weight:900;line-height:.78;letter-spacing:-.07em;text-transform:uppercase;white-space:nowrap}
+.mask{position:absolute;overflow:hidden}
+#blackWrap{left:74px;top:246px;width:938px;height:292px}
+#black{left:0;top:0;font-size:276px;transform:scaleX(.90);transform-origin:left center}
+#fridayWrap{left:72px;top:500px;width:944px;height:306px}
+#friday{left:0;top:0;font-size:250px;color:var(--paper);-webkit-text-stroke:10px var(--ink);paint-order:stroke fill;transform:scaleX(.89);transform-origin:left center}
+#kicker{
+  position:absolute;left:80px;top:184px;padding:16px 28px 14px;
+  background:var(--ink);color:var(--yellow);font-size:36px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;
+  clip-path:polygon(0 12%,96% 0,100% 82%,5% 100%);white-space:nowrap
+}
+#tape{
+  position:absolute;left:88px;top:842px;width:904px;height:258px;overflow:hidden;
+  background:var(--yellow);clip-path:polygon(1.2% 9%,97.2% 0,100% 85%,3.5% 100%,0 22%);
+  transform-origin:0% 50%;will-change:transform
+}
+#tape::before,#tape::after{content:"";position:absolute;top:-80px;width:46px;height:420px;background:var(--ink);transform:rotate(18deg)}
+#tape::before{left:36px}#tape::after{right:30px}
+#saleText{position:absolute;left:92px;top:50px;font-size:164px;letter-spacing:-.06em;line-height:.78;color:var(--ink)}
+#discountBlock{position:absolute;left:84px;top:24px;width:730px;height:212px;color:var(--ink);display:flex;align-items:center;gap:28px}
+#discountBlock .upto{font-size:46px;line-height:.9;letter-spacing:.05em;max-width:138px}
+#discountBlock .pct{font-size:158px;line-height:.72;letter-spacing:-.08em;transform:scaleX(.90);transform-origin:left center}
+#discountBlock .off{font-size:70px;line-height:.85;letter-spacing:-.04em;align-self:flex-end;margin-bottom:18px}
+#todayMask{left:82px;top:1165px;width:920px;height:270px}
+#today{left:0;top:0;font-size:236px;color:var(--ink);transform:scaleX(.90);transform-origin:left center}
+#onlyBar{
+  position:absolute;left:84px;top:1408px;width:902px;height:168px;background:var(--ink);color:var(--paper);
+  clip-path:polygon(0 9%,98% 0,100% 88%,2% 100%);overflow:hidden
+}
+#onlyText{position:absolute;left:106px;top:30px;font-size:110px;letter-spacing:.08em;line-height:.9}
+#microRow{position:absolute;left:92px;top:1596px;width:886px;display:flex;gap:16px;align-items:center}
+.micro{
+  padding:12px 18px 10px;border:6px solid var(--ink);background:var(--paper);color:var(--ink);
+  font-size:26px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
+  clip-path:polygon(2% 0,100% 6%,97% 100%,0 92%)
+}
+.micro:nth-child(2){background:var(--red);color:var(--paper);transform:rotate(-2deg)}
+.micro:nth-child(3){background:var(--yellow);transform:rotate(1.5deg)}
+#finalDiscount{
+  position:absolute;left:646px;top:1038px;width:330px;height:238px;background:var(--red);color:var(--paper);
+  clip-path:polygon(50% 0,61% 10%,75% 4%,82% 18%,97% 20%,94% 36%,100% 50%,91% 61%,96% 78%,80% 82%,72% 96%,58% 90%,45% 100%,35% 89%,19% 95%,15% 79%,0 72%,7% 56%,1% 43%,12% 31%,8% 16%,25% 14%,34% 2%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(8deg);will-change:transform
+}
+#finalDiscount strong{font-size:106px;line-height:.72;letter-spacing:-.07em}
+#finalDiscount span{font-size:44px;line-height:1;letter-spacing:.06em;margin-top:14px}
+#edgeA,#edgeB,#edgeC,#edgeD{position:absolute;background:var(--ink);clip-path:polygon(0 8%,100% 0,92% 100%,4% 90%);will-change:transform}
+#edgeA{left:-190px;top:86px;width:510px;height:46px;transform:rotate(-10deg)}
+#edgeB{right:-220px;top:910px;width:530px;height:58px;background:var(--paper);transform:rotate(12deg)}
+#edgeC{left:-210px;bottom:170px;width:580px;height:54px;background:var(--red);transform:rotate(7deg)}
+#edgeD{right:-170px;bottom:82px;width:480px;height:42px;background:var(--yellow);transform:rotate(-8deg)}
+#shopText{position:absolute;left:126px;top:69px;font-size:104px;letter-spacing:.02em;line-height:.78;color:var(--ink);visibility:hidden}
+#shopText b{font-size:44px;letter-spacing:.06em;margin-left:22px;vertical-align:20px}
+#safeTop,#safeBottom{position:absolute;left:0;width:100%;height:42px;background:var(--key);z-index:40;pointer-events:none}
+#safeTop{top:0}#safeBottom{bottom:0}
+#debug{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:100;padding:9px 13px;background:#000;color:#fff;font:14px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camera">
+    <div id="world">
+      <div id="edgeA"></div><div id="edgeB"></div><div id="edgeC"></div><div id="edgeD"></div>
+      <div id="kicker">Mega deal incoming</div>
+      <div id="blackWrap" class="mask"><div id="black" class="type">Black</div></div>
+      <div id="fridayWrap" class="mask"><div id="friday" class="type">Friday</div></div>
+      <div id="tape">
+        <div id="saleText" class="type">Sale</div>
+        <div id="discountBlock" style="visibility:hidden">
+          <div class="upto">UP TO</div><div class="pct">70%</div><div class="off">OFF</div>
+        </div>
+        <div id="shopText" class="type">Shop now <b>70% off</b></div>
+      </div>
+      <div id="todayMask" class="mask"><div id="today" class="type">Today</div></div>
+      <div id="onlyBar"><div id="onlyText" class="type">Only</div></div>
+      <div id="microRow"><div class="micro">Limited drop</div><div class="micro">Doorbuster</div><div class="micro">Online</div></div>
+      <div id="finalDiscount" style="visibility:hidden"><strong>70%</strong><span>OFF</span></div>
+    </div>
+  </div>
+  <div id="safeTop"></div><div id="safeBottom"></div>
+</div>
+<div id="debug">0.00s</div>
+<script>
+const W=1080,H=1920,DURATION=12;
+const stage=document.querySelector('#stage');
+const camera=document.querySelector('#camera');
+const debug=document.querySelector('#debug');
+const q=new URLSearchParams(location.search);
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+// Matte-safe setup: solid fills, no glow, no motion blur, no translucent shadows.
+gsap.set('#kicker',{x:-520,rotation:-5,transformOrigin:'50% 50%'});
+gsap.set('#blackWrap,#fridayWrap,#todayMask',{clipPath:'inset(0 100% 0 0)'});
+gsap.set('#black',{x:-120});
+gsap.set('#friday',{x:120});
+gsap.set('#tape',{scaleX:.06,scaleY:.84,rotation:-8,x:-28,transformOrigin:'0% 50%'});
+gsap.set('#saleText',{clipPath:'inset(0 100% 0 0)',x:40});
+gsap.set('#discountBlock',{clipPath:'inset(100% 0 0 0)',y:120});
+gsap.set('#onlyBar',{scaleX:.05,rotation:4,transformOrigin:'0% 50%'});
+gsap.set('#onlyText',{x:-440});
+gsap.set('#microRow',{y:130});
+gsap.set('.micro',{scale:.001,transformOrigin:'50% 50%'});
+gsap.set('#finalDiscount',{scale:.001,rotation:-14});
+gsap.set('#edgeA',{x:-460});gsap.set('#edgeB',{x:460});gsap.set('#edgeC',{x:-520});gsap.set('#edgeD',{x:420});
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+
+// Beat 1 — ANTICIPATE → ATTACK → LAND
+// Camera mode: MOVING then LOCKED_INTENTIONAL.
+tl.to('#kicker',{x:0,rotation:-1,duration:.46,ease:'power4.out'},.10);
+tl.to('#blackWrap',{clipPath:'inset(0 0% 0 0)',duration:.56,ease:'power4.inOut'},.28);
+tl.to('#black',{x:0,duration:.62,ease:'power4.out'},.28);
+tl.to('#fridayWrap',{clipPath:'inset(0 0% 0 0)',duration:.62,ease:'power3.inOut'},.64);
+tl.to('#friday',{x:0,duration:.64,ease:'power4.out'},.64);
+tl.to('#tape',{scaleX:1,scaleY:1,rotation:-3,x:0,duration:.58,ease:'back.out(1.35)'},1.00);
+tl.to('#saleText',{clipPath:'inset(0 0% 0 0)',x:0,duration:.42,ease:'power3.out'},1.16);
+tl.to('#edgeA',{x:0,duration:.42,ease:'power4.out'},1.42);
+tl.to('#edgeB',{x:0,duration:.42,ease:'power4.out'},1.50);
+tl.to(camera,{scale:.975,x:10,y:0,duration:.18,ease:'power2.in'},2.22);
+
+// Beat 2 — SALE tape becomes the discount proof plane.
+// Camera mode: REFRAME with attack → travel → settle.
+tl.to(camera,{scale:1.43,x:-34,y:-2,duration:.72,ease:'expo.inOut'},2.40);
+tl.to('#saleText',{y:-205,scaleY:.82,duration:.34,ease:'power3.in'},2.46);
+tl.set('#discountBlock',{visibility:'visible'},2.66);
+tl.to('#discountBlock',{clipPath:'inset(0% 0 0 0)',y:0,duration:.48,ease:'power4.out'},2.66);
+tl.to('#tape',{rotation:0,scaleX:1.04,scaleY:1.05,duration:.50,ease:'power3.out'},2.58);
+tl.to('#discountBlock .pct',{scaleX:.98,duration:.18,ease:'power2.out'},3.24);
+tl.to('#discountBlock .pct',{scaleX:.90,duration:.22,ease:'power3.out'},3.42);
+tl.to(camera,{x:-18,y:14,scale:1.39,duration:.42,ease:'power2.out'},3.60);
+
+// Beat 3 — the same tape stretches into a route and reveals TODAY ONLY.
+// Camera mode: TRACKING / REFRAME.
+tl.to('#discountBlock',{clipPath:'inset(0 100% 0 0)',x:130,duration:.32,ease:'power3.in'},4.46);
+tl.to('#tape',{scaleX:1.30,scaleY:.34,rotation:-7,x:-64,y:510,duration:.72,ease:'power3.inOut'},4.56);
+tl.to(camera,{scale:1.18,x:0,y:-438,duration:.86,ease:'power3.inOut'},4.60);
+tl.to('#todayMask',{clipPath:'inset(0 0% 0 0)',duration:.54,ease:'power4.inOut'},5.10);
+tl.to('#today',{x:20,duration:.24,ease:'power2.out'},5.18);
+tl.to('#today',{x:0,duration:.20,ease:'power2.out'},5.42);
+tl.to('#onlyBar',{scaleX:1,rotation:-1,duration:.48,ease:'power4.out'},5.58);
+tl.to('#onlyText',{x:0,duration:.40,ease:'power4.out'},5.76);
+tl.to('#microRow',{y:0,duration:.46,ease:'power3.out'},6.08);
+tl.to('.micro',{scale:1,duration:.34,ease:'back.out(1.7)',stagger:.08},6.18);
+tl.to('#edgeC',{x:0,duration:.42,ease:'power4.out'},6.36);
+tl.to('#edgeD',{x:0,duration:.42,ease:'power4.out'},6.44);
+
+// Beat 4 — tape becomes a transition surface, then resolves as CTA.
+// Camera mode: MOVING → pull-back reveal → LOCKED_INTENTIONAL.
+tl.to('#tape',{scaleX:1.56,scaleY:3.65,rotation:0,x:-118,y:130,duration:.48,ease:'power3.in'},7.28);
+tl.to(camera,{scale:1.04,x:-10,y:-220,duration:.42,ease:'power3.in'},7.30);
+tl.set('#discountBlock',{visibility:'hidden'},7.60);
+tl.set('#saleText',{visibility:'hidden'},7.60);
+tl.set('#shopText',{visibility:'visible',clipPath:'inset(0 100% 0 0)'},7.60);
+tl.to(camera,{scale:.92,x:0,y:-34,duration:.82,ease:'power4.out'},7.68);
+tl.to('#tape',{scaleX:1,scaleY:.64,rotation:-2,x:0,y:642,duration:.78,ease:'power4.out'},7.70);
+tl.to('#shopText',{clipPath:'inset(0 0% 0 0)',duration:.48,ease:'power4.out'},8.10);
+tl.set('#finalDiscount',{visibility:'visible'},8.18);
+tl.to('#finalDiscount',{scale:1,rotation:7,duration:.48,ease:'back.out(1.45)'},8.18);
+tl.to('#finalDiscount',{rotation:4,duration:.30,ease:'power2.out'},8.66);
+tl.to(camera,{scale:.945,x:-8,y:-24,duration:.38,ease:'power2.out'},8.80);
+tl.to(camera,{scale:.92,x:0,y:-34,duration:.42,ease:'power2.inOut'},9.18);
+
+// Final payoff hold, then a clean matte-only tail.
+tl.to('#finalDiscount',{scale:1.055,duration:.16,ease:'power2.out'},10.22);
+tl.to('#finalDiscount',{scale:1,duration:.22,ease:'power2.out'},10.38);
+tl.to('#kicker',{x:-540,duration:.32,ease:'power3.in'},10.88);
+tl.to('#blackWrap',{clipPath:'inset(0 0 0 100%)',duration:.36,ease:'power3.in'},10.92);
+tl.to('#fridayWrap',{clipPath:'inset(0 100% 0 0)',duration:.36,ease:'power3.in'},11.00);
+tl.to('#todayMask',{clipPath:'inset(0 0 0 100%)',duration:.32,ease:'power3.in'},11.02);
+tl.to('#onlyBar',{scaleX:.001,duration:.30,ease:'power3.in'},11.06);
+tl.to('#microRow',{y:210,duration:.30,ease:'power3.in'},11.06);
+tl.to('#finalDiscount',{scale:.001,rotation:18,duration:.30,ease:'power3.in'},11.08);
+tl.to('#tape',{scaleX:.001,x:960,duration:.38,ease:'power4.in'},11.10);
+tl.to('#edgeA',{x:-500,duration:.24,ease:'power3.in'},11.12);
+tl.to('#edgeB',{x:500,duration:.24,ease:'power3.in'},11.12);
+tl.to('#edgeC',{x:-560,duration:.24,ease:'power3.in'},11.12);
+tl.to('#edgeD',{x:480,duration:.24,ease:'power3.in'},11.12);
+tl.to(camera,{scale:1,x:0,y:0,duration:.24,ease:'power2.out'},11.30);
+tl.to({},{duration:.01},11.99);
+
+if(q.has('debug'))debug.classList.add('on');
+gsap.ticker.add(()=>{debug.textContent=tl.time().toFixed(2)+'s';});
+window.OPENER={W,H,DURATION,tl,ready:false,seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},play(){tl.play();}};
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
