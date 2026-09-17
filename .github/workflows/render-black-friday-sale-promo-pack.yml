@@ -1,0 +1,84 @@
+name: Render Black Friday Sale Promo Pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'render/black-friday-sale-promo-pack-vertical'
+    paths:
+      - 'assets/black-friday-sale-promo-pack-vertical.html'
+      - '.github/workflows/render-black-friday-sale-promo-pack.yml'
+      - 'runtime/**'
+      - 'scripts/export-mp4.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-black-friday-sale-promo-pack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render 12s Black Friday 9x16 greenscreen
+        run: |
+          mkdir -p output
+          env INDEX=assets/black-friday-sale-promo-pack-vertical.html \
+            QUALITY=final FPS=30 WIDTH=1080 HEIGHT=1920 CRF=17 PRESET=medium \
+            OUT_VIDEO=output/black-friday-sale-promo-pack-vertical.mp4 \
+            npm run render:ffmpeg
+      - name: Verify technical render contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r = JSON.parse(fs.readFileSync('output/black-friday-sale-promo-pack-vertical.verify.json', 'utf8'));
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`video codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 1080 || r.video?.height !== 1920) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 12) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('Greenscreen promo unexpectedly contains audio');
+          NODE
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/black-friday-sale-promo-pack-vertical.mp4 \
+            -vf "select='eq(n,18)+eq(n,54)+eq(n,96)+eq(n,150)+eq(n,186)+eq(n,228)+eq(n,270)+eq(n,330)+eq(n,357)'" \
+            -fps_mode vfr output/black-friday-frame-%02d.png
+      - name: Record artifact hash
+        run: |
+          stat -c '%n %s bytes' output/black-friday-sale-promo-pack-vertical.mp4 output/black-friday-sale-promo-pack-vertical.verify.json > output/artifact-info.txt
+          sha256sum output/black-friday-sale-promo-pack-vertical.mp4 > output/sha256.txt
+          cat output/artifact-info.txt
+          cat output/sha256.txt
+      - name: Upload Black Friday render
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-friday-sale-promo-pack-vertical
+          path: |
+            output/black-friday-sale-promo-pack-vertical.mp4
+            output/black-friday-sale-promo-pack-vertical.verify.json
+            output/black-friday-frame-*.png
+            output/artifact-info.txt
+            output/sha256.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
