@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vectora Icon Studio</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><div class="brand"><span>VECTORA</span><h1>Icon Studio</h1></div><p>FLUX → VTracer → SVG / EPS / JPG</p></div>
+      <div class="badge">Standalone Render build</div>
+    </header>
+    <div class="layout">
+      <section class="panel controls">
+        <div class="segmented"><button id="modeIcon" class="active">Icons</button><button id="modeIllustration">Illustration</button></div>
+        <div class="statusRow"><label>Engine</label><span id="engineStatus">Checking…</span></div>
+        <label>Tema</label><input id="theme" placeholder="coffee shop, camping, cybersecurity" />
+        <label>Style</label>
+        <select id="style">
+          <option>Flat Style</option><option>Minimalist Flat</option><option>Rounded Flat</option><option>Geometric Flat</option><option>Duotone</option><option>Black & White</option><option>Monoline</option><option>Outline</option><option>Filled Outline</option><option>Flat Isometric</option><option>Soft Pastel</option><option>Retro Flat</option>
+        </select>
+        <div class="twocol">
+          <div><label id="countLabel">Icons</label><select id="iconCount"><option>4</option><option>6</option><option>8</option><option selected>9</option><option>12</option><option>16</option></select></div>
+          <div><label>Hasil</label><select id="resultCount"><option>1</option><option selected>2</option><option>3</option></select></div>
+        </div>
+        <label>Tambahan</label><input id="extra" placeholder="blue-green, rounded, simple" />
+        <div id="error" class="error hidden"></div>
+        <button id="generate" class="primary">Generate 2</button>
+      </section>
+      <section class="panel resultsPanel">
+        <div class="resultsHead"><div><h2>Hasil</h2><small id="resultSummary">Belum ada asset</small></div><button id="clear" class="ghost">Clear</button></div>
+        <div id="empty" class="empty"><div class="spark">✦</div><h3>Buat vector stock-ready dari satu tema</h3><p>Vectora membuat raster dengan FLUX, lalu men-trace ke SVG dan EPS menggunakan VTracer.</p></div>
+        <div id="results" class="results"></div>
+      </section>
+    </div>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
