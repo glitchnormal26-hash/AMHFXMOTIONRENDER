@@ -76,6 +76,31 @@ jobs:
             printf '%s' "$unexpected_workflows"
             exit 1
           fi
+          if grep -R -nE '^[[:space:]]*contents:[[:space:]]*write([[:space:]]*(#.*)?)?          if [ -d videos ]; then
+            echo 'Top-level videos/ is reserved for project-specific work and must not live on main.' >&2
+            find videos -maxdepth 3 -type f -print
+            exit 1
+          fi
+          unexpected_assets="$(find assets -maxdepth 1 -type f ! -name 'starter*.html' -print)"
+          if [ -n "$unexpected_assets" ]; then
+            echo 'Top-level assets/ files on main must be neutral starter architectures.' >&2
+            printf '%s\n' "$unexpected_assets"
+            exit 1
+          fi
+          if git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256' | grep -q .; then
+            echo 'Generated render media/checksums must not be committed.' >&2
+            git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256'
+            exit 1
+          fi
+          node -e "const p=require('./package.json'); if (!p.scripts['render:ffmpeg'] || !p.scripts['render:production'] || !p.scripts['check:creative'] || p.scripts['render:motra']) process.exit(1)"
+ .github/workflows; then
+            echo 'Repository workflows must not request contents: write; updates belong in reviewed PRs.' >&2
+            exit 1
+          fi
+          if grep -R -nE '(^|[[:space:]])git[[:space:]]+push([[:space:]]|$)' .github/workflows; then
+            echo 'Repository workflows must not push commits directly; updates belong in reviewed PRs.' >&2
+            exit 1
+          fi
           if [ -d videos ]; then
             echo 'Top-level videos/ is reserved for project-specific work and must not live on main.' >&2
             find videos -maxdepth 3 -type f -print
