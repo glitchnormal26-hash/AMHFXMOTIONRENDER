@@ -1,0 +1,92 @@
+name: Deliver Power Off Greenscreen 4K
+
+on:
+  push:
+    branches:
+      - render/power-off-greenscreen-4k
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deliver-power-off-greenscreen-4k
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render final 4K portrait MP4
+        run: |
+          mkdir -p output
+          env \
+            MANIFEST=project/power-off-manifest.json \
+            INDEX=project/power-off-greenscreen.html \
+            OUT_VIDEO=output/power-off-greenscreen-4k.mp4 \
+            QUALITY=final FPS=30 WIDTH=2160 HEIGHT=3840 \
+            CRF=16 PRESET=fast FRAME_TRANSPORT=stream \
+            npm run render:production
+      - name: Verify final report and exact video contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const f = JSON.parse(fs.readFileSync('output/power-off-greenscreen-4k.final.verify.json','utf8'));
+          const t = JSON.parse(fs.readFileSync('output/power-off-greenscreen-4k.verify.json','utf8'));
+          if (f.status !== 'FINAL_VERIFIED') throw new Error('final status='+f.status);
+          if (t.status !== 'TECHNICAL_VERIFIED') throw new Error('technical status='+t.status);
+          if (t.video?.codec_name !== 'h264') throw new Error('codec='+t.video?.codec_name);
+          if (t.video?.width !== 2160 || t.video?.height !== 3840) throw new Error('size='+t.video?.width+'x'+t.video?.height);
+          if (Math.abs(Number(t.duration)-10) > 0.12) throw new Error('duration='+t.duration);
+          if (t.audio !== null) throw new Error('unexpected audio stream');
+          NODE
+      - name: Verify final screen is blank black
+        run: |
+          ffmpeg -v info -ss 9.4 -i output/power-off-greenscreen-4k.mp4 -frames:v 1 \
+            -vf "blackframe=amount=99:threshold=32" -f null - 2> output/black-frame-check.txt
+          cat output/black-frame-check.txt
+          grep -Eq 'pblack:(99|100)' output/black-frame-check.txt
+      - name: Extract visual evidence
+        run: |
+          for spec in '0.5 opening' '2.6 active' '4.9 impact' '6.8 shutdown' '9.4 black'; do
+            set -- $spec
+            ffmpeg -y -ss "$1" -i output/power-off-greenscreen-4k.mp4 -frames:v 1 \
+              -vf scale=540:960 "output/frame-$2.png"
+          done
+      - name: Record hashes
+        run: |
+          sha256sum output/power-off-greenscreen-4k.mp4 > output/sha256.txt
+          stat -c '%n %s bytes' output/power-off-greenscreen-4k.mp4 > output/file-size.txt
+          cat output/file-size.txt
+          cat output/sha256.txt
+      - name: Upload delivery artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: power-off-greenscreen-4k
+          path: |
+            output/power-off-greenscreen-4k.mp4
+            output/power-off-greenscreen-4k.verify.json
+            output/power-off-greenscreen-4k.final.verify.json
+            project/power-off-manifest.creative.verify.json
+            output/black-frame-check.txt
+            output/frame-*.png
+            output/sha256.txt
+            output/file-size.txt
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
