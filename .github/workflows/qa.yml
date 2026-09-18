@@ -56,10 +56,22 @@ jobs:
           test ! -e scripts/render-motra.mjs
           test ! -d motra-output
           test ! -d delivery
-          unexpected_workflows="$(find .github/workflows -maxdepth 1 -type f \\( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-*.yml' -o -name 'render-*.yaml' \\) ! -name 'render-e2e.yml' ! -name 'render-e2e.yaml' -print)"
+          unexpected_workflows=""
+          for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -e "$workflow" ] || continue
+            base="$(basename "$workflow")"
+            case "$base" in
+              deliver-*.yml|deliver-*.yaml|render-*.yml|render-*.yaml)
+                case "$base" in
+                  render-e2e.yml|render-e2e.yaml) ;;
+                  *) unexpected_workflows="$unexpected_workflows$workflow"$'\n' ;;
+                esac
+                ;;
+            esac
+          done
           if [ -n "$unexpected_workflows" ]; then
             echo 'Project-specific delivery/render workflows must not live on main.' >&2
-            printf '%s\n' "$unexpected_workflows"
+            printf '%s' "$unexpected_workflows"
             exit 1
           fi
           if [ -d videos ]; then
