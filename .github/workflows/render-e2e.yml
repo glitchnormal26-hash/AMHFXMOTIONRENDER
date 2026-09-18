@@ -41,8 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -76,7 +76,7 @@ jobs:
         run: |
           ffmpeg -y -i output/e2e-pr.mp4 \
             -vf "select='eq(n,0)+eq(n,45)+eq(n,89)'" -fps_mode vfr output/pr-frame-%02d.png
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: motion-v3.9.4-pr-smoke
           path: |
@@ -92,8 +92,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -177,7 +177,7 @@ jobs:
           echo '--- audio benchmark ---'
           cat output/benchmark-audio.txt
       - name: Upload E2E evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: motion-v3.9.4-e2e-qa
           path: |

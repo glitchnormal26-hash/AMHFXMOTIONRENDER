@@ -16,15 +16,17 @@ jobs:
   syntax:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: npm ci
+      - name: Block high-severity dependency advisories
+        run: npm audit --audit-level=high
       - run: npm run check
       - run: python -m py_compile scripts/serve.py
       - name: Verify creative-gate example
@@ -56,9 +58,33 @@ jobs:
           test ! -e scripts/render-motra.mjs
           test ! -d motra-output
           test ! -d delivery
-          if find .github/workflows -maxdepth 1 -type f \( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-autumn-cute-10.yml' \) | grep -q .; then
+          unexpected_workflows=""
+          for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -e "$workflow" ] || continue
+            base="$(basename "$workflow")"
+            case "$base" in
+              deliver-*.yml|deliver-*.yaml|render-*.yml|render-*.yaml)
+                case "$base" in
+                  render-e2e.yml|render-e2e.yaml) ;;
+                  *) unexpected_workflows="$unexpected_workflows$workflow"$'\n' ;;
+                esac
+                ;;
+            esac
+          done
+          if [ -n "$unexpected_workflows" ]; then
             echo 'Project-specific delivery/render workflows must not live on main.' >&2
-            find .github/workflows -maxdepth 1 -type f \( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-autumn-cute-10.yml' \)
+            printf '%s' "$unexpected_workflows"
+            exit 1
+          fi
+          if [ -d videos ]; then
+            echo 'Top-level videos/ is reserved for project-specific work and must not live on main.' >&2
+            find videos -maxdepth 3 -type f -print
+            exit 1
+          fi
+          unexpected_assets="$(find assets -maxdepth 1 -type f ! -name 'starter*.html' -print)"
+          if [ -n "$unexpected_assets" ]; then
+            echo 'Top-level assets/ files on main must be neutral starter architectures.' >&2
+            printf '%s\n' "$unexpected_assets"
             exit 1
           fi
           if git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256' | grep -q .; then

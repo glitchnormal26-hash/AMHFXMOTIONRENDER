@@ -33,7 +33,7 @@ Safe local cleanup targets include `node_modules/`, generated output/frame/snaps
 
 Do not remove active authored source from `skill-source/`, `references/`, `runtime/`, `scripts/`, or the neutral reusable files in `assets/` unless the corresponding feature is intentionally retired.
 
-`main` must not contain a top-level `delivery/` project tree or project-specific delivery/render workflow files. The QA hygiene gate enforces this boundary.
+`main` must not contain top-level `delivery/` or `videos/` project trees, project-specific top-level asset files, or project-specific delivery/render workflows. The QA hygiene gate enforces this boundary and only permits the project-agnostic `render-e2e` render workflow.
 
 ## Verification
 
