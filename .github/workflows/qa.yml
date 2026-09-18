@@ -25,6 +25,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - name: Report dependency advisories
+        run: npm audit --audit-level=high || true
       - run: npm run check
       - run: python -m py_compile scripts/serve.py
       - name: Verify creative-gate example
