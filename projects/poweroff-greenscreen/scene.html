@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Off Greenscreen Motion</title>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --green:#00ff00;
+  --ink:#f8fbff;
+  --edge:#cfd8e3;
+  --graphite:#10151c;
+  --graphite2:#222a35;
+  --cyan:#7fe9ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;width:1920px;height:1080px;
+  transform:translate(-50%,-50%);transform-origin:center;
+  overflow:hidden;background:var(--green)
+}
+#camera{
+  position:absolute;inset:0;transform-origin:50% 50%;
+  will-change:transform;
+}
+#iconRig{
+  position:absolute;left:960px;top:540px;width:620px;height:620px;
+  transform:translate(-50%,-50%);
+  will-change:transform,opacity,filter;
+}
+#shadowPlate{
+  position:absolute;inset:62px;border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,#364252 0%,#1c232d 36%,#10151c 72%,#0a0e13 100%);
+  border:12px solid #e8eef5;
+  box-shadow:0 42px 0 #070a0f;
+}
+#innerPlate{
+  position:absolute;inset:105px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#273240 0%,#151b23 52%,#0c1117 100%);
+  border:6px solid #4e5a68;
+}
+#powerSvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#powerShadow,#powerArc,#powerStem,#powerArcHot,#powerStemHot{
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+  vector-effect:non-scaling-stroke
+}
+#powerShadow{stroke:#020406;stroke-width:56;opacity:.92}
+#powerArc,#powerStem{stroke:var(--ink);stroke-width:34}
+#powerArcHot,#powerStemHot{stroke:var(--cyan);stroke-width:13;opacity:.96}
+#powerArc,#powerArcHot{stroke-dasharray:1;stroke-dashoffset:1}
+#powerStem,#powerStemHot{stroke-dasharray:1;stroke-dashoffset:1}
+#halo{
+  position:absolute;inset:34px;border-radius:50%;
+  border:8px solid #fff;opacity:0;
+  transform:scale(.72);
+}
+#energySweep{
+  position:absolute;inset:18px;border-radius:50%;
+  border:10px solid transparent;
+  border-top-color:#fff;border-right-color:#fff;
+  opacity:0;transform:rotate(-90deg) scale(.92);
+}
+#clickCore{
+  position:absolute;left:50%;top:50%;width:74px;height:74px;
+  margin:-37px 0 0 -37px;border-radius:50%;
+  background:#fff;opacity:0;transform:scale(.1);
+}
+#sparkA,#sparkB,#sparkC,#sparkD{
+  position:absolute;left:50%;top:50%;width:12px;height:116px;
+  margin:-58px 0 0 -6px;border-radius:999px;background:#fff;
+  transform-origin:50% 310px;opacity:0;
+}
+#sparkA{transform:rotate(25deg) translateY(-275px) scaleY(.25)}
+#sparkB{transform:rotate(115deg) translateY(-275px) scaleY(.25)}
+#sparkC{transform:rotate(205deg) translateY(-275px) scaleY(.25)}
+#sparkD{transform:rotate(295deg) translateY(-275px) scaleY(.25)}
+#blackout{
+  position:absolute;inset:0;background:#000;opacity:0;z-index:50;
+}
+#debug{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camera">
+    <div id="iconRig">
+      <div id="halo"></div>
+      <div id="energySweep"></div>
+      <div id="shadowPlate"></div>
+      <div id="innerPlate"></div>
+      <svg id="powerSvg" viewBox="0 0 620 620" aria-hidden="true">
+        <path id="powerShadow" d="M 214 187 A 190 190 0 1 0 406 187"/>
+        <path id="powerArc" pathLength="1" d="M 214 187 A 190 190 0 1 0 406 187"/>
+        <path id="powerArcHot" pathLength="1" d="M 214 187 A 190 190 0 1 0 406 187"/>
+        <path id="powerStem" pathLength="1" d="M 310 88 L 310 302"/>
+        <path id="powerStemHot" pathLength="1" d="M 310 88 L 310 302"/>
+      </svg>
+      <div id="clickCore"></div>
+      <div id="sparkA"></div><div id="sparkB"></div><div id="sparkC"></div><div id="sparkD"></div>
+    </div>
+  </div>
+  <div id="blackout"></div>
+</div>
+<div id="debug"></div>
+<script>
+const W=1920,H=1080,DURATION=10;
+const stage=document.querySelector('#stage');
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+const q=new URLSearchParams(location.search);
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+gsap.set('#iconRig',{opacity:0,scale:.58,rotation:-8});
+gsap.set('#camera',{x:190,y:-40,scale:1.48,rotation:-1.4,transformOrigin:'50% 50%'});
+gsap.set('#powerArc,#powerArcHot,#powerStem,#powerStemHot',{strokeDashoffset:1});
+gsap.set('#innerPlate',{scale:.84,opacity:0});
+gsap.set('#shadowPlate',{scale:.9,opacity:0});
+
+tl.to('#iconRig',{opacity:1,scale:1.04,rotation:0,duration:.82,ease:'power4.out'},.20);
+tl.to('#shadowPlate',{opacity:1,scale:1,duration:.72,ease:'power3.out'},.28);
+tl.to('#innerPlate',{opacity:1,scale:1,duration:.62,ease:'power3.out'},.48);
+tl.to('#powerArc,#powerArcHot',{strokeDashoffset:0,duration:1.18,ease:'power2.inOut'},.46);
+tl.to('#powerStem,#powerStemHot',{strokeDashoffset:0,duration:.58,ease:'power3.out'},1.12);
+tl.to('#camera',{x:0,y:0,scale:1,rotation:0,duration:1.22,ease:'power3.inOut'},.72);
+tl.to('#halo',{opacity:.92,scale:1.02,duration:.34,ease:'power2.out'},1.46);
+tl.to('#halo',{opacity:0,scale:1.18,duration:.70,ease:'power2.out'},1.80);
+
+tl.to('#camera',{x:-150,y:56,scale:1.22,rotation:-1.2,duration:.74,ease:'power2.in'},2.70);
+tl.to('#camera',{x:-105,y:28,scale:1.16,rotation:-.3,duration:.42,ease:'power3.out'},3.44);
+tl.fromTo('#energySweep',{opacity:0,rotation:-105,scale:.92},{opacity:1,rotation:125,scale:1,duration:.72,ease:'power2.inOut'},3.02);
+tl.to('#energySweep',{opacity:0,duration:.22,ease:'power2.out'},3.67);
+tl.to('#iconRig',{scale:1.075,duration:.20,ease:'power2.out'},3.08);
+tl.to('#iconRig',{scale:1,duration:.38,ease:'back.out(2.2)'},3.28);
+
+tl.to('#camera',{x:128,y:-30,scale:1.10,rotation:.75,duration:.82,ease:'power3.inOut'},4.52);
+tl.to('#powerArcHot,#powerStemHot',{opacity:.25,duration:.52,ease:'power2.inOut'},4.82);
+tl.to('#powerArcHot,#powerStemHot',{opacity:.98,duration:.30,ease:'power3.out'},5.34);
+
+tl.to('#iconRig',{scale:.93,duration:.18,ease:'power2.in'},5.76);
+tl.to('#clickCore',{opacity:1,scale:1,duration:.16,ease:'power4.out'},5.82);
+tl.to('#clickCore',{opacity:0,scale:2.7,duration:.48,ease:'power2.out'},5.98);
+tl.to('#sparkA,#sparkB,#sparkC,#sparkD',{opacity:1,duration:.05},5.86);
+tl.to('#sparkA,#sparkB,#sparkC,#sparkD',{opacity:0,scaleY:1.25,duration:.42,ease:'power3.out'},5.92);
+tl.to('#iconRig',{scale:1.025,duration:.22,ease:'back.out(2.8)'},5.94);
+tl.to('#iconRig',{scale:1,duration:.24,ease:'power2.out'},6.16);
+
+tl.to('#powerArcHot,#powerStemHot',{opacity:0,duration:.46,ease:'power2.out'},6.02);
+tl.to('#powerArc,#powerStem',{stroke:'#9ba6b2',duration:.52,ease:'power2.inOut'},6.05);
+tl.to('#innerPlate',{background:'radial-gradient(circle at 42% 36%,#1a2028 0%,#0f141a 58%,#090d11 100%)',duration:.55},6.05);
+tl.to('#shadowPlate',{borderColor:'#8d98a4',duration:.55},6.05);
+tl.to('#camera',{x:0,y:0,scale:.94,rotation:0,duration:.92,ease:'power3.out'},6.18);
+
+tl.to('#iconRig',{opacity:.82,scale:.94,duration:.74,ease:'power2.inOut'},7.10);
+tl.to('#iconRig',{opacity:0,scale:.76,rotation:4,duration:.74,ease:'power3.in'},7.78);
+tl.to('#camera',{scale:.86,y:32,duration:.70,ease:'power2.in'},7.78);
+tl.to('#blackout',{opacity:1,duration:.28,ease:'power2.out'},8.48);
+tl.set('#iconRig',{visibility:'hidden'},8.76);
+tl.to({},{duration:.01},9.99);
+
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);},
+  play(){tl.play();}
+};
+Promise.resolve(document.fonts?.ready).then(()=>{
+  window.OPENER.ready=true;
+  if(!q.has('clean')) tl.play(0);
+});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean')) tl.play(0);});
+</script>
+</body>
+</html>
