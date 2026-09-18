@@ -56,9 +56,21 @@ jobs:
           test ! -e scripts/render-motra.mjs
           test ! -d motra-output
           test ! -d delivery
-          if find .github/workflows -maxdepth 1 -type f \( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-autumn-cute-10.yml' \) | grep -q .; then
+          unexpected_workflows="$(find .github/workflows -maxdepth 1 -type f \\( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-*.yml' -o -name 'render-*.yaml' \\) ! -name 'render-e2e.yml' ! -name 'render-e2e.yaml' -print)"
+          if [ -n "$unexpected_workflows" ]; then
             echo 'Project-specific delivery/render workflows must not live on main.' >&2
-            find .github/workflows -maxdepth 1 -type f \( -name 'deliver-*.yml' -o -name 'deliver-*.yaml' -o -name 'render-autumn-cute-10.yml' \)
+            printf '%s\n' "$unexpected_workflows"
+            exit 1
+          fi
+          if [ -d videos ]; then
+            echo 'Top-level videos/ is reserved for project-specific work and must not live on main.' >&2
+            find videos -maxdepth 3 -type f -print
+            exit 1
+          fi
+          unexpected_assets="$(find assets -maxdepth 1 -type f ! -name 'starter*.html' -print)"
+          if [ -n "$unexpected_assets" ]; then
+            echo 'Top-level assets/ files on main must be neutral starter architectures.' >&2
+            printf '%s\n' "$unexpected_assets"
             exit 1
           fi
           if git ls-files '*.mp4' '*.mov' '*.webm' '*.sha256' | grep -q .; then
