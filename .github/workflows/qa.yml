@@ -76,6 +76,26 @@ jobs:
             printf '%s' "$unexpected_workflows"
             exit 1
           fi
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import path from "node:path";
+
+          const dir = ".github/workflows";
+          const workflowNames = fs.readdirSync(dir).filter(name => /\.ya?ml$/.test(name));
+          const contentsWrite = new RegExp("^\\s*contents:\\s*" + "write" + "\\s*(?:#.*)?$", "m");
+          const directPush = new RegExp("(^|\\s)git\\s+" + "push(?:\\s|$)", "m");
+
+          for (const name of workflowNames) {
+            const relative = path.join(dir, name);
+            const body = fs.readFileSync(relative, "utf8");
+            if (contentsWrite.test(body)) {
+              throw new Error(`${relative} requests repository write permission; source updates must go through reviewed PRs.`);
+            }
+            if (directPush.test(body)) {
+              throw new Error(`${relative} performs a direct VCS push; source updates must go through reviewed PRs.`);
+            }
+          }
+          NODE
           if [ -d videos ]; then
             echo 'Top-level videos/ is reserved for project-specific work and must not live on main.' >&2
             find videos -maxdepth 3 -type f -print
