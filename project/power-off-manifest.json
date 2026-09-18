@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "project": "Power Off Greenscreen 4K Vertical",
+  "creative_intent": "A clean modern power glyph appears with controlled draw-on energy, settles into a centered hero state, powers down through a physical collapse, and resolves to a fully blank black screen.",
+  "visual_language": "Minimal chroma-key utility motion: pure green field, crisp white-to-soft-gray power glyph, rounded monoline geometry, restrained pulses, and a decisive black shutdown payoff.",
+  "continuity_carrier": "The same power glyph ring and stem persist through every visible beat, then collapse and hand their visual energy directly into the final full-frame blackout.",
+  "styleframes": [
+    {
+      "beat": "0.5s opening draw",
+      "hero": "Partially drawn power ring with descending stem",
+      "composition": "Large centered glyph on uninterrupted chroma green with disciplined negative space",
+      "quality_note": "Stroke silhouette is crisp, keyable, and immediately readable at thumbnail size"
+    },
+    {
+      "beat": "2.6s active settle",
+      "hero": "Fully resolved white power glyph",
+      "composition": "Centered hero with a subtle authored push-in rather than a static hold",
+      "quality_note": "No text, no decorative clutter, and no shadow contamination on the green field"
+    },
+    {
+      "beat": "4.9s press impact",
+      "hero": "Power glyph compressed during the shutdown press",
+      "composition": "Tighter framing and pulse ring create a distinct impact state while preserving center authority",
+      "quality_note": "The icon remains legible during the fastest change and retains clean chroma separation"
+    },
+    {
+      "beat": "6.8s power-down transition",
+      "hero": "Ring retracting while the stem lifts away",
+      "composition": "Hero scale and framing pull back as the persistent glyph physically dismantles",
+      "quality_note": "The transition is caused by the same glyph rather than by a screen swap"
+    },
+    {
+      "beat": "9.4s final shutdown",
+      "hero": "Full-frame black shutdown state",
+      "composition": "Completely blank black frame with no residual icon, green edge, or visible element",
+      "quality_note": "The final frame is intentionally featureless black and holds cleanly through the end"
+    }
+  ],
+  "proof_of_motion": {
+    "status": "PASS",
+    "duration_seconds": 10,
+    "scope": "Full draw-on, active settle, press impact, ring retraction, stem lift, scale pull-back, and blackout landing",
+    "playback_note": "The complete ten-second timeline was authored as one deterministic GSAP sequence with readable impact timing and a dedicated black hold at the end"
+  },
+  "scenes": [
+    {
+      "id": "beat-01-active",
+      "purpose": "Build the power symbol and establish a clean active state",
+      "hero": "Persistent white power ring and vertical stem",
+      "camera_mode": "MOVING",
+      "depth_plan": "Single flat chroma field with scale-based framing changes and pulse geometry kept on the same visual plane",
+      "type_role": "No typography is used; the power glyph alone carries the semantic message and motion hierarchy",
+      "transition_to_next": {
+        "cause": "The settled power glyph receives a deliberate press impulse",
+        "action": "The stem depresses, the hero compresses, and the framing pushes in with a short pulse",
+        "result": "The active symbol enters a visibly committed shutdown state",
+        "continuity": "The same ring, stem, center point, and motion direction survive into the shutdown beat"
+      }
+    },
+    {
+      "id": "beat-02-shutdown",
+      "purpose": "Turn the active power glyph off through a physical dismantling motion",
+      "hero": "The same power glyph changing from complete to retracted",
+      "camera_mode": "REFRAME",
+      "depth_plan": "The stage reframes through controlled scale and vertical shift while the glyph stays visually dominant",
+      "type_role": "No typography is used; ring retraction and stem lift provide the semantic handoff",
+      "transition_to_next": {
+        "cause": "The glyph has completed its shutdown collapse",
+        "action": "The icon disappears and a full-frame black layer replaces the chroma field",
+        "result": "The composition resolves into a blank powered-off screen",
+        "continuity": "The blackout is the direct payoff of the same shutdown action, not an unrelated new scene"
+      }
+    },
+    {
+      "id": "beat-03-black-hold",
+      "purpose": "Hold an unmistakable powered-off ending",
+      "hero": "Uniform black frame",
+      "camera_mode": "LOCKED_INTENTIONAL",
+      "depth_plan": "No depth elements remain; the frame is intentionally uniform and blank",
+      "type_role": "No typography or icon remains during the final black hold"
+    }
+  ],
+  "gates": {
+    "SKILL_USAGE_GATE": "PASS",
+    "PLAYBACK_GATE": "PASS",
+    "CAMERA_GATE": "PASS",
+    "CAMERA_ENERGY_GATE": "PASS",
+    "HERO_AUTHORITY_GATE": "PASS",
+    "COMPOSITION_GATE": "PASS",
+    "KINETIC_GATE": "PASS",
+    "KINETIC_CAUSALITY_GATE": "PASS",
+    "ANTI_PPT_GATE": "PASS",
+    "CONTINUITY_MATERIAL_GATE": "PASS",
+    "SCREEN_SWAP_GATE": "PASS",
+    "PAYOFF_GATE": "PASS",
+    "ANTI_PRIMITIVE_GATE": "PASS",
+    "STILL_FRAME_GATE": "PASS",
+    "HERO_VISUAL_GATE": "PASS",
+    "MATERIAL_GATE": "PASS",
+    "DEPTH_GATE": "PASS",
+    "ART_DIRECTION_GATE": "PASS",
+    "THUMBNAIL_GATE": "PASS",
+    "COPYSPACE_GATE": "NOT_REQUIRED",
+    "SPEED_RAMP": "ACTIVE",
+    "CAMERA_FOLLOW": "NOT_REQUIRED",
+    "SFX_MODE": "NONE",
+    "AUDIO_MIX_GATE": "NOT_REQUIRED",
+    "SAAS_DIRECTION_GATE": "NOT_REQUIRED"
+  },
+  "review": {
+    "summary": "The piece is intentionally minimal but uses authored framing changes, differentiated motion signatures, a persistent hero carrier, and a resolved blackout ending while preserving a clean chroma-key field before shutdown.",
+    "rejected_shortcuts": [
+      "Static icon with a single fade in and fade out",
+      "Decorative text, cards, or extra objects that would weaken chroma-key utility"
+    ],
+    "representative_frames": [
+      "0.5s opening draw",
+      "2.6s active settle",
+      "4.9s press impact",
+      "6.8s power-down transition",
+      "9.4s final shutdown"
+    ]
+  }
+}
