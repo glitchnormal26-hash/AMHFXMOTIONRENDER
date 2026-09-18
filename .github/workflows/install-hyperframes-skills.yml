@@ -1,31 +1,36 @@
-name: Install HyperFrames core skills
+name: Check HyperFrames core skills
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.agents/skills/**'
+      - 'skills-lock.json'
+      - '.github/workflows/install-hyperframes-skills.yml'
   push:
     branches:
       - main
     paths:
-      - .github/workflows/install-hyperframes-skills.yml
+      - '.agents/skills/**'
+      - 'skills-lock.json'
+      - '.github/workflows/install-hyperframes-skills.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  install:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 22
 
-      - name: Install HyperFrames Core Skills project-locally
+      - name: Resolve latest HyperFrames core skills project-locally
         run: |
           npx -y skills add heygen-com/hyperframes \
             --skill hyperframes \
@@ -41,21 +46,15 @@ jobs:
             --copy \
             --yes
 
-      - name: Commit installed skills
+      - name: Verify checked-in skills are current
         shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add .agents/skills
-          if [ -f skills-lock.json ]; then
-            git add skills-lock.json
-          fi
-
-          if git diff --cached --quiet; then
-            echo "HyperFrames Core Skills are already current."
+          set -euo pipefail
+          if git diff --quiet -- .agents/skills skills-lock.json; then
+            echo "HyperFrames Core Skills are current."
             exit 0
           fi
 
-          git commit -m "chore: install HyperFrames core skills"
-          git push
+          echo "Checked-in HyperFrames skills are stale. Regenerate them on a branch and merge through a reviewed PR." >&2
+          git diff --stat -- .agents/skills skills-lock.json
+          exit 1
