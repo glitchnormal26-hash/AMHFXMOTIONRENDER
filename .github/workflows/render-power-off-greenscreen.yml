@@ -1,0 +1,88 @@
+name: Render Power Off Greenscreen 4K
+
+on:
+  push:
+    branches:
+      - render/power-off-greenscreen-4k-vertical-20260918
+    paths:
+      - 'projects/power-off-greenscreen/**'
+      - '.github/workflows/render-power-off-greenscreen.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: power-off-greenscreen-4k-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run renderer checks
+        run: npm run check
+      - name: Render 10s 4K vertical MP4
+        run: |
+          mkdir -p output
+          env INDEX=projects/power-off-greenscreen/scene.html \
+            QUALITY=final FPS=30 WIDTH=2160 HEIGHT=3840 \
+            CRF=16 PRESET=fast \
+            OUT_VIDEO=output/power-off-greenscreen-4k-vertical.mp4 \
+            npm run render:ffmpeg
+      - name: Verify technical contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='output/power-off-greenscreen-4k-vertical.verify.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.status!=='TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if(r.video?.codec_name!=='h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if(r.video?.width!==2160 || r.video?.height!==3840) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if(Math.abs(Number(r.duration)-10)>0.15) throw new Error(`duration=${r.duration}`);
+          if(r.audio!==null) throw new Error('unexpected audio stream');
+          NODE
+      - name: Verify blank black ending
+        run: |
+          ffmpeg -v error -sseof -0.04 -i output/power-off-greenscreen-4k-vertical.mp4 \
+            -vf "scale=1:1:flags=area,format=rgb24" -frames:v 1 -f rawvideo output/final-pixel.rgb
+          python - <<'PY'
+          b=open('output/final-pixel.rgb','rb').read(3)
+          if len(b)!=3:
+              raise SystemExit('missing final pixel sample')
+          if max(b)>8:
+              raise SystemExit(f'final frame is not black enough: {list(b)}')
+          print('final frame black sample:', list(b))
+          PY
+      - name: Extract review frames
+        run: |
+          ffmpeg -y -ss 0.8 -i output/power-off-greenscreen-4k-vertical.mp4 -frames:v 1 output/review-01-assembly.png
+          ffmpeg -y -ss 3.0 -i output/power-off-greenscreen-4k-vertical.mp4 -frames:v 1 output/review-02-energy.png
+          ffmpeg -y -ss 6.9 -i output/power-off-greenscreen-4k-vertical.mp4 -frames:v 1 output/review-03-impact.png
+          ffmpeg -y -ss 8.3 -i output/power-off-greenscreen-4k-vertical.mp4 -frames:v 1 output/review-04-shutdown.png
+          ffmpeg -y -ss 9.6 -i output/power-off-greenscreen-4k-vertical.mp4 -frames:v 1 output/review-05-black.png
+      - name: Upload render
+        uses: actions/upload-artifact@v7
+        with:
+          name: power-off-greenscreen-4k-vertical
+          path: |
+            output/power-off-greenscreen-4k-vertical.mp4
+            output/power-off-greenscreen-4k-vertical.verify.json
+            output/review-*.png
+            output/final-pixel.rgb
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
