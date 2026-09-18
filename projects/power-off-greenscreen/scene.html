@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Off Greenscreen</title>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{--key:#00ff00;--white:#ffffff;--black:#000000}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{
+  position:fixed;left:50%;top:50%;
+  width:1080px;height:1920px;
+  transform:translate(-50%,-50%);
+  transform-origin:center;
+  overflow:hidden;
+  background:var(--key);
+}
+#chroma{position:absolute;inset:0;background:var(--key)}
+#camera{
+  position:absolute;inset:0;
+  transform-origin:540px 960px;
+  will-change:transform;
+}
+#hero{
+  position:absolute;left:0;top:420px;
+  width:1080px;height:1080px;
+  overflow:visible;
+  will-change:transform,opacity;
+}
+#powerArc,#powerStem,#pulseA,#pulseB,#rays line{
+  vector-effect:non-scaling-stroke;
+  shape-rendering:geometricPrecision;
+}
+#powerArc,#powerStem{
+  fill:none;
+  stroke:var(--white);
+  stroke-width:96;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#powerArc{stroke-dasharray:100;stroke-dashoffset:100}
+#powerStem{transform-origin:540px 540px}
+#pulseA,#pulseB{
+  fill:none;
+  stroke:var(--white);
+  stroke-width:18;
+  opacity:0;
+  transform-origin:540px 540px;
+}
+#rays line{
+  stroke:var(--white);
+  stroke-width:24;
+  stroke-linecap:round;
+  opacity:0;
+}
+#core{
+  position:absolute;
+  left:490px;top:910px;
+  width:100px;height:100px;
+  border-radius:50%;
+  background:var(--white);
+  opacity:0;
+  transform:scale(.2);
+  will-change:transform,opacity;
+}
+#blackout{
+  position:absolute;
+  z-index:50;
+  left:440px;top:860px;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:#000;
+  transform:scale(0);
+  transform-origin:50% 50%;
+  will-change:transform;
+}
+#blackFinal{
+  position:absolute;z-index:60;inset:0;
+  background:#000;opacity:0;
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="chroma"></div>
+  <div id="camera">
+    <svg id="hero" viewBox="0 0 1080 1080" aria-hidden="true">
+      <g id="rays"></g>
+      <circle id="pulseA" cx="540" cy="540" r="360"></circle>
+      <circle id="pulseB" cx="540" cy="540" r="360"></circle>
+      <path id="powerArc" pathLength="100" d="M 326 326 A 330 330 0 1 0 754 326"></path>
+      <line id="powerStem" x1="540" y1="174" x2="540" y2="548"></line>
+    </svg>
+    <div id="core"></div>
+  </div>
+  <div id="blackout"></div>
+  <div id="blackFinal"></div>
+</div>
+<script>
+const W=1080,H=1920,DURATION=10;
+const stage=document.querySelector('#stage');
+const rays=document.querySelector('#rays');
+const NS='http://www.w3.org/2000/svg';
+
+for(let i=0;i<12;i++){
+  const a=(i*30-90)*Math.PI/180;
+  const r1=426,r2=492,cx=540,cy=540;
+  const line=document.createElementNS(NS,'line');
+  line.setAttribute('x1',String(cx+Math.cos(a)*r1));
+  line.setAttribute('y1',String(cy+Math.sin(a)*r1));
+  line.setAttribute('x2',String(cx+Math.cos(a)*r2));
+  line.setAttribute('y2',String(cy+Math.sin(a)*r2));
+  rays.appendChild(line);
+}
+
+const fit=()=>{
+  const s=Math.min(innerWidth/W,innerHeight/H);
+  stage.style.transform=`translate(-50%,-50%) scale(${s})`;
+};
+addEventListener('resize',fit);fit();
+
+gsap.set('#camera',{scale:.72,rotation:-7,y:42});
+gsap.set('#powerStem',{scaleY:0,transformOrigin:'540px 548px'});
+gsap.set('#hero',{opacity:1});
+gsap.set('#rays line',{scale:.45,transformOrigin:'50% 50%'});
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:false}});
+
+// Bold assembly.
+tl.to('#camera',{scale:1.07,rotation:1.8,y:-8,duration:.78,ease:'expo.out'},.18);
+tl.to('#powerArc',{strokeDashoffset:0,duration:.82,ease:'power4.out'},.22);
+tl.to('#powerStem',{scaleY:1,duration:.52,ease:'back.out(1.8)'},.48);
+tl.to('#camera',{scale:1,rotation:0,y:0,duration:.42,ease:'power3.out'},.92);
+
+// First clean energy pulse.
+tl.fromTo('#pulseA',
+  {opacity:.7,scale:.78},
+  {opacity:0,scale:1.52,duration:.72,ease:'power2.out'},1.28);
+tl.fromTo('#core',
+  {opacity:0,scale:.2},
+  {opacity:.95,scale:1,duration:.14,ease:'power4.out'},1.42);
+tl.to('#core',{opacity:0,scale:1.9,duration:.36,ease:'power2.out'},1.56);
+
+// Authored camera energy + radial accents.
+tl.to('#camera',{x:-48,y:-24,scale:1.085,rotation:-3.2,duration:.72,ease:'power3.inOut'},2.48);
+tl.to('#rays line',{opacity:1,scale:1,duration:.18,stagger:.022,ease:'back.out(2.2)'},2.68);
+tl.to('#rays line',{opacity:0,scale:.72,duration:.30,stagger:.014,ease:'power2.in'},3.10);
+tl.to('#camera',{x:44,y:30,scale:.965,rotation:2.6,duration:.78,ease:'power4.inOut'},3.26);
+tl.to('#camera',{x:0,y:0,scale:1,rotation:0,duration:.58,ease:'expo.out'},4.06);
+
+// Second pulse with stronger authority.
+tl.fromTo('#pulseB',
+  {opacity:.82,scale:.86},
+  {opacity:0,scale:1.68,duration:.78,ease:'power3.out'},4.52);
+tl.to('#powerArc,#powerStem',{strokeWidth:112,duration:.18,ease:'power3.out'},4.56);
+tl.to('#powerArc,#powerStem',{strokeWidth:96,duration:.34,ease:'power2.out'},4.76);
+tl.to('#camera',{scale:1.10,duration:.42,ease:'power4.out'},5.16);
+tl.to('#camera',{scale:1,duration:.54,ease:'elastic.out(1,.65)'},5.58);
+
+// Pre-shutdown compression and impact.
+tl.to('#camera',{scale:.94,rotation:-2.2,duration:.30,ease:'power2.in'},6.42);
+tl.to('#camera',{scale:1.135,rotation:1.5,duration:.20,ease:'power4.out'},6.72);
+tl.fromTo('#pulseA',
+  {opacity:.82,scale:.72},
+  {opacity:0,scale:1.92,duration:.62,ease:'expo.out'},6.72);
+tl.to('#camera',{scale:1,rotation:0,duration:.42,ease:'back.out(2.1)'},6.94);
+
+// Power-off snap.
+tl.to('#powerStem',{y:54,duration:.16,ease:'power4.in'},7.48);
+tl.to('#powerArc',{scale:.93,transformOrigin:'540px 540px',duration:.16,ease:'power4.in'},7.48);
+tl.to('#powerStem',{scaleY:.04,opacity:0,duration:.22,ease:'power4.in'},7.64);
+tl.to('#powerArc',{scale:.78,opacity:.72,duration:.24,ease:'power3.in'},7.66);
+tl.to('#camera',{scale:.88,rotation:-5,duration:.26,ease:'power3.in'},7.70);
+
+// Black iris swallows the keyed frame.
+tl.to('#blackout',{scale:1,duration:.01},8.02);
+tl.to('#blackout',{scale:24,duration:.54,ease:'power4.in'},8.03);
+tl.set('#blackFinal',{opacity:1},8.56);
+tl.set('#chroma',{background:'#000'},8.56);
+tl.set('#camera',{opacity:0},8.56);
+tl.set('#blackout',{opacity:0},8.56);
+
+// Guaranteed blank-black tail.
+tl.to({},{duration:.01},9.99);
+
+const q=new URLSearchParams(location.search);
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  seek(t){
+    tl.pause();
+    tl.time(Math.max(0,Math.min(DURATION,t)),false);
+  },
+  play(){tl.play();}
+};
+Promise.resolve(document.fonts?.ready).then(()=>{
+  window.OPENER.ready=true;
+  if(!q.has('clean')) tl.play(0);
+});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
