@@ -1,7 +1,7 @@
 {
   "name": "amhfxmotionrender",
   "private": true,
-  "version": "3.9.2",
+  "version": "3.9.4",
   "type": "module",
   "scripts": {
     "serve": "python scripts/serve.py",
@@ -16,11 +16,12 @@
     "check:skill": "node scripts/check-skill.mjs",
     "check:creative": "node scripts/check-creative-gates.mjs",
     "verify:final": "node scripts/finalize-verification.mjs",
-    "check": "npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/check-creative-gates.mjs && node --check scripts/finalize-verification.mjs && node --check scripts/render-production.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js"
+    "check": "npm run check:version && npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/check-creative-gates.mjs && node --check scripts/finalize-verification.mjs && node --check scripts/render-production.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js",
+    "check:version": "node scripts/check-version-sync.mjs"
   },
   "dependencies": {
-    "gsap": "^3.13.0",
-    "puppeteer": "^24.0.0"
+    "gsap": "^3.15.0",
+    "puppeteer": "^24.43.1"
   },
   "description": "Browser motion renderer with deterministic Chromium-to-FFmpeg frame streaming, creative verification gates, and H.264/AAC encoding.",
   "repository": {
