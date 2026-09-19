@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analytics Dashboard Collection Greenscreen</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#00ff00}
+body{display:grid;place-items:center}
+#gl{display:block;width:100vw;height:100vh;background:transparent}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
+const DURATION=10;
+const canvas=document.querySelector("#gl");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,premultipliedAlpha:true,powerPreference:"high-performance"});
+renderer.setClearColor(0x00ff00,0);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.NoToneMapping;
+renderer.shadowMap.enabled=false;
+
+const scene=new THREE.Scene();
+const camera=new THREE.OrthographicCamera(-8,8,4.5,-4.5,.1,50);
+camera.position.set(0,0,20);
+camera.lookAt(0,0,0);
+scene.add(camera);
+
+scene.add(new THREE.HemisphereLight(0xd8e8ff,0x10121a,2.15));
+const key=new THREE.DirectionalLight(0xffffff,3.3); key.position.set(-4,7,12); scene.add(key);
+const rim=new THREE.DirectionalLight(0x8b7cff,2.2); rim.position.set(7,-3,8); scene.add(rim);
+
+const C={graphite:0x111621,graphite2:0x171e2b,graphite3:0x20293a,ink:0xf4f7ff,muted:0x526079,cyan:0x66dfe3,blue:0x6f9cff,violet:0x9a7bff,coral:0xff9b7b,amber:0xffc56d,ice:0xcfe9ff};
+const std=(color,opts={})=>new THREE.MeshStandardMaterial({color,roughness:.38,metalness:.08,...opts});
+const mats={
+ panel:std(C.graphite,{roughness:.48}),panel2:std(C.graphite2,{roughness:.42,metalness:.10}),panel3:std(C.graphite3),
+ muted:std(C.muted,{roughness:.55,metalness:.03}),ink:std(C.ink,{roughness:.33,metalness:.03}),
+ cyan:std(C.cyan,{emissive:C.cyan,emissiveIntensity:.06,roughness:.30}),blue:std(C.blue,{emissive:C.blue,emissiveIntensity:.05,roughness:.31}),
+ violet:std(C.violet,{emissive:C.violet,emissiveIntensity:.06,roughness:.30}),coral:std(C.coral,{emissive:C.coral,emissiveIntensity:.04,roughness:.36,metalness:.04}),
+ amber:std(C.amber,{emissive:C.amber,emissiveIntensity:.04,roughness:.34,metalness:.04}),ice:std(C.ice,{roughness:.28,metalness:.02}),
+ area:new THREE.MeshBasicMaterial({color:C.blue,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false}),
+ line:new THREE.MeshBasicMaterial({color:C.ice,transparent:true,opacity:.96,side:THREE.DoubleSide}),
+ rail:new THREE.MeshBasicMaterial({color:0x354157,transparent:true,opacity:.68,side:THREE.DoubleSide})
+};
+
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const outCubic=v=>{v=clamp01(v);return 1-Math.pow(1-v,3)};
+const inOutSine=v=>{v=clamp01(v);return -(Math.cos(Math.PI*v)-1)/2};
+const smoothPulse=x=>.5-.5*Math.cos(x*Math.PI*2);
+const enter=(t,d=.0,u=.8)=>outCubic((t-d)/u);
+const settleWindow=t=>1-outCubic((t-8.9)/.8);
+
+function roundedRectShape(w,h,r){
+ const x=-w/2,y=-h/2,s=new THREE.Shape();
+ s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);
+ s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+ s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);
+ s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;
+}
+function shapeMesh(shape,mat,z=.1,depth=.045,bevel=.025){
+ const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:bevel>0,bevelSegments:2,steps:1,bevelSize:bevel,bevelThickness:bevel,curveSegments:14});
+ g.translate(0,0,-depth/2);const m=new THREE.Mesh(g,mat);m.position.z=z;return m;
+}
+const roundedMesh=(w,h,r,mat,z=.1,depth=.045,bevel=.025)=>shapeMesh(roundedRectShape(w,h,r),mat,z,depth,bevel);
+function polygonShape(points){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();return s}
+function hexMesh(radius,mat,z=.4){const pts=[];for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;pts.push([Math.cos(a)*radius,Math.sin(a)*radius])}return shapeMesh(polygonShape(pts),mat,z,.03,.01)}
+function ringSectorShape(ro,ri,a0,a1,segments=42){
+ const pts=[];for(let i=0;i<=segments;i++){const a=a0+(a1-a0)*i/segments;pts.push([Math.cos(a)*ro,Math.sin(a)*ro])}
+ for(let i=segments;i>=0;i--){const a=a0+(a1-a0)*i/segments;pts.push([Math.cos(a)*ri,Math.sin(a)*ri])}return polygonShape(pts);
+}
+const ringMesh=(ro,ri,a0,a1,mat,z=.45)=>shapeMesh(ringSectorShape(ro,ri,a0,a1),mat,z,.035,.012);
+function makeCard(x,y,w,h,accentMat){
+ const g=new THREE.Group();g.position.set(x,y,0);
+ const border=roundedMesh(w+.08,h+.08,.32,accentMat,.02,.055,.035);border.scale.set(1.002,1.002,1);
+ g.add(border,roundedMesh(w,h,.30,mats.panel,.08,.075,.035),roundedMesh(w-.34,h-.34,.23,mats.panel2,.18,.035,.02));
+ g.userData.baseY=y;g.userData.baseX=x;return g;
+}
+function addTopAccent(g,w,mat){const a=roundedMesh(w*.31,.075,.035,mat,.38,.035,.012);a.position.set(-w*.27,w>4?1.03:.98,.38);g.add(a)}
+function updateEntrance(g,t,delay){
+ const e=enter(t,delay,.78),hold=settleWindow(t),s=.88+.12*e;
+ g.scale.set(s,s,1);g.position.y=g.userData.baseY+(1-e)*-.32+Math.sin((t+delay)*.62)*.008*e*hold;
+ g.rotation.z=(1-e)*-.025+Math.sin(t*.45+delay)*.0025*e*hold;g.visible=e>.002;
+}
+
+// 1. Radial gauge.
+const gauge=makeCard(-5.25,2.18,4.45,2.62,mats.cyan);addTopAccent(gauge,4.45,mats.cyan);scene.add(gauge);
+const gaugeTrack=ringMesh(.88,.64,-Math.PI*.86,Math.PI*.86,mats.panel3,.43);gaugeTrack.position.set(-.58,-.06,.43);gauge.add(gaugeTrack);
+let gaugeArc=ringMesh(.88,.64,-Math.PI*.86,-Math.PI*.80,mats.cyan,.50);gaugeArc.position.set(-.58,-.06,.50);gauge.add(gaugeArc);
+const gaugeCore=hexMesh(.30,mats.ice,.54);gaugeCore.position.set(-.58,-.06,.54);gauge.add(gaugeCore);
+const gaugeBars=[];
+for(let i=0;i<4;i++){const r=roundedMesh(1.45-i*.13,.15,.07,i<2?mats.blue:mats.panel3,.43,.03,.01);r.position.set(.95,.50-i*.38,.43);gauge.add(r);gaugeBars.push(r)}
+const gaugeTicks=[];for(let i=0;i<5;i++){const h=hexMesh(.085,i===4?mats.coral:mats.muted,.5);h.position.set(.30+i*.40,-.79,.50);gauge.add(h);gaugeTicks.push(h)}
+
+// 2. Bar analytics.
+const barsCard=makeCard(-.05,2.18,4.75,2.62,mats.violet);addTopAccent(barsCard,4.75,mats.violet);scene.add(barsCard);
+const barItems=[];
+for(let i=0;i<7;i++){const m=i===5?mats.violet:(i===6?mats.coral:mats.blue),bar=roundedMesh(.38,1,.14,m,.47,.04,.015);bar.position.x=-1.55+i*.52;bar.userData.baseH=.52+[.15,.42,.28,.68,.54,.88,.72][i];bar.userData.phase=i*.61;barsCard.add(bar);barItems.push(bar)}
+for(let i=0;i<3;i++){const rail=roundedMesh(3.75,.035,.016,mats.rail,.35,.012,0);rail.position.set(0,-.62+i*.52,.35);barsCard.add(rail)}
+const barPulse=roundedMesh(.62,.16,.08,mats.ice,.53,.03,.012);barPulse.position.set(1.52,.88,.53);barsCard.add(barPulse);
+
+// 3. Area / line analytics.
+const lineCard=makeCard(5.15,2.18,4.45,2.62,mats.blue);addTopAccent(lineCard,4.45,mats.blue);scene.add(lineCard);
+for(let i=0;i<3;i++){const rail=roundedMesh(3.55,.035,.016,mats.rail,.34,.012,0);rail.position.set(0,-.62+i*.53,.34);lineCard.add(rail)}
+const lineGroup=new THREE.Group();lineGroup.position.set(-1.68,-.64,.51);lineCard.add(lineGroup);
+let lineArea=new THREE.Mesh(new THREE.BufferGeometry(),mats.area);lineGroup.add(lineArea);
+let lineRibbon=new THREE.Mesh(new THREE.BufferGeometry(),mats.line);lineGroup.add(lineRibbon);
+const lineNodes=[];for(let i=0;i<8;i++){const n=hexMesh(i===7?.10:.075,i===7?mats.coral:mats.ice,.03);lineGroup.add(n);lineNodes.push(n)}
+function ribbonGeometry(points,width=.045){
+ const verts=[],idx=[];
+ for(let i=0;i<points.length;i++){const p=points[i],p0=points[Math.max(0,i-1)],p1=points[Math.min(points.length-1,i+1)],dx=p1.x-p0.x,dy=p1.y-p0.y,len=Math.hypot(dx,dy)||1,nx=-dy/len*width,ny=dx/len*width;
+  verts.push(p.x+nx,p.y+ny,0,p.x-nx,p.y-ny,0);if(i<points.length-1){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));g.setIndex(idx);g.computeVertexNormals();return g;
+}
+function areaGeometry(points,baseY=-.02){
+ const verts=[],idx=[];for(const p of points)verts.push(p.x,p.y,-.02);for(let i=points.length-1;i>=0;i--)verts.push(points[i].x,baseY,-.02);
+ const contour=points.map(p=>new THREE.Vector2(p.x,p.y));contour.push(...points.slice().reverse().map(p=>new THREE.Vector2(p.x,baseY)));
+ for(const tri of THREE.ShapeUtils.triangulateShape(contour,[]))idx.push(...tri);
+ const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(verts,3));g.setIndex(idx);return g;
+}
+
+// 4. Donut / distribution.
+const donutCard=makeCard(-3.20,-1.68,5.35,2.88,mats.coral);addTopAccent(donutCard,5.35,mats.coral);scene.add(donutCard);
+const donutBase=ringMesh(.88,.55,0,Math.PI*2-.02,mats.panel3,.43);donutBase.position.set(-1.15,-.02,.43);donutCard.add(donutBase);
+const donutSegA=ringMesh(.88,.55,-.35,1.78,mats.coral,.51);donutSegA.position.set(-1.15,-.02,.51);donutCard.add(donutSegA);
+const donutSegB=ringMesh(.88,.55,1.95,3.56,mats.violet,.50);donutSegB.position.set(-1.15,-.02,.50);donutCard.add(donutSegB);
+const donutSegC=ringMesh(.88,.55,3.72,5.76,mats.cyan,.49);donutSegC.position.set(-1.15,-.02,.49);donutCard.add(donutSegC);
+const orbitMarkers=[];for(let i=0;i<5;i++){const m=hexMesh(.075,i===0?mats.ice:mats.muted,.56);donutCard.add(m);orbitMarkers.push(m)}
+const miniStacks=[];
+for(let r=0;r<3;r++)for(let c=0;c<4;c++){const m=roundedMesh(.42,.16,.07,[mats.panel3,mats.blue,mats.violet,mats.coral][(r+c)%4],.46,.025,.008);m.position.set(.40+c*.58,.56-r*.42,.46);donutCard.add(m);miniStacks.push(m)}
+
+// 5. Heatmap / matrix.
+const heatCard=makeCard(3.55,-1.68,6.15,2.88,mats.amber);addTopAccent(heatCard,6.15,mats.amber);scene.add(heatCard);
+const cells=[],heatMats=[mats.panel3,mats.blue,mats.violet,mats.coral,mats.amber,mats.cyan];
+for(let r=0;r<4;r++)for(let c=0;c<8;c++){const m=roundedMesh(.43,.36,.10,heatMats[(r*3+c*2)%heatMats.length],.48,.03,.01);m.position.set(-2.05+c*.55,.70-r*.48,.48);m.userData.r=r;m.userData.c=c;heatCard.add(m);cells.push(m)}
+const sideRails=[];for(let i=0;i<4;i++){const m=roundedMesh(.82,.15,.07,i===1?mats.ice:mats.panel3,.48,.025,.008);m.position.set(2.18,.62-i*.43,.48);heatCard.add(m);sideRails.push(m)}
+const sweep=roundedMesh(.12,1.86,.055,mats.amber,.58,.025,.008);sweep.position.set(-2.13,0,.58);heatCard.add(sweep);
+
+function updateLine(t){
+ const pts=[],settle=settleWindow(t);
+ for(let i=0;i<8;i++){const x=i*(3.36/7),base=[.42,.66,.58,1.12,.92,1.42,1.30,1.73][i],y=base+Math.sin(t*.94+i*.78)*.10*settle+Math.sin(t*.37+i*.44)*.045*settle;
+  pts.push(new THREE.Vector2(x,y));lineNodes[i].position.set(x,y,.05);lineNodes[i].scale.setScalar(.92+.12*Math.sin(t*1.7+i*.6)*settle)}
+ const rg=ribbonGeometry(pts,.036);lineRibbon.geometry.dispose();lineRibbon.geometry=rg;
+ const ag=areaGeometry(pts,-.02);lineArea.geometry.dispose();lineArea.geometry=ag;
+}
+
+function render(t=0){
+ t=Math.max(0,Math.min(DURATION,Number(t)||0));
+ updateEntrance(gauge,t,.02);updateEntrance(barsCard,t,.16);updateEntrance(lineCard,t,.30);updateEntrance(donutCard,t,.46);updateEntrance(heatCard,t,.62);
+ const settle=settleWindow(t);
+
+ const gp=.18+.72*inOutSine(clamp01((t-.28)/3.2)),ga0=-Math.PI*.86,ga1=ga0+(Math.PI*1.72)*gp;
+ const ng=ringMesh(.88,.64,ga0,ga1,mats.cyan,.50).geometry;gaugeArc.geometry.dispose();gaugeArc.geometry=ng;
+ gaugeCore.rotation.z=t*.22*settle;gaugeCore.scale.setScalar(.96+.07*Math.sin(t*1.6)*settle);
+ gaugeBars.forEach((b,i)=>{const sx=.68+.30*smoothPulse(t*.12+i*.18);b.scale.x=sx;b.position.x=.95-(1-sx)*.22});
+ gaugeTicks.forEach((h,i)=>h.scale.setScalar(.90+.13*Math.sin(t*1.35+i*.8)*settle));
+
+ barItems.forEach(b=>{const wave=.72+.28*smoothPulse(t*.11+b.userData.phase/(Math.PI*2)),sy=.38+b.userData.baseH*wave;b.scale.y=sy;b.position.y=-.60+sy*.50});
+ barPulse.scale.x=.78+.24*smoothPulse(t*.18);barPulse.rotation.z=Math.sin(t*.72)*.035*settle;
+
+ updateLine(t);
+
+ donutSegA.rotation.z=Math.sin(t*.48)*.10*settle;donutSegB.rotation.z=-Math.sin(t*.41+.7)*.08*settle;donutSegC.rotation.z=Math.sin(t*.36+1.2)*.06*settle;
+ orbitMarkers.forEach((m,i)=>{const a=t*.20*settle+i*Math.PI*2/5,rr=1.08+.04*Math.sin(t+i);m.position.set(-1.15+Math.cos(a)*rr,-.02+Math.sin(a)*rr,.12);m.rotation.z=-a*.35});
+ miniStacks.forEach((m,i)=>m.scale.x=.92+.10*Math.sin(t*1.1+i*.43)*settle);
+
+ const phase=(t*1.15)%10;
+ cells.forEach(m=>{const d=Math.abs((m.userData.c*.82+m.userData.r*.45)-phase),boost=Math.max(0,1-d/2)*settle;m.scale.setScalar(1+boost*.10);m.position.z=.48+boost*.10});
+ sweep.position.x=-2.10+(((t*.58)%1)*3.95);sweep.scale.y=.72+.24*Math.sin(t*.9)*settle;
+ sideRails.forEach((m,i)=>m.scale.x=.72+.25*smoothPulse(t*.14+i*.17));
+
+ renderer.render(scene,camera);
+}
+
+function resize(){
+ const w=Math.max(1,innerWidth),h=Math.max(1,innerHeight);
+ renderer.setPixelRatio(1);renderer.setSize(w,h,false);
+ const aspect=w/h,target=16/9;
+ if(aspect>=target){const halfH=4.5,halfW=halfH*aspect;camera.left=-halfW;camera.right=halfW;camera.top=halfH;camera.bottom=-halfH}
+ else{const halfW=8,halfH=halfW/aspect;camera.left=-halfW;camera.right=halfW;camera.top=halfH;camera.bottom=-halfH}
+ camera.updateProjectionMatrix();render(window.OPENER?.time||0);
+}
+addEventListener("resize",resize);
+
+window.OPENER={W:1920,H:1080,DURATION,ready:false,time:0,CAMERA_MODE:"LOCKED_INTENTIONAL",
+ seek(t){this.time=Math.max(0,Math.min(DURATION,Number(t)||0));render(this.time)},
+ play(){previewStart()}
+};
+
+let raf=0,start=0;
+function previewStart(){
+ cancelAnimationFrame(raf);start=performance.now()-window.OPENER.time*1000;
+ const loop=now=>{const t=((now-start)/1000)%DURATION;window.OPENER.time=t;render(t);raf=requestAnimationFrame(loop)};
+ raf=requestAnimationFrame(loop);
+}
+
+resize();
+window.OPENER.ready=true;
+render(0);
+if(!new URLSearchParams(location.search).has("clean"))previewStart();
+</script>
+</body>
+</html>
