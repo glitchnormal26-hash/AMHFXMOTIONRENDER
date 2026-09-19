@@ -1,0 +1,51 @@
+name: Analytics Dashboard Visual Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'assets/analytics-dashboard-greenscreen.html'
+      - '.github/workflows/render-analytics-dashboard-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Render low-cost visual smoke
+        run: |
+          mkdir -p output
+          env INDEX=assets/analytics-dashboard-greenscreen.html \
+            QUALITY=fast FPS=2 WIDTH=1280 HEIGHT=720 \
+            CRF=20 PRESET=veryfast \
+            OUT_VIDEO=output/analytics-smoke.mp4 \
+            npm run render:ffmpeg
+      - name: Extract representative stills
+        run: |
+          ffmpeg -y -ss 2.5 -i output/analytics-smoke.mp4 -frames:v 1 output/smoke-025.png
+          ffmpeg -y -ss 5.0 -i output/analytics-smoke.mp4 -frames:v 1 output/smoke-050.png
+          ffmpeg -y -ss 7.5 -i output/analytics-smoke.mp4 -frames:v 1 output/smoke-075.png
+      - uses: actions/upload-artifact@v7
+        with:
+          name: analytics-dashboard-visual-smoke
+          path: |
+            output/analytics-smoke.mp4
+            output/analytics-smoke.verify.json
+            output/smoke-*.png
+          retention-days: 2
+          compression-level: 0
