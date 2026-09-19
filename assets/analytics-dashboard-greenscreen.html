@@ -78,7 +78,7 @@ function makeCard(x,y,w,h,accentMat){
  g.add(border,roundedMesh(w,h,.30,mats.panel,.08,.075,.035),roundedMesh(w-.34,h-.34,.23,mats.panel2,.18,.035,.02));
  g.userData.baseY=y;g.userData.baseX=x;return g;
 }
-function addTopAccent(g,w,mat){const a=roundedMesh(w*.31,.075,.035,mat,.38,.035,.012);a.position.set(-w*.27,w>4?1.03:.98,0);g.add(a)}
+function addTopAccent(g,w,mat){const a=roundedMesh(w*.31,.075,.035,mat,.38,.035,.012);a.position.set(-w*.27,w>4?1.03:.98,.38);g.add(a)}
 function updateEntrance(g,t,delay){
  const e=enter(t,delay,.78),hold=settleWindow(t),s=.88+.12*e;
  g.scale.set(s,s,1);g.position.y=g.userData.baseY+(1-e)*-.32+Math.sin((t+delay)*.62)*.008*e*hold;
@@ -87,23 +87,23 @@ function updateEntrance(g,t,delay){
 
 // 1. Radial gauge.
 const gauge=makeCard(-5.25,2.18,4.45,2.62,mats.cyan);addTopAccent(gauge,4.45,mats.cyan);scene.add(gauge);
-const gaugeTrack=ringMesh(.88,.64,-Math.PI*.86,Math.PI*.86,mats.panel3,.43);gaugeTrack.position.set(-.58,-.06,0);gauge.add(gaugeTrack);
-let gaugeArc=ringMesh(.88,.64,-Math.PI*.86,-Math.PI*.80,mats.cyan,.50);gaugeArc.position.copy(gaugeTrack.position);gauge.add(gaugeArc);
-const gaugeCore=hexMesh(.30,mats.ice,.54);gaugeCore.position.set(-.58,-.06,0);gauge.add(gaugeCore);
+const gaugeTrack=ringMesh(.88,.64,-Math.PI*.86,Math.PI*.86,mats.panel3,.43);gaugeTrack.position.set(-.58,-.06,.43);gauge.add(gaugeTrack);
+let gaugeArc=ringMesh(.88,.64,-Math.PI*.86,-Math.PI*.80,mats.cyan,.50);gaugeArc.position.set(-.58,-.06,.50);gauge.add(gaugeArc);
+const gaugeCore=hexMesh(.30,mats.ice,.54);gaugeCore.position.set(-.58,-.06,.54);gauge.add(gaugeCore);
 const gaugeBars=[];
-for(let i=0;i<4;i++){const r=roundedMesh(1.45-i*.13,.15,.07,i<2?mats.blue:mats.panel3,.43,.03,.01);r.position.set(.95,.50-i*.38,0);gauge.add(r);gaugeBars.push(r)}
-const gaugeTicks=[];for(let i=0;i<5;i++){const h=hexMesh(.085,i===4?mats.coral:mats.muted,.5);h.position.set(.30+i*.40,-.79,0);gauge.add(h);gaugeTicks.push(h)}
+for(let i=0;i<4;i++){const r=roundedMesh(1.45-i*.13,.15,.07,i<2?mats.blue:mats.panel3,.43,.03,.01);r.position.set(.95,.50-i*.38,.43);gauge.add(r);gaugeBars.push(r)}
+const gaugeTicks=[];for(let i=0;i<5;i++){const h=hexMesh(.085,i===4?mats.coral:mats.muted,.5);h.position.set(.30+i*.40,-.79,.50);gauge.add(h);gaugeTicks.push(h)}
 
 // 2. Bar analytics.
 const barsCard=makeCard(-.05,2.18,4.75,2.62,mats.violet);addTopAccent(barsCard,4.75,mats.violet);scene.add(barsCard);
 const barItems=[];
 for(let i=0;i<7;i++){const m=i===5?mats.violet:(i===6?mats.coral:mats.blue),bar=roundedMesh(.38,1,.14,m,.47,.04,.015);bar.position.x=-1.55+i*.52;bar.userData.baseH=.52+[.15,.42,.28,.68,.54,.88,.72][i];bar.userData.phase=i*.61;barsCard.add(bar);barItems.push(bar)}
-for(let i=0;i<3;i++){const rail=roundedMesh(3.75,.035,.016,mats.rail,.35,.012,0);rail.position.set(0,-.62+i*.52,0);barsCard.add(rail)}
-const barPulse=roundedMesh(.62,.16,.08,mats.ice,.53,.03,.012);barPulse.position.set(1.52,.88,0);barsCard.add(barPulse);
+for(let i=0;i<3;i++){const rail=roundedMesh(3.75,.035,.016,mats.rail,.35,.012,0);rail.position.set(0,-.62+i*.52,.35);barsCard.add(rail)}
+const barPulse=roundedMesh(.62,.16,.08,mats.ice,.53,.03,.012);barPulse.position.set(1.52,.88,.53);barsCard.add(barPulse);
 
 // 3. Area / line analytics.
 const lineCard=makeCard(5.15,2.18,4.45,2.62,mats.blue);addTopAccent(lineCard,4.45,mats.blue);scene.add(lineCard);
-for(let i=0;i<3;i++){const rail=roundedMesh(3.55,.035,.016,mats.rail,.34,.012,0);rail.position.set(0,-.62+i*.53,0);lineCard.add(rail)}
+for(let i=0;i<3;i++){const rail=roundedMesh(3.55,.035,.016,mats.rail,.34,.012,0);rail.position.set(0,-.62+i*.53,.34);lineCard.add(rail)}
 const lineGroup=new THREE.Group();lineGroup.position.set(-1.68,-.64,.51);lineCard.add(lineGroup);
 let lineArea=new THREE.Mesh(new THREE.BufferGeometry(),mats.area);lineGroup.add(lineArea);
 let lineRibbon=new THREE.Mesh(new THREE.BufferGeometry(),mats.line);lineGroup.add(lineRibbon);
@@ -124,20 +124,20 @@ function areaGeometry(points,baseY=-.02){
 
 // 4. Donut / distribution.
 const donutCard=makeCard(-3.20,-1.68,5.35,2.88,mats.coral);addTopAccent(donutCard,5.35,mats.coral);scene.add(donutCard);
-const donutBase=ringMesh(.88,.55,0,Math.PI*2-.02,mats.panel3,.43);donutBase.position.set(-1.15,-.02,0);donutCard.add(donutBase);
-const donutSegA=ringMesh(.88,.55,-.35,1.78,mats.coral,.51);donutSegA.position.copy(donutBase.position);donutCard.add(donutSegA);
-const donutSegB=ringMesh(.88,.55,1.95,3.56,mats.violet,.50);donutSegB.position.copy(donutBase.position);donutCard.add(donutSegB);
-const donutSegC=ringMesh(.88,.55,3.72,5.76,mats.cyan,.49);donutSegC.position.copy(donutBase.position);donutCard.add(donutSegC);
+const donutBase=ringMesh(.88,.55,0,Math.PI*2-.02,mats.panel3,.43);donutBase.position.set(-1.15,-.02,.43);donutCard.add(donutBase);
+const donutSegA=ringMesh(.88,.55,-.35,1.78,mats.coral,.51);donutSegA.position.set(-1.15,-.02,.51);donutCard.add(donutSegA);
+const donutSegB=ringMesh(.88,.55,1.95,3.56,mats.violet,.50);donutSegB.position.set(-1.15,-.02,.50);donutCard.add(donutSegB);
+const donutSegC=ringMesh(.88,.55,3.72,5.76,mats.cyan,.49);donutSegC.position.set(-1.15,-.02,.49);donutCard.add(donutSegC);
 const orbitMarkers=[];for(let i=0;i<5;i++){const m=hexMesh(.075,i===0?mats.ice:mats.muted,.56);donutCard.add(m);orbitMarkers.push(m)}
 const miniStacks=[];
-for(let r=0;r<3;r++)for(let c=0;c<4;c++){const m=roundedMesh(.42,.16,.07,[mats.panel3,mats.blue,mats.violet,mats.coral][(r+c)%4],.46,.025,.008);m.position.set(.40+c*.58,.56-r*.42,0);donutCard.add(m);miniStacks.push(m)}
+for(let r=0;r<3;r++)for(let c=0;c<4;c++){const m=roundedMesh(.42,.16,.07,[mats.panel3,mats.blue,mats.violet,mats.coral][(r+c)%4],.46,.025,.008);m.position.set(.40+c*.58,.56-r*.42,.46);donutCard.add(m);miniStacks.push(m)}
 
 // 5. Heatmap / matrix.
 const heatCard=makeCard(3.55,-1.68,6.15,2.88,mats.amber);addTopAccent(heatCard,6.15,mats.amber);scene.add(heatCard);
 const cells=[],heatMats=[mats.panel3,mats.blue,mats.violet,mats.coral,mats.amber,mats.cyan];
-for(let r=0;r<4;r++)for(let c=0;c<8;c++){const m=roundedMesh(.43,.36,.10,heatMats[(r*3+c*2)%heatMats.length],.48,.03,.01);m.position.set(-2.05+c*.55,.70-r*.48,0);m.userData.r=r;m.userData.c=c;heatCard.add(m);cells.push(m)}
-const sideRails=[];for(let i=0;i<4;i++){const m=roundedMesh(.82,.15,.07,i===1?mats.ice:mats.panel3,.48,.025,.008);m.position.set(2.18,.62-i*.43,0);heatCard.add(m);sideRails.push(m)}
-const sweep=roundedMesh(.12,1.86,.055,mats.amber,.58,.025,.008);sweep.position.set(-2.13,0,0);heatCard.add(sweep);
+for(let r=0;r<4;r++)for(let c=0;c<8;c++){const m=roundedMesh(.43,.36,.10,heatMats[(r*3+c*2)%heatMats.length],.48,.03,.01);m.position.set(-2.05+c*.55,.70-r*.48,.48);m.userData.r=r;m.userData.c=c;heatCard.add(m);cells.push(m)}
+const sideRails=[];for(let i=0;i<4;i++){const m=roundedMesh(.82,.15,.07,i===1?mats.ice:mats.panel3,.48,.025,.008);m.position.set(2.18,.62-i*.43,.48);heatCard.add(m);sideRails.push(m)}
+const sweep=roundedMesh(.12,1.86,.055,mats.amber,.58,.025,.008);sweep.position.set(-2.13,0,.58);heatCard.add(sweep);
 
 function updateLine(t){
  const pts=[],settle=settleWindow(t);
