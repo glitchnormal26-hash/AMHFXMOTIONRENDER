@@ -1,0 +1,103 @@
+name: Calendar Holidays 10 — 4K Render
+
+on:
+  push:
+    branches:
+      - work/calendar-holidays-10-20260920
+    paths:
+      - 'projects/calendar-holidays-10/**'
+      - '.github/workflows/calendar-holidays-10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: calendar-holidays-10-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Repository checks
+        run: npm run check
+      - name: Browser-scene syntax check
+        run: node --check projects/calendar-holidays-10/calendar-scenes.js
+
+  render:
+    needs: validate
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        concept: [1,2,3,4,5,6,7,8,9,10]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - run: npm ci
+      - name: Render concept ${{ matrix.concept }} — 10s 4K MP4
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p output/calendar-holidays
+          BASE="file://$(pwd)/projects/calendar-holidays-10/index.html"
+          env URL="${BASE}?clean=1&concept=${{ matrix.concept }}" \
+            QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 CRF=18 PRESET=medium \
+            OUT_VIDEO="output/calendar-holidays/calendar-${{ matrix.concept }}.mp4" \
+            npm run render:ffmpeg
+      - name: Verify technical contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="output/calendar-holidays/calendar-${{ matrix.concept }}.verify.json"
+          node --input-type=module - "$FILE" <<'NODE'
+          import fs from 'node:fs';
+          const file=process.argv[2];
+          const r=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(r.status!=='TECHNICAL_VERIFIED') throw new Error('not technically verified');
+          if(r.video?.codec_name!=='h264') throw new Error('codec='+r.video?.codec_name);
+          if(r.video?.width!==3840||r.video?.height!==2160) throw new Error('size mismatch');
+          if(Math.abs(Number(r.duration)-10)>0.20) throw new Error('duration='+r.duration);
+          if(r.audio!==null) throw new Error('unexpected audio');
+          NODE
+      - name: Extract representative visual evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          IN="output/calendar-holidays/calendar-${{ matrix.concept }}.mp4"
+          ffmpeg -y -i "$IN" -vf "select='eq(n,24)+eq(n,102)+eq(n,156)+eq(n,234)+eq(n,285)'" -fps_mode vfr \
+            "output/calendar-holidays/calendar-${{ matrix.concept }}-frame-%02d.png"
+          ffprobe -v error -show_entries format=duration,bit_rate,size -show_entries stream=codec_name,width,height,r_frame_rate \
+            -of json "$IN" > "output/calendar-holidays/calendar-${{ matrix.concept }}-probe.json"
+          sha256sum "$IN" > "output/calendar-holidays/calendar-${{ matrix.concept }}.sha256"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: calendar-holiday-4k-${{ matrix.concept }}
+          path: |
+            output/calendar-holidays/calendar-${{ matrix.concept }}.mp4
+            output/calendar-holidays/calendar-${{ matrix.concept }}.verify.json
+            output/calendar-holidays/calendar-${{ matrix.concept }}-probe.json
+            output/calendar-holidays/calendar-${{ matrix.concept }}.sha256
+            output/calendar-holidays/calendar-${{ matrix.concept }}-frame-*.png
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
