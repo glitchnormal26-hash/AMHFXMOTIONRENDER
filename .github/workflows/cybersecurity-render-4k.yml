@@ -1,0 +1,66 @@
+name: Cybersecurity 4K Medium Render
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - render/cybersecurity-greenscreen-10
+    paths:
+      - '.github/workflows/cybersecurity-render-4k.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cybersecurity-4k-medium-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Enable Chromium user namespace
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
+      - name: Install repository dependencies
+        run: npm ci
+
+      - name: Install portable Chromium
+        run: npm install --no-save --package-lock=false @sparticuz/chromium@153.0.0
+
+      - name: Render 10 cybersecurity clips in 4K medium bitrate
+        run: |
+          mkdir -p tmp output/cybersecurity
+          TMPDIR="$PWD/tmp" node project/cybersecurity/render-batch.mjs
+
+      - name: Verify rendered MP4 files
+        run: |
+          python3 project/cybersecurity/verify.py
+          for f in output/cybersecurity/*.mp4; do
+            echo "=== $f ==="
+            ffprobe -v error               -show_entries stream=codec_name,width,height,r_frame_rate,bit_rate               -show_entries format=duration,bit_rate,size               -of default=noprint_wrappers=1 "$f"
+          done
+
+      - name: Upload 4K MP4 artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: cybersecurity-4k-medium-16m
+          path: |
+            output/cybersecurity/*.mp4
+            output/cybersecurity/*.render.log
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
