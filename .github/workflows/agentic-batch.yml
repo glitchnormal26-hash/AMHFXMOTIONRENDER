@@ -35,8 +35,8 @@ jobs:
           gzip -dc /tmp/agentic-batch.html.gz > /tmp/agentic-batch.html
           test -s /tmp/agentic-batch.html
           grep -q 'window.OPENER' /tmp/agentic-batch.html
-          grep -q 'Autonomous Task Orchestrator' /tmp/agentic-batch.html
-          grep -q 'Agentic Data Analyst' /tmp/agentic-batch.html
+          grep -q 'AUTONOMOUS ORCHESTRATION' /tmp/agentic-batch.html
+          grep -q 'AGENTIC DATA ANALYST' /tmp/agentic-batch.html
 
   render:
     needs: validate
