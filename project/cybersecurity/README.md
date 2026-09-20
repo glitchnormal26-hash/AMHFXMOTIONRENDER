@@ -25,3 +25,7 @@ The branch-local exporter adds optional VIDEO_BITRATE, VIDEO_MAXRATE, VIDEO_BUFS
 Styleframe inspection and technical decoding are separate from normal-speed visual playback. The delivery manifest explicitly records whether that latter review has occurred. Technical reports do not constitute `FINAL_VERIFIED` creative approval.
 
 All generated media and QA files stay under ignored `output/`. This project belongs on its render branch, not on `main`.
+
+## Panduan berbahasa Indonesia
+
+Lihat [Skill, Cara Kerja, dan Optimasi](SKILL-CARA-KERJA-OPTIMASI.md) untuk kemampuan yang digunakan, alur produksi, konfigurasi, hasil pengukuran, dan batas verifikasi proyek.
