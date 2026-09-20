@@ -237,21 +237,21 @@ jobs:
       - name: Render concept in 4K
         run: |
           mkdir -p output
-          env URL="file://$GITHUB_WORKSPACE/render/ai-automation-10/index.html?clean=1&concept=\${{ matrix.concept }}" \
+          env URL="file://$GITHUB_WORKSPACE/render/ai-automation-10/index.html?clean=1&concept=${{ matrix.concept }}" \
             QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 CRF=12 PRESET=veryfast \
-            OUT_VIDEO="output/source-\${{ matrix.slug }}.mp4" npm run render:ffmpeg
+            OUT_VIDEO="output/source-${{ matrix.slug }}.mp4" npm run render:ffmpeg
       - name: Encode medium-bitrate delivery
         run: |
-          ffmpeg -y -i "output/source-\${{ matrix.slug }}.mp4" -an \
+          ffmpeg -y -i "output/source-${{ matrix.slug }}.mp4" -an \
             -c:v libx264 -preset medium -b:v 20M -maxrate 24M -bufsize 40M \
             -pix_fmt yuv420p -movflags +faststart \
-            "output/\${{ matrix.slug }}-4k.mp4"
-          rm -f "output/source-\${{ matrix.slug }}.mp4"
+            "output/${{ matrix.slug }}-4k.mp4"
+          rm -f "output/source-${{ matrix.slug }}.mp4"
       - name: Verify delivery and create QA sheet
         run: |
           ffprobe -v error \
             -show_entries format=duration,bit_rate:stream=index,codec_type,codec_name,width,height,r_frame_rate,bit_rate \
-            -of json "output/\${{ matrix.slug }}-4k.mp4" > "output/\${{ matrix.slug }}-ffprobe.json"
+            -of json "output/${{ matrix.slug }}-4k.mp4" > "output/${{ matrix.slug }}-ffprobe.json"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const slug = process.env.SLUG;
@@ -264,21 +264,21 @@ jobs:
           const d = Number(r.format?.duration || 0);
           if (Math.abs(d - 6) > 0.25) throw new Error('duration=' + d);
           NODE
-          ffmpeg -y -i "output/\${{ matrix.slug }}-4k.mp4" \
-            -vf "fps=1,scale=960:-1,tile=3x2" -frames:v 1 "output/\${{ matrix.slug }}-contact.png"
-          sha256sum "output/\${{ matrix.slug }}-4k.mp4" > "output/\${{ matrix.slug }}-sha256.txt"
+          ffmpeg -y -i "output/${{ matrix.slug }}-4k.mp4" \
+            -vf "fps=1,scale=960:-1,tile=3x2" -frames:v 1 "output/${{ matrix.slug }}-contact.png"
+          sha256sum "output/${{ matrix.slug }}-4k.mp4" > "output/${{ matrix.slug }}-sha256.txt"
         env:
-          SLUG: \${{ matrix.slug }}
+          SLUG: ${{ matrix.slug }}
       - name: Upload individual 4K deliverable
         uses: actions/upload-artifact@v7
         with:
-          name: ai-automation-\${{ matrix.concept }}-\${{ matrix.slug }}-4k
+          name: ai-automation-${{ matrix.concept }}-${{ matrix.slug }}-4k
           path: |
-            output/\${{ matrix.slug }}-4k.mp4
-            output/\${{ matrix.slug }}-ffprobe.json
-            output/\${{ matrix.slug }}-contact.png
-            output/\${{ matrix.slug }}-sha256.txt
-            output/source-\${{ matrix.slug }}.verify.json
+            output/${{ matrix.slug }}-4k.mp4
+            output/${{ matrix.slug }}-ffprobe.json
+            output/${{ matrix.slug }}-contact.png
+            output/${{ matrix.slug }}-sha256.txt
+            output/source-${{ matrix.slug }}.verify.json
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
