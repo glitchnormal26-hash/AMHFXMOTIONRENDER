@@ -1,0 +1,119 @@
+name: Agentic AI Batch 4K
+
+on:
+  pull_request:
+    paths:
+      - 'projects/agentic-ai/**'
+      - '.github/workflows/agentic-batch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agentic-ai-batch-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Decode batch scene
+        run: |
+          base64 -d projects/agentic-ai/batch.html.gz.b64 | gzip -dc > /tmp/agentic-batch.html
+          test -s /tmp/agentic-batch.html
+          grep -q 'window.OPENER' /tmp/agentic-batch.html
+          grep -q 'Autonomous Task Orchestrator' /tmp/agentic-batch.html
+          grep -q 'Agentic Data Analyst' /tmp/agentic-batch.html
+
+  render:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        concept: [1,2,3,4,5,6,7,8,9,10]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Decode scene source
+        run: |
+          base64 -d projects/agentic-ai/batch.html.gz.b64 | gzip -dc > /tmp/agentic-batch.html
+          test -s /tmp/agentic-batch.html
+      - name: Render concept ${{ matrix.concept }} in 4K
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          env \
+            URL="file:///tmp/agentic-batch.html?clean=1&concept=${{ matrix.concept }}" \
+            QUALITY=final \
+            FPS=30 \
+            WIDTH=3840 \
+            HEIGHT=2160 \
+            CRF=10 \
+            PRESET=medium \
+            OUT_VIDEO="output/agentic-c${{ matrix.concept }}-4k.mp4" \
+            npm run render:ffmpeg
+      - name: Verify technical contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          C="${{ matrix.concept }}"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const c = process.env.C;
+          const r = JSON.parse(fs.readFileSync(`output/agentic-c${c}-4k.verify.json`, 'utf8'));
+          if (r.status !== 'TECHNICAL_VERIFIED') throw new Error(`status=${r.status}`);
+          if (r.video?.codec_name !== 'h264') throw new Error(`codec=${r.video?.codec_name}`);
+          if (r.video?.width !== 3840 || r.video?.height !== 2160) throw new Error(`size=${r.video?.width}x${r.video?.height}`);
+          if (Math.abs(Number(r.duration) - 8) > 0.2) throw new Error(`duration=${r.duration}`);
+          if (r.audio !== null) throw new Error('unexpected audio stream');
+          NODE
+          ffprobe -v error \
+            -show_entries format=duration,size,bit_rate \
+            -show_entries stream=index,codec_type,codec_name,width,height,r_frame_rate,bit_rate \
+            -of json "output/agentic-c${C}-4k.mp4" > "output/agentic-c${C}-4k.metadata.json"
+        env:
+          C: ${{ matrix.concept }}
+      - name: Extract five QA frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          C="${{ matrix.concept }}"
+          ffmpeg -y -i "output/agentic-c${C}-4k.mp4" \
+            -vf "select='eq(n,18)+eq(n,69)+eq(n,126)+eq(n,183)+eq(n,228)',scale=1920:-2" \
+            -fps_mode vfr "output/agentic-c${C}-frame-%02d.png"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: agentic-ai-c${{ matrix.concept }}-4k
+          path: |
+            output/agentic-c${{ matrix.concept }}-4k.mp4
+            output/agentic-c${{ matrix.concept }}-4k.verify.json
+            output/agentic-c${{ matrix.concept }}-4k.metadata.json
+            output/agentic-c${{ matrix.concept }}-frame-*.png
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
