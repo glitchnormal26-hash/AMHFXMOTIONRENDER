@@ -183,6 +183,11 @@ function buildFfmpegArgs(videoInput, duration) {
       outVideo
     );
   }
+  const outputIndex = ff.length - 1;
+  const rate = process.env.VIDEO_BITRATE;
+  const extra = ['-threads', process.env.ENCODE_THREADS || '4'];
+  if (rate) extra.push('-b:v', rate, '-maxrate', process.env.VIDEO_MAXRATE || rate, '-bufsize', process.env.VIDEO_BUFSIZE || '24M');
+  ff.splice(outputIndex, 0, ...extra);
   return ff;
 }
 

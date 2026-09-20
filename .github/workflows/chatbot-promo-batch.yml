@@ -1,0 +1,75 @@
+name: Render 10 AI chatbot promos in 4K
+on:
+  push:
+    branches: ['render/ai-chatbot-promo-10']
+    paths:
+      - 'projects/ai-chatbot-promo/**'
+      - 'scripts/export-mp4.mjs'
+      - '.github/workflows/chatbot-promo-batch.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: chatbot-promo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        include:
+          - { id: 1, name: '01-instant-support' }
+          - { id: 2, name: '02-sales-qualification' }
+          - { id: 3, name: '03-internal-knowledge' }
+          - { id: 4, name: '04-unified-channels' }
+          - { id: 5, name: '05-human-handoff' }
+          - { id: 6, name: '06-chatbot-analytics' }
+          - { id: 7, name: '07-team-access' }
+          - { id: 8, name: '08-multilingual-support' }
+          - { id: 9, name: '09-automated-resolution' }
+          - { id: 10, name: '10-conversation-recap' }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install render dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-urw-base35
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          npm ci
+          npx puppeteer browsers install chrome
+      - name: Check sources
+        run: npm run check
+      - name: Render native 4K MP4
+        env:
+          CONCEPT: ${{ matrix.id }}
+          NAME: ${{ matrix.name }}
+        run: |
+          mkdir -p output/chatbot
+          URL="file://$PWD/projects/ai-chatbot-promo/scene.html?concept=$CONCEPT" \
+          WIDTH=3840 HEIGHT=2160 FPS=30 QUALITY=final CRF=18 PRESET=medium \
+          VIDEO_BITRATE=12M VIDEO_MAXRATE=18M VIDEO_BUFSIZE=24M ENCODE_THREADS=2 \
+          OUT_VIDEO="output/chatbot/$NAME.mp4" node scripts/export-mp4.mjs
+      - name: Validate streams and extract encoded evidence
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          ffmpeg -v error -i "output/chatbot/$NAME.mp4" -f null -
+          ffprobe -v error -count_frames -show_entries stream=codec_name,width,height,r_frame_rate,nb_read_frames,bit_rate,pix_fmt:format=duration,size -of json "output/chatbot/$NAME.mp4" > "output/chatbot/$NAME.probe.json"
+          for T in 0.5 3.2 5.5 8 11.5; do
+            ffmpeg -v error -ss "$T" -i "output/chatbot/$NAME.mp4" -frames:v 1 -vf scale=960:540 "output/chatbot/$NAME-$T.jpg"
+          done
+          sha256sum "output/chatbot/$NAME.mp4" > "output/chatbot/$NAME.sha256"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}-4k
+          path: output/chatbot/*
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error

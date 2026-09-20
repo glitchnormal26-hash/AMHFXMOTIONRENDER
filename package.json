@@ -27,5 +27,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "^153.0.0"
   }
 }
