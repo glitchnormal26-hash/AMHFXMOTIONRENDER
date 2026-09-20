@@ -6,7 +6,7 @@ Preview `scene.html?clip=1` through `?clip=10`. Use `OPENER.seek(seconds)` for d
 
 ## Render
 
-Use Node 22+, FFmpeg and ffprobe. Install the repository dependencies with `npm ci`. The portable browser adapter additionally requires `npm install --no-save --package-lock=false @sparticuz/chromium`. On hosts with Chrome already installed, use the repository exporter directly and omit the adapter.
+Use Node 22+, FFmpeg and ffprobe. Install the repository dependencies with `npm ci`. The portable browser adapter additionally requires `npm install --no-save --package-lock=false @sparticuz/chromium@153.0.0`. On hosts with Chrome already installed, use the repository exporter directly and omit the adapter.
 
 ```bash
 mkdir -p tmp output/cybersecurity

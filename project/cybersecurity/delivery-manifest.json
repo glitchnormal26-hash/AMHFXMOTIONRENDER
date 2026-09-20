@@ -29,7 +29,9 @@
       9.967
     ],
     "normal_speed_visual_playback": "NOT_VERIFIED",
-    "status": "STILL_FRAMES_REVIEWED; TECHNICAL_ENCODE_IN_PROGRESS",
-    "notes": "Contact sheets reviewed; lower shield screws and upper biometric screw corrected, exterior key arcs removed. No claim of FINAL_VERIFIED."
+    "status": "TECHNICAL_VERIFIED; STILL_FRAMES_REVIEWED",
+    "notes": "Contact sheets reviewed; lower shield screws and upper biometric screw corrected, exterior key arcs removed. No claim of FINAL_VERIFIED.",
+    "automated_playback": "All ten encoded videos played to the end at rate 1 with 300 frames and no browser errors.",
+    "verification": "All ten files passed 3840x2160, 30 fps, 300 frames, 10.000-second duration, complete FFmpeg decode, green-background and nonstatic-motion checks."
   }
 }
