@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "project": "Cybersecurity greenscreen: 10 individual loops",
+  "source_repository": "glitchnormal26-hash/AMHFXMOTIONRENDER",
+  "source_commit": "a01a4c1a610cdde8c9bc8d6f0630347e631b0e20",
+  "creative_intent": "Stock compositing elements: stable silhouettes, no branding, internal micro-motion and broad negative space.",
+  "visual_language": "Beveled navy alloy with pale-blue circuit detail; unlit pure-green background.",
+  "camera_mode": "LOCKED_INTENTIONAL",
+  "camera_reason": "User requests internal micro-motion and negative space for greenscreen compositing.",
+  "typography": "NONE",
+  "audio": "NONE",
+  "output": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 30,
+    "seconds": 10,
+    "frames": 300,
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "target_bitrate": "16M",
+    "maxrate": "20M"
+  },
+  "review": {
+    "styleframes_inspected_per_clip": [
+      0,
+      2.5,
+      5,
+      7.5,
+      9.967
+    ],
+    "normal_speed_visual_playback": "NOT_VERIFIED",
+    "status": "STILL_FRAMES_REVIEWED; TECHNICAL_ENCODE_IN_PROGRESS",
+    "notes": "Contact sheets reviewed; lower shield screws and upper biometric screw corrected, exterior key arcs removed. No claim of FINAL_VERIFIED."
+  }
+}

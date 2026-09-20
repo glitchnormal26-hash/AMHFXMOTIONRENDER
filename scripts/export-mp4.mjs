@@ -131,6 +131,16 @@ if (requireAudio && !finalAudio && !voiceover && !sfx && !ambience) {
 
 function buildFfmpegArgs(videoInput, duration) {
   const ff = ["-y", ...videoInput];
+  const deliveryOptions = () => {
+    if (process.env.VIDEO_BITRATE) {
+      for (let i = ff.indexOf("-crf"); i >= 0; i = ff.indexOf("-crf")) ff.splice(i, 2);
+      ff.splice(ff.length - 1, 0, "-b:v", process.env.VIDEO_BITRATE,
+        "-maxrate", process.env.VIDEO_MAXRATE || process.env.VIDEO_BITRATE,
+        "-bufsize", process.env.VIDEO_BUFSIZE || "32M");
+    }
+    if (process.env.ENCODE_THREADS) ff.splice(ff.length - 1, 0, "-threads", process.env.ENCODE_THREADS);
+    return ff;
+  };
 
   if (finalAudio) {
     ff.push("-i", finalAudio);
@@ -144,7 +154,7 @@ function buildFfmpegArgs(videoInput, duration) {
       "-movflags", "+faststart",
       outVideo
     );
-    return ff;
+    return deliveryOptions();
   }
 
   const audioInputs = [];
@@ -183,7 +193,7 @@ function buildFfmpegArgs(videoInput, duration) {
       outVideo
     );
   }
-  return ff;
+  return deliveryOptions();
 }
 
 async function waitForProcess(child, label) {
