@@ -1,0 +1,71 @@
+{
+  "project": "AI Agent SaaS 10x Motion Batch",
+  "delivery": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 24,
+    "duration_seconds": 8,
+    "codec": "h264",
+    "target_video_bitrate_mbps": 18,
+    "max_video_bitrate_mbps": 24,
+    "audio": false
+  },
+  "direction": {
+    "ui": "iOS-inspired brand-neutral SaaS UX/UI",
+    "micro_motion": true,
+    "branding_visible": false,
+    "continuous_world": true
+  },
+  "concepts": [
+    [
+      "01-agent-inbox",
+      "Agent Inbox",
+      "Route every request"
+    ],
+    [
+      "02-research-map",
+      "Research Map",
+      "From question to evidence"
+    ],
+    [
+      "03-meeting-copilot",
+      "Meeting Copilot",
+      "Turn talk into action"
+    ],
+    [
+      "04-revenue-agent",
+      "Revenue Agent",
+      "Qualify. Personalize. Book."
+    ],
+    [
+      "05-support-resolution",
+      "Support Agent",
+      "Resolve with context"
+    ],
+    [
+      "06-finance-ops",
+      "Finance Ops",
+      "Close the loop faster"
+    ],
+    [
+      "07-devops-incident",
+      "Incident Agent",
+      "Detect. Explain. Repair."
+    ],
+    [
+      "08-personal-workflow",
+      "Daily Agent",
+      "One plan from every signal"
+    ],
+    [
+      "09-agent-team",
+      "Agent Team",
+      "Specialists that hand off"
+    ],
+    [
+      "10-knowledge-agent",
+      "Knowledge Agent",
+      "Ask once. Trace every answer."
+    ]
+  ]
+}
