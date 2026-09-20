@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calendar Holiday Motion Collection</title>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+:root{
+  --bg:#0b1020;--bg2:#171d33;--ink:#f7f5ef;--muted:#b7bfd1;--accent:#6ee7ff;--accent2:#8b5cf6;
+  --paper:#f7f4ec;--paperInk:#101522;--line:rgba(255,255,255,.16);--shadow:rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070d}
+body{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:var(--bg)}
+#camera{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#world{position:absolute;inset:0;overflow:hidden;background:
+  radial-gradient(ellipse at 18% 12%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 34%),
+  radial-gradient(ellipse at 82% 88%,color-mix(in srgb,var(--accent2) 16%,transparent),transparent 42%),
+  linear-gradient(145deg,var(--bg),var(--bg2));}
+#world:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.1;mix-blend-mode:soft-light;background-image:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 1px,transparent 1px 4px);
+  mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent)}
+.scene{position:absolute;inset:0}
+.kicker{font-size:24px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.event-title{font-size:72px;line-height:.95;letter-spacing:-.055em;font-weight:760}
+.meta{font-size:24px;line-height:1.35;color:var(--muted)}
+.date-number{font-variant-numeric:tabular-nums;font-weight:800;line-height:.8;letter-spacing:-.075em}
+.calendar{position:absolute;isolation:isolate}
+.calendar:before{content:"";position:absolute;inset:18px -18px -22px 20px;border-radius:inherit;background:var(--shadow);filter:blur(28px);z-index:-2}
+.paper{background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(240,238,229,.95));color:var(--paperInk);box-shadow:
+  0 28px 90px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.75),inset 0 -1px rgba(0,0,0,.06)}
+.glass{background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.055));backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.24);box-shadow:0 38px 110px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.28)}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.micro-line{position:absolute;height:2px;border-radius:99px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.7;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--accent) 60%,transparent))}
+.orbit{fill:none;stroke:rgba(255,255,255,.22);stroke-width:2}
+.draw{stroke-dasharray:1;stroke-dashoffset:1}
+.soft{filter:blur(18px)}
+.glow{filter:drop-shadow(0 0 24px color-mix(in srgb,var(--accent) 46%,transparent))}
+.depth-fg{position:absolute;pointer-events:none;filter:blur(1.5px)}
+.depth-bg{position:absolute;pointer-events:none;opacity:.5}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 10px;font-size:16px;line-height:1}
+.month-grid span{display:grid;place-items:center;height:28px;border-radius:9px;color:rgba(20,24,33,.62)}
+.month-grid .hot{color:#fff;background:var(--accent2);box-shadow:0 8px 18px color-mix(in srgb,var(--accent2) 28%,transparent);font-weight:800}
+.mini-label{font-size:18px;letter-spacing:.1em;text-transform:uppercase;font-weight:760}
+.debug{display:none;position:fixed;z-index:20;left:24px;bottom:24px;padding:10px 14px;background:#000c;color:#fff;font:14px monospace;border-radius:10px}
+.debug.on{display:block}
+
+/* 01 */
+.c1 .calendar{left:180px;top:166px;width:720px;height:744px;border-radius:42px}
+.c1 .flip-cap{height:116px;padding:40px 50px;border-radius:42px 42px 0 0;background:linear-gradient(120deg,#071727,#0f2d45);color:#dff8ff;border-bottom:1px solid rgba(255,255,255,.1)}
+.c1 .flip-page{position:absolute;left:30px;right:30px;top:116px;bottom:30px;border-radius:0 0 30px 30px;padding:62px 54px;transform-origin:50% 4%;overflow:hidden}
+.c1 .flip-page .date-number{font-size:330px}
+.c1 .copy{position:absolute;left:1050px;top:264px;width:650px}
+.c1 .count-ring{position:absolute;right:115px;top:110px;width:600px;height:600px}
+.c1 .count-ring path{fill:none;stroke-linecap:round}
+.c1 .tick{position:absolute;width:8px;height:28px;border-radius:8px;background:linear-gradient(var(--accent),transparent);transform-origin:4px 260px}
+
+/* 02 */
+.c2 .ribbon-wrap{position:absolute;left:94px;top:50px;width:1000px;height:980px}
+.c2 .calendar{right:176px;top:190px;width:610px;height:700px;border-radius:38px;padding:52px}
+.c2 .calendar .date-number{font-size:300px;color:#b91c58}
+.c2 .ribbon-copy{position:absolute;left:160px;top:650px;width:730px}
+.c2 .petal{position:absolute;width:38px;height:72px;border-radius:70% 30% 70% 30%;background:linear-gradient(160deg,#ffb2ca,#fb5a8c 64%,#a91954);box-shadow:0 18px 35px rgba(120,20,65,.25)}
+
+/* 03 */
+.c3 .eco-blob{position:absolute;left:110px;top:90px;width:980px;height:900px}
+.c3 .calendar{right:160px;top:230px;width:650px;height:620px;border-radius:120px 36px 120px 36px;padding:56px;background:linear-gradient(150deg,#f6f3df,#dfe9d0)}
+.c3 .calendar .date-number{font-size:276px;color:#214e3f}
+.c3 .copy{position:absolute;left:190px;top:170px;width:630px}
+.c3 .leaf{transform-origin:center}
+
+/* 04 */
+.c4 .industrial-grid{position:absolute;inset:-120px;transform:rotate(-7deg);opacity:.3;background-image:
+ linear-gradient(rgba(255,102,51,.34) 1px,transparent 1px),linear-gradient(90deg,rgba(255,102,51,.34) 1px,transparent 1px);background-size:86px 86px}
+.c4 .slash{position:absolute;left:-180px;top:365px;width:2360px;height:240px;transform:rotate(-7deg);background:linear-gradient(90deg,#ff4d22,#f9a11b);box-shadow:0 38px 90px rgba(0,0,0,.35)}
+.c4 .calendar{left:208px;top:155px;width:760px;height:770px;border-radius:24px;padding:62px;background:#ece9de;color:#161616}
+.c4 .calendar .date-number{font-size:322px}
+.c4 .copy{position:absolute;left:1110px;top:270px;width:640px}
+.c4 .slot{position:absolute;width:160px;height:56px;border-radius:12px;background:#111;color:#fff;display:grid;place-items:center;font:700 22px/1 ui-monospace,monospace;letter-spacing:.08em}
+
+/* 05 */
+.c5 .glass-shell{position:absolute;left:235px;top:130px;width:1450px;height:820px;border-radius:90px 28px 90px 28px;overflow:hidden}
+.c5 .calendar{left:215px;top:180px;width:720px;height:720px;border-radius:72px 22px 72px 22px;padding:58px}
+.c5 .calendar .date-number{font-size:302px}
+.c5 .copy{position:absolute;right:205px;top:300px;width:560px}
+.c5 .vine{fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* 06 */
+.c6 .flag-ribbon{position:absolute;left:-300px;width:2550px;height:310px;transform:skewY(-6deg);filter:drop-shadow(0 34px 48px rgba(0,0,0,.24))}
+.c6 .flag-ribbon.red{top:180px;background:linear-gradient(90deg,#8c0016,#f01833 42%,#ff5d6b 65%,#9b001b)}
+.c6 .flag-ribbon.white{top:496px;background:linear-gradient(90deg,#d7d2c5,#fff 48%,#ece5d6)}
+.c6 .calendar{left:190px;top:180px;width:680px;height:720px;border-radius:40px;padding:54px}
+.c6 .calendar .date-number{font-size:306px;color:#c8102e}
+.c6 .copy{position:absolute;left:1060px;top:275px;width:630px}
+
+/* 07 */
+.c7 .batik-field{position:absolute;inset:0;opacity:.58}
+.c7 .calendar{left:650px;top:152px;width:620px;height:776px;border-radius:170px 30px 170px 30px;padding:58px;background:linear-gradient(150deg,#f3e3b1,#b79248);color:#20180f;box-shadow:0 48px 120px rgba(0,0,0,.36)}
+.c7 .calendar .date-number{font-size:286px}
+.c7 .copy{position:absolute;left:156px;top:294px;width:430px}
+.c7 .side-copy{position:absolute;right:140px;bottom:180px;width:410px;text-align:right}
+
+/* 08 */
+.c8 .beam{position:absolute;left:790px;top:-80px;width:400px;height:1240px;transform:skewX(-8deg);background:linear-gradient(90deg,transparent,rgba(255,193,90,.08),rgba(255,193,90,.4),rgba(255,255,220,.75),rgba(255,193,90,.18),transparent);filter:blur(8px)}
+.c8 .monument{position:absolute;left:770px;bottom:85px;width:380px;height:780px}
+.c8 .calendar{left:170px;top:235px;width:560px;height:600px;border-radius:20px;padding:50px;border-left:8px solid #e7ad52}
+.c8 .calendar .date-number{font-size:270px;color:#ffd18c}
+.c8 .copy{position:absolute;right:170px;top:300px;width:580px}
+
+/* 09 */
+.c9 .flower-stage{position:absolute;right:-50px;top:25px;width:1050px;height:1020px}
+.c9 .petal-big{position:absolute;border-radius:72% 28% 62% 38% / 70% 34% 66% 30%;transform-origin:30% 76%;box-shadow:inset 0 2px rgba(255,255,255,.35),0 32px 66px rgba(64,10,44,.15)}
+.c9 .calendar{left:190px;top:170px;width:650px;height:740px;border-radius:48px;padding:54px}
+.c9 .calendar .date-number{font-size:300px;color:#7a284f}
+.c9 .copy{position:absolute;left:945px;top:390px;width:650px}
+
+/* 10 */
+.c10 .folded-star{position:absolute;right:120px;top:140px;width:780px;height:780px}
+.c10 .calendar{left:175px;top:185px;width:680px;height:710px;border-radius:38px;padding:56px;background:linear-gradient(150deg,#f4ead2,#e6d5ae)}
+.c10 .calendar .date-number{font-size:302px;color:#17392e}
+.c10 .copy{position:absolute;left:1010px;top:650px;width:650px}
+.c10 .sprig{position:absolute;width:14px;height:190px;border-radius:90% 10% 90% 10%;background:linear-gradient(#d9bd79,#806118);transform-origin:50% 100%}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camera"><div id="world"></div></div>
+</div>
+<div id="debug" class="debug">0.00s</div>
+<script src="./calendar-scenes.js"></script>
+</body>
+</html>
