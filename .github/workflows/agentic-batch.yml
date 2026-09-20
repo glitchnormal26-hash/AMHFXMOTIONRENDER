@@ -30,7 +30,7 @@ jobs:
         run: npm run check
       - name: Decode batch scene
         run: |
-          cat projects/agentic-ai/batch.part* | base64 -d > /tmp/agentic-batch.html.gz
+          cat projects/agentic-ai/batch.part01 projects/agentic-ai/batch.part02 projects/agentic-ai/batch.part03a projects/agentic-ai/batch.part03b projects/agentic-ai/batch.part03c projects/agentic-ai/batch.part03d projects/agentic-ai/batch.part03e projects/agentic-ai/batch.part04 projects/agentic-ai/batch.part05 projects/agentic-ai/batch.part06 projects/agentic-ai/batch.part07 | base64 -d > /tmp/agentic-batch.html.gz
           echo 'af01f425c1e44bf22f79d8026c0f514280ff376a137bc5271840d11b917320b9  /tmp/agentic-batch.html.gz' | sha256sum -c -
           gzip -dc /tmp/agentic-batch.html.gz > /tmp/agentic-batch.html
           test -s /tmp/agentic-batch.html
@@ -62,7 +62,7 @@ jobs:
         run: npm ci
       - name: Decode scene source
         run: |
-          cat projects/agentic-ai/batch.part* | base64 -d > /tmp/agentic-batch.html.gz
+          cat projects/agentic-ai/batch.part01 projects/agentic-ai/batch.part02 projects/agentic-ai/batch.part03a projects/agentic-ai/batch.part03b projects/agentic-ai/batch.part03c projects/agentic-ai/batch.part03d projects/agentic-ai/batch.part03e projects/agentic-ai/batch.part04 projects/agentic-ai/batch.part05 projects/agentic-ai/batch.part06 projects/agentic-ai/batch.part07 | base64 -d > /tmp/agentic-batch.html.gz
           echo 'af01f425c1e44bf22f79d8026c0f514280ff376a137bc5271840d11b917320b9  /tmp/agentic-batch.html.gz' | sha256sum -c -
           gzip -dc /tmp/agentic-batch.html.gz > /tmp/agentic-batch.html
           test -s /tmp/agentic-batch.html
