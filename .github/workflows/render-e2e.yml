@@ -232,7 +232,7 @@ jobs:
         run: npm ci
       - name: Reconstruct temporary render source
         run: |
-          cat render/ai-automation-10/source.tgz.b64.part* | base64 -d | tar -xzf - -C render/ai-automation-10
+          cat render/ai-automation-10/source2.b64.part* | base64 -d | tar -xzf - -C render/ai-automation-10
           node --check render/ai-automation-10/app.js
       - name: Render concept in 4K
         run: |
