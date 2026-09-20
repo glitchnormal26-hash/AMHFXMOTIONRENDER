@@ -62,7 +62,7 @@ function scene1(){
 }
 function scene2(){
  world.innerHTML=`<div class="scene">
-   <div class="ribbon-wrap">${svgPaths('<defs><linearGradient id="r" x1="0" x2="1"><stop stop-color="#ffb1ca"/><stop offset=".45" stop-color="#ff5a8c"/><stop offset="1" stop-color="#8f164b"/></linearGradient></defs><path class="ribbon-main" d="M520 820C155 590 80 385 235 238C385 96 552 222 560 390C570 215 762 90 906 244C1070 420 934 651 520 820Z" fill="none" stroke="url(#r)" stroke-width="92" stroke-linecap="round"/><path class="draw" pathLength="1" d="M515 820C365 710 265 630 205 535" fill="none" stroke="#ffd4e2" stroke-width="8" stroke-linecap="round"/>','','ribbon-svg')}</div>
+   <div class="ribbon-wrap">${svgPaths('<defs><linearGradient id="r" x1="0" x2="1"><stop stop-color="#ffb1ca"/><stop offset=".45" stop-color="#ff5a8c"/><stop offset="1" stop-color="#8f164b"/></linearGradient></defs><path class="ribbon-main" d="M520 820C155 590 80 385 235 238C385 96 552 222 560 390C570 215 762 90 906 244C1070 420 934 651 520 820Z" fill="none" stroke="url(#r)" stroke-width="92" stroke-linecap="round"/><path class="draw" pathLength="1" d="M515 820C365 710 265 630 205 535" fill="none" stroke="#ffd4e2" stroke-width="8" stroke-linecap="round"/>'0 0 1000 1000','ribbon-svg')}</div>
    ${calendarCard(14)}
    <div class="ribbon-copy">${infoBlock()}</div>
    <div class="petal p1" style="left:1110px;top:130px;transform:rotate(-26deg)"></div><div class="petal p2" style="left:1600px;top:740px;transform:rotate(34deg) scale(.75)"></div>
@@ -71,7 +71,7 @@ function scene2(){
 }
 function scene3(){
  world.innerHTML=`<div class="scene">
-   <div class="eco-blob">${svgPaths('<defs><linearGradient id="eco" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b9dc80"/><stop offset=".52" stop-color="#5d9f77"/><stop offset="1" stop-color="#1d5d4c"/></linearGradient></defs><path class="blob" d="M520 72C740 56 926 180 930 402C934 611 846 840 620 914C398 986 153 857 84 639C17 429 121 184 332 111C390 91 449 78 520 72Z" fill="url(#eco)"/><path class="draw" pathLength="1" d="M170 602C365 438 492 401 762 202M251 744C407 568 579 515 837 402" fill="none" stroke="#e5f4cb" stroke-width="11" stroke-linecap="round"/><path d="M420 566C339 476 342 368 448 309C522 409 510 508 420 566ZM602 464C570 334 628 244 747 246C748 370 703 441 602 464Z" fill="#dff0b8"/>','','eco-svg')}</div>
+   <div class="eco-blob">${svgPaths('<defs><linearGradient id="eco" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b9dc80"/><stop offset=".52" stop-color="#5d9f77"/><stop offset="1" stop-color="#1d5d4c"/></linearGradient></defs><path class="blob" d="M520 72C740 56 926 180 930 402C934 611 846 840 620 914C398 986 153 857 84 639C17 429 121 184 332 111C390 91 449 78 520 72Z" fill="url(#eco)"/><path class="draw" pathLength="1" d="M170 602C365 438 492 401 762 202M251 744C407 568 579 515 837 402" fill="none" stroke="#e5f4cb" stroke-width="11" stroke-linecap="round"/><path d="M420 566C339 476 342 368 448 309C522 409 510 508 420 566ZM602 464C570 334 628 244 747 246C748 370 703 441 602 464Z" fill="#dff0b8"/>'0 0 1000 1000','eco-svg')}</div>
    ${calendarCard(22)}
    <div class="copy">${infoBlock()}</div>
    <div class="leaf l1 depth-fg" style="left:1010px;top:95px;width:110px;height:210px;background:linear-gradient(155deg,#d9eab2,#4e8c68);border-radius:75% 25% 68% 32% / 68% 35% 65% 32%;transform:rotate(24deg)"></div>
