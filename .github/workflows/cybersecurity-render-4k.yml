@@ -17,8 +17,15 @@ concurrency:
 
 jobs:
   render:
+    name: Render clip ${{ matrix.clip }}
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        clip: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
     steps:
       - uses: actions/checkout@v7
 
@@ -41,38 +48,70 @@ jobs:
       - name: Install portable Chromium
         run: npm install --no-save --package-lock=false @sparticuz/chromium@153.0.0
 
-      - name: Render 10 cybersecurity clips in 4K medium bitrate
-        id: render
+      - name: Render clip ${{ matrix.clip }}
         run: |
           mkdir -p tmp output/cybersecurity
-          set +e
-          TMPDIR="$PWD/tmp" node project/cybersecurity/render-batch.mjs
-          status=$?
-          echo "===== per-clip render logs ====="
-          for f in output/cybersecurity/*.render.log; do
-            [ -f "$f" ] || continue
-            echo "===== $f ====="
-            cat "$f"
-          done
-          exit $status
+          TMPDIR="$PWD/tmp" node project/cybersecurity/render-batch.mjs ${{ matrix.clip }}
 
-      - name: Verify rendered MP4 files
-        if: success()
+      - name: Verify clip
         run: |
-          python3 project/cybersecurity/verify.py
-          for f in output/cybersecurity/*.mp4; do
-            echo "=== $f ==="
-            ffprobe -v error               -show_entries stream=codec_name,width,height,r_frame_rate,bit_rate               -show_entries format=duration,bit_rate,size               -of default=noprint_wrappers=1 "$f"
-          done
+          f="$(find output/cybersecurity -maxdepth 1 -name '*.mp4' -print -quit)"
+          test -n "$f"
+          ffprobe -v error             -show_entries stream=codec_name,width,height,r_frame_rate             -show_entries format=duration,bit_rate,size             -of default=noprint_wrappers=1 "$f"
 
-      - name: Upload render outputs and logs
-        if: always()
+          width="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$f")"
+          height="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$f")"
+          fps="$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "$f")"
+          codec="$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$f")"
+          test "$width" = "3840"
+          test "$height" = "2160"
+          test "$fps" = "30/1"
+          test "$codec" = "h264"
+
+      - name: Upload clip artifact
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cybersecurity-clip-${{ matrix.clip }}
+          path: output/cybersecurity/*.mp4
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cybersecurity-clip-${{ matrix.clip }}-logs
+          path: output/cybersecurity/*.render.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  bundle:
+    name: Bundle 10 MP4 files
+    needs: render
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download rendered clips
+        uses: actions/download-artifact@v8
+        with:
+          pattern: cybersecurity-clip-*
+          path: bundle
+          merge-multiple: true
+
+      - name: Confirm 10 MP4 files
+        run: |
+          count="$(find bundle -maxdepth 1 -name '*.mp4' | wc -l)"
+          echo "MP4 count: $count"
+          test "$count" -eq 10
+          ls -lh bundle/*.mp4
+
+      - name: Upload complete 4K bundle
         uses: actions/upload-artifact@v7
         with:
           name: cybersecurity-4k-medium-16m
-          path: |
-            output/cybersecurity/*.mp4
-            output/cybersecurity/*.render.log
-          if-no-files-found: warn
+          path: bundle/*.mp4
+          if-no-files-found: error
           retention-days: 14
           compression-level: 0
