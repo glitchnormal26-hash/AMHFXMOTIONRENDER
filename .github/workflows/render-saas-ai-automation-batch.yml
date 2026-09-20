@@ -64,7 +64,8 @@ jobs:
       - name: Encode medium-bitrate delivery
         run: |
           ffmpeg -y -i output/source-${{ matrix.id }}.mp4 -an \
-            -c:v libx264 -preset medium -b:v 18M -maxrate 24M -bufsize 36M \
+            -c:v libx264 -preset medium -b:v 18M -minrate 18M -maxrate 18M -bufsize 36M \
+            -x264-params "nal-hrd=cbr:force-cfr=1" \
             -pix_fmt yuv420p -movflags +faststart \
             output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4
           rm output/source-${{ matrix.id }}.mp4
@@ -86,7 +87,7 @@ jobs:
           if (v.width !== 3840 || v.height !== 2160) throw new Error(`size=${v.width}x${v.height}`);
           if (Math.abs(Number(r.format?.duration) - 10) > 0.20) throw new Error(`duration=${r.format?.duration}`);
           const br = Number(v.bit_rate || r.format?.bit_rate || 0);
-          if (br && (br < 10000000 || br > 26000000)) throw new Error(`bitrate=${br}`);
+          if (br && (br < 16000000 || br > 20000000)) throw new Error(`bitrate=${br}`);
           NODE
         env:
           ID: ${{ matrix.id }}
