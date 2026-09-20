@@ -82,7 +82,7 @@ function scene4(){
  world.innerHTML=`<div class="scene">
    <div class="industrial-grid"></div><div class="slash"></div>
    ${calendarCard(1)}
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:36px;max-width:500px">Bold modular motion with a precise mechanical rhythm.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:36px;max-width:500px">Honouring effort, skill, and the people behind every day.</div>')}</div>
    <div class="slot s1" style="left:1140px;top:620px">SHIFT A</div><div class="slot s2" style="left:1360px;top:700px">08:00</div><div class="slot s3" style="left:1570px;top:585px">ON</div>
  </div>`;
 }
@@ -90,7 +90,7 @@ function scene5(){
  world.innerHTML=`<div class="scene">
    <div class="glass-shell glass"></div>
    ${calendarCard(5,'<div class="micro-line" style="left:70px;right:70px;bottom:42px"></div>')}
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:28px">Frosted layers, organic flow, quiet internal motion.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:28px">A shared reminder to protect the places we call home.</div>')}</div>
    <svg style="position:absolute;left:820px;top:100px;width:860px;height:900px" viewBox="0 0 860 900">
      <path class="vine draw" pathLength="1" d="M105 785C206 694 170 567 296 510C438 446 375 290 520 229C603 194 689 210 765 118" stroke="#77e5c7" stroke-width="14"/>
      <path class="leaf v1" d="M273 544C221 462 242 392 322 357C361 441 347 501 273 544Z" fill="#8be6bb"/>
@@ -104,7 +104,7 @@ function scene6(){
  world.innerHTML=`<div class="scene">
    <div class="flag-ribbon red"></div><div class="flag-ribbon white"></div>
    ${calendarCard(17)}
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:32px;color:#f3dce1">Layered fabric-like ribbons carry the transition and frame the date.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:32px;color:#f3dce1">A day of freedom, unity, and shared memory.</div>')}</div>
    <svg style="position:absolute;right:80px;top:90px;width:740px;height:850px" viewBox="0 0 740 850"><path class="draw" pathLength="1" d="M75 666C211 595 224 473 358 420C488 370 510 257 675 174" fill="none" stroke="#ffced6" stroke-width="9" stroke-linecap="round"/></svg>
  </div>`;
 }
@@ -118,7 +118,7 @@ function scene7(){
    </svg>
    ${calendarCard(2)}
    <div class="copy">${infoBlock()}</div>
-   <div class="side-copy"><div class="meta">Ornamental curves bloom around a sculpted date tile while the camera glides through the repeating field.</div></div>
+   <div class="side-copy"><div class="meta">A living textile tradition carried through generations.</div></div>
  </div>`;
 }
 function scene8(){
@@ -131,7 +131,7 @@ function scene8(){
       <path d="M144 719H245L268 758H119Z" fill="#0b0907"/><path class="draw" pathLength="1" d="M190 72V275M136 410H252" fill="none" stroke="#efbd70" stroke-width="7"/>
     </svg>
    </div>
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:30px">A restrained light monument rises from the date and resolves into a quiet final lock.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:30px">Remembering courage, service, and sacrifice.</div>')}</div>
  </div>`;
 }
 function scene9(){
@@ -141,7 +141,7 @@ function scene9(){
  world.innerHTML=`<div class="scene">
    ${calendarCard(22)}
    <div class="flower-stage">${petals}<div class="soft" style="position:absolute;left:410px;top:400px;width:270px;height:270px;background:#f9dbe7;border-radius:57% 43% 65% 35%"></div></div>
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:30px">Layered cut-paper petals unfold from the calendar edge with gentle secondary motion.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:30px">For every lesson, embrace, and quiet act of care.</div>')}</div>
  </div>`;
 }
 function scene10(){
@@ -154,7 +154,7 @@ function scene10(){
       <path class="draw" pathLength="1" d="M402 54L486 287L739 300L538 455L602 700" fill="none" stroke="#fff4cf" stroke-width="7"/>
     </svg>
    </div>
-   <div class="copy">${infoBlock('<div class="meta" style="margin-top:26px">Folded paper light, warm metallic edges, and calm seasonal micro-motion.</div>')}</div>
+   <div class="copy">${infoBlock('<div class="meta" style="margin-top:26px">A season of light, warmth, and togetherness.</div>')}</div>
    <div class="sprig sp1" style="left:1020px;top:170px;transform:rotate(-42deg)"></div><div class="sprig sp2" style="left:1660px;top:610px;transform:rotate(38deg)"></div>
  </div>`;
 }
