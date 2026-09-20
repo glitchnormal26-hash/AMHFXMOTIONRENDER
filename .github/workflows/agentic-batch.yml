@@ -30,7 +30,9 @@ jobs:
         run: npm run check
       - name: Decode batch scene
         run: |
-          base64 -d projects/agentic-ai/batch.html.gz.b64 | gzip -dc > /tmp/agentic-batch.html
+          cat projects/agentic-ai/batch.part* | base64 -d > /tmp/agentic-batch.html.gz
+          echo 'af01f425c1e44bf22f79d8026c0f514280ff376a137bc5271840d11b917320b9  /tmp/agentic-batch.html.gz' | sha256sum -c -
+          gzip -dc /tmp/agentic-batch.html.gz > /tmp/agentic-batch.html
           test -s /tmp/agentic-batch.html
           grep -q 'window.OPENER' /tmp/agentic-batch.html
           grep -q 'Autonomous Task Orchestrator' /tmp/agentic-batch.html
@@ -60,7 +62,9 @@ jobs:
         run: npm ci
       - name: Decode scene source
         run: |
-          base64 -d projects/agentic-ai/batch.html.gz.b64 | gzip -dc > /tmp/agentic-batch.html
+          cat projects/agentic-ai/batch.part* | base64 -d > /tmp/agentic-batch.html.gz
+          echo 'af01f425c1e44bf22f79d8026c0f514280ff376a137bc5271840d11b917320b9  /tmp/agentic-batch.html.gz' | sha256sum -c -
+          gzip -dc /tmp/agentic-batch.html.gz > /tmp/agentic-batch.html
           test -s /tmp/agentic-batch.html
       - name: Render concept ${{ matrix.concept }} in 4K
         shell: bash
