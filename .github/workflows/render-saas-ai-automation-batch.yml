@@ -1,0 +1,112 @@
+name: Render SaaS AI Automation Batch
+
+on:
+  push:
+    branches:
+      - render/saas-ai-automation-10x-4k
+    paths:
+      - 'render-jobs/ai-automation-batch/**'
+      - '.github/workflows/render-saas-ai-automation-batch.yml'
+  pull_request:
+    paths:
+      - 'render-jobs/ai-automation-batch/**'
+      - '.github/workflows/render-saas-ai-automation-batch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saas-ai-automation-batch-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: '01', file: 'scene-01.html', slug: 'intelligent-routing' }
+          - { id: '02', file: 'scene-02.html', slug: 'inbox-triage' }
+          - { id: '03', file: 'scene-03.html', slug: 'agent-orchestration' }
+          - { id: '04', file: 'scene-04.html', slug: 'document-extraction' }
+          - { id: '05', file: 'scene-05.html', slug: 'approval-loop' }
+          - { id: '06', file: 'scene-06.html', slug: 'integration-bridge' }
+          - { id: '07', file: 'scene-07.html', slug: 'exception-resolver' }
+          - { id: '08', file: 'scene-08.html', slug: 'scheduled-automation' }
+          - { id: '09', file: 'scene-09.html', slug: 'data-enrichment' }
+          - { id: '10', file: 'scene-10.html', slug: 'monitor-recover' }
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Enable Chromium user-namespace sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run repository checks
+        run: npm run check
+      - name: Render deterministic 4K source
+        run: |
+          mkdir -p output
+          env INDEX=render-jobs/ai-automation-batch/${{ matrix.file }} \
+            QUALITY=final FPS=30 WIDTH=3840 HEIGHT=2160 CRF=14 PRESET=medium \
+            OUT_VIDEO=output/source-${{ matrix.id }}.mp4 npm run render:ffmpeg
+      - name: Encode medium-bitrate delivery
+        run: |
+          ffmpeg -y -i output/source-${{ matrix.id }}.mp4 -an \
+            -c:v libx264 -preset medium -b:v 18M -maxrate 24M -bufsize 36M \
+            -pix_fmt yuv420p -movflags +faststart \
+            output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4
+          rm output/source-${{ matrix.id }}.mp4
+      - name: Verify delivery contract
+        run: |
+          ffprobe -v error \
+            -show_entries format=duration,bit_rate:stream=index,codec_type,codec_name,width,height,r_frame_rate,bit_rate \
+            -of json output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4 \
+            > output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.metadata.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const id = process.env.ID;
+          const slug = process.env.SLUG;
+          const p = `output/saas-ai-automation-${id}-${slug}.metadata.json`;
+          const r = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const v = (r.streams || []).find(s => s.codec_type === 'video');
+          if (!v) throw new Error('missing video stream');
+          if (v.codec_name !== 'h264') throw new Error(`codec=${v.codec_name}`);
+          if (v.width !== 3840 || v.height !== 2160) throw new Error(`size=${v.width}x${v.height}`);
+          if (Math.abs(Number(r.format?.duration) - 10) > 0.20) throw new Error(`duration=${r.format?.duration}`);
+          const br = Number(v.bit_rate || r.format?.bit_rate || 0);
+          if (br && (br < 10000000 || br > 26000000)) throw new Error(`bitrate=${br}`);
+          NODE
+        env:
+          ID: ${{ matrix.id }}
+          SLUG: ${{ matrix.slug }}
+      - name: Extract visual QA frames
+        run: |
+          ffmpeg -y -i output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4 \
+            -vf "select='eq(n,0)+eq(n,75)+eq(n,150)+eq(n,225)+eq(n,299)'" \
+            -fps_mode vfr output/qa-${{ matrix.id }}-%02d.png
+          sha256sum output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4 \
+            > output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.sha256
+      - name: Upload individual MP4
+        uses: actions/upload-artifact@v7
+        with:
+          name: saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}-4k
+          path: |
+            output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.mp4
+            output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.metadata.json
+            output/saas-ai-automation-${{ matrix.id }}-${{ matrix.slug }}.sha256
+            output/qa-${{ matrix.id }}-*.png
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
