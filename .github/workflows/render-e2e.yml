@@ -215,7 +215,7 @@ jobs:
           - { concept: 7, slug: browser-task-runner }
           - { concept: 8, slug: data-sync-bridge }
           - { concept: 9, slug: scheduled-agent }
-          - { concept: 10, slug: multi-agent-orchestration }
+          - { concept: 10, slug: multi-agent }
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -279,6 +279,44 @@ jobs:
             output/\${{ matrix.slug }}-contact.png
             output/\${{ matrix.slug }}-sha256.txt
             output/source-\${{ matrix.slug }}.verify.json
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+
+  ai-automation-package:
+    if: github.event_name == 'pull_request' && github.head_ref == 'render/ai-automation-10-4k'
+    needs: ai-automation-4k
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download all rendered concepts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: ai-automation-*-4k
+          path: collected
+          merge-multiple: true
+      - name: Package videos and stock CSV metadata
+        run: |
+          mkdir -p package/videos package/metadata
+          cp collected/*-4k.mp4 package/videos/
+          cp render/ai-automation-10/adobe_stock_ai_automation_10.csv package/metadata/
+          cp render/ai-automation-10/shutterstock_ai_automation_10.csv package/metadata/
+          cp collected/*-ffprobe.json package/metadata/
+          cp collected/*-contact.png package/metadata/
+          cp collected/*-sha256.txt package/metadata/
+          count=$(find package/videos -maxdepth 1 -name '*.mp4' | wc -l)
+          test "$count" -eq 10
+          (cd package && zip -r -0 ../ai-automation-workflows-10-4k.zip videos metadata)
+          sha256sum ai-automation-workflows-10-4k.zip > ai-automation-workflows-10-4k.zip.sha256.txt
+      - name: Upload complete ZIP
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-automation-workflows-10-4k-complete
+          path: |
+            ai-automation-workflows-10-4k.zip
+            ai-automation-workflows-10-4k.zip.sha256.txt
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
