@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RelayAI — AI Chatbot Dashboard Promo</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+:root{
+  /* Electric Teal — one named palette only. */
+  --bg:#0A1414;
+  --panel:#102020;
+  --panel-2:#132626;
+  --panel-soft:rgba(255,255,255,.045);
+  --fg:#F3FFFB;
+  --muted:#91AAA4;
+  --accent-1:#00E5B0;
+  --accent-2:#3B82F6;
+  --hairline:rgba(255,255,255,.10);
+  --shadow:rgba(0,0,0,.34);
+  --danger:#FF8D78;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#061010}
+body{font-family:Inter,"Space Grotesk",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}
+#viewport-fit{
+  position:fixed;left:50%;top:50%;width:1920px;height:1080px;
+  transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center;
+  overflow:hidden;background:var(--bg);color:var(--fg)
+}
+#camera,#world{position:absolute;inset:0;width:1920px;height:1080px;transform-origin:960px 540px}
+#world{overflow:hidden}
+.layer{position:absolute;inset:0;pointer-events:none}
+#background{z-index:0}
+#midground{z-index:2}
+#foreground{z-index:4}
+.bg-grid{
+  position:absolute;inset:-100px;opacity:.17;
+  background-image:
+    linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:84px 84px;
+  mask-image:radial-gradient(circle at 54% 48%,#000 18%,rgba(0,0,0,.7) 48%,transparent 78%);
+}
+.aurora{position:absolute;border-radius:46% 54% 58% 42%/42% 48% 52% 58%;filter:blur(40px);opacity:.18;will-change:transform}
+#auroraA{width:720px;height:520px;left:1060px;top:-90px;background:linear-gradient(34deg,var(--accent-2),rgba(59,130,246,.04))}
+#auroraB{width:520px;height:420px;left:-80px;top:700px;background:linear-gradient(34deg,var(--accent-1),rgba(0,229,176,.03));opacity:.12}
+
+#headlineWrap{position:absolute;left:112px;top:108px;width:670px}
+.kicker{font-size:20px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;color:var(--accent-1)}
+.hero{
+  margin:18px 0 0;font-size:70px;line-height:.96;letter-spacing:-.055em;font-weight:820;
+  max-width:660px
+}
+.hero .accent{color:var(--accent-1)}
+.heroSub{margin-top:24px;color:var(--muted);font-size:24px;line-height:1.35;max-width:560px;font-weight:520}
+
+#productShell{
+  position:absolute;left:260px;top:245px;width:1410px;height:730px;
+  border:1px solid var(--hairline);border-radius:26px;overflow:hidden;
+  background:rgba(13,28,28,.90);box-shadow:0 42px 120px var(--shadow);
+  backdrop-filter:blur(16px)
+}
+.shellTop{
+  height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 22px;
+  border-bottom:1px solid var(--hairline);background:rgba(255,255,255,.018)
+}
+.brand{display:flex;align-items:center;gap:13px;font-size:20px;font-weight:780;letter-spacing:-.025em}
+.brandMark{
+  width:34px;height:34px;border-radius:12px;position:relative;overflow:hidden;
+  border:1px solid rgba(0,229,176,.28);background:rgba(0,229,176,.08);
+  box-shadow:0 0 32px rgba(0,229,176,.13)
+}
+.brandMark:before,.brandMark:after{content:"";position:absolute;border-radius:999px;background:var(--accent-1)}
+.brandMark:before{width:16px;height:4px;left:7px;top:9px;box-shadow:0 7px 0 rgba(0,229,176,.6)}
+.brandMark:after{width:5px;height:5px;left:22px;top:21px}
+.topActions{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:15px}
+.livePill{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:999px;border:1px solid var(--hairline);background:rgba(255,255,255,.025)}
+.liveDot{width:8px;height:8px;border-radius:50%;background:var(--accent-1);box-shadow:0 0 18px rgba(0,229,176,.55)}
+
+.shellBody{display:grid;grid-template-columns:210px 1fr;height:658px}
+.sidebar{border-right:1px solid var(--hairline);padding:22px 15px;position:relative;background:rgba(5,12,12,.22)}
+.navLabel{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#69827c;margin:8px 14px 10px}
+.navItem{
+  height:46px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 14px;
+  color:#91aaa4;font-size:15px;font-weight:620;margin-bottom:6px
+}
+.navItem.active{color:var(--fg);background:rgba(0,229,176,.09);border:1px solid rgba(0,229,176,.16)}
+.navIcon{width:20px;height:20px;color:currentColor;display:grid;place-items:center}
+.navIcon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.channelDock{position:absolute;left:15px;right:15px;bottom:18px;padding:14px;border-radius:14px;border:1px solid var(--hairline);background:rgba(255,255,255,.025)}
+.channelDockTitle{font-size:12px;color:var(--muted);margin-bottom:11px}
+.channelRow{display:flex;gap:8px}
+.channelBadge{
+  width:32px;height:32px;border-radius:10px;border:1px solid var(--hairline);display:grid;place-items:center;
+  color:var(--muted);font-size:11px;font-weight:800;background:rgba(255,255,255,.025)
+}
+.channelBadge.primary{color:var(--accent-1);border-color:rgba(0,229,176,.25);background:rgba(0,229,176,.07)}
+
+.workspace{position:relative;overflow:hidden}
+#conversationView,#analyticsView,#usersView{position:absolute;inset:0;padding:26px}
+#conversationView{display:grid;grid-template-columns:1.36fr .74fr;gap:20px}
+.panel{
+  position:relative;border:1px solid var(--hairline);border-radius:18px;background:var(--panel-soft);
+  overflow:hidden;box-shadow:0 22px 56px rgba(0,0,0,.12)
+}
+.panelHeader{height:64px;border-bottom:1px solid var(--hairline);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.panelTitle{display:flex;align-items:center;gap:10px;font-weight:740;font-size:16px}
+.panelMeta{font-size:13px;color:var(--muted)}
+.avatar{
+  width:34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:12px;font-weight:820;
+  background:linear-gradient(145deg,rgba(59,130,246,.24),rgba(0,229,176,.12));border:1px solid rgba(255,255,255,.12)
+}
+.chatPane{padding:24px 22px 18px;position:absolute;left:0;right:0;top:64px;bottom:74px;overflow:hidden}
+.messageRow{display:flex;gap:11px;align-items:flex-end;margin-bottom:16px}
+.messageRow.ai{justify-content:flex-end}
+.messageBubble{
+  max-width:74%;padding:14px 16px;border-radius:16px 16px 16px 5px;
+  color:#d9ebe6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.075);
+  font-size:16px;line-height:1.36;box-shadow:0 10px 22px rgba(0,0,0,.10)
+}
+.messageRow.ai .messageBubble{
+  border-radius:16px 16px 5px 16px;background:rgba(0,229,176,.10);
+  border-color:rgba(0,229,176,.22);color:#eafff9
+}
+.msgMeta{font-size:11px;color:#6f8983;margin-top:7px}
+.aiSpark{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--accent-1);font-weight:760;margin-bottom:7px}
+.sparkDot{width:7px;height:7px;border-radius:50%;background:var(--accent-1);box-shadow:0 0 14px rgba(0,229,176,.48)}
+.typing{display:flex;gap:5px;align-items:center;height:18px}
+.typing i{width:6px;height:6px;border-radius:50%;display:block;background:#7f9a94}
+.composer{
+  position:absolute;left:18px;right:18px;bottom:14px;height:50px;border-radius:14px;
+  border:1px solid var(--hairline);background:rgba(4,10,10,.36);display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#75908a;font-size:14px
+}
+.sendBtn{width:34px;height:34px;border-radius:10px;background:var(--accent-1);color:#06221b;display:grid;place-items:center;font-weight:900}
+
+.contextPane{padding:20px}
+.contextTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.scoreRing{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--accent-1) 0 79%,rgba(255,255,255,.07) 79% 100%)}
+.scoreRing:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#122323}
+.scoreRing b{position:relative;font-size:24px;letter-spacing:-.03em}
+.contextLabel{font-size:13px;color:var(--muted);margin-bottom:7px}
+.contextValue{font-size:20px;font-weight:780}
+.contextBlock{padding:15px;border-radius:14px;border:1px solid var(--hairline);background:rgba(255,255,255,.025);margin-top:12px}
+.tagRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:11px;padding:7px 9px;border-radius:999px;border:1px solid rgba(59,130,246,.22);background:rgba(59,130,246,.07);color:#b9d3ff}
+.aiAction{
+  margin-top:14px;padding:15px;border-radius:14px;border:1px solid rgba(0,229,176,.20);background:rgba(0,229,176,.055)
+}
+.aiActionTitle{display:flex;align-items:center;gap:8px;color:var(--accent-1);font-size:12px;font-weight:760}
+.aiActionText{margin-top:9px;color:#d9ebe6;font-size:14px;line-height:1.35}
+
+#analyticsView{opacity:0;visibility:hidden}
+.analyticsGrid{display:grid;grid-template-columns:1.05fr 1.55fr;gap:20px;height:100%}
+.metricStack{display:grid;grid-template-rows:repeat(3,1fr);gap:15px}
+.metricCard{padding:20px;border-radius:17px;border:1px solid var(--hairline);background:rgba(255,255,255,.035);position:relative;overflow:hidden}
+.metricLabel{font-size:13px;color:var(--muted)}
+.metricValue{font-size:52px;font-weight:820;letter-spacing:-.055em;margin-top:9px;font-variant-numeric:tabular-nums}
+.metricDelta{position:absolute;right:18px;top:18px;font-size:12px;color:var(--accent-1)}
+.chartPanel{padding:20px 22px}
+.chartTitle{display:flex;justify-content:space-between;align-items:center}
+.chartTitle b{font-size:16px}
+.chartTitle span{font-size:12px;color:var(--muted)}
+.chartArea{position:absolute;left:22px;right:22px;top:84px;bottom:26px}
+.chartGrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px);background-size:100% 25%;border-bottom:1px solid rgba(255,255,255,.08)}
+#chartSvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#chartPath{fill:none;stroke:var(--accent-1);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 10px rgba(0,229,176,.18))}
+.chartFill{fill:url(#chartFill)}
+.chartPoint{fill:#102020;stroke:var(--accent-1);stroke-width:3}
+.channelBars{position:absolute;left:30px;right:30px;bottom:28px;display:flex;gap:14px;align-items:flex-end;height:140px}
+.channelBar{flex:1;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,rgba(59,130,246,.50),rgba(59,130,246,.12));border:1px solid rgba(59,130,246,.18);transform-origin:bottom}
+.channelBar.teal{background:linear-gradient(180deg,rgba(0,229,176,.58),rgba(0,229,176,.12));border-color:rgba(0,229,176,.18)}
+
+#usersView{opacity:0;visibility:hidden}
+.usersLayout{display:grid;grid-template-columns:1.34fr .66fr;gap:20px;height:100%}
+.userTable{padding:0}
+.tableHead,.userRow{display:grid;grid-template-columns:1.45fr .8fr .82fr .7fr;align-items:center;padding:0 20px}
+.tableHead{height:52px;color:#708983;font-size:11px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--hairline)}
+.userRow{height:82px;border-bottom:1px solid rgba(255,255,255,.055)}
+.userCell{display:flex;align-items:center;gap:11px;font-size:14px}
+.userName{font-weight:720}.userEmail{font-size:11px;color:#6f8983;margin-top:4px}
+.statusPill{display:inline-flex;padding:7px 10px;border-radius:999px;font-size:11px;border:1px solid rgba(0,229,176,.18);color:#8df4d9;background:rgba(0,229,176,.055)}
+.statusPill.wait{border-color:rgba(59,130,246,.20);color:#a9c7ff;background:rgba(59,130,246,.06)}
+.assignee{display:flex;align-items:center}
+.assignee .avatar{width:28px;height:28px;border-radius:9px;margin-left:-7px;box-shadow:0 0 0 2px #132626}
+.assignee .avatar:first-child{margin-left:0}
+.teamPanel{padding:20px}
+.teamTitle{font-size:15px;font-weight:760}
+.teamSub{font-size:12px;color:var(--muted);margin-top:5px}
+.queueNode{margin-top:18px;padding:14px 15px;border-radius:14px;border:1px solid var(--hairline);background:rgba(255,255,255,.026);display:flex;justify-content:space-between;align-items:center}
+.queueNode b{font-size:13px}.queueNode span{font-size:12px;color:var(--muted)}
+#routeSvg{position:absolute;inset:0;width:100%;height:100%;z-index:8;pointer-events:none;overflow:visible}
+#routePath{fill:none;stroke:var(--accent-1);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(0,229,176,.4));opacity:0}
+#routePulse{fill:var(--accent-1);filter:drop-shadow(0 0 10px rgba(0,229,176,.65));opacity:0}
+
+#multiChannelFloat{
+  position:absolute;left:1270px;top:720px;width:440px;padding:18px;border-radius:18px;border:1px solid rgba(0,229,176,.20);
+  background:rgba(8,20,20,.93);box-shadow:0 24px 70px rgba(0,0,0,.30);opacity:0
+}
+.mcTop{display:flex;justify-content:space-between;align-items:center}
+.mcTop b{font-size:15px}.mcTop span{font-size:11px;color:var(--muted)}
+.mcGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.mcChip{height:70px;border-radius:14px;border:1px solid var(--hairline);background:rgba(255,255,255,.025);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.mcIcon{width:24px;height:24px;color:var(--accent-1)}
+.mcIcon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mcChip span{font-size:10px;color:#9db5af}
+
+#payoff{
+  position:absolute;left:102px;bottom:72px;width:720px;opacity:0
+}
+.payoffEyebrow{font-size:14px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent-1);font-weight:760}
+.payoffLine{margin-top:10px;font-size:48px;line-height:1;letter-spacing:-.045em;font-weight:830}
+.payoffTag{margin-top:16px;display:inline-flex;padding:10px 13px;border-radius:12px;border:1px solid rgba(0,229,176,.18);background:rgba(0,229,176,.065);color:#b9ffec;font-size:13px}
+
+#debug{
+  display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;
+  align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(5,10,10,.94);
+  border:1px solid rgba(255,255,255,.12);color:#fff;font:13px system-ui
+}
+#debug.on{display:flex}#debug input{width:360px}#clock{min-width:6ch;font-variant-numeric:tabular-nums}#beat{min-width:128px;color:#9fb6b0}
+.safe-outline{display:none;position:absolute;left:80px;top:80px;width:1760px;height:920px;border:1px dashed rgba(0,229,176,.28);z-index:30;pointer-events:none}
+#debug.on~#viewport-fit .safe-outline{display:block}
+</style>
+</head>
+<body>
+<div id="debug">
+  <button id="play">Play</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="clock">0.00s</span>
+  <span id="beat">HOOK</span>
+</div>
+
+<div id="viewport-fit">
+  <div class="safe-outline"></div>
+  <div id="camera">
+    <div id="world">
+      <div id="background" class="layer">
+        <div class="bg-grid"></div>
+        <div id="auroraA" class="aurora"></div>
+        <div id="auroraB" class="aurora"></div>
+      </div>
+
+      <div id="midground" class="layer">
+        <section id="headlineWrap">
+          <div id="kicker" class="kicker">AI customer operations</div>
+          <h1 id="hero" class="hero">Every chat becomes <span class="accent">action.</span></h1>
+          <div id="heroSub" class="heroSub">One AI workspace for conversations, insights, teams, and every channel.</div>
+        </section>
+
+        <section id="productShell">
+          <div class="shellTop">
+            <div class="brand"><span class="brandMark"></span>RelayAI</div>
+            <div class="topActions">
+              <span>Workspace / Support</span>
+              <span class="livePill"><i class="liveDot"></i>AI online</span>
+            </div>
+          </div>
+
+          <div class="shellBody">
+            <aside class="sidebar">
+              <div class="navLabel">Workspace</div>
+              <div class="navItem active" id="navInbox">
+                <span class="navIcon"><svg viewBox="0 0 24 24"><path d="M5 6h14v10H8l-3 3z"/></svg></span>Inbox
+              </div>
+              <div class="navItem" id="navAnalytics">
+                <span class="navIcon"><svg viewBox="0 0 24 24"><path d="M5 18V9M12 18V5M19 18v-7"/></svg></span>Analytics
+              </div>
+              <div class="navItem" id="navUsers">
+                <span class="navIcon"><svg viewBox="0 0 24 24"><path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM16 10a2.5 2.5 0 1 0 0-5M3 19c.6-3.1 2.4-5 5-5s4.4 1.9 5 5M14 14c2.8 0 4.6 1.7 5 4.5"/></svg></span>Users
+              </div>
+              <div class="navItem" id="navAutomation">
+                <span class="navIcon"><svg viewBox="0 0 24 24"><path d="M5 7h9M14 7l3-3M14 7l3 3M19 17H10M10 17l-3-3M10 17l-3 3"/></svg></span>Automations
+              </div>
+              <div class="navItem">
+                <span class="navIcon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></span>Integrations
+              </div>
+
+              <div class="channelDock">
+                <div class="channelDockTitle">Active channels</div>
+                <div class="channelRow">
+                  <div class="channelBadge primary">WEB</div>
+                  <div class="channelBadge">EM</div>
+                  <div class="channelBadge">MSG</div>
+                  <div class="channelBadge">API</div>
+                </div>
+              </div>
+            </aside>
+
+            <div class="workspace">
+              <svg id="routeSvg" viewBox="0 0 1200 658" preserveAspectRatio="none">
+                <path id="routePath" d="M455,280 C560,280 565,354 670,354 S810,245 915,245 S1030,320 1110,320"/>
+                <circle id="routePulse" r="7" cx="455" cy="280"/>
+              </svg>
+
+              <div id="conversationView">
+                <div class="panel">
+                  <div class="panelHeader">
+                    <div class="panelTitle"><span class="avatar">AN</span><span>Anna · Website chat</span></div>
+                    <div class="panelMeta">Order #10482</div>
+                  </div>
+                  <div class="chatPane">
+                    <div class="messageRow" id="msg1">
+                      <span class="avatar">AN</span>
+                      <div class="messageBubble">
+                        Hi! Can I change the delivery address before my order ships?
+                        <div class="msgMeta">19:24</div>
+                      </div>
+                    </div>
+
+                    <div class="messageRow ai" id="typingRow">
+                      <div class="messageBubble">
+                        <div class="aiSpark"><i class="sparkDot"></i>RelayAI is thinking</div>
+                        <div class="typing"><i></i><i></i><i></i></div>
+                      </div>
+                    </div>
+
+                    <div class="messageRow ai" id="aiResponse">
+                      <div class="messageBubble">
+                        <div class="aiSpark"><i class="sparkDot"></i>AI response</div>
+                        <span id="typedResponse"></span>
+                        <div class="msgMeta">Drafted from order + policy context</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="composer"><span>Reply to Anna…</span><span class="sendBtn">↗</span></div>
+                </div>
+
+                <div class="panel contextPane">
+                  <div class="contextTop">
+                    <div>
+                      <div class="contextLabel">Conversation confidence</div>
+                      <div class="contextValue">Context matched</div>
+                    </div>
+                    <div class="scoreRing"><b id="scoreText">79%</b></div>
+                  </div>
+                  <div class="contextBlock">
+                    <div class="contextLabel">Customer context</div>
+                    <div class="contextValue">Anna Nielsen</div>
+                    <div class="tagRow"><span class="tag">2 orders</span><span class="tag">Priority</span><span class="tag">Web chat</span></div>
+                  </div>
+                  <div class="aiAction" id="aiAction">
+                    <div class="aiActionTitle"><i class="sparkDot"></i>Suggested action</div>
+                    <div class="aiActionText">Update address before fulfillment and confirm the change automatically.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="analyticsView">
+                <div class="analyticsGrid">
+                  <div class="metricStack">
+                    <div class="metricCard">
+                      <div class="metricLabel">Live conversations</div>
+                      <div class="metricValue" id="metricLive">0</div>
+                      <div class="metricDelta">now</div>
+                    </div>
+                    <div class="metricCard">
+                      <div class="metricLabel">AI assisted</div>
+                      <div class="metricValue" id="metricAI">0</div>
+                      <div class="metricDelta">today</div>
+                    </div>
+                    <div class="metricCard">
+                      <div class="metricLabel">Median response</div>
+                      <div class="metricValue"><span id="metricTime">0.0</span><small style="font-size:18px;color:var(--muted);margin-left:7px">min</small></div>
+                      <div class="metricDelta">live</div>
+                    </div>
+                  </div>
+                  <div class="panel chartPanel">
+                    <div class="chartTitle"><b>Conversation volume</b><span>last 7 hours</span></div>
+                    <div class="chartArea">
+                      <div class="chartGrid"></div>
+                      <svg id="chartSvg" viewBox="0 0 760 420" preserveAspectRatio="none">
+                        <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00E5B0" stop-opacity=".16"/><stop offset="100%" stop-color="#00E5B0" stop-opacity="0"/></linearGradient></defs>
+                        <path class="chartFill" d="M0,326 C90,318 118,250 205,268 S330,184 415,202 S555,96 760,124 L760,420 L0,420 Z"/>
+                        <path id="chartPath" pathLength="1" d="M0,326 C90,318 118,250 205,268 S330,184 415,202 S555,96 760,124"/>
+                        <circle class="chartPoint" cx="205" cy="268" r="6"/>
+                        <circle class="chartPoint" cx="415" cy="202" r="6"/>
+                        <circle class="chartPoint" cx="760" cy="124" r="7"/>
+                      </svg>
+                      <div class="channelBars">
+                        <div class="channelBar" style="height:38%"></div>
+                        <div class="channelBar teal" style="height:72%"></div>
+                        <div class="channelBar" style="height:51%"></div>
+                        <div class="channelBar teal" style="height:88%"></div>
+                        <div class="channelBar" style="height:66%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="usersView">
+                <div class="usersLayout">
+                  <div class="panel userTable">
+                    <div class="panelHeader"><div class="panelTitle">Team routing</div><div class="panelMeta">AI + human handoff</div></div>
+                    <div class="tableHead"><span>User</span><span>Status</span><span>Owner</span><span>Channel</span></div>
+                    <div class="userRow">
+                      <div class="userCell"><span class="avatar">AN</span><div><div class="userName">Anna Nielsen</div><div class="userEmail">Order update</div></div></div>
+                      <div><span class="statusPill">AI active</span></div>
+                      <div class="assignee"><span class="avatar">MK</span><span class="avatar">AI</span></div>
+                      <div class="userCell">Web</div>
+                    </div>
+                    <div class="userRow">
+                      <div class="userCell"><span class="avatar">JO</span><div><div class="userName">Jon Ortiz</div><div class="userEmail">Pricing question</div></div></div>
+                      <div><span class="statusPill wait">Review</span></div>
+                      <div class="assignee"><span class="avatar">LS</span></div>
+                      <div class="userCell">Email</div>
+                    </div>
+                    <div class="userRow">
+                      <div class="userCell"><span class="avatar">MI</span><div><div class="userName">Mika Ito</div><div class="userEmail">Account access</div></div></div>
+                      <div><span class="statusPill">AI active</span></div>
+                      <div class="assignee"><span class="avatar">AI</span></div>
+                      <div class="userCell">Message</div>
+                    </div>
+                  </div>
+                  <div class="panel teamPanel">
+                    <div class="teamTitle">Smart assignment</div>
+                    <div class="teamSub">Route by intent, priority, and team capacity.</div>
+                    <div class="queueNode"><div><b>Sales</b><br><span>pricing + plans</span></div><span>12</span></div>
+                    <div class="queueNode"><div><b>Support</b><br><span>orders + access</span></div><span>24</span></div>
+                    <div class="queueNode"><div><b>Internal</b><br><span>policy + ops</span></div><span>8</span></div>
+                    <div class="aiAction" style="margin-top:18px">
+                      <div class="aiActionTitle"><i class="sparkDot"></i>Handoff ready</div>
+                      <div class="aiActionText">Context stays attached when a conversation moves from AI to a teammate.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div id="multiChannelFloat">
+          <div class="mcTop"><b>One inbox, every channel</b><span>connected live</span></div>
+          <div class="mcGrid">
+            <div class="mcChip"><span class="mcIcon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 3z"/></svg></span><span>Web chat</span></div>
+            <div class="mcChip"><span class="mcIcon"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></span><span>Email</span></div>
+            <div class="mcChip"><span class="mcIcon"><svg viewBox="0 0 24 24"><path d="M7 5h10a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-4l-4 3v-3H7a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"/></svg></span><span>Messaging</span></div>
+            <div class="mcChip"><span class="mcIcon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></span><span>API</span></div>
+          </div>
+        </div>
+
+        <div id="payoff">
+          <div class="payoffEyebrow">RelayAI workspace</div>
+          <div class="payoffLine">One AI. Every conversation.</div>
+          <div class="payoffTag">Support · Sales · Internal teams</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const W=1920,H=1080,DURATION=12;
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const viewport=$("#viewport-fit"),camera=$("#camera");
+const fit=()=>viewport.style.setProperty("--fit",Math.min(innerWidth/W,innerHeight/H));
+addEventListener("resize",fit);fit();
+
+const responseText="Absolutely — I can update the delivery address before fulfillment. I’ll confirm the change once it’s saved.";
+const route=$("#routePath");
+const pulse=$("#routePulse");
+const routeLength=route.getTotalLength();
+
+gsap.set(["#kicker","#hero","#heroSub"],{autoAlpha:0});
+gsap.set("#productShell",{autoAlpha:0,y:42,scale:.965});
+gsap.set(["#msg1","#typingRow","#aiResponse","#aiAction"],{autoAlpha:0,y:16});
+gsap.set("#typedResponse",{opacity:1});
+gsap.set("#routePath",{strokeDasharray:routeLength,strokeDashoffset:routeLength,autoAlpha:0});
+gsap.set("#routePulse",{autoAlpha:0});
+gsap.set("#analyticsView",{autoAlpha:0});
+gsap.set("#usersView",{autoAlpha:0});
+gsap.set(".metricCard",{y:18});
+gsap.set("#chartPath",{strokeDasharray:1,strokeDashoffset:1});
+gsap.set(".channelBar",{scaleY:.06});
+gsap.set(".userRow",{x:26,autoAlpha:0});
+gsap.set(".queueNode",{x:20,autoAlpha:0});
+gsap.set("#multiChannelFloat",{autoAlpha:0,y:24,scale:.96});
+gsap.set("#payoff",{autoAlpha:0,y:18});
+gsap.set(camera,{x:0,y:0,scale:.985,rotation:0});
+
+function navState(activeId){
+  ["#navInbox","#navAnalytics","#navUsers","#navAutomation"].forEach(id=>$(id)?.classList.toggle("active",id===activeId));
+}
+
+const tl=gsap.timeline({paused:true});
+tl.addLabel("hook",0)
+  .to("#productShell",{autoAlpha:1,y:0,scale:1,duration:.58,ease:"power2.out"},.28)
+  .to(camera,{x:-62,y:-24,scale:1.055,duration:1.18,ease:"expo.inOut"},.38)
+  .to("#kicker",{autoAlpha:1,duration:.34,ease:"power2.out"},.52)
+  .fromTo("#hero",{autoAlpha:0,y:28},{autoAlpha:1,y:0,duration:.5,ease:"power2.out",immediateRender:false},.66)
+  .fromTo("#heroSub",{autoAlpha:0,y:16},{autoAlpha:1,y:0,duration:.44,ease:"power2.out",immediateRender:false},.92)
+
+  .addLabel("conversation",1.45)
+  .to("#headlineWrap",{autoAlpha:.12,y:-18,duration:.38,ease:"power1.inOut"},1.45)
+  .to(camera,{x:-24,y:-58,scale:1.105,duration:.86,ease:"power2.inOut"},1.48)
+  .to("#msg1",{autoAlpha:1,y:0,duration:.36,ease:"power2.out"},1.62)
+  .to("#typingRow",{autoAlpha:1,y:0,duration:.28,ease:"power2.out"},2.08)
+  .to("#typingRow",{autoAlpha:0,y:-8,duration:.24,ease:"power1.inOut"},2.62)
+  .to("#aiResponse",{autoAlpha:1,y:0,duration:.36,ease:"back.out(1.4)"},2.68)
+  .to("#aiAction",{autoAlpha:1,y:0,duration:.36,ease:"power2.out"},3.18)
+
+  .addLabel("analytics",4.15)
+  .to("#routePath",{autoAlpha:1,duration:.12},4.1)
+  .to("#routePath",{strokeDashoffset:0,duration:.82,ease:"power2.inOut"},4.12)
+  .to("#routePulse",{autoAlpha:1,duration:.12},4.12)
+  .to(camera,{x:-182,y:-38,scale:1.08,duration:.92,ease:"power3.out"},4.22)
+  .to("#conversationView",{autoAlpha:.08,scale:.985,duration:.52,ease:"power1.inOut"},4.28)
+  .to("#analyticsView",{autoAlpha:1,duration:.44,ease:"power2.out",onStart:()=>navState("#navAnalytics")},4.42)
+  .to(".metricCard",{y:0,duration:.42,ease:"power2.out",stagger:.07},4.52)
+  .to("#chartPath",{strokeDashoffset:0,duration:.78,ease:"power2.out"},4.68)
+  .to(".channelBar",{scaleY:1,duration:.46,ease:"power2.out",stagger:.06},4.9)
+
+  .addLabel("users",6.75)
+  .to(camera,{x:74,y:-70,scale:1.095,duration:1.05,ease:"power2.inOut"},6.72)
+  .to("#analyticsView",{autoAlpha:.08,scale:.985,duration:.42,ease:"power1.inOut"},6.82)
+  .to("#usersView",{autoAlpha:1,duration:.38,ease:"power2.out",onStart:()=>navState("#navUsers")},6.96)
+  .to(".userRow",{x:0,autoAlpha:1,duration:.36,ease:"power2.out",stagger:.08},7.08)
+  .to(".queueNode",{x:0,autoAlpha:1,duration:.34,ease:"power2.out",stagger:.07},7.32)
+
+  .addLabel("channels",9.1)
+  .to(camera,{x:-46,y:10,scale:1.025,duration:.95,ease:"power1.inOut"},9.06)
+  .to("#multiChannelFloat",{autoAlpha:1,y:0,scale:1,duration:.44,ease:"back.out(1.4)"},9.28)
+  .fromTo(".mcChip",{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.32,ease:"power2.out",stagger:.06,immediateRender:false},9.42)
+  .to("#routePulse",{scale:1.5,duration:.22,ease:"power2.out"},9.74)
+  .to("#routePulse",{scale:1,duration:.28,ease:"power1.inOut"},9.96)
+
+  .addLabel("payoff",10.35)
+  .to("#headlineWrap",{autoAlpha:0,duration:.28},10.28)
+  .to(camera,{x:0,y:0,scale:.935,duration:1.0,ease:"power2.inOut"},10.34)
+  .to("#productShell",{x:160,y:-34,scale:.90,duration:.88,ease:"power2.inOut"},10.42)
+  .to("#multiChannelFloat",{x:-74,y:-26,scale:.94,duration:.62,ease:"power1.inOut"},10.48)
+  .to("#payoff",{autoAlpha:1,y:0,duration:.52,ease:"power2.out"},10.72)
+  .to({}, {duration:.01},DURATION);
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function range(t,a,b){return clamp((t-a)/(b-a),0,1)}
+function easeOutCubic(x){return 1-Math.pow(1-x,3)}
+
+function render(t){
+  const typeP=range(t,2.78,3.54);
+  const chars=Math.round(responseText.length*easeOutCubic(typeP));
+  $("#typedResponse").textContent=responseText.slice(0,chars);
+
+  const score=Math.round(79+17*range(t,2.65,3.6));
+  $("#scoreText").textContent=score+"%";
+  $(".scoreRing").style.background=`conic-gradient(var(--accent-1) 0 ${score}%,rgba(255,255,255,.07) ${score}% 100%)`;
+
+  $("#metricLive").textContent=Math.round(128*range(t,4.45,5.25));
+  $("#metricAI").textContent=Math.round(86*range(t,4.54,5.38));
+  $("#metricTime").textContent=(2.4*range(t,4.62,5.35)).toFixed(1);
+
+  const routeP=range(t,4.12,4.94);
+  const pt=route.getPointAtLength(routeLength*routeP);
+  pulse.setAttribute("cx",pt.x);
+  pulse.setAttribute("cy",pt.y);
+
+  $("#auroraA").style.transform=`translate(${Math.sin(t*.52)*12}px,${Math.cos(t*.44)*9}px) rotate(${Math.sin(t*.21)*1.1}deg)`;
+  $("#auroraB").style.transform=`translate(${Math.cos(t*.58)*10}px,${Math.sin(t*.48)*8}px) rotate(${Math.cos(t*.27)*1.0}deg)`;
+
+  $$(".typing i").forEach((dot,i)=>{
+    const amp=.45+.55*((Math.sin((t*7.2)-(i*.9))+1)/2);
+    dot.style.transform=`translateY(${-amp*4}px)`;
+    dot.style.opacity=String(.45+amp*.5);
+  });
+}
+gsap.ticker.add(()=>render(tl.time()));
+
+const q=new URLSearchParams(location.search);
+const debug=$("#debug"),scrub=$("#scrub"),clock=$("#clock"),beat=$("#beat"),play=$("#play");
+if(q.has("debug"))debug.classList.add("on");
+let dragging=false;
+const beatName=t=>t<1.45?"HOOK":t<4.15?"CONVERSATION":t<6.75?"ANALYTICS":t<9.1?"USER ROUTING":t<10.35?"MULTI-CHANNEL":"PAYOFF";
+gsap.ticker.add(()=>{
+  const t=tl.time();clock.textContent=t.toFixed(2)+"s";beat.textContent=beatName(t);
+  play.textContent=tl.paused()?"Play":"Pause";
+  if(!dragging)scrub.value=String(Math.round(t/DURATION*1000));
+});
+scrub.onpointerdown=()=>{dragging=true;tl.pause()};
+addEventListener("pointerup",()=>dragging=false);
+scrub.oninput=()=>window.OPENER.seek(Number(scrub.value)/1000*DURATION);
+play.onclick=()=>tl.paused()?tl.play():tl.pause();
+tl.eventCallback("onComplete",()=>{if(!q.has("clean"))tl.play(0)});
+
+window.OPENER={
+  W,H,DURATION,tl,ready:false,
+  seek(t){
+    const clamped=Math.max(0,Math.min(DURATION,Number(t)||0));
+    tl.pause();tl.time(clamped,false);render(clamped);
+    if(clamped<4.15)navState("#navInbox");
+    else if(clamped<6.75)navState("#navAnalytics");
+    else if(clamped<9.1)navState("#navUsers");
+    else navState("#navAutomation");
+  },
+  play(){tl.play()}
+};
+const ready=()=>{
+  window.OPENER.ready=true;render(0);
+  if(!q.has("clean"))tl.play(0)
+};
+if(document.fonts?.ready)document.fonts.ready.then(ready);else ready();
+</script>
+</body>
+</html>
