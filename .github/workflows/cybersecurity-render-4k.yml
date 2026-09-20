@@ -42,11 +42,22 @@ jobs:
         run: npm install --no-save --package-lock=false @sparticuz/chromium@153.0.0
 
       - name: Render 10 cybersecurity clips in 4K medium bitrate
+        id: render
         run: |
           mkdir -p tmp output/cybersecurity
+          set +e
           TMPDIR="$PWD/tmp" node project/cybersecurity/render-batch.mjs
+          status=$?
+          echo "===== per-clip render logs ====="
+          for f in output/cybersecurity/*.render.log; do
+            [ -f "$f" ] || continue
+            echo "===== $f ====="
+            cat "$f"
+          done
+          exit $status
 
       - name: Verify rendered MP4 files
+        if: success()
         run: |
           python3 project/cybersecurity/verify.py
           for f in output/cybersecurity/*.mp4; do
@@ -54,13 +65,14 @@ jobs:
             ffprobe -v error               -show_entries stream=codec_name,width,height,r_frame_rate,bit_rate               -show_entries format=duration,bit_rate,size               -of default=noprint_wrappers=1 "$f"
           done
 
-      - name: Upload 4K MP4 artifact
+      - name: Upload render outputs and logs
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: cybersecurity-4k-medium-16m
           path: |
             output/cybersecurity/*.mp4
             output/cybersecurity/*.render.log
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           compression-level: 0
