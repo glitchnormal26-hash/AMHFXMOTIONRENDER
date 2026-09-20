@@ -1,0 +1,36 @@
+{
+  "project": "AI Chatbot SaaS Promo 10x4K",
+  "branch": "render/chatbot-ai-saas-promos-10x4k",
+  "delivery": {
+    "count": 10,
+    "format": "mp4",
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "fps": 24,
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "target_video_bitrate_mbps": 20,
+    "audio": false,
+    "branding": false
+  },
+  "capture_note": "Final H.264 stream is 3840x2160. Internal deterministic browser capture used a lower raster resolution and Lanczos upscale for throughput; vector/UI source remains clean.",
+  "concepts": [
+    "customer-support-smart-reply",
+    "sales-lead-qualification",
+    "internal-knowledge-assistant",
+    "chatbot-analytics",
+    "user-management",
+    "multi-channel-unified-inbox",
+    "ai-human-escalation",
+    "automation-routing",
+    "conversation-qa-sentiment",
+    "conversation-search"
+  ],
+  "verification": {
+    "ffprobe_stream_check": "PASS",
+    "representative_encoded_stills": "PASS",
+    "full_repo_FINAL_VERIFIED": "NOT_CLAIMED",
+    "reason": "Encoded representative frames were inspected and stream metadata verified; the repo's formal FINAL_VERIFIED label additionally requires normal-speed encoded playback review."
+  }
+}
