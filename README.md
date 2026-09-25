@@ -76,6 +76,50 @@ KEEP_FRAMES=1 FRAMES_DIR=output/frames npm run render:ffmpeg
 npm run render:ffmpeg:files
 ```
 
+### Target-bitrate delivery
+
+Rate control is CRF by default. Set `BITRATE` to encode to an explicit delivery
+bitrate instead; `MAXRATE` and `BUFSIZE` default to the target rate and one
+second of that rate. `6000`, `6000k`, `6M`, and `6000000` all mean 6 Mbps.
+
+```bash
+# 1920x1080, 30 fps, 6 Mbps H.264
+WIDTH=1920 HEIGHT=1080 FPS=30 BITRATE=6000k PRESET=medium npm run render:ffmpeg
+
+DRY_RUN=1 BITRATE=6000k npm run render:ffmpeg   # print the resolved ffmpeg command
+```
+
+`FFMPEG_PATH`, `FFPROBE_PATH`, `CHROME_PATH`, and `NO_SANDBOX=1` are available for
+hosts where the tools are not on `PATH` or the browser cannot use a sandbox.
+`NAV_TIMEOUT` (ms, default 180000) widens the page-load/readiness window on slow
+software-GL hosts.
+
+`DRY_RUN=1` prints the resolved FFmpeg command without capturing frames.
+
+### Offline / restricted hosts
+
+Some starter scenes load GSAP, Three.js, or Google Fonts from a public CDN. On hosts
+where those origins are unreachable, set `OFFLINE_ASSETS` to a JSON map so the
+exporter serves them from local files instead; every substitution is recorded in the
+`.verify.json` report under `offline_assets.served`, and failures under
+`diagnostics.offline_errors`.
+
+```json
+{
+  "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js": "/abs/node_modules/gsap/dist/gsap.min.js",
+  "/npm/three@0.161.0/": "/abs/node_modules/three/",
+  "https://fonts.googleapis.com/css2": "/abs/vendor/fonts.css"
+}
+```
+
+A key ending in `/` maps the URL suffix onto a local directory; any other key maps an
+exact URL to a local file. Files under `examples/jsm/` get bare `three` specifiers
+rewritten to the versioned build URL, matching what the CDN serves. Install the library
+versions your map points at locally first (for the starters:
+`npm i --no-save three@0.161.0 gsap@3.13.0`). Local font files are not visually
+identical to a re-downloaded webfont subset, so re-check the still-frame gates after
+any offline substitution.
+
 `FRAME_TRANSPORT=stream` is the default. `FRAME_TRANSPORT=files` restores the older disk-backed workflow.
 
 Generated media belongs under `output/` (or another ignored local path) and must not be committed to `main`.
