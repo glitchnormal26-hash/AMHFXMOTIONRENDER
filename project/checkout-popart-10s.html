@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pop Art Checkout — Hand Drawn Motion</title>
+<style>
+:root{--ink:#151515;--paper:#f7efd9;--red:#ef4d43;--yellow:#ffd34e;--blue:#3b72d9;--green:#38a96b}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
+body{font-family:Arial,Helvetica,sans-serif}
+#stage{position:fixed;left:50%;top:50%;width:3840px;height:2160px;transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center;overflow:hidden;background:var(--paper)}
+#three{position:absolute;inset:0;width:3840px;height:2160px}
+#art{position:absolute;inset:0;width:3840px;height:2160px;overflow:hidden}
+.hand{fill:none;stroke:var(--ink);stroke-width:28;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.thin{stroke-width:18}.heavy{stroke-width:38}
+.fill-ink{fill:var(--ink)}.fill-paper{fill:var(--paper)}.fill-red{fill:var(--red)}.fill-yellow{fill:var(--yellow)}.fill-blue{fill:var(--blue)}.fill-green{fill:var(--green)}
+.stroke-red{stroke:var(--red)}.stroke-blue{stroke:var(--blue)}.stroke-green{stroke:var(--green)}
+.rough{filter:url(#rough)}
+.micro{transform-box:fill-box;transform-origin:center;will-change:transform,opacity}
+#headline{font-weight:900;font-size:170px;letter-spacing:-8px;fill:var(--ink)}
+#sub{font-weight:800;font-size:64px;letter-spacing:2px;fill:var(--ink)}
+#price{font-weight:900;font-size:82px;fill:var(--ink)}
+#success{font-weight:900;font-size:118px;letter-spacing:-3px;fill:var(--ink)}
+#small{font-weight:800;font-size:42px;fill:var(--ink)}
+#debug{display:none;position:fixed;z-index:9;left:50%;bottom:20px;transform:translateX(-50%);padding:12px 18px;background:#111;color:#fff;border-radius:10px;font:16px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+<canvas id="three"></canvas>
+<svg id="art" viewBox="0 0 3840 2160" aria-label="Original hand drawn checkout and payment success animation">
+<defs>
+  <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <pattern id="dots" width="42" height="42" patternUnits="userSpaceOnUse">
+    <circle cx="10" cy="10" r="5" fill="#151515" opacity=".26"/>
+  </pattern>
+  <pattern id="dotsRed" width="44" height="44" patternUnits="userSpaceOnUse">
+    <circle cx="12" cy="12" r="6" fill="#ef4d43" opacity=".34"/>
+  </pattern>
+</defs>
+
+<!-- Background graphic language: original paper, ink and halftone accents -->
+<g id="bg">
+  <path d="M0 300 C420 180 650 270 950 130 S1540 70 1810 230" stroke="url(#dots)" stroke-width="300" fill="none" opacity=".65"/>
+  <path d="M2930 1870 C3200 1650 3460 1740 3840 1530 L3840 2160 L2800 2160Z" fill="url(#dotsRed)"/>
+  <path d="M110 1890 C370 1710 650 1810 860 1620" class="hand thin" opacity=".2"/>
+</g>
+
+<!-- HOOK: illustrated parcel + item -->
+<g id="sceneHook" class="micro">
+  <g id="parcel" class="rough">
+    <path d="M480 820 L1040 680 L1440 890 L875 1050 Z" class="fill-yellow hand"/>
+    <path d="M875 1050 L875 1435 L1440 1265 L1440 890" class="fill-yellow hand"/>
+    <path d="M480 820 L480 1190 L875 1435" class="fill-red hand"/>
+    <path d="M480 820 L875 1005 L1440 890" class="hand"/>
+    <path d="M875 1005 L875 1435" class="hand"/>
+    <path d="M875 1005 L1040 680 L1190 800 L1040 1120 Z" class="fill-red hand"/>
+    <path d="M1040 680 L1440 890" class="hand"/>
+  </g>
+  <g id="item" class="rough">
+    <path d="M1500 620 C1610 560 1780 585 1850 690 L1805 1100 C1690 1160 1540 1130 1470 1030 Z" class="fill-blue hand"/>
+    <path d="M1510 700 C1590 650 1700 660 1780 710" class="hand thin"/>
+    <path d="M1550 805 C1630 770 1710 785 1770 820" class="hand thin"/>
+    <path d="M1570 910 C1640 890 1700 900 1750 925" class="hand thin"/>
+    <path d="M1470 1030 C1540 1110 1690 1160 1805 1100" class="hand"/>
+  </g>
+  <g id="sparkA" class="micro">
+    <path d="M1330 530 l55 -65 M1385 530 l65 -20 M1350 570 l15 -75" class="hand stroke-red"/>
+  </g>
+  <g id="sparkB" class="micro">
+    <path d="M1880 480 l30 -70 M1930 500 l70 -35 M1900 535 l55 25" class="hand stroke-green"/>
+  </g>
+</g>
+
+<!-- CHECKOUT panel -->
+<g id="checkout" class="micro">
+  <path d="M1850 530 C2060 430 2700 420 3000 560 L2940 1580 C2700 1710 2070 1690 1810 1530 Z" class="fill-paper hand rough"/>
+  <path d="M1980 670 C2200 600 2670 610 2830 690" class="hand thin"/>
+  <text id="headline" x="1980" y="860">CHECKOUT</text>
+  <text id="sub" x="1990" y="970">YOUR CART IS READY</text>
+
+  <g id="miniProduct" class="micro">
+    <path d="M2010 1080 l210 -55 155 85 -215 58z" class="fill-yellow hand"/>
+    <path d="M2160 1168 v175 l215 -58 v-175" class="fill-yellow hand"/>
+    <path d="M2010 1080 v180 l150 83" class="fill-red hand"/>
+    <path d="M2160 1168 l60 -143" class="hand"/>
+    <text id="price" x="2440" y="1200">$24</text>
+  </g>
+
+  <g id="button" class="micro">
+    <path d="M2000 1380 C2190 1340 2630 1345 2800 1400 L2770 1510 C2550 1550 2200 1545 2010 1490 Z" class="fill-red hand"/>
+    <text x="2230" y="1470" font-size="66" font-weight="900" fill="#151515">PAY NOW</text>
+  </g>
+</g>
+
+<!-- payment card -->
+<g id="card" class="micro rough">
+  <path d="M2350 780 C2570 690 3150 700 3370 820 L3330 1250 C3080 1360 2570 1320 2360 1210 Z" class="fill-blue hand"/>
+  <path d="M2390 890 C2640 830 3090 840 3340 920" class="hand"/>
+  <path d="M2470 1020 L2740 1010" class="hand thin"/>
+  <path d="M2470 1110 L2610 1105" class="hand thin"/>
+  <circle cx="3160" cy="1090" r="74" class="fill-yellow hand"/>
+  <path d="M3105 1090 l42 42 l85 -102" class="hand heavy"/>
+</g>
+
+<!-- SUCCESS payoff -->
+<g id="successGroup" class="micro">
+  <path d="M650 370 C1040 180 1450 260 1690 530 C1830 690 1840 930 1710 1110 C1480 1430 950 1460 620 1190 C340 960 390 540 650 370 Z" class="fill-green hand rough"/>
+  <path d="M760 800 l190 190 l520 -560" class="hand heavy"/>
+  <text id="success" x="1980" y="1050">PAYMENT SUCCESS!</text>
+  <text id="small" x="1990" y="1150">ORDER CONFIRMED · THANK YOU</text>
+</g>
+
+<!-- finale confetti / organic accents -->
+<g id="confetti" class="micro">
+  <path d="M560 450 l65 -90 M760 330 l10 -100 M1040 390 l80 -70 M1450 360 l70 -85 M3160 420 l20 -105 M3430 650 l100 -30 M3220 1450 l85 65 M2860 1570 l20 105 M1710 1540 l-70 90 M530 1390 l-90 40" class="hand stroke-red"/>
+  <path d="M610 1540 l55 75 M860 1660 l15 90 M1510 1530 l80 65 M3030 1530 l80 75 M3460 1060 l100 20" class="hand stroke-blue"/>
+  <path d="M1840 380 l-20 -90 M2760 360 l60 -80 M3510 850 l100 -20 M2300 1660 l55 90" class="hand stroke-green"/>
+</g>
+</svg>
+</div>
+<div id="debug">0.00s</div>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+import {gsap} from "https://cdn.jsdelivr.net/npm/gsap@3.13.0/index.js";
+
+const W=3840,H=2160,DURATION=10;
+const stage=document.querySelector("#stage");
+const canvas=document.querySelector("#three");
+const fit=()=>stage.style.setProperty("--fit",Math.min(innerWidth/W,innerHeight/H));
+addEventListener("resize",fit);fit();
+
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1); renderer.setSize(W,H,false);
+const scene=new THREE.Scene();
+const camera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+const geo=new THREE.BufferGeometry();
+geo.setAttribute("position",new THREE.BufferAttribute(new Float32Array([-1,-1,0,3,-1,0,-1,3,0]),3));
+const mat=new THREE.ShaderMaterial({
+  uniforms:{uTime:{value:0},uRes:{value:new THREE.Vector2(W,H)}},
+  vertexShader:`void main(){gl_Position=vec4(position,1.0);}`,
+  fragmentShader:`uniform float uTime; uniform vec2 uRes;
+  float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+  void main(){
+    vec2 uv=gl_FragCoord.xy/uRes;
+    float n=hash(floor(uv*uRes/22.0));
+    float paper=0.965+0.018*sin(uv.y*8.0)+0.012*n;
+    vec2 grid=fract(uv*vec2(88.0,88.0));
+    float dots=smoothstep(.33,.0,length(grid-.5));
+    vec3 c=mix(vec3(.975,.94,.82),vec3(.94,.88,.72),dots*.055);
+    c*=paper;
+    gl_FragColor=vec4(c,1.0);
+  }`
+});
+scene.add(new THREE.Mesh(geo,mat));
+
+const q=new URLSearchParams(location.search);
+const debug=document.querySelector("#debug"); if(q.has("debug"))debug.classList.add("on");
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+
+gsap.set("#sceneHook",{x:-500,rotation:-5,scale:.86,opacity:0});
+gsap.set("#parcel",{y:180,rotation:-8});
+gsap.set("#item",{x:240,y:-90,rotation:9,scale:.78});
+gsap.set("#sparkA",{opacity:0,scale:.2,rotation:-25});
+gsap.set("#sparkB",{opacity:0,scale:.2,rotation:20});
+gsap.set("#checkout",{x:900,rotation:6,scale:.82,opacity:0});
+gsap.set("#card",{x:1100,y:380,rotation:12,scale:.65,opacity:0});
+gsap.set("#successGroup",{x:450,y:70,scale:.55,opacity:0});
+gsap.set("#confetti",{opacity:0,scale:.65});
+gsap.set("#button",{scale:.92});
+gsap.set("#miniProduct",{y:20,opacity:.4});
+
+const tl=gsap.timeline({paused:true,defaults:{overwrite:"auto"}});
+
+tl.to("#sceneHook",{opacity:1,x:0,rotation:0,scale:1,duration:.75,ease:"back.out(1.35)"},0)
+  .to("#parcel",{y:0,rotation:0,duration:.65,ease:"back.out(1.7)"},.12)
+  .to("#item",{x:0,y:0,rotation:0,scale:1,duration:.72,ease:"back.out(1.5)"},.22)
+  .to("#sparkA",{opacity:1,scale:1,rotation:0,duration:.28,ease:"back.out(2)"},.48)
+  .to("#sparkB",{opacity:1,scale:1,rotation:0,duration:.28,ease:"back.out(2)"},.58)
+  .to("#item",{y:-16,duration:.22,ease:"power1.out",yoyo:true,repeat:1},1.0)
+
+  // Checkout enters as a hand-drawn board; camera-like framing change via group travel.
+  .to("#checkout",{opacity:1,x:0,rotation:0,scale:1,duration:.85,ease:"back.out(1.2)"},1.35)
+  .to("#sceneHook",{x:-520,scale:.9,rotation:-2,duration:.8,ease:"power2.inOut"},1.55)
+  .to("#miniProduct",{y:0,opacity:1,duration:.3,ease:"power2.out"},1.85)
+  .to("#button",{scale:1.045,duration:.22,ease:"back.out(2)"},2.05)
+  .to("#button",{scale:1,duration:.18,ease:"power1.inOut"},2.27)
+
+  // readable hold
+  .to("#card",{opacity:1,x:0,y:0,rotation:0,scale:1,duration:.8,ease:"back.out(1.15)"},3.0)
+  .to("#card",{y:-18,duration:.26,ease:"power1.out",yoyo:true,repeat:1},3.85)
+  .to("#button",{x:22,rotation:-1,duration:.14,ease:"power2.out",yoyo:true,repeat:1},4.18)
+
+  // payment action: card slides through the visual field
+  .to("#card",{x:-720,y:170,rotation:-7,scale:.82,duration:.85,ease:"power3.inOut"},4.65)
+  .to("#checkout",{x:330,rotation:-2,scale:.92,duration:.7,ease:"power2.inOut"},4.72)
+  .to("#sceneHook",{x:-900,opacity:.35,duration:.7,ease:"power2.inOut"},4.72)
+
+  // success reveal with elastic hand-drawn micro motion
+  .to("#successGroup",{opacity:1,x:0,y:0,scale:1,duration:.82,ease:"back.out(1.45)"},5.65)
+  .to("#successGroup",{rotation:-1.5,duration:.16,ease:"power1.out",yoyo:true,repeat:1},6.5)
+  .to("#confetti",{opacity:1,scale:1,duration:.42,ease:"back.out(2)"},6.65)
+  .to("#confetti",{rotation:2,duration:.22,ease:"power1.out",yoyo:true,repeat:1},7.05)
+
+  // success hold
+  .to("#successGroup",{scale:1.035,duration:.35,ease:"power1.inOut",yoyo:true,repeat:1},7.55)
+  .to("#card",{x:-950,opacity:.18,duration:.55,ease:"power2.in"},7.7)
+  .to("#checkout",{x:600,opacity:.18,duration:.55,ease:"power2.in"},7.72)
+
+  // final clean settle
+  .to("#successGroup",{scale:.98,duration:.3,ease:"power2.out"},8.45)
+  .to("#confetti",{y:-22,opacity:.75,duration:.5,ease:"power1.out"},8.55)
+  .to({}, {duration:1.0},9.0);
+
+function render(t){
+  mat.uniforms.uTime.value=t;
+  renderer.render(scene,camera);
+  debug.textContent=t.toFixed(2)+"s";
+}
+gsap.ticker.add(()=>render(tl.time()));
+
+window.OPENER={
+  W,H,DURATION,tl,ready:true,
+  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);render(tl.time());},
+  play(){tl.play();}
+};
+if(!q.has("clean"))tl.play(0);
+</script>
+</body>
+</html>
