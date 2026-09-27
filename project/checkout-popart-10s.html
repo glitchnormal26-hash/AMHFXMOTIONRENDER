@@ -23,6 +23,11 @@ body{font-family:Arial,Helvetica,sans-serif}
 #price{font-weight:900;font-size:82px;fill:var(--ink)}
 #success{font-weight:900;font-size:118px;letter-spacing:-3px;fill:var(--ink)}
 #small{font-weight:800;font-size:42px;fill:var(--ink)}
+.shadow{fill:#151515;opacity:.12}
+.outline{fill:none;stroke:var(--ink);stroke-width:28;stroke-linecap:round;stroke-linejoin:round}
+.caption{font-weight:900;font-size:48px;letter-spacing:5px;fill:var(--ink)}
+#burst{transform-box:fill-box;transform-origin:center}
+#scan{transform-box:fill-box;transform-origin:center}
 #debug{display:none;position:fixed;z-index:9;left:50%;bottom:20px;transform:translateX(-50%);padding:12px 18px;background:#111;color:#fff;border-radius:10px;font:16px monospace}
 #debug.on{display:block}
 </style>
@@ -122,6 +127,21 @@ body{font-family:Arial,Helvetica,sans-serif}
   <path d="M610 1540 l55 75 M860 1660 l15 90 M1510 1530 l80 65 M3030 1530 l80 75 M3460 1060 l100 20" class="hand stroke-blue"/>
   <path d="M1840 380 l-20 -90 M2760 360 l60 -80 M3510 850 l100 -20 M2300 1660 l55 90" class="hand stroke-green"/>
 </g>
+<!-- extra editorial accents: original shapes, no logos/brands -->
+<g id="burst" opacity=".9">
+  <circle cx="1950" cy="1030" r="430" fill="none" stroke="#ffd34e" stroke-width="95" stroke-dasharray="18 34" opacity=".5"/>
+  <path d="M1940 520v-150 M1940 1540v150 M1430 1030h-150 M2450 1030h150
+           M1570 660l-105-105 M2310 660l105-105 M1570 1400l-105 105 M2310 1400l105 105"
+        class="hand stroke-red thin"/>
+</g>
+<g id="speedLines" opacity="0">
+  <path d="M1500 1250h-360 M1500 1310h-470 M1500 1370h-300" class="hand stroke-blue thin"/>
+  <path d="M3130 900h-310 M3180 960h-390 M3150 1020h-260" class="hand stroke-red thin"/>
+</g>
+<g id="statusLabel" opacity="0">
+  <path d="M640 1520 C900 1480 1180 1490 1400 1540 L1370 1640 C1100 1680 820 1670 650 1620 Z" class="fill-yellow hand"/>
+  <text x="790" y="1595" class="caption">SECURE • PAID</text>
+</g>
 </svg>
 </div>
 <div id="debug">0.00s</div>
@@ -165,59 +185,63 @@ const debug=document.querySelector("#debug"); if(q.has("debug"))debug.classList.
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 
-gsap.set("#sceneHook",{x:-500,rotation:-5,scale:.86,opacity:0});
-gsap.set("#parcel",{y:180,rotation:-8});
-gsap.set("#item",{x:240,y:-90,rotation:9,scale:.78});
+gsap.set("#sceneHook",{x:-360,rotation:-4,scale:.88,opacity:0});
+gsap.set("#parcel",{y:120,rotation:-6});
+gsap.set("#item",{x:190,y:-70,rotation:7,scale:.8});
 gsap.set("#sparkA",{opacity:0,scale:.2,rotation:-25});
 gsap.set("#sparkB",{opacity:0,scale:.2,rotation:20});
-gsap.set("#checkout",{x:900,rotation:6,scale:.82,opacity:0});
-gsap.set("#card",{x:1100,y:380,rotation:12,scale:.65,opacity:0});
-gsap.set("#successGroup",{x:450,y:70,scale:.55,opacity:0});
+gsap.set("#checkout",{x:760,rotation:4,scale:.78,opacity:0});
+gsap.set("#card",{x:1050,y:120,rotation:10,scale:.7,opacity:0});
+gsap.set("#successGroup",{x:260,y:40,scale:.6,rotation:2,opacity:0});
 gsap.set("#confetti",{opacity:0,scale:.65});
-gsap.set("#button",{scale:.92});
-gsap.set("#miniProduct",{y:20,opacity:.4});
+gsap.set("#burst",{opacity:0,scale:.45,rotation:-12});
+gsap.set("#speedLines",{opacity:0,x:0});
+gsap.set("#statusLabel",{opacity:0,scale:.7,rotation:-5});
+gsap.set("#button",{scale:.94});
+gsap.set("#miniProduct",{y:24,opacity:0});
 
 const tl=gsap.timeline({paused:true,defaults:{overwrite:"auto"}});
 
-tl.to("#sceneHook",{opacity:1,x:0,rotation:0,scale:1,duration:.75,ease:"back.out(1.35)"},0)
-  .to("#parcel",{y:0,rotation:0,duration:.65,ease:"back.out(1.7)"},.12)
-  .to("#item",{x:0,y:0,rotation:0,scale:1,duration:.72,ease:"back.out(1.5)"},.22)
-  .to("#sparkA",{opacity:1,scale:1,rotation:0,duration:.28,ease:"back.out(2)"},.48)
-  .to("#sparkB",{opacity:1,scale:1,rotation:0,duration:.28,ease:"back.out(2)"},.58)
-  .to("#item",{y:-16,duration:.22,ease:"power1.out",yoyo:true,repeat:1},1.0)
+// 0.00–1.90 — hook: parcel + item pop in, then a tiny settle.
+tl.to("#sceneHook",{opacity:1,x:0,rotation:0,scale:1,duration:.62,ease:"back.out(1.45)"},0)
+  .to("#parcel",{y:0,rotation:0,duration:.58,ease:"back.out(1.8)"},.08)
+  .to("#item",{x:0,y:0,rotation:0,scale:1,duration:.62,ease:"back.out(1.55)"},.18)
+  .to("#sparkA",{opacity:1,scale:1,rotation:0,duration:.24,ease:"back.out(2.2)"},.46)
+  .to("#sparkB",{opacity:1,scale:1,rotation:0,duration:.24,ease:"back.out(2.2)"},.56)
+  .to("#item",{y:-18,duration:.18,ease:"power1.out",yoyo:true,repeat:1},1.05)
+  .to("#parcel",{rotation:1.2,duration:.14,ease:"power1.out",yoyo:true,repeat:1},1.1)
 
-  // Checkout enters as a hand-drawn board; camera-like framing change via group travel.
-  .to("#checkout",{opacity:1,x:0,rotation:0,scale:1,duration:.85,ease:"back.out(1.2)"},1.35)
-  .to("#sceneHook",{x:-520,scale:.9,rotation:-2,duration:.8,ease:"power2.inOut"},1.55)
-  .to("#miniProduct",{y:0,opacity:1,duration:.3,ease:"power2.out"},1.85)
-  .to("#button",{scale:1.045,duration:.22,ease:"back.out(2)"},2.05)
-  .to("#button",{scale:1,duration:.18,ease:"power1.inOut"},2.27)
+// 1.65–4.55 — checkout becomes the hero; hook slides back, avoiding overlap.
+  .to("#checkout",{opacity:1,x:0,rotation:0,scale:1,duration:.78,ease:"back.out(1.18)"},1.58)
+  .to("#sceneHook",{x:-620,scale:.78,rotation:-3,opacity:.45,duration:.72,ease:"power2.inOut"},1.72)
+  .to("#miniProduct",{y:0,opacity:1,duration:.28,ease:"power2.out"},2.18)
+  .to("#button",{scale:1.08,duration:.18,ease:"back.out(2.5)"},2.58)
+  .to("#button",{scale:1,duration:.2,ease:"power2.inOut"},2.76)
+  .to("#button",{rotation:-1.2,duration:.12,ease:"power1.out",yoyo:true,repeat:1},3.05)
+  .to("#checkout",{y:-14,duration:.28,ease:"power1.out",yoyo:true,repeat:1},3.55)
 
-  // readable hold
-  .to("#card",{opacity:1,x:0,y:0,rotation:0,scale:1,duration:.8,ease:"back.out(1.15)"},3.0)
-  .to("#card",{y:-18,duration:.26,ease:"power1.out",yoyo:true,repeat:1},3.85)
-  .to("#button",{x:22,rotation:-1,duration:.14,ease:"power2.out",yoyo:true,repeat:1},4.18)
+// 4.35–6.45 — payment action: card arrives from outside, button/card exchange energy.
+  .to("#speedLines",{opacity:1,duration:.16,ease:"power1.out"},4.25)
+  .to("#card",{opacity:1,x:0,y:0,rotation:0,scale:1,duration:.68,ease:"back.out(1.25)"},4.35)
+  .to("#button",{scale:.9,duration:.12,ease:"power2.in"},4.7)
+  .to("#button",{scale:1.02,duration:.16,ease:"back.out(1.8)"},4.82)
+  .to("#card",{x:-420,y:35,rotation:-4,scale:.92,duration:.5,ease:"power3.inOut"},5.05)
+  .to("#checkout",{x:260,rotation:-1.5,scale:.94,duration:.5,ease:"power2.inOut"},5.08)
+  .to("#speedLines",{x:-220,opacity:0,duration:.38,ease:"power2.in"},5.1)
 
-  // payment action: card slides through the visual field
-  .to("#card",{x:-720,y:170,rotation:-7,scale:.82,duration:.85,ease:"power3.inOut"},4.65)
-  .to("#checkout",{x:330,rotation:-2,scale:.92,duration:.7,ease:"power2.inOut"},4.72)
-  .to("#sceneHook",{x:-900,opacity:.35,duration:.7,ease:"power2.inOut"},4.72)
-
-  // success reveal with elastic hand-drawn micro motion
-  .to("#successGroup",{opacity:1,x:0,y:0,scale:1,duration:.82,ease:"back.out(1.45)"},5.65)
-  .to("#successGroup",{rotation:-1.5,duration:.16,ease:"power1.out",yoyo:true,repeat:1},6.5)
-  .to("#confetti",{opacity:1,scale:1,duration:.42,ease:"back.out(2)"},6.65)
-  .to("#confetti",{rotation:2,duration:.22,ease:"power1.out",yoyo:true,repeat:1},7.05)
-
-  // success hold
-  .to("#successGroup",{scale:1.035,duration:.35,ease:"power1.inOut",yoyo:true,repeat:1},7.55)
-  .to("#card",{x:-950,opacity:.18,duration:.55,ease:"power2.in"},7.7)
-  .to("#checkout",{x:600,opacity:.18,duration:.55,ease:"power2.in"},7.72)
-
-  // final clean settle
-  .to("#successGroup",{scale:.98,duration:.3,ease:"power2.out"},8.45)
-  .to("#confetti",{y:-22,opacity:.75,duration:.5,ease:"power1.out"},8.55)
-  .to({}, {duration:1.0},9.0);
+// 6.05–10.00 — clean success payoff, then a calm readable hold.
+  .to("#card",{x:-980,opacity:.08,scale:.72,duration:.5,ease:"power3.in"},5.68)
+  .to("#checkout",{x:640,opacity:.08,duration:.5,ease:"power3.in"},5.72)
+  .to("#burst",{opacity:1,scale:1,rotation:0,duration:.55,ease:"back.out(1.5)"},5.95)
+  .to("#successGroup",{opacity:1,x:0,y:0,scale:1,rotation:0,duration:.72,ease:"back.out(1.45)"},6.08)
+  .to("#successGroup",{rotation:-1.4,duration:.13,ease:"power1.out",yoyo:true,repeat:1},6.85)
+  .to("#confetti",{opacity:1,scale:1,duration:.38,ease:"back.out(2.2)"},7.02)
+  .to("#statusLabel",{opacity:1,scale:1,rotation:0,duration:.42,ease:"back.out(1.8)"},7.2)
+  .to("#successGroup",{scale:1.025,duration:.32,ease:"power1.inOut",yoyo:true,repeat:1},7.75)
+  .to("#confetti",{y:-18,rotation:2,duration:.5,ease:"power1.out"},8.2)
+  .to("#burst",{scale:1.04,rotation:3,duration:1.25,ease:"sine.inOut"},8.3)
+  .to("#successGroup",{y:-6,duration:.8,ease:"sine.inOut",yoyo:true,repeat:1},8.45)
+  .to({}, {duration:.65},9.25);
 
 function render(t){
   mat.uniforms.uTime.value=t;
