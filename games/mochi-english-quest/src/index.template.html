@@ -1983,6 +1983,13 @@ function goHome(msg){
 let G=null;
 const PRAISE=['Hebat!','Keren sekali!','Great job!','Perfect!','Amazing!','Yay, benar!','Excellent!'];
 const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+/* ---------- anti-pengulangan soal: yang belum pernah/paling lama tidak muncul didahulukan ---------- */
+const qKey=x=>{const k=x&&(x.q||x.s||x.en||x.a||(x.qs&&x.qs[0]&&x.qs[0].q))||JSON.stringify(x);return String(typeof k==='string'?k:JSON.stringify(k)).slice(0,48);};
+function seenQ(){return Array.isArray(S.seenQ)?S.seenQ:(S.seenQ=[]);}
+function markSeen(items){const a=seenQ();items.forEach(x=>{const k=qKey(x),i=a.indexOf(k);if(i>=0)a.splice(i,1);a.push(k);});while(a.length>260)a.shift();}
+function freshSort(arr){const a=seenQ(),r=shuffle(arr.slice()).map(x=>({x,r:a.indexOf(qKey(x))}));r.sort((p,q)=>p.r-q.r);return r.map(o=>o.x);}
+function freshTake(arr,n){const t=freshSort(arr).slice(0,n);markSeen(t);return t;}
+function freshOne(arr){return freshTake(arr,1)[0];}
 function pool(){
   const tp=(G&&G.topic)||S.topic,a=poolAll(),p=tp==='all'?a:a.filter(w=>w.t===tp);
   return p.length>=4?p:a;
@@ -2013,22 +2020,22 @@ function after(ms,fn){const my=G;setTimeout(()=>{if(G&&G===my)fn();},ms);}
 const CHOICE=['pic','listen','grammar','power','exam','read'];
 function buildItems(mode){
   const d=S.diff;
-  if(mode==='grammar')return shuffle(GRAMMAR[d]).slice(0,MODES.grammar.rounds);
-  if(mode==='power')return shuffle(POWER[d]).slice(0,MODES.power.rounds);
-  if(mode==='exam')return shuffle(shuffle(GRAMMAR[d]).slice(0,5).concat(shuffle(POWER[d]).slice(0,5)));
-  if(mode==='order')return shuffle(ORDER[d]).slice(0,MODES.order.rounds);
+  if(mode==='grammar')return freshTake(GRAMMAR[d],MODES.grammar.rounds);
+  if(mode==='power')return freshTake(POWER[d],MODES.power.rounds);
+  if(mode==='exam')return shuffle(freshTake(GRAMMAR[d],5).concat(freshTake(POWER[d],5)));
+  if(mode==='order')return freshTake(ORDER[d],MODES.order.rounds);
   if(mode==='read'){
-    const ps=READ[d],p=ps[Math.floor(Math.random()*ps.length)];
+    const ps=READ[d],p=freshOne(ps.map(x=>x));
     G.passage=p;
     return p.qs.slice();
   }
   let p=pool();
   if(mode==='match'){
-    if(d===2)return shuffle(SYN).slice(0,8);
-    return shuffle(p).slice(0,MODES.match.rounds);
+    if(d===2)return freshTake(SYN,8);
+    return freshTake(p,MODES.match.rounds);
   }
   if(mode==='spell'){const lim=d===2?12:10,s=p.filter(w=>w.en.length<=lim);if(s.length>=4)p=s;}
-  return shuffle(p).slice(0,MODES[mode].rounds);
+  return freshTake(p,MODES[mode].rounds);
 }
 function start(mode,opts){
   opts=opts||{};
@@ -3060,11 +3067,11 @@ $('wList').addEventListener('click',e=>{const b=e.target.closest('button[data-sa
 function npcQuestion(){
   const W=WORLD;
   if(Math.random()<.5){
-    const pool=ALLW.filter(w=>VT[W.ci].includes(w.t)),w=pool[Math.floor(Math.random()*pool.length)];
+    const pool=ALLW.filter(w=>VT[W.ci].includes(w.t)),w=freshOne(pool);
     const o=shuffle(pool.filter(x=>x.en!==w.en)).slice(0,3).map(x=>x.en).concat(w.en);
     return {q:w.pic+'  What is this in English?',o:shuffle(o),ans:w.en,w:w.en+' = '+w.id};
   }
-  const bank=Math.random()<.5?GRAMMAR[S.diff]:POWER[S.diff],it=bank[Math.floor(Math.random()*bank.length)];
+  const bank=Math.random()<.5?GRAMMAR[S.diff]:POWER[S.diff],it=freshOne(bank);
   return {q:it.q,o:shuffle(it.o.slice()),ans:it.o[it.a],w:it.w};
 }
 function wTalk(){
@@ -3589,7 +3596,9 @@ const misTier=()=>Math.min(2,Math.floor((level()-1)/3));
 function misMake(avoid){
   const tier=misTier();
   let t=null,guard=0;
-  do{t=MIS[Math.floor(Math.random()*MIS.length)];guard++;}while(avoid.includes(t.id)&&guard<40);
+  const hist=Array.isArray(S.misHist)?S.misHist:(S.misHist=[]),av=avoid.concat(hist);
+  do{t=MIS[Math.floor(Math.random()*MIS.length)];guard++;}while(av.includes(t.id)&&guard<60);
+  hist.push(t.id);while(hist.length>5)hist.shift();
   return {id:t.id,goal:t.g[tier],base:S.stat[t.k]||0,done:false};
 }
 function misFill(){
@@ -4197,12 +4206,12 @@ function sellAll(){
 function farmQuestion(){
   const pool=(typeof ALLW!=='undefined'?ALLW:WORDS).filter(w=>['animals','fruits','food','nature','actions','jobs'].includes(w.t));
   if(Math.random()<0.55&&pool.length>4){
-    const w=pickOne(pool);
+    const w=freshOne(pool);
     const o=shuffle(pool.filter(x=>x.en!==w.en)).slice(0,3).map(x=>x.en).concat(w.en);
     return {q:w.pic+'  What is "'+w.id+'" in English?',o:shuffle(o),ans:w.en,info:w.en+' = '+w.id};
   }
   const bank=Math.random()<0.5?GRAMMAR[S.diff]:POWER[S.diff];
-  const it=pickOne(bank);
+  const it=freshOne(bank);
   return {q:it.q,o:shuffle(it.o.slice()),ans:it.o[it.a],info:it.w||''};
 }
 function paintFq(){

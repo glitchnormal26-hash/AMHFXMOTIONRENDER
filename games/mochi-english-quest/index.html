@@ -1983,6 +1983,13 @@ function goHome(msg){
 let G=null;
 const PRAISE=['Hebat!','Keren sekali!','Great job!','Perfect!','Amazing!','Yay, benar!','Excellent!'];
 const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+/* ---------- anti-pengulangan soal: yang belum pernah/paling lama tidak muncul didahulukan ---------- */
+const qKey=x=>{const k=x&&(x.q||x.s||x.en||x.a||(x.qs&&x.qs[0]&&x.qs[0].q))||JSON.stringify(x);return String(typeof k==='string'?k:JSON.stringify(k)).slice(0,48);};
+function seenQ(){return Array.isArray(S.seenQ)?S.seenQ:(S.seenQ=[]);}
+function markSeen(items){const a=seenQ();items.forEach(x=>{const k=qKey(x),i=a.indexOf(k);if(i>=0)a.splice(i,1);a.push(k);});while(a.length>260)a.shift();}
+function freshSort(arr){const a=seenQ(),r=shuffle(arr.slice()).map(x=>({x,r:a.indexOf(qKey(x))}));r.sort((p,q)=>p.r-q.r);return r.map(o=>o.x);}
+function freshTake(arr,n){const t=freshSort(arr).slice(0,n);markSeen(t);return t;}
+function freshOne(arr){return freshTake(arr,1)[0];}
 function pool(){
   const tp=(G&&G.topic)||S.topic,a=poolAll(),p=tp==='all'?a:a.filter(w=>w.t===tp);
   return p.length>=4?p:a;
@@ -2013,22 +2020,22 @@ function after(ms,fn){const my=G;setTimeout(()=>{if(G&&G===my)fn();},ms);}
 const CHOICE=['pic','listen','grammar','power','exam','read'];
 function buildItems(mode){
   const d=S.diff;
-  if(mode==='grammar')return shuffle(GRAMMAR[d]).slice(0,MODES.grammar.rounds);
-  if(mode==='power')return shuffle(POWER[d]).slice(0,MODES.power.rounds);
-  if(mode==='exam')return shuffle(shuffle(GRAMMAR[d]).slice(0,5).concat(shuffle(POWER[d]).slice(0,5)));
-  if(mode==='order')return shuffle(ORDER[d]).slice(0,MODES.order.rounds);
+  if(mode==='grammar')return freshTake(GRAMMAR[d],MODES.grammar.rounds);
+  if(mode==='power')return freshTake(POWER[d],MODES.power.rounds);
+  if(mode==='exam')return shuffle(freshTake(GRAMMAR[d],5).concat(freshTake(POWER[d],5)));
+  if(mode==='order')return freshTake(ORDER[d],MODES.order.rounds);
   if(mode==='read'){
-    const ps=READ[d],p=ps[Math.floor(Math.random()*ps.length)];
+    const ps=READ[d],p=freshOne(ps.map(x=>x));
     G.passage=p;
     return p.qs.slice();
   }
   let p=pool();
   if(mode==='match'){
-    if(d===2)return shuffle(SYN).slice(0,8);
-    return shuffle(p).slice(0,MODES.match.rounds);
+    if(d===2)return freshTake(SYN,8);
+    return freshTake(p,MODES.match.rounds);
   }
   if(mode==='spell'){const lim=d===2?12:10,s=p.filter(w=>w.en.length<=lim);if(s.length>=4)p=s;}
-  return shuffle(p).slice(0,MODES[mode].rounds);
+  return freshTake(p,MODES[mode].rounds);
 }
 function start(mode,opts){
   opts=opts||{};
@@ -3060,11 +3067,11 @@ $('wList').addEventListener('click',e=>{const b=e.target.closest('button[data-sa
 function npcQuestion(){
   const W=WORLD;
   if(Math.random()<.5){
-    const pool=ALLW.filter(w=>VT[W.ci].includes(w.t)),w=pool[Math.floor(Math.random()*pool.length)];
+    const pool=ALLW.filter(w=>VT[W.ci].includes(w.t)),w=freshOne(pool);
     const o=shuffle(pool.filter(x=>x.en!==w.en)).slice(0,3).map(x=>x.en).concat(w.en);
     return {q:w.pic+'  What is this in English?',o:shuffle(o),ans:w.en,w:w.en+' = '+w.id};
   }
-  const bank=Math.random()<.5?GRAMMAR[S.diff]:POWER[S.diff],it=bank[Math.floor(Math.random()*bank.length)];
+  const bank=Math.random()<.5?GRAMMAR[S.diff]:POWER[S.diff],it=freshOne(bank);
   return {q:it.q,o:shuffle(it.o.slice()),ans:it.o[it.a],w:it.w};
 }
 function wTalk(){
@@ -3589,7 +3596,9 @@ const misTier=()=>Math.min(2,Math.floor((level()-1)/3));
 function misMake(avoid){
   const tier=misTier();
   let t=null,guard=0;
-  do{t=MIS[Math.floor(Math.random()*MIS.length)];guard++;}while(avoid.includes(t.id)&&guard<40);
+  const hist=Array.isArray(S.misHist)?S.misHist:(S.misHist=[]),av=avoid.concat(hist);
+  do{t=MIS[Math.floor(Math.random()*MIS.length)];guard++;}while(av.includes(t.id)&&guard<60);
+  hist.push(t.id);while(hist.length>5)hist.shift();
   return {id:t.id,goal:t.g[tier],base:S.stat[t.k]||0,done:false};
 }
 function misFill(){
@@ -4197,12 +4206,12 @@ function sellAll(){
 function farmQuestion(){
   const pool=(typeof ALLW!=='undefined'?ALLW:WORDS).filter(w=>['animals','fruits','food','nature','actions','jobs'].includes(w.t));
   if(Math.random()<0.55&&pool.length>4){
-    const w=pickOne(pool);
+    const w=freshOne(pool);
     const o=shuffle(pool.filter(x=>x.en!==w.en)).slice(0,3).map(x=>x.en).concat(w.en);
     return {q:w.pic+'  What is "'+w.id+'" in English?',o:shuffle(o),ans:w.en,info:w.en+' = '+w.id};
   }
   const bank=Math.random()<0.5?GRAMMAR[S.diff]:POWER[S.diff];
-  const it=pickOne(bank);
+  const it=freshOne(bank);
   return {q:it.q,o:shuffle(it.o.slice()),ans:it.o[it.a],info:it.w||''};
 }
 function paintFq(){
@@ -5610,6 +5619,7 @@ function owState(){
   if(typeof o.tod!=='number'||!isFinite(o.tod))o.tod=9;
   o.play=Number(o.play)||0;
   o.assist=!!o.assist;
+  ['recent','qhist'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[];o[k]=o[k].filter(x=>typeof x==='string').slice(-90);});
   if(o.quest&&typeof o.quest!=='object')o.quest=null;
   return o;
 }
@@ -5895,7 +5905,15 @@ function owQText(q){
   if(q.type==='visit')return 'Kunjungi '+(OW.W.villages[q.vid]?OW.W.villages[q.vid].name:'desa');
   return '';
 }
+function owQKey(q){return q.type+':'+(q.to||q.wid||q.vid||'');}
+function owQHist(q){const h=S.ow.qhist||(S.ow.qhist=[]);h.push(owQKey(q));while(h.length>8)h.shift();}
 function owNewQuest(n){
+  const h=(S.ow.qhist||[]),lastT=h.length?h[h.length-1].split(':')[0]:'';
+  let q=null;
+  for(let i=0;i<30;i++){q=owNewQuest0(n);if(!h.includes(owQKey(q))&&(q.type!==lastT||i>20))break;}
+  return q;
+}
+function owNewQuest0(n){
   const n_=n,W=OW.W,p=OW.p,r=Math.random();let q=null;
   if(r<.45&&false){}
   if(r<.28)q={type:'collect',need:3+rn(3),prog:0};
@@ -5956,10 +5974,10 @@ function owWordQ(w,pl){
   return{kind,w,opts,key:w.en,topic:w.t,say:w.en,ans:forEn?w.en:w.id,word:true};
 }
 /* opt: {onlyMiss, boss} — campuran kosakata, grammar, dan susun kalimat */
-function owMakeQ(opt){
+function owMakeQ0(opt){
   opt=opt||{};
   const o=S.ow,miss=Object.keys(o.miss||{}),pl=poolAll();
-  if(opt.onlyMiss&&miss.length){const w=ALLW.find(x=>x.en===miss[rn(miss.length)]);if(w)return owWordQ(w,pl);}
+  if(opt.onlyMiss&&miss.length){const mk=miss[rn(miss.length)],w=ALLW.find(x=>x.en===mk);if(w)return owWordQ(w,pl);}
   const r=Math.random();
   const gl=(typeof GRAMMAR!=='undefined'&&(GRAMMAR[S.diff]||GRAMMAR[0]))||[],ol=(typeof ORDER!=='undefined'&&(ORDER[S.diff]||ORDER[0]))||[];
   if(!opt.onlyMiss&&r<(opt.boss?.3:.18)&&gl.length){
@@ -5978,11 +5996,29 @@ function owMakeQ(opt){
     }
   }
   let w=null;
-  if(miss.length&&Math.random()<.35)w=ALLW.find(x=>x.en===miss[rn(miss.length)]);
+  if(miss.length&&Math.random()<.35){const mk=miss[rn(miss.length)];w=ALLW.find(x=>x.en===mk);}
   const dk=Object.keys(o.dict);
-  if(!w&&dk.length>=4&&Math.random()<.3)w=ALLW.find(x=>x.en===dk[rn(dk.length)]);
+  if(!w&&dk.length>=4&&Math.random()<.3){const dkk=dk[rn(dk.length)];w=ALLW.find(x=>x.en===dkk);}
   if(!w)w=pl[rn(pl.length)];
   return owWordQ(w,pl);
+}
+/* anti-pengulangan: soal yang sama tidak muncul lagi di kuis yang sama, dan tidak muncul lagi dalam ~90 soal terakhir */
+function owQId(q){return q.kind==='gram'?'g:'+q.g.q:q.kind==='order'?'o:'+q.it.s:'w:'+q.w.en;}
+function owMakeQ(opt){
+  opt=opt||{};const o=S.ow,rec=o.recent||(o.recent=[]),seen=opt.seen;
+  const cap=poolAll().length+((typeof GRAMMAR!=='undefined'&&GRAMMAR[S.diff])||[]).length+((typeof ORDER!=='undefined'&&ORDER[S.diff])||[]).length,win=Math.min(90,Math.max(8,Math.floor(cap*.55)));
+  const bad=id=>(seen&&seen.has(id))||(!opt.onlyMiss&&rec.slice(-win).includes(id));
+  let q=null;
+  for(let i=0;i<80;i++){const c=owMakeQ0(opt);if(!bad(owQId(c))){q=c;break;}}
+  if(!q){ // cadangan: ambil kata yang belum dipakai di kuis ini
+    const pl=poolAll(),free=pl.filter(w=>!(seen&&seen.has('w:'+w.en))&&(opt.onlyMiss?o.miss[w.en]:true));
+    if(free.length)q=owWordQ(free[rn(free.length)],pl);
+    else if(opt.onlyMiss)return null;
+    else{q=owMakeQ0(opt);}
+  }
+  const id=owQId(q);if(seen)seen.add(id);
+  if(!opt.onlyMiss){rec.push(id);while(rec.length>90)rec.shift();}
+  return q;
 }
 function owQPrompt(q){
   const w=q.w;
@@ -6038,7 +6074,8 @@ function owQuiz(cfg){
       },100);
     }
   };
-  const next=()=>{st.q=owMakeQ({onlyMiss:cfg.onlyMiss,boss:cfg.boss});st.busy=false;st.hit='';st.sel=-1;draw();};
+  st.seen=new Set();
+  const next=()=>{st.q=owMakeQ({onlyMiss:cfg.onlyMiss,boss:cfg.boss,seen:st.seen});if(!st.q)return fin({win:true,st});st.busy=false;st.hit='';st.sel=-1;draw();};
   st.pick=(i,confirm)=>{
     if(st.busy||!OW.quiz||OW.quiz!==st)return;
     const q=st.q,o=q.opts[i];
@@ -6138,7 +6175,7 @@ function owTalk(n){
   OW.acts={
     close:()=>owModalHide(),
     deliver:()=>{const q2=S.ow.quest;if(!q2||q2.type!=='deliver')return owModalHide();speak('Here is a letter for you.');q2.done=true;q2.from=n.k;owBurst(OW.p.x,OW.p.y,30,16,['#fff','#ffd24d']);OW.acts.turnin();},
-    accept:()=>{S.ow.quest=owNewQuest(n);save();owModalHide();toast('Misi baru: '+owQText(S.ow.quest),'🎯');owBanner('Misi baru!',owQText(S.ow.quest));},
+    accept:()=>{S.ow.quest=owNewQuest(n);owQHist(S.ow.quest);save();owModalHide();toast('Misi baru: '+owQText(S.ow.quest),'🎯');owBanner('Misi baru!',owQText(S.ow.quest));},
     turnin:()=>{
       const q2=S.ow.quest;if(!q2||!q2.done)return owModalHide();
       let it=null;if(Math.random()<.3){it=rollReward(1);if(it)ownItem(it.id);}
@@ -6271,7 +6308,7 @@ function owReview(){
   const miss=Object.keys(S.ow.miss);
   if(!miss.length){toast('Belum ada kata sulit. Bagus sekali!','🌟');return;}
   OW.acts={close:()=>owModalHide(),menu:()=>{owModalHide();owMenu();}};
-  owQuiz({mode:'chat',onlyMiss:true,foe:'mochi',rounds:Math.min(5,Math.max(3,miss.length)),title:'Latihan kata sulit',onEnd:r=>{
+  owQuiz({mode:'chat',onlyMiss:true,foe:'mochi',rounds:Math.min(5,miss.length),title:'Latihan kata sulit',onEnd:r=>{
     const ok=r.st.ok;addCoins(ok*3,true);S.points+=ok*2;save();sfx(ok>=3?'win':'ok');
     const left=Object.keys(S.ow.miss).length;
     owModalShow(owCard(avatar('mochi',ok>=3?'cheer':'happy'),'Latihan selesai',`Benar ${ok}/${r.st.n} · 🪙 +${ok*3} koin<br>${left?`Masih ada ${left} kata untuk diulang.`:'Semua kata sulit sudah dikuasai! 🎉'}`,owBtn('close','Oke')));
@@ -6501,7 +6538,7 @@ function owTapWorld(x,y){
 }
 
 owBindUI();
-window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld,owReview,owReport,owReportText,owMakeQ,owQText,owPickCrystal,owHud,owModalHide,loadSlot,readIdx,startCreate,ALLW:()=>ALLW};
+window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld,owReview,owReport,owReportText,owMakeQ,owQText,owPickCrystal,owHud,owModalHide,owMakeQ0,loadSlot,readIdx,startCreate,ALLW:()=>ALLW};
 /*__OW_END__*/
 
 /* ---------- Mulai ---------- */

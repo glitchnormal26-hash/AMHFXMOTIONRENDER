@@ -700,6 +700,7 @@ function owState(){
   if(typeof o.tod!=='number'||!isFinite(o.tod))o.tod=9;
   o.play=Number(o.play)||0;
   o.assist=!!o.assist;
+  ['recent','qhist'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[];o[k]=o[k].filter(x=>typeof x==='string').slice(-90);});
   if(o.quest&&typeof o.quest!=='object')o.quest=null;
   return o;
 }
@@ -985,7 +986,15 @@ function owQText(q){
   if(q.type==='visit')return 'Kunjungi '+(OW.W.villages[q.vid]?OW.W.villages[q.vid].name:'desa');
   return '';
 }
+function owQKey(q){return q.type+':'+(q.to||q.wid||q.vid||'');}
+function owQHist(q){const h=S.ow.qhist||(S.ow.qhist=[]);h.push(owQKey(q));while(h.length>8)h.shift();}
 function owNewQuest(n){
+  const h=(S.ow.qhist||[]),lastT=h.length?h[h.length-1].split(':')[0]:'';
+  let q=null;
+  for(let i=0;i<30;i++){q=owNewQuest0(n);if(!h.includes(owQKey(q))&&(q.type!==lastT||i>20))break;}
+  return q;
+}
+function owNewQuest0(n){
   const n_=n,W=OW.W,p=OW.p,r=Math.random();let q=null;
   if(r<.45&&false){}
   if(r<.28)q={type:'collect',need:3+rn(3),prog:0};
@@ -1046,10 +1055,10 @@ function owWordQ(w,pl){
   return{kind,w,opts,key:w.en,topic:w.t,say:w.en,ans:forEn?w.en:w.id,word:true};
 }
 /* opt: {onlyMiss, boss} — campuran kosakata, grammar, dan susun kalimat */
-function owMakeQ(opt){
+function owMakeQ0(opt){
   opt=opt||{};
   const o=S.ow,miss=Object.keys(o.miss||{}),pl=poolAll();
-  if(opt.onlyMiss&&miss.length){const w=ALLW.find(x=>x.en===miss[rn(miss.length)]);if(w)return owWordQ(w,pl);}
+  if(opt.onlyMiss&&miss.length){const mk=miss[rn(miss.length)],w=ALLW.find(x=>x.en===mk);if(w)return owWordQ(w,pl);}
   const r=Math.random();
   const gl=(typeof GRAMMAR!=='undefined'&&(GRAMMAR[S.diff]||GRAMMAR[0]))||[],ol=(typeof ORDER!=='undefined'&&(ORDER[S.diff]||ORDER[0]))||[];
   if(!opt.onlyMiss&&r<(opt.boss?.3:.18)&&gl.length){
@@ -1068,11 +1077,29 @@ function owMakeQ(opt){
     }
   }
   let w=null;
-  if(miss.length&&Math.random()<.35)w=ALLW.find(x=>x.en===miss[rn(miss.length)]);
+  if(miss.length&&Math.random()<.35){const mk=miss[rn(miss.length)];w=ALLW.find(x=>x.en===mk);}
   const dk=Object.keys(o.dict);
-  if(!w&&dk.length>=4&&Math.random()<.3)w=ALLW.find(x=>x.en===dk[rn(dk.length)]);
+  if(!w&&dk.length>=4&&Math.random()<.3){const dkk=dk[rn(dk.length)];w=ALLW.find(x=>x.en===dkk);}
   if(!w)w=pl[rn(pl.length)];
   return owWordQ(w,pl);
+}
+/* anti-pengulangan: soal yang sama tidak muncul lagi di kuis yang sama, dan tidak muncul lagi dalam ~90 soal terakhir */
+function owQId(q){return q.kind==='gram'?'g:'+q.g.q:q.kind==='order'?'o:'+q.it.s:'w:'+q.w.en;}
+function owMakeQ(opt){
+  opt=opt||{};const o=S.ow,rec=o.recent||(o.recent=[]),seen=opt.seen;
+  const cap=poolAll().length+((typeof GRAMMAR!=='undefined'&&GRAMMAR[S.diff])||[]).length+((typeof ORDER!=='undefined'&&ORDER[S.diff])||[]).length,win=Math.min(90,Math.max(8,Math.floor(cap*.55)));
+  const bad=id=>(seen&&seen.has(id))||(!opt.onlyMiss&&rec.slice(-win).includes(id));
+  let q=null;
+  for(let i=0;i<80;i++){const c=owMakeQ0(opt);if(!bad(owQId(c))){q=c;break;}}
+  if(!q){ // cadangan: ambil kata yang belum dipakai di kuis ini
+    const pl=poolAll(),free=pl.filter(w=>!(seen&&seen.has('w:'+w.en))&&(opt.onlyMiss?o.miss[w.en]:true));
+    if(free.length)q=owWordQ(free[rn(free.length)],pl);
+    else if(opt.onlyMiss)return null;
+    else{q=owMakeQ0(opt);}
+  }
+  const id=owQId(q);if(seen)seen.add(id);
+  if(!opt.onlyMiss){rec.push(id);while(rec.length>90)rec.shift();}
+  return q;
 }
 function owQPrompt(q){
   const w=q.w;
@@ -1128,7 +1155,8 @@ function owQuiz(cfg){
       },100);
     }
   };
-  const next=()=>{st.q=owMakeQ({onlyMiss:cfg.onlyMiss,boss:cfg.boss});st.busy=false;st.hit='';st.sel=-1;draw();};
+  st.seen=new Set();
+  const next=()=>{st.q=owMakeQ({onlyMiss:cfg.onlyMiss,boss:cfg.boss,seen:st.seen});if(!st.q)return fin({win:true,st});st.busy=false;st.hit='';st.sel=-1;draw();};
   st.pick=(i,confirm)=>{
     if(st.busy||!OW.quiz||OW.quiz!==st)return;
     const q=st.q,o=q.opts[i];
@@ -1228,7 +1256,7 @@ function owTalk(n){
   OW.acts={
     close:()=>owModalHide(),
     deliver:()=>{const q2=S.ow.quest;if(!q2||q2.type!=='deliver')return owModalHide();speak('Here is a letter for you.');q2.done=true;q2.from=n.k;owBurst(OW.p.x,OW.p.y,30,16,['#fff','#ffd24d']);OW.acts.turnin();},
-    accept:()=>{S.ow.quest=owNewQuest(n);save();owModalHide();toast('Misi baru: '+owQText(S.ow.quest),'🎯');owBanner('Misi baru!',owQText(S.ow.quest));},
+    accept:()=>{S.ow.quest=owNewQuest(n);owQHist(S.ow.quest);save();owModalHide();toast('Misi baru: '+owQText(S.ow.quest),'🎯');owBanner('Misi baru!',owQText(S.ow.quest));},
     turnin:()=>{
       const q2=S.ow.quest;if(!q2||!q2.done)return owModalHide();
       let it=null;if(Math.random()<.3){it=rollReward(1);if(it)ownItem(it.id);}
@@ -1361,7 +1389,7 @@ function owReview(){
   const miss=Object.keys(S.ow.miss);
   if(!miss.length){toast('Belum ada kata sulit. Bagus sekali!','🌟');return;}
   OW.acts={close:()=>owModalHide(),menu:()=>{owModalHide();owMenu();}};
-  owQuiz({mode:'chat',onlyMiss:true,foe:'mochi',rounds:Math.min(5,Math.max(3,miss.length)),title:'Latihan kata sulit',onEnd:r=>{
+  owQuiz({mode:'chat',onlyMiss:true,foe:'mochi',rounds:Math.min(5,miss.length),title:'Latihan kata sulit',onEnd:r=>{
     const ok=r.st.ok;addCoins(ok*3,true);S.points+=ok*2;save();sfx(ok>=3?'win':'ok');
     const left=Object.keys(S.ow.miss).length;
     owModalShow(owCard(avatar('mochi',ok>=3?'cheer':'happy'),'Latihan selesai',`Benar ${ok}/${r.st.n} · 🪙 +${ok*3} koin<br>${left?`Masih ada ${left} kata untuk diulang.`:'Semua kata sulit sudah dikuasai! 🎉'}`,owBtn('close','Oke')));
@@ -1591,5 +1619,5 @@ function owTapWorld(x,y){
 }
 
 owBindUI();
-window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld,owReview,owReport,owReportText,owMakeQ,owQText,owPickCrystal,owHud,owModalHide,loadSlot,readIdx,startCreate,ALLW:()=>ALLW};
+window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld,owReview,owReport,owReportText,owMakeQ,owQText,owPickCrystal,owHud,owModalHide,owMakeQ0,loadSlot,readIdx,startCreate,ALLW:()=>ALLW};
 
