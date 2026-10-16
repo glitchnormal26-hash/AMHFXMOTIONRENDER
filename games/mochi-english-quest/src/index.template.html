@@ -1,4 +1,81 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* ===== Petualangan 2.0 ===== */
+.modal.stagemodal,.modal.boonmodal{grid-template-columns:minmax(0,1fr)}.modal.stagemodal .wcard,.modal.boonmodal .wcard{justify-self:center;width:100%}
+.arena-top .hero{width:84px;flex:none;align-self:flex-end}
+.hero svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 4px rgba(58,42,92,.3))}
+.hero.lunge{animation:herolunge .55s}
+.hero.hurt{animation:herohurt .5s}
+@keyframes herolunge{0%{transform:translateX(0)}35%{transform:translateX(34px) scale(1.12) rotate(6deg)}100%{transform:translateX(0)}}
+@keyframes herohurt{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px) rotate(-6deg)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.arena{overflow:hidden}
+.arena-fx{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.afloat{position:absolute;font-family:var(--font-display);font-weight:800;font-size:1.5rem;color:#fff;text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink);animation:afl 1.2s ease-out forwards;transform:translateX(-50%)}
+.afloat.bonus{color:var(--sun);font-size:1.8rem}
+.afloat.dmg{color:#ff6b6b}
+@keyframes afl{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}15%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-44px) scale(1)}}
+.abanner{position:absolute;left:0;right:0;top:34%;text-align:center;display:flex;flex-direction:column;gap:2px;animation:aban 1.6s ease-out forwards}
+.abanner b{display:inline-block;margin:0 auto;font-family:var(--font-display);font-size:1.5rem;color:#fff;background:var(--ink);padding:4px 16px;border-radius:12px;box-shadow:3px 3px 0 var(--sun);transform:rotate(-2deg)}
+.abanner small{font-weight:800;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:10px;padding:1px 10px;margin:0 auto}
+@keyframes aban{0%{opacity:0;transform:translateX(-60px)}15%{opacity:1;transform:translateX(0)}80%{opacity:1}100%{opacity:0;transform:translateX(40px)}}
+.arena.special{animation:aspecial .7s}
+@keyframes aspecial{0%,100%{filter:none}30%{filter:brightness(1.35) saturate(1.4)}}
+.arena.shake{animation:ashake .4s}
+@keyframes ashake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.foe.rage{animation:rage .5s ease-in-out infinite alternate;filter:hue-rotate(-40deg) saturate(1.5)}
+@keyframes rage{to{transform:scale(1.07) rotate(-3deg)}}
+@media (max-width:420px){.arena-top .hero{width:64px}.foe{width:84px}.foe.boss{width:110px}}
+/* peta ular */
+.nodes.snake{display:flex;flex-direction:column;gap:0}
+.nodes.snake::before{display:none}
+.nrow{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.nrow::before{content:"";position:absolute;left:12.5%;right:12.5%;top:30px;border-top:4px dotted var(--ink);opacity:.35}
+.nrow.rev{direction:rtl}
+.nrow.rev>*{direction:ltr}
+.nlink{height:26px;position:relative}
+.nlink::after{content:"";position:absolute;right:12.5%;top:-2px;bottom:-2px;border-right:4px dotted var(--ink);opacity:.35;transform:translateX(2px)}
+.node .you{position:absolute;right:-6px;top:-16px;width:34px;height:34px;z-index:3;animation:youb 1s ease-in-out infinite;pointer-events:none}
+.node .you svg{width:100%;height:100%;display:block;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+@keyframes youb{50%{transform:translateY(-5px)}}
+.chap-prog{position:relative;height:18px;border:3px solid var(--ink);border-radius:10px;background:rgba(255,255,255,.7);overflow:hidden;margin:2px 0 8px}
+.chap-prog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--sun),#ffb84d)}
+.chap-prog span{position:relative;display:block;text-align:center;font-weight:800;font-size:.7rem;line-height:12px;color:var(--ink)}
+/* pratinjau stage */
+.stageprev{gap:10px;box-sizing:border-box;min-width:0;width:100%}.stageprev *{box-sizing:border-box;min-width:0}.stageprev .row{display:flex;gap:8px}.stageprev .row .btn{flex:1}
+.sp-top{display:flex;align-items:center;gap:12px;background:linear-gradient(160deg,var(--g1),var(--g2));border:3px solid var(--ink);border-radius:16px;padding:10px}
+.sp-foe{width:92px;flex:none}.sp-foe.boss{width:110px}.sp-foe svg{display:block;width:100%;height:auto}
+.sp-txt{display:flex;flex-direction:column;gap:2px;min-width:0}.sp-txt h2{margin:0;font-size:1.25rem;line-height:1.15}
+.sp-goals{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.sp-goals li{background:var(--soft);border:2px solid var(--ink);border-radius:12px;padding:5px 10px;font-weight:800;font-size:.9rem;opacity:.75}
+.sp-goals li.on{background:var(--mint);opacity:1}
+.sp-goals li.ev{background:#fff3b0;opacity:1}
+.sp-goals small{font-weight:700;opacity:.7;margin-left:6px}
+/* boon */
+.boons{display:grid;gap:8px}
+.boon{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:3px 3px 0 var(--ink);padding:8px 12px;font:inherit;color:var(--ink);cursor:pointer;min-height:56px}
+.boon .bi{grid-row:1/3;font-size:1.9rem;text-align:center}
+.boon small{font-weight:700;opacity:.75}
+.boon:hover,.boon:focus-visible{background:#fff3b0}
+.boon:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+/* percakapan */
+.talk{display:flex;flex-direction:column;gap:10px}
+.talk-head{display:flex;align-items:center;gap:10px}
+.talk-head small{display:block;font-weight:700;opacity:.7}
+.tav{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:#fff;overflow:hidden;flex:none}
+.tav svg{width:100%;height:100%;display:block}
+.chat{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow-y:auto;padding:4px 2px}
+.cb{max-width:86%;padding:8px 12px;border:3px solid var(--ink);border-radius:16px;font-weight:700;line-height:1.3;background:#fff;animation:pop .25s ease-out}
+.cb.npc{align-self:flex-start;border-bottom-left-radius:4px}
+.cb.me{align-self:flex-end;background:var(--mint);border-bottom-right-radius:4px}
+.cb.live{font-size:1.1rem;background:#fff9d6}
+.cb small{display:block;font-weight:700;opacity:.65;font-size:.8rem;margin-top:3px}
+.cb .spk{border:2px solid var(--ink);border-radius:50%;background:#fff;width:30px;height:30px;font-size:.9rem;cursor:pointer;vertical-align:middle}
+/* tangkap kata */
+.catchwrap{display:flex;flex-direction:column;gap:8px}
+.catchhint{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:6px 12px;display:flex;flex-direction:column}
+.catchhint small{font-weight:700;opacity:.7}
+.catchcv{width:100%;display:block;border:3px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);touch-action:none;cursor:ew-resize;background:#cfe}
+@media (prefers-reduced-motion:reduce){.afloat,.abanner,.you,.hero.lunge,.hero.hurt,.foe.rage{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style></head><body>
 <title>Adelian Althania English Adventure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -312,6 +389,10 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:3px}
 .mode.wide .ico{flex:none}
 .m5{background:#c9b8ff}.m6{background:#ffb88c}.m7{background:#9be8ff}.m8{background:#ffe27a}
 
+@media (max-width:440px){
+  .logo{font-size:1.3rem}
+  .top{gap:6px}.top .hbtns{gap:5px;flex:none}.top .hbtns .icon-btn{width:40px!important;height:40px!important;font-size:1.05rem}
+}
 @media (max-width:380px){
   #mochi{width:120px}
   .is-play #mochi{width:84px}
@@ -913,6 +994,8 @@ body{
         <button class="btn mode m1" data-mode="pic"><span class="ico">🖼️</span><b>Tebak Gambar</b><small>Lihat gambar, pilih katanya</small></button>
         <button class="btn mode m2" data-mode="listen"><span class="ico">🎧</span><b>Dengar &amp; Pilih</b><small>Dengar kata, pilih gambar</small></button>
         <button class="btn mode m4" data-mode="spell"><span class="ico">🔤</span><b>Susun Kata</b><small>Susun huruf jadi kata</small></button>
+        <button class="btn mode m6" data-mode="talk"><span class="ico">💬</span><b>Percakapan</b><small>Ngobrol dengan penduduk</small></button>
+        <button class="btn mode m3" data-mode="catch"><span class="ico">🧺</span><b>Tangkap Kata</b><small>Tangkap kata sesuai tema</small></button>
         <button class="btn mode m1" data-mode="match"><span class="ico">🃏</span><b>Pasangkan</b><small>Cocokkan pasangan kata</small></button>
       </div>
     </div>
@@ -1038,7 +1121,9 @@ body{
       <span class="score" id="comboText"></span>
     </div>
     <div class="arena" id="arena" hidden>
+      <div class="arena-fx" id="arenaFx" aria-hidden="true"></div>
       <div class="arena-top">
+        <div class="hero" id="heroBox" aria-hidden="true"></div>
         <div class="foe-info">
           <b id="foeName"></b>
           <div class="bar thin hp" id="hpBar" role="progressbar" aria-label="Nyawa musuh"><i id="foeHp"></i></div>
@@ -1175,8 +1260,10 @@ const MODES={
   grammar:{n:'Grammar',rounds:8},
   power:{n:'Word Power',rounds:8},
   exam:{n:'Ujian Mini',rounds:10},
-  order:{n:'Susun Kalimat',rounds:5},
-  read:{n:'Reading',rounds:5}
+  order:{n:'Susun Kalimat',rounds:6},
+  read:{n:'Reading',rounds:5},
+  talk:{n:'Percakapan',rounds:5},
+  catch:{n:'Tangkap Kata',rounds:10}
 };
 
 /* ---------- State ---------- */
@@ -1839,8 +1926,8 @@ function art(key,expr,crop,layer){
 const avatar=(key,expr)=>art(key,expr||'happy',true);
 
 /* ---------- Cerita petualangan: Pulau Kata ---------- */
-const MODE_ICON={pic:'🖼️',listen:'🎧',spell:'🔤',match:'🃏',grammar:'✏️',power:'💡',order:'🧩',read:'📖',exam:'📝'};
-const MODE_NAME={pic:'Tebak Gambar',listen:'Dengar & Pilih',spell:'Susun Kata',match:'Pasangkan',grammar:'Grammar',power:'Word Power',order:'Susun Kalimat',read:'Reading',exam:'Ujian Mini'};
+const MODE_ICON={pic:'🖼️',listen:'🎧',spell:'🔤',match:'🃏',grammar:'✏️',power:'💡',order:'🧩',read:'📖',exam:'📝',talk:'💬',catch:'🧺'};
+const MODE_NAME={pic:'Tebak Gambar',listen:'Dengar & Pilih',spell:'Susun Kata',match:'Pasangkan',grammar:'Grammar',power:'Word Power',order:'Susun Kalimat',read:'Reading',exam:'Ujian Mini',talk:'Percakapan',catch:'Tangkap Kata'};
 const ABILITY={kai:'Coret 2',luna:'Sembuh',bima:'Perisai',sari:'Arti',pip:'Lewati',foxy:'Beruntung'};
 
 /* baris dialog: [siapa, teks, ekspresi] */
@@ -1945,6 +2032,8 @@ const CHAPTERS=[
   ['mochi','Terima kasih, semuanya! Tapi petualangan belajar belum selesai.','cheer']]}
 ];
 
+/*__ADV_DATA__*/
+
 /* ---------- Layar & menu ---------- */
 const SCREENS=['home','story','world','play','result','create','open'];
 function showScreen(name){
@@ -2019,13 +2108,15 @@ function startTimer(sec){
 }
 function after(ms,fn){const my=G;setTimeout(()=>{if(G&&G===my)fn();},ms);}
 
-const CHOICE=['pic','listen','grammar','power','exam','read'];
+const CHOICE=['pic','listen','grammar','power','exam','read','talk'];
 function buildItems(mode){
   const d=S.diff;
   if(mode==='grammar')return freshTake(GRAMMAR[d],MODES.grammar.rounds);
   if(mode==='power')return freshTake(POWER[d],MODES.power.rounds);
   if(mode==='exam')return shuffle(freshTake(GRAMMAR[d],5).concat(freshTake(POWER[d],5)));
   if(mode==='order')return freshTake(ORDER[d],MODES.order.rounds);
+  if(mode==='talk')return talkItems();
+  if(mode==='catch')return catchItems();
   if(mode==='read'){
     const ps=READ[d],p=freshOne(ps.map(x=>x));
     G.passage=p;
@@ -2046,13 +2137,14 @@ function start(mode,opts){
      heartsMax:MAXH(),
      adv:opts.adv||null,topic:opts.topic||null,foe:opts.foe||null,used:{},shield:false,lucky:false};
   G.items=buildItems(mode);
-  if(opts.rounds&&mode!=='read'&&mode!=='exam')G.items=G.items.slice(0,opts.rounds);
+  if(opts.rounds&&mode!=='read'&&mode!=='exam'&&mode!=='talk'&&mode!=='catch')G.items=G.items.slice(0,opts.rounds);
+  G.wv={};
   G.total=G.items.length;
   showScreen('play');
   initArena();
   updateHud();
   mochi('think',G.adv?'Pertarungan dimulai! Jawab dengan teliti!':'Siap? '+MODES[mode].n+' dimulai!');
-  if(mode==='match')renderMatch();else nextRound();
+  if(mode==='match')renderMatch();else if(mode==='catch')renderCatch();else nextRound();
 }
 function updateHud(){
   const mh=G.heartsMax||3,h=Math.max(0,G.hearts);
@@ -2067,11 +2159,12 @@ function good(){
   G.correct++;G.combo++;G.best=Math.max(G.best,G.combo);
   let gain=Math.round((10+Math.min(G.combo-1,5)*2)*MULT[S.diff]);
   if(G.lucky){gain*=2;G.lucky=false;drawSkills();}
+  if(G.luckyN>0){gain*=2;G.luckyN--;}
   if(petFx('score'))gain=Math.round(gain*1.15);
   G.score+=gain;
   statAdd('correct',1);
   if(G.mode==='spell')statAdd('spell',1);
-  if(G.adv)foeHit();
+  if(G.adv){foeHit();advOnGood();}
   sfx('ok');
   mochi('cheer',pickOne(PRAISE)+' +'+gain,{back:1400,backMsg:'Lanjut, ya!'});
   burst(10);
@@ -2079,7 +2172,7 @@ function good(){
 }
 function bad(msg){
   G.wrong++;G.combo=0;
-  if(G.adv)foeAtk();
+  if(G.adv){foeAtk();advOnBad();}
   if(G.shield){
     G.shield=false;sfx('tap');
     mochi('think','Perisai Bima menahan serangan! Nyawa aman.');
@@ -2094,10 +2187,11 @@ function bad(msg){
 }
 function nextRound(){
   if(G.progress>=G.total){endGame(true);return;}
+  if(G.adv&&advWave())return;
   G.locked=false;G.next=null;G.cur=null;
   $('tbar').hidden=true;
   ({pic:renderPic,listen:renderListen,spell:renderSpell,order:renderOrder,
-    grammar:renderQuiz,power:renderQuiz,exam:renderQuiz,read:renderQuiz})[G.mode]();
+    grammar:renderQuiz,power:renderQuiz,exam:renderQuiz,read:renderQuiz,talk:renderTalk})[G.mode]();
 }
 function advance(dead,ms){
   G.progress++;
@@ -2325,7 +2419,7 @@ $('home').addEventListener('click',e=>{
   if(!b||b.disabled)return;
   if(b.dataset.tab){TAB=b.dataset.tab;sfx('tap');setTab();return;}
   if(b.dataset.wd!==undefined){enterWorld(+b.dataset.wd);return;}
-  if(b.dataset.st){openStage(b.dataset.st);return;}
+  if(b.dataset.st){stagePreview(b.dataset.st);return;}
   if(b.dataset.mode){sfx('tap');start(b.dataset.mode);return;}
   if(b.dataset.d!==undefined){
     S.diff=+b.dataset.d;save();renderHome();sfx('tap');
@@ -2449,7 +2543,7 @@ if(!Array.isArray(S.adv.party)||!S.adv.party.length)S.adv.party=['mochi'];
 if(!S.adv.party.includes('mochi'))S.adv.party.unshift('mochi');
 
 const stars=(ci,si)=>S.adv.stars[ci+'-'+si]||0;
-const chapDone=ci=>stars(ci,3)>0;
+const chapDone=ci=>stars(ci,ADV_LAST(ci))>0;
 const chapOpen=ci=>ci===0||chapDone(ci-1);
 const stageOpen=(ci,si)=>chapOpen(ci)&&(si===0||stars(ci,si-1)>0);
 const pickTopic=t=>{for(const k of (t||[])){if(poolAll().filter(w=>w.t===k).length>=4)return k;}return 'all';};
@@ -2472,7 +2566,7 @@ function renderAdv(){
     ?`<div class="pm"><span class="av">${avatar(k)}</span>${esc(CAST[k].n)}</div>`
     :`<div class="pm lock"><span class="av">?</span>???</div>`).join('');
   let nxt=null;
-  for(let ci=0;ci<CHAPTERS.length&&!nxt;ci++)for(let si=0;si<4;si++){if(stageOpen(ci,si)&&!stars(ci,si)){nxt=ci+'-'+si;break;}}
+  for(let ci=0;ci<CHAPTERS.length&&!nxt;ci++)for(let si=0;si<CHAPTERS[ci].stages.length;si++){if(stageOpen(ci,si)&&!stars(ci,si)){nxt=ci+'-'+si;break;}}
   $('advMap').innerHTML=CHAPTERS.map((ch,ci)=>{
     const open=chapOpen(ci);
     const guide=ch.join&&S.adv.party.includes(ch.join)?avatar(ch.join):'?';
@@ -2481,11 +2575,13 @@ function renderAdv(){
       const cls='node'+(boss?' boss':'')+(n?' done':'')+(k===nxt?' next':'')+(op?'':' lock');
       const inner=op?(boss?avatar(st.foe,'angry'):MODE_ICON[st.m]):'🔒';
       const label=boss?'Boss':MODE_NAME[st.m];
-      return `<button class="${cls}" data-st="${k}" aria-label="Chapter ${ci+1}, ${boss?'boss':'stage '+(si+1)}, ${esc(label)}${n?', '+n+' bintang':''}${op?'':', terkunci'}"><span class="circ">${inner}</span><span class="st">${n?'★'.repeat(n)+'☆'.repeat(3-n):'☆☆☆'}</span><small>${esc(label)}</small></button>`;
-    }).join('');
+      return `<button class="${cls}" data-st="${k}" aria-label="Chapter ${ci+1}, ${boss?'boss':'stage '+(si+1)}, ${esc(label)}${n?', '+n+' bintang':''}${op?'':', terkunci'}">${k===nxt?`<span class="you" aria-hidden="true">${avatar('mochi')}</span>`:''}<span class="circ">${inner}</span><span class="st">${n?'★'.repeat(n)+'☆'.repeat(3-n):'☆☆☆'}</span><small>${esc(label)}</small></button>`;
+    });
+    const half=Math.ceil(nodes.length/2),got=ch.stages.reduce((a,_,si)=>a+stars(ci,si),0),max=ch.stages.length*3;
     return `<article class="chap${open?'':' locked'}${ci===5?' dark':''}" style="--g1:${ch.bg[0]};--g2:${ch.bg[1]}">
       <div class="chap-head"><div class="chap-title"><span class="tag">Chapter ${ci+1}${open?'':' · terkunci'}</span><h3>${esc(ch.name)}</h3><small>${esc(ch.sub)}</small><span class="deco" aria-hidden="true">${ch.deco.slice(0,5).join('')}</span></div><div class="guide" aria-hidden="true">${guide}</div></div>
-      <div class="nodes">${nodes}</div></article>`;
+      <div class="chap-prog" aria-label="Bintang chapter ${got} dari ${max}"><i style="width:${Math.round(got/max*100)}%"></i><span>★ ${got}/${max}</span></div>
+      <div class="nodes snake"><div class="nrow">${nodes.slice(0,half).join('')}</div><div class="nlink" aria-hidden="true"></div><div class="nrow rev">${nodes.slice(half).join('')}</div></div></article>`;
   }).join('');
 }
 function renderCast(){
@@ -2553,7 +2649,7 @@ function openStage(key){
 }
 function beginStage(ci,si){
   const st=CHAPTERS[ci].stages[si];
-  start(st.m,{adv:{ci:ci,si:si,boss:!!st.boss},topic:pickTopic(st.t),rounds:5,foe:st.foe});
+  start(st.m,{adv:{ci:ci,si:si,boss:!!st.boss,sc:st.sc||null},topic:pickTopic(st.t),foe:st.foe});
   if(newMate){
     mochi('cheer',CAST[newMate].n+' bergabung! Kemampuan: '+ABILITY[newMate]+'.');
     drawSkills();newMate=null;
@@ -2601,6 +2697,8 @@ function initArena(){
   $('foeBox').className='foe'+(G.adv.boss?' boss':'');
   $('foeHp').style.width='100%';
   setFoe(G.adv.boss?'angry':'smirk');
+  $('heroBox').innerHTML=art('mochi','happy');
+  $('arenaFx').innerHTML='';ar.classList.remove('special','shake');
   drawSkills();
 }
 function foeReact(cls,expr){
@@ -3480,6 +3578,7 @@ if(!S.adv.seen||typeof S.adv.seen!=='object')S.adv.seen={};
 if(!S.adv.vw||typeof S.adv.vw!=='object')S.adv.vw={};
 if(!Array.isArray(S.adv.party)||!S.adv.party.length)S.adv.party=['mochi'];
 if(!S.adv.party.includes('mochi'))S.adv.party.unshift('mochi');
+advMigrate(S);
 if(!S.ow||typeof S.ow!=='object')S.ow={};
 if(!STYLES[S.hair]||STYLES[S.hair].lv>1+Math.floor(S.points/LV_PTS))S.hair=0;
 S.coins=Number(S.coins)||0;
@@ -4918,6 +5017,8 @@ const WINGS=[
 WINGS.forEach(w=>CATALOG.push(w));
 function isWingId(id){return ['fas_wing','fas_dwing','wg_fairy','wg_bird','wg_angel','wg_bat','wg_star','wg_star','wg_rainbow','wg_mecha'].indexOf(id)>=0;}
 
+/*__CAT_JS__*/
+/*__ADV_JS__*/
 /*__OW_BEGIN__*/
 /*__OW_JS__*/
 /*__OW_END__*/

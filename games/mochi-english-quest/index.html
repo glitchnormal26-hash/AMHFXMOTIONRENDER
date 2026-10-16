@@ -1,4 +1,81 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* ===== Petualangan 2.0 ===== */
+.modal.stagemodal,.modal.boonmodal{grid-template-columns:minmax(0,1fr)}.modal.stagemodal .wcard,.modal.boonmodal .wcard{justify-self:center;width:100%}
+.arena-top .hero{width:84px;flex:none;align-self:flex-end}
+.hero svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 4px rgba(58,42,92,.3))}
+.hero.lunge{animation:herolunge .55s}
+.hero.hurt{animation:herohurt .5s}
+@keyframes herolunge{0%{transform:translateX(0)}35%{transform:translateX(34px) scale(1.12) rotate(6deg)}100%{transform:translateX(0)}}
+@keyframes herohurt{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px) rotate(-6deg)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.arena{overflow:hidden}
+.arena-fx{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.afloat{position:absolute;font-family:var(--font-display);font-weight:800;font-size:1.5rem;color:#fff;text-shadow:2px 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink);animation:afl 1.2s ease-out forwards;transform:translateX(-50%)}
+.afloat.bonus{color:var(--sun);font-size:1.8rem}
+.afloat.dmg{color:#ff6b6b}
+@keyframes afl{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}15%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-44px) scale(1)}}
+.abanner{position:absolute;left:0;right:0;top:34%;text-align:center;display:flex;flex-direction:column;gap:2px;animation:aban 1.6s ease-out forwards}
+.abanner b{display:inline-block;margin:0 auto;font-family:var(--font-display);font-size:1.5rem;color:#fff;background:var(--ink);padding:4px 16px;border-radius:12px;box-shadow:3px 3px 0 var(--sun);transform:rotate(-2deg)}
+.abanner small{font-weight:800;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:10px;padding:1px 10px;margin:0 auto}
+@keyframes aban{0%{opacity:0;transform:translateX(-60px)}15%{opacity:1;transform:translateX(0)}80%{opacity:1}100%{opacity:0;transform:translateX(40px)}}
+.arena.special{animation:aspecial .7s}
+@keyframes aspecial{0%,100%{filter:none}30%{filter:brightness(1.35) saturate(1.4)}}
+.arena.shake{animation:ashake .4s}
+@keyframes ashake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.foe.rage{animation:rage .5s ease-in-out infinite alternate;filter:hue-rotate(-40deg) saturate(1.5)}
+@keyframes rage{to{transform:scale(1.07) rotate(-3deg)}}
+@media (max-width:420px){.arena-top .hero{width:64px}.foe{width:84px}.foe.boss{width:110px}}
+/* peta ular */
+.nodes.snake{display:flex;flex-direction:column;gap:0}
+.nodes.snake::before{display:none}
+.nrow{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.nrow::before{content:"";position:absolute;left:12.5%;right:12.5%;top:30px;border-top:4px dotted var(--ink);opacity:.35}
+.nrow.rev{direction:rtl}
+.nrow.rev>*{direction:ltr}
+.nlink{height:26px;position:relative}
+.nlink::after{content:"";position:absolute;right:12.5%;top:-2px;bottom:-2px;border-right:4px dotted var(--ink);opacity:.35;transform:translateX(2px)}
+.node .you{position:absolute;right:-6px;top:-16px;width:34px;height:34px;z-index:3;animation:youb 1s ease-in-out infinite;pointer-events:none}
+.node .you svg{width:100%;height:100%;display:block;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+@keyframes youb{50%{transform:translateY(-5px)}}
+.chap-prog{position:relative;height:18px;border:3px solid var(--ink);border-radius:10px;background:rgba(255,255,255,.7);overflow:hidden;margin:2px 0 8px}
+.chap-prog i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--sun),#ffb84d)}
+.chap-prog span{position:relative;display:block;text-align:center;font-weight:800;font-size:.7rem;line-height:12px;color:var(--ink)}
+/* pratinjau stage */
+.stageprev{gap:10px;box-sizing:border-box;min-width:0;width:100%}.stageprev *{box-sizing:border-box;min-width:0}.stageprev .row{display:flex;gap:8px}.stageprev .row .btn{flex:1}
+.sp-top{display:flex;align-items:center;gap:12px;background:linear-gradient(160deg,var(--g1),var(--g2));border:3px solid var(--ink);border-radius:16px;padding:10px}
+.sp-foe{width:92px;flex:none}.sp-foe.boss{width:110px}.sp-foe svg{display:block;width:100%;height:auto}
+.sp-txt{display:flex;flex-direction:column;gap:2px;min-width:0}.sp-txt h2{margin:0;font-size:1.25rem;line-height:1.15}
+.sp-goals{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.sp-goals li{background:var(--soft);border:2px solid var(--ink);border-radius:12px;padding:5px 10px;font-weight:800;font-size:.9rem;opacity:.75}
+.sp-goals li.on{background:var(--mint);opacity:1}
+.sp-goals li.ev{background:#fff3b0;opacity:1}
+.sp-goals small{font-weight:700;opacity:.7;margin-left:6px}
+/* boon */
+.boons{display:grid;gap:8px}
+.boon{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:3px 3px 0 var(--ink);padding:8px 12px;font:inherit;color:var(--ink);cursor:pointer;min-height:56px}
+.boon .bi{grid-row:1/3;font-size:1.9rem;text-align:center}
+.boon small{font-weight:700;opacity:.75}
+.boon:hover,.boon:focus-visible{background:#fff3b0}
+.boon:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+/* percakapan */
+.talk{display:flex;flex-direction:column;gap:10px}
+.talk-head{display:flex;align-items:center;gap:10px}
+.talk-head small{display:block;font-weight:700;opacity:.7}
+.tav{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:#fff;overflow:hidden;flex:none}
+.tav svg{width:100%;height:100%;display:block}
+.chat{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow-y:auto;padding:4px 2px}
+.cb{max-width:86%;padding:8px 12px;border:3px solid var(--ink);border-radius:16px;font-weight:700;line-height:1.3;background:#fff;animation:pop .25s ease-out}
+.cb.npc{align-self:flex-start;border-bottom-left-radius:4px}
+.cb.me{align-self:flex-end;background:var(--mint);border-bottom-right-radius:4px}
+.cb.live{font-size:1.1rem;background:#fff9d6}
+.cb small{display:block;font-weight:700;opacity:.65;font-size:.8rem;margin-top:3px}
+.cb .spk{border:2px solid var(--ink);border-radius:50%;background:#fff;width:30px;height:30px;font-size:.9rem;cursor:pointer;vertical-align:middle}
+/* tangkap kata */
+.catchwrap{display:flex;flex-direction:column;gap:8px}
+.catchhint{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:6px 12px;display:flex;flex-direction:column}
+.catchhint small{font-weight:700;opacity:.7}
+.catchcv{width:100%;display:block;border:3px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);touch-action:none;cursor:ew-resize;background:#cfe}
+@media (prefers-reduced-motion:reduce){.afloat,.abanner,.you,.hero.lunge,.hero.hurt,.foe.rage{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style></head><body>
 <title>Adelian Althania English Adventure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -312,6 +389,10 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:3px}
 .mode.wide .ico{flex:none}
 .m5{background:#c9b8ff}.m6{background:#ffb88c}.m7{background:#9be8ff}.m8{background:#ffe27a}
 
+@media (max-width:440px){
+  .logo{font-size:1.3rem}
+  .top{gap:6px}.top .hbtns{gap:5px;flex:none}.top .hbtns .icon-btn{width:40px!important;height:40px!important;font-size:1.05rem}
+}
 @media (max-width:380px){
   #mochi{width:120px}
   .is-play #mochi{width:84px}
@@ -913,6 +994,8 @@ body{
         <button class="btn mode m1" data-mode="pic"><span class="ico">🖼️</span><b>Tebak Gambar</b><small>Lihat gambar, pilih katanya</small></button>
         <button class="btn mode m2" data-mode="listen"><span class="ico">🎧</span><b>Dengar &amp; Pilih</b><small>Dengar kata, pilih gambar</small></button>
         <button class="btn mode m4" data-mode="spell"><span class="ico">🔤</span><b>Susun Kata</b><small>Susun huruf jadi kata</small></button>
+        <button class="btn mode m6" data-mode="talk"><span class="ico">💬</span><b>Percakapan</b><small>Ngobrol dengan penduduk</small></button>
+        <button class="btn mode m3" data-mode="catch"><span class="ico">🧺</span><b>Tangkap Kata</b><small>Tangkap kata sesuai tema</small></button>
         <button class="btn mode m1" data-mode="match"><span class="ico">🃏</span><b>Pasangkan</b><small>Cocokkan pasangan kata</small></button>
       </div>
     </div>
@@ -1038,7 +1121,9 @@ body{
       <span class="score" id="comboText"></span>
     </div>
     <div class="arena" id="arena" hidden>
+      <div class="arena-fx" id="arenaFx" aria-hidden="true"></div>
       <div class="arena-top">
+        <div class="hero" id="heroBox" aria-hidden="true"></div>
         <div class="foe-info">
           <b id="foeName"></b>
           <div class="bar thin hp" id="hpBar" role="progressbar" aria-label="Nyawa musuh"><i id="foeHp"></i></div>
@@ -1175,8 +1260,10 @@ const MODES={
   grammar:{n:'Grammar',rounds:8},
   power:{n:'Word Power',rounds:8},
   exam:{n:'Ujian Mini',rounds:10},
-  order:{n:'Susun Kalimat',rounds:5},
-  read:{n:'Reading',rounds:5}
+  order:{n:'Susun Kalimat',rounds:6},
+  read:{n:'Reading',rounds:5},
+  talk:{n:'Percakapan',rounds:5},
+  catch:{n:'Tangkap Kata',rounds:10}
 };
 
 /* ---------- State ---------- */
@@ -1839,8 +1926,8 @@ function art(key,expr,crop,layer){
 const avatar=(key,expr)=>art(key,expr||'happy',true);
 
 /* ---------- Cerita petualangan: Pulau Kata ---------- */
-const MODE_ICON={pic:'🖼️',listen:'🎧',spell:'🔤',match:'🃏',grammar:'✏️',power:'💡',order:'🧩',read:'📖',exam:'📝'};
-const MODE_NAME={pic:'Tebak Gambar',listen:'Dengar & Pilih',spell:'Susun Kata',match:'Pasangkan',grammar:'Grammar',power:'Word Power',order:'Susun Kalimat',read:'Reading',exam:'Ujian Mini'};
+const MODE_ICON={pic:'🖼️',listen:'🎧',spell:'🔤',match:'🃏',grammar:'✏️',power:'💡',order:'🧩',read:'📖',exam:'📝',talk:'💬',catch:'🧺'};
+const MODE_NAME={pic:'Tebak Gambar',listen:'Dengar & Pilih',spell:'Susun Kata',match:'Pasangkan',grammar:'Grammar',power:'Word Power',order:'Susun Kalimat',read:'Reading',exam:'Ujian Mini',talk:'Percakapan',catch:'Tangkap Kata'};
 const ABILITY={kai:'Coret 2',luna:'Sembuh',bima:'Perisai',sari:'Arti',pip:'Lewati',foxy:'Beruntung'};
 
 /* baris dialog: [siapa, teks, ekspresi] */
@@ -1945,6 +2032,115 @@ const CHAPTERS=[
   ['mochi','Terima kasih, semuanya! Tapi petualangan belajar belum selesai.','cheer']]}
 ];
 
+/* ---------- Petualangan 2.0: tiap chapter jadi 8 stage (4 stage baru sebelum boss) ---------- */
+const ADV_EXTRA=[
+  // Chapter 1 · Desa Padang Hijau
+  [{m:'catch',t:['animals'],foe:'slime',pre:[['kai','Lendir-lendir menjatuhkan kata dari langit! Geser keranjangmu dan tangkap hanya kata HEWAN!','cheer']]},
+   {m:'match',t:['animals','food'],foe:'slime',pre:[['slime','Blub! Kata-kataku tertukar pasangannya. Cocokkan lagi kalau bisa!','smirk']]},
+   {m:'talk',sc:'greet',foe:'slime',pre:[['kai','Ada anak desa baru. Ayo ngobrol pakai bahasa Inggris. Pilih jawaban yang paling sopan!','happy']]},
+   {m:'pic',t:['fruits','food'],foe:'slime',pre:[['slime','Blub! Ini lendir paling licin. Tebak buah dan makanan ini dulu!','smirk']]}],
+  // Chapter 2 · Hutan Buah
+  [{m:'catch',t:['fruits'],foe:'boo',pre:[['sari','Buah-buahan berjatuhan! Tangkap yang benar saja dan jangan sampai kena kata keliru.','happy']]},
+   {m:'listen',t:['fruits','food'],foe:'boo',pre:[['boo','Buuu! Dengarkan bisikanku... kalau kamu berani.','smirk']]},
+   {m:'talk',sc:'fruitshop',foe:'boo',pre:[['sari','Ada kios buah di tengah hutan. Ayo belanja pakai bahasa Inggris!','happy']]},
+   {m:'spell',t:['fruits','food'],foe:'boo',pre:[['boo','Huruf-huruf ini kubuat melayang. Susun kembali, ya!','smirk']]}],
+  // Chapter 3 · Sekolah Awan
+  [{m:'talk',sc:'class',foe:'inky',pre:[['luna','Bel sekolah berbunyi. Jawab guru dengan sopan, ya!','happy']]},
+   {m:'catch',t:['school'],foe:'inky',pre:[['inky','Tintaku menetes ke mana-mana! Tangkap kata tentang SEKOLAH saja.','smirk']]},
+   {m:'power',t:[],foe:'inky',pre:[['luna','Kata-kata ini tertukar artinya. Cari sinonim dan antonimnya!','think']]},
+   {m:'spell',t:['school','body'],foe:'inky',pre:[['inky','Tintaku mengacak huruf. Susun lagi kalau bisa!','smirk']]}],
+  // Chapter 4 · Gunung Api
+  [{m:'catch',t:['nature','weather'],foe:'dragonet',pre:[['bima','Batu dan abu berjatuhan! Tangkap kata ALAM dan CUACA, hindari yang lain.','happy']]},
+   {m:'order',t:[],foe:'dragonet',pre:[['dragonet','Roarr kecil! Aku meniup kalimatmu sampai berantakan.','smirk']]},
+   {m:'talk',sc:'weather',foe:'dragonet',pre:[['bima','Kita berkemah di kaki gunung. Ngobrol soal cuaca, yuk!','happy']]},
+   {m:'read',t:[],foe:'dragonet',pre:[['bima','Ada catatan lama di dinding gua. Bacalah dengan teliti.','think']]}],
+  // Chapter 5 · Laut Harta
+  [{m:'catch',t:['transport'],foe:'crab',pre:[['pip','Bip! Kendaraan-kendaraan laut terlempar ke udara. Tangkap kata KENDARAAN!','cheer']]},
+   {m:'listen',t:['transport','places'],foe:'crab',pre:[['crab','Jepit jepit! Dengar baik-baik, jangan salah gambar!','smirk']]},
+   {m:'talk',sc:'direction',foe:'crab',pre:[['pip','Pip tersesat di pelabuhan. Tanyakan arah pakai bahasa Inggris. Bip!','think']]},
+   {m:'grammar',t:[],foe:'crab',pre:[['crab','Kalimat-kalimatku bolong-bolong. Lengkapi dengan benar!','smirk']]}],
+  // Chapter 6 · Istana Bulan
+  [{m:'catch',t:['jobs','places'],foe:'shade',pre:[['foxy','Bayangan menjatuhkan kata-kata dari menara! Tangkap kata PROFESI atau TEMPAT.','cheer']]},
+   {m:'talk',sc:'party',foe:'shade',pre:[['foxy','Ada pesta di istana. Ayo bergaul pakai bahasa Inggris!','happy']]},
+   {m:'order',t:[],foe:'shade',pre:[['shade','Kalimat-kalimat ini kuhapus separuh. Susun lagi!','smirk']]},
+   {m:'exam',t:[],foe:'shade',pre:[['foxy','Ujian terakhir sebelum Ratu Blank. Tarik napas dalam-dalam!','cheer']]}]
+];
+ADV_EXTRA.forEach((ex,ci)=>{
+  const ch=CHAPTERS[ci];
+  if(ch&&ch.stages.length===4)ch.stages.splice(3,0,...ex);
+});
+const ADV_LAST=ci=>CHAPTERS[ci].stages.length-1;
+
+/* simpanan lama: boss dulu stage ke-4 (indeks 3), sekarang indeks 7 */
+function advMigrate(S){
+  const a=S.adv;if(!a||a.v>=2)return;
+  CHAPTERS.forEach((ch,ci)=>{
+    const old=a.stars[ci+'-3'];
+    const last=ch.stages.length-1;
+    if(last!==7)return;
+    if(old){
+      a.stars[ci+'-'+last]=Math.max(a.stars[ci+'-'+last]||0,old);
+      for(let si=3;si<last;si++)a.stars[ci+'-'+si]=Math.max(a.stars[ci+'-'+si]||0,1);
+    }
+    delete a.stars[ci+'-3'];
+    if(old)a.stars[ci+'-3']=1;
+    if(a.seen['s'+ci+'-3']){a.seen['s'+ci+'-'+last]=1;delete a.seen['s'+ci+'-3'];}
+  });
+  a.v=2;
+}
+
+/* ---------- Skenario obrolan (mode Percakapan) ---------- */
+const SCEN=[
+ {q:'greet',n:'Berkenalan',who:'kai',turns:[
+  {q:'Hello! What is your name?',id:'Halo! Siapa namamu?',o:['My name is $NAME.','I am fine, thank you.','I am nine years old.'],w:'Pertanyaan nama dijawab dengan My name is ...'},
+  {q:'Nice to meet you! How are you today?',id:'Senang bertemu denganmu! Apa kabar hari ini?',o:['I am fine, thank you.','My name is Kai.','It is a cat.'],w:'How are you? dijawab I am fine, thank you.'},
+  {q:'How old are you?',id:'Berapa umurmu?',o:['I am nine years old.','I am in the kitchen.','I like pizza.'],w:'How old are you? dijawab I am ... years old.'},
+  {q:'Where do you live?',id:'Kamu tinggal di mana?',o:['I live in Green Meadow Village.','I am ten years old.','It is Monday.'],w:'Where menanyakan tempat. Jawab dengan I live in ...'},
+  {q:'Goodbye! See you tomorrow!',id:'Sampai jumpa! Sampai besok!',o:['Goodbye! See you!','Good morning!','Nice to meet you!'],w:'Untuk berpisah, katakan Goodbye atau See you.'}]},
+ {q:'fruitshop',n:'Di Kios Buah',who:'sari',turns:[
+  {q:'Good morning! What would you like?',id:'Selamat pagi! Kamu mau apa?',o:['I would like some apples, please.','I am a student.','It is a big tree.'],w:'Saat membeli, katakan I would like ..., please.'},
+  {q:'Here you are. Do you want a banana too?',id:'Ini untukmu. Mau pisang juga?',o:['Yes, please.','Goodbye.','It is red.'],w:'Do you want ...? dijawab Yes, please atau No, thank you.'},
+  {q:'How many oranges do you want?',id:'Kamu mau berapa jeruk?',o:['Three oranges, please.','They are yellow.','Yes, I am.'],w:'How many menanyakan jumlah. Jawab dengan angka.'},
+  {q:'That is five dollars.',id:'Itu lima dolar.',o:['Here you are. Thank you!','My name is Sari.','Where is the market?'],w:'Saat membayar, katakan Here you are. Thank you!'},
+  {q:'Have a nice day!',id:'Semoga harimu menyenangkan!',o:['You too! Goodbye!','I am fine.','It is delicious.'],w:'Have a nice day dibalas You too!'}]},
+ {q:'class',n:'Di Kelas',who:'luna',turns:[
+  {q:'Good morning, class! Please sit down.',id:'Selamat pagi, anak-anak! Silakan duduk.',o:['Good morning, teacher!','Good night, teacher!','Goodbye, teacher!'],w:'Pagi hari kita bilang Good morning.'},
+  {q:'Open your book, please.',id:'Tolong buka bukumu.',o:['Okay, teacher.','No, thank you.','You are welcome.'],w:'Perintah guru dijawab dengan Okay atau Yes, teacher.'},
+  {q:'Do you have a pencil?',id:'Apakah kamu punya pensil?',o:['Yes, I do. Here it is.','Yes, it is.','No, I am not.'],w:'Do you have ...? dijawab Yes, I do atau No, I do not.'},
+  {q:'What is your favorite subject?',id:'Apa pelajaran favoritmu?',o:['My favorite subject is English.','My favorite color is blue.','I have a ruler.'],w:'Subject berarti mata pelajaran.'},
+  {q:'It is time to go home. See you tomorrow!',id:'Waktunya pulang. Sampai besok!',o:['See you tomorrow, teacher!','Good morning, teacher!','Open the door, please.'],w:'Untuk berpisah, katakan See you tomorrow.'}]},
+ {q:'weather',n:'Cuaca & Berkemah',who:'bima',turns:[
+  {q:'It is raining outside. What should we bring?',id:'Di luar hujan. Apa yang sebaiknya kita bawa?',o:['We should bring an umbrella.','We should bring a fan.','We should bring ice cream.'],w:'Umbrella dipakai saat hujan.'},
+  {q:'How is the weather today?',id:'Bagaimana cuaca hari ini?',o:['It is sunny and warm.','It is Tuesday.','I am happy today.'],w:'How is the weather? dijawab It is ...'},
+  {q:'What do you wear when it is cold?',id:'Apa yang kamu pakai saat dingin?',o:['I wear a jacket.','I wear a swimsuit.','I wear sunglasses at night.'],w:'Saat dingin kita memakai jaket (jacket).'},
+  {q:'Can we go camping this weekend?',id:'Bolehkah kita berkemah akhir pekan ini?',o:['Yes, let us go camping!','It is a tent.','Because it is blue.'],w:'Can we ...? dijawab Yes, let us ... atau Sorry, we cannot.'},
+  {q:'Look at the sky! What do you see?',id:'Lihat langit! Apa yang kamu lihat?',o:['I see dark clouds.','I see a red fish.','I see my shoes.'],w:'What do you see? dijawab I see ...'}]},
+ {q:'direction',n:'Menanyakan Arah',who:'pip',turns:[
+  {q:'Excuse me, where is the library?',id:'Permisi, di mana perpustakaan?',o:['It is next to the school.','It is nine o\'clock.','Yes, it is a big book.'],w:'Where menanyakan tempat. Next to berarti di sebelah.'},
+  {q:'How can I get to the park?',id:'Bagaimana cara ke taman?',o:['Turn left at the corner.','I am a good driver.','The park is a book.'],w:'Turn left artinya belok kiri.'},
+  {q:'Is it far from here?',id:'Apakah jauh dari sini?',o:['No, it is near.','Because I like it.','It is Monday.'],w:'Near berarti dekat, far berarti jauh.'},
+  {q:'Should I go by bus or by boat?',id:'Sebaiknya naik bus atau perahu?',o:['Go by bus. It is faster.','Go to sleep.','I go to school.'],w:'By bus artinya naik bus.'},
+  {q:'Thank you so much for your help!',id:'Terima kasih banyak atas bantuanmu!',o:['You are welcome!','I am sorry.','Excuse me.'],w:'Thank you dibalas You are welcome.'}]},
+ {q:'party',n:'Pesta Ulang Tahun',who:'foxy',turns:[
+  {q:'Happy birthday! How old are you today?',id:'Selamat ulang tahun! Berapa umurmu hari ini?',o:['I am ten years old today!','I am in the garden.','It is a cake.'],w:'How old are you? dijawab I am ... years old.'},
+  {q:'Would you like some cake?',id:'Mau kue?',o:['Yes, please. It looks delicious!','Yes, I am happy.','You are welcome.'],w:'Would you like ...? dijawab Yes, please atau No, thank you.'},
+  {q:'What do you want to drink?',id:'Kamu mau minum apa?',o:['Orange juice, please.','It is on the table.','I want to dance.'],w:'What do you want to drink? dijawab dengan nama minuman.'},
+  {q:'Let us play a game! Do you like games?',id:'Ayo main game! Kamu suka game?',o:['Yes, I love games!','They are on the table.','I am eating lunch.'],w:'Do you like ...? dijawab Yes, I do atau No, I do not.'},
+  {q:'The party is over. Thank you for coming!',id:'Pestanya sudah selesai. Terima kasih sudah datang!',o:['Thank you for inviting me!','Happy birthday to me!','Good morning!'],w:'Thank you for inviting me artinya terima kasih sudah mengundangku.'}]},
+ {q:'restaurant',n:'Di Restoran',who:'kai',turns:[
+  {q:'Welcome! Table for how many?',id:'Selamat datang! Meja untuk berapa orang?',o:['Table for two, please.','I am a waiter.','It is delicious.'],w:'Table for two artinya meja untuk dua orang.'},
+  {q:'What would you like to eat?',id:'Kamu mau makan apa?',o:['I would like fried rice, please.','I am very hungry in the morning.','It is a spoon.'],w:'I would like ... dipakai untuk memesan.'},
+  {q:'Would you like something to drink?',id:'Mau minum sesuatu?',o:['Yes, a glass of water, please.','Yes, I am a glass.','No, it is a table.'],w:'A glass of water artinya segelas air.'},
+  {q:'How is your food?',id:'Bagaimana makananmu?',o:['It is delicious!','It is Friday.','I am at school.'],w:'Delicious artinya enak.'},
+  {q:'Here is your bill.',id:'Ini tagihanmu.',o:['Thank you. Here is the money.','Good morning.','I am sleepy.'],w:'Bill artinya tagihan.'}]},
+ {q:'family',n:'Tentang Keluarga',who:'luna',turns:[
+  {q:'Who is she?',id:'Siapa dia?',o:['She is my mother.','He is my father.','It is my cat.'],w:'She dipakai untuk perempuan, he untuk laki-laki.'},
+  {q:'Do you have any brothers or sisters?',id:'Apakah kamu punya kakak atau adik?',o:['I have one sister.','I am a sister.','Yes, it is.'],w:'I have ... artinya aku punya ...'},
+  {q:'What does your father do?',id:'Apa pekerjaan ayahmu?',o:['He is a doctor.','He is in the kitchen.','He is nine years old.'],w:'What does he do? menanyakan pekerjaan.'},
+  {q:'Where does your grandmother live?',id:'Di mana nenekmu tinggal?',o:['She lives in Bandung.','She is my grandmother.','I live in a house.'],w:'Where does she live? dijawab She lives in ...'},
+  {q:'Do you like your family?',id:'Apakah kamu menyayangi keluargamu?',o:['Yes, I love my family very much.','Yes, she is my mother.','No, it is a family.'],w:'I love my family artinya aku sayang keluargaku.'}]}
+];
+
 /* ---------- Layar & menu ---------- */
 const SCREENS=['home','story','world','play','result','create','open'];
 function showScreen(name){
@@ -2019,13 +2215,15 @@ function startTimer(sec){
 }
 function after(ms,fn){const my=G;setTimeout(()=>{if(G&&G===my)fn();},ms);}
 
-const CHOICE=['pic','listen','grammar','power','exam','read'];
+const CHOICE=['pic','listen','grammar','power','exam','read','talk'];
 function buildItems(mode){
   const d=S.diff;
   if(mode==='grammar')return freshTake(GRAMMAR[d],MODES.grammar.rounds);
   if(mode==='power')return freshTake(POWER[d],MODES.power.rounds);
   if(mode==='exam')return shuffle(freshTake(GRAMMAR[d],5).concat(freshTake(POWER[d],5)));
   if(mode==='order')return freshTake(ORDER[d],MODES.order.rounds);
+  if(mode==='talk')return talkItems();
+  if(mode==='catch')return catchItems();
   if(mode==='read'){
     const ps=READ[d],p=freshOne(ps.map(x=>x));
     G.passage=p;
@@ -2046,13 +2244,14 @@ function start(mode,opts){
      heartsMax:MAXH(),
      adv:opts.adv||null,topic:opts.topic||null,foe:opts.foe||null,used:{},shield:false,lucky:false};
   G.items=buildItems(mode);
-  if(opts.rounds&&mode!=='read'&&mode!=='exam')G.items=G.items.slice(0,opts.rounds);
+  if(opts.rounds&&mode!=='read'&&mode!=='exam'&&mode!=='talk'&&mode!=='catch')G.items=G.items.slice(0,opts.rounds);
+  G.wv={};
   G.total=G.items.length;
   showScreen('play');
   initArena();
   updateHud();
   mochi('think',G.adv?'Pertarungan dimulai! Jawab dengan teliti!':'Siap? '+MODES[mode].n+' dimulai!');
-  if(mode==='match')renderMatch();else nextRound();
+  if(mode==='match')renderMatch();else if(mode==='catch')renderCatch();else nextRound();
 }
 function updateHud(){
   const mh=G.heartsMax||3,h=Math.max(0,G.hearts);
@@ -2067,11 +2266,12 @@ function good(){
   G.correct++;G.combo++;G.best=Math.max(G.best,G.combo);
   let gain=Math.round((10+Math.min(G.combo-1,5)*2)*MULT[S.diff]);
   if(G.lucky){gain*=2;G.lucky=false;drawSkills();}
+  if(G.luckyN>0){gain*=2;G.luckyN--;}
   if(petFx('score'))gain=Math.round(gain*1.15);
   G.score+=gain;
   statAdd('correct',1);
   if(G.mode==='spell')statAdd('spell',1);
-  if(G.adv)foeHit();
+  if(G.adv){foeHit();advOnGood();}
   sfx('ok');
   mochi('cheer',pickOne(PRAISE)+' +'+gain,{back:1400,backMsg:'Lanjut, ya!'});
   burst(10);
@@ -2079,7 +2279,7 @@ function good(){
 }
 function bad(msg){
   G.wrong++;G.combo=0;
-  if(G.adv)foeAtk();
+  if(G.adv){foeAtk();advOnBad();}
   if(G.shield){
     G.shield=false;sfx('tap');
     mochi('think','Perisai Bima menahan serangan! Nyawa aman.');
@@ -2094,10 +2294,11 @@ function bad(msg){
 }
 function nextRound(){
   if(G.progress>=G.total){endGame(true);return;}
+  if(G.adv&&advWave())return;
   G.locked=false;G.next=null;G.cur=null;
   $('tbar').hidden=true;
   ({pic:renderPic,listen:renderListen,spell:renderSpell,order:renderOrder,
-    grammar:renderQuiz,power:renderQuiz,exam:renderQuiz,read:renderQuiz})[G.mode]();
+    grammar:renderQuiz,power:renderQuiz,exam:renderQuiz,read:renderQuiz,talk:renderTalk})[G.mode]();
 }
 function advance(dead,ms){
   G.progress++;
@@ -2325,7 +2526,7 @@ $('home').addEventListener('click',e=>{
   if(!b||b.disabled)return;
   if(b.dataset.tab){TAB=b.dataset.tab;sfx('tap');setTab();return;}
   if(b.dataset.wd!==undefined){enterWorld(+b.dataset.wd);return;}
-  if(b.dataset.st){openStage(b.dataset.st);return;}
+  if(b.dataset.st){stagePreview(b.dataset.st);return;}
   if(b.dataset.mode){sfx('tap');start(b.dataset.mode);return;}
   if(b.dataset.d!==undefined){
     S.diff=+b.dataset.d;save();renderHome();sfx('tap');
@@ -2449,7 +2650,7 @@ if(!Array.isArray(S.adv.party)||!S.adv.party.length)S.adv.party=['mochi'];
 if(!S.adv.party.includes('mochi'))S.adv.party.unshift('mochi');
 
 const stars=(ci,si)=>S.adv.stars[ci+'-'+si]||0;
-const chapDone=ci=>stars(ci,3)>0;
+const chapDone=ci=>stars(ci,ADV_LAST(ci))>0;
 const chapOpen=ci=>ci===0||chapDone(ci-1);
 const stageOpen=(ci,si)=>chapOpen(ci)&&(si===0||stars(ci,si-1)>0);
 const pickTopic=t=>{for(const k of (t||[])){if(poolAll().filter(w=>w.t===k).length>=4)return k;}return 'all';};
@@ -2472,7 +2673,7 @@ function renderAdv(){
     ?`<div class="pm"><span class="av">${avatar(k)}</span>${esc(CAST[k].n)}</div>`
     :`<div class="pm lock"><span class="av">?</span>???</div>`).join('');
   let nxt=null;
-  for(let ci=0;ci<CHAPTERS.length&&!nxt;ci++)for(let si=0;si<4;si++){if(stageOpen(ci,si)&&!stars(ci,si)){nxt=ci+'-'+si;break;}}
+  for(let ci=0;ci<CHAPTERS.length&&!nxt;ci++)for(let si=0;si<CHAPTERS[ci].stages.length;si++){if(stageOpen(ci,si)&&!stars(ci,si)){nxt=ci+'-'+si;break;}}
   $('advMap').innerHTML=CHAPTERS.map((ch,ci)=>{
     const open=chapOpen(ci);
     const guide=ch.join&&S.adv.party.includes(ch.join)?avatar(ch.join):'?';
@@ -2481,11 +2682,13 @@ function renderAdv(){
       const cls='node'+(boss?' boss':'')+(n?' done':'')+(k===nxt?' next':'')+(op?'':' lock');
       const inner=op?(boss?avatar(st.foe,'angry'):MODE_ICON[st.m]):'🔒';
       const label=boss?'Boss':MODE_NAME[st.m];
-      return `<button class="${cls}" data-st="${k}" aria-label="Chapter ${ci+1}, ${boss?'boss':'stage '+(si+1)}, ${esc(label)}${n?', '+n+' bintang':''}${op?'':', terkunci'}"><span class="circ">${inner}</span><span class="st">${n?'★'.repeat(n)+'☆'.repeat(3-n):'☆☆☆'}</span><small>${esc(label)}</small></button>`;
-    }).join('');
+      return `<button class="${cls}" data-st="${k}" aria-label="Chapter ${ci+1}, ${boss?'boss':'stage '+(si+1)}, ${esc(label)}${n?', '+n+' bintang':''}${op?'':', terkunci'}">${k===nxt?`<span class="you" aria-hidden="true">${avatar('mochi')}</span>`:''}<span class="circ">${inner}</span><span class="st">${n?'★'.repeat(n)+'☆'.repeat(3-n):'☆☆☆'}</span><small>${esc(label)}</small></button>`;
+    });
+    const half=Math.ceil(nodes.length/2),got=ch.stages.reduce((a,_,si)=>a+stars(ci,si),0),max=ch.stages.length*3;
     return `<article class="chap${open?'':' locked'}${ci===5?' dark':''}" style="--g1:${ch.bg[0]};--g2:${ch.bg[1]}">
       <div class="chap-head"><div class="chap-title"><span class="tag">Chapter ${ci+1}${open?'':' · terkunci'}</span><h3>${esc(ch.name)}</h3><small>${esc(ch.sub)}</small><span class="deco" aria-hidden="true">${ch.deco.slice(0,5).join('')}</span></div><div class="guide" aria-hidden="true">${guide}</div></div>
-      <div class="nodes">${nodes}</div></article>`;
+      <div class="chap-prog" aria-label="Bintang chapter ${got} dari ${max}"><i style="width:${Math.round(got/max*100)}%"></i><span>★ ${got}/${max}</span></div>
+      <div class="nodes snake"><div class="nrow">${nodes.slice(0,half).join('')}</div><div class="nlink" aria-hidden="true"></div><div class="nrow rev">${nodes.slice(half).join('')}</div></div></article>`;
   }).join('');
 }
 function renderCast(){
@@ -2553,7 +2756,7 @@ function openStage(key){
 }
 function beginStage(ci,si){
   const st=CHAPTERS[ci].stages[si];
-  start(st.m,{adv:{ci:ci,si:si,boss:!!st.boss},topic:pickTopic(st.t),rounds:5,foe:st.foe});
+  start(st.m,{adv:{ci:ci,si:si,boss:!!st.boss,sc:st.sc||null},topic:pickTopic(st.t),foe:st.foe});
   if(newMate){
     mochi('cheer',CAST[newMate].n+' bergabung! Kemampuan: '+ABILITY[newMate]+'.');
     drawSkills();newMate=null;
@@ -2601,6 +2804,8 @@ function initArena(){
   $('foeBox').className='foe'+(G.adv.boss?' boss':'');
   $('foeHp').style.width='100%';
   setFoe(G.adv.boss?'angry':'smirk');
+  $('heroBox').innerHTML=art('mochi','happy');
+  $('arenaFx').innerHTML='';ar.classList.remove('special','shake');
   drawSkills();
 }
 function foeReact(cls,expr){
@@ -3480,6 +3685,7 @@ if(!S.adv.seen||typeof S.adv.seen!=='object')S.adv.seen={};
 if(!S.adv.vw||typeof S.adv.vw!=='object')S.adv.vw={};
 if(!Array.isArray(S.adv.party)||!S.adv.party.length)S.adv.party=['mochi'];
 if(!S.adv.party.includes('mochi'))S.adv.party.unshift('mochi');
+advMigrate(S);
 if(!S.ow||typeof S.ow!=='object')S.ow={};
 if(!STYLES[S.hair]||STYLES[S.hair].lv>1+Math.floor(S.points/LV_PTS))S.hair=0;
 S.coins=Number(S.coins)||0;
@@ -4918,6 +5124,310 @@ const WINGS=[
 WINGS.forEach(w=>CATALOG.push(w));
 function isWingId(id){return ['fas_wing','fas_dwing','wg_fairy','wg_bird','wg_angel','wg_bat','wg_star','wg_star','wg_rainbow','wg_mecha'].indexOf(id)>=0;}
 
+
+/* ============================================================
+   PETUALANGAN 2.0 — mode baru (Percakapan, Tangkap Kata), gelombang
+   & boon, serangan kombo, pratinjau stage, efek arena
+   ============================================================ */
+const MODE_DESC={
+  pic:'Lihat gambar, pilih kata bahasa Inggrisnya.',listen:'Dengar kata, pilih gambar yang cocok.',spell:'Susun huruf yang teracak menjadi kata.',
+  match:'Pasangkan kata dengan artinya secepat mungkin.',grammar:'Lengkapi kalimat dengan kata yang tepat.',power:'Sinonim, antonim, dan kata yang tidak cocok.',
+  order:'Urutkan kata menjadi kalimat yang benar.',read:'Baca teks pendek, lalu jawab pertanyaannya.',exam:'Soal campuran grammar dan kosakata.',
+  talk:'Ngobrol dengan penduduk! Pilih balasan bahasa Inggris yang paling tepat.',catch:'Geser keranjang dan tangkap kata yang sesuai tema. Hindari kata yang salah!'
+};
+function advCount(st){
+  if(st.m==='talk')return 5;
+  if(st.m==='catch')return st.boss?14:10;
+  if(st.m==='read')return 4;
+  if(st.m==='exam')return 10;
+  return MODES[st.m]?MODES[st.m].rounds:6;
+}
+function stagePreview(key){
+  const p=key.split('-').map(Number),ci=p[0],si=p[1],ch=CHAPTERS[ci],st=ch.stages[si];
+  if(!stageOpen(ci,si)){openStage(key);return;}
+  sfx('tap');
+  const f=FOES[st.foe],n=stars(ci,si),last=si===ch.stages.length-1;
+  const dm=document.querySelector('.modal.stagemodal');if(dm)dm.remove();
+  const wave=last?'3 fase boss':(advCount(st)>=6&&st.m!=='catch'&&st.m!=='match'?'Ada Gelombang 2 + pilih Boon':'');
+  const m=document.createElement('div');
+  m.className='modal stagemodal';
+  m.innerHTML=`<div class="wcard stageprev" role="dialog" aria-modal="true" aria-label="Pratinjau stage">
+    <div class="sp-top" style="--g1:${ch.bg[0]};--g2:${ch.bg[1]}">
+      <div class="sp-foe${last?' boss':''}">${art(st.foe,last?'angry':'smirk')}</div>
+      <div class="sp-txt"><span class="tag">Chapter ${ci+1} · Stage ${si+1}/${ch.stages.length}</span>
+        <h2>${last?'👑 ':''}${MODE_ICON[st.m]} ${esc(MODE_NAME[st.m])}</h2><b>${esc(f.n)}</b><small>${esc(f.role)}</small></div>
+    </div>
+    <p class="sub">${esc(MODE_DESC[st.m]||'')}</p>
+    <ul class="sp-goals">
+      <li class="${n>=1?'on':''}">★ Selesaikan stage <small>${advCount(st)} ${st.m==='catch'?'tangkapan':st.m==='talk'?'balasan':'soal'}</small></li>
+      <li class="${n>=2?'on':''}">★★ Akurasi minimal 60%</li>
+      <li class="${n>=3?'on':''}">★★★ Akurasi minimal 85%</li>
+      ${wave?`<li class="ev">⚡ ${wave}</li>`:''}
+      <li class="ev">✨ Kombo 3 jawaban benar = Serangan Kombo</li>
+    </ul>
+    <div class="row"><button class="btn" data-sp="go">⚔️ ${n?'Main lagi':'Mulai'}</button><button class="btn soft" data-sp="close">Nanti</button></div>
+  </div>`;
+  document.body.appendChild(m);
+  const go=m.querySelector('[data-sp="go"]');
+  go.focus();
+  m.addEventListener('click',e=>{
+    const b=e.target.closest('button');
+    if(e.target===m){m.remove();return;}
+    if(!b)return;
+    if(b.dataset.sp==='go'){m.remove();openStage(key);}
+    else m.remove();
+  });
+  m.addEventListener('keydown',e=>{if(e.key==='Escape')m.remove();});
+}
+
+/* ---------- Efek arena ---------- */
+function arenaFloat(txt,cls,x,y){
+  const fx=$('arenaFx');if(!fx)return;
+  const s=document.createElement('span');
+  s.className='afloat '+(cls||'');s.textContent=txt;
+  s.style.left=(x==null?62:x)+'%';s.style.top=(y==null?30:y)+'%';
+  fx.appendChild(s);setTimeout(()=>s.remove(),1300);
+}
+function arenaBanner(txt,sub){
+  const fx=$('arenaFx');if(!fx)return;
+  const b=document.createElement('div');
+  b.className='abanner';b.innerHTML='<b>'+esc(txt)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'');
+  fx.appendChild(b);setTimeout(()=>b.remove(),1700);
+}
+function heroReact(cls,expr){
+  const h=$('heroBox');if(!h||!G||!G.adv)return;
+  h.innerHTML=art('mochi',expr||'happy');
+  h.classList.remove('lunge','hurt');void h.offsetWidth;h.classList.add(cls);
+  const my=G;setTimeout(()=>{if(G===my&&!G.done)h.innerHTML=art('mochi','happy');},700);
+}
+function advOnGood(){
+  heroReact('lunge','cheer');
+  arenaFloat('-1','dmg',72,26);
+  if(G.combo>=3&&G.combo%3===0){
+    const bonus=Math.round(12*(MULT[S.diff]||1));
+    G.score+=bonus;
+    arenaBanner('✨ Serangan Kombo!','+'+bonus+' skor');
+    const a=$('arena');a.classList.remove('special');void a.offsetWidth;a.classList.add('special');
+    arenaFloat('+'+bonus,'bonus',50,45);
+    sfx('win');updateHud();
+  }
+}
+function advOnBad(){heroReact('hurt','sad');arenaFloat('💔','dmg',16,28);const a=$('arena');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');}
+
+/* ---------- Gelombang & boon ---------- */
+const BOONS=[
+  {k:'heart',ico:'❤️',n:'Nyawa +1',d:'Tambah satu nyawa.',ok:()=>G.hearts<(G.heartsMax||3)+1},
+  {k:'shield',ico:'🛡️',n:'Perisai',d:'Satu kesalahan berikutnya aman.',ok:()=>!G.shield},
+  {k:'lucky',ico:'⭐',n:'Skor Ganda',d:'Skor 3 jawaban benar berikutnya dobel.',ok:()=>true},
+  {k:'refill',ico:'🔄',n:'Isi Ulang Skill',d:'Kemampuan teman bisa dipakai lagi.',ok:()=>Object.keys(G.used).length>0},
+  {k:'coins',ico:'🪙',n:'Kantong Koin',d:'Dapat 25 koin langsung.',ok:()=>true}
+];
+function advWave(){
+  if(!G||!G.adv||G.mode==='catch'||G.mode==='match')return false;
+  const t=G.total,p=G.progress;let ph=0;
+  if(G.adv.boss&&t>=9){if(p===Math.round(t/3)&&!G.wv.a)ph=1;else if(p===Math.round(t*2/3)&&!G.wv.b)ph=2;}
+  else if(t>=6&&p===Math.ceil(t/2)&&!G.wv.a)ph=1;
+  if(!ph)return false;
+  G.wv[ph===1?'a':'b']=true;
+  G.locked=true;clearTimer();
+  const boss=G.adv.boss,f=FOES[G.foe];
+  const title=boss?(ph===1?'Fase 2!':'Fase 3: Mengamuk!'):'Gelombang 2!';
+  if(boss&&ph===2){const fb=$('foeBox');if(fb)fb.classList.add('rage');}
+  foeAtk();
+  arenaBanner(title,f.n+(boss?' makin garang!':' memanggil bala bantuan!'));
+  sfx('hit');
+  const my=G;
+  setTimeout(()=>{if(G===my&&!G.done)showBoon(title);},900);
+  return true;
+}
+function showBoon(title){
+  const my=G;
+  const opts=shuffle(BOONS.filter(b=>b.ok())).slice(0,3);
+  const m=document.createElement('div');
+  m.className='modal boonmodal';
+  m.innerHTML=`<div class="wcard" role="dialog" aria-modal="true" aria-label="Pilih Boon">
+    <h2>${esc(title)}</h2><p class="sub">Istirahat sebentar! Pilih satu bantuan untuk pertarungan berikutnya.</p>
+    <div class="boons">${opts.map(b=>`<button class="boon" data-boon="${b.k}"><span class="bi">${b.ico}</span><b>${b.n}</b><small>${b.d}</small></button>`).join('')}</div>
+  </div>`;
+  document.body.appendChild(m);
+  const f=m.querySelector('button');if(f)f.focus();
+  m.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-boon]');
+    if(!b)return;
+    const k=b.dataset.boon;
+    if(G===my&&!G.done){
+      if(k==='heart'){G.heartsMax=Math.max(G.heartsMax||3,G.hearts+1);G.hearts++;}
+      else if(k==='shield')G.shield=true;
+      else if(k==='lucky')G.luckyN=3;
+      else if(k==='refill'){G.used={};}
+      else if(k==='coins')addCoins(25,true);
+      sfx('win');burst(12);
+      updateHud();drawSkills();
+      toast('Boon: '+BOONS.find(x=>x.k===k).n,BOONS.find(x=>x.k===k).ico,'win');
+    }
+    m.remove();
+    if(G===my&&!G.done){G.locked=false;nextRound();}
+  });
+}
+
+/* ---------- Mode Percakapan ---------- */
+function talkItems(){
+  const sc=(G&&G.adv&&G.adv.sc&&SCEN.find(s=>s.q===G.adv.sc))||freshOne(SCEN);
+  G.sc=sc;G.talk={log:[]};
+  const nm=pname();
+  return sc.turns.map(t=>({q:t.q,id:t.id,o:t.o.map(x=>x.replace('$NAME',nm)),a:0,w:t.w,k:sc.n}));
+}
+function renderTalk(){
+  if(G.talk.pending){G.talk.log.push({t:G.talk.pending.npc},{t:G.talk.pending.me,me:1});G.talk.pending=null;}
+  const it=G.items[G.progress],sc=G.sc,ans=it.o[0],opts=shuffle(it.o.slice());
+  const log=G.talk.log.map(l=>`<div class="cb ${l.me?'me':'npc'}">${esc(l.t)}</div>`).join('');
+  $('board').innerHTML=`<div class="talk">
+    <div class="talk-head"><span class="tav">${avatar(sc.who||'kai')}</span><div><b>${esc(sc.n)}</b><small>Percakapan ${G.progress+1}/${G.total}</small></div></div>
+    <div class="chat" id="chat">${log}<div class="cb npc live"><span>${esc(it.q)}</span> <button class="spk" data-say="${esc(it.q)}" aria-label="Dengarkan">🔊</button>${S.diff===2?'':`<small>${esc(it.id)}</small>`}</div></div>
+    <div class="opts one">${opts.map(t=>`<button class="opt txt" data-k="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+    <div id="whyBox"></div></div>`;
+  const ch=$('chat');if(ch)ch.scrollTop=ch.scrollHeight;
+  G.cur={ans:ans,teach:true,info:it.w||'',wrong:'Balasan terbaik: '+ans,say:ans};
+  G.talk.pending={npc:it.q,me:ans};
+  speak(it.q);
+  mochi('think','Balasan apa yang paling tepat?');
+  startTimer(S.diff===2?25:30);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('#board .spk');
+  if(b){speak(b.dataset.say);e.stopPropagation();}
+},true);
+
+/* ---------- Mode Tangkap Kata ---------- */
+function catchItems(){
+  const n=(G&&G.adv&&G.adv.boss)?14:10;
+  return new Array(n).fill(0).map((_,i)=>({i:i}));
+}
+function catchTopic(){
+  const all=poolAll(),cnt={};
+  all.forEach(w=>{cnt[w.t]=(cnt[w.t]||0)+1;});
+  const ok=Object.keys(cnt).filter(k=>cnt[k]>=6);
+  const pref=(G.topic&&G.topic!=='all'&&cnt[G.topic]>=6)?G.topic:null;
+  const tp=pref||ok[Math.floor(Math.random()*ok.length)]||'animals';
+  return tp;
+}
+function renderCatch(){
+  clearTimer();
+  const tp=catchTopic(),tn=(TOPICS.find(t=>t.k===tp)||{n:tp}).n;
+  const all=poolAll(),gwords=all.filter(w=>w.t===tp&&w.pic),bwords=all.filter(w=>w.t!==tp&&w.pic);
+  $('board').innerHTML=`<div class="catchwrap">
+    <div class="catchhint"><b>🧺 Tangkap kata bertema: ${esc(tn.toUpperCase())}</b><small>Geser atau ketuk untuk menggerakkan keranjang. Panah kiri/kanan juga bisa.</small></div>
+    <canvas id="catchCv" class="catchcv" aria-label="Permainan tangkap kata" tabindex="0"></canvas></div>`;
+  const cv=$('catchCv'),ctx=cv.getContext('2d');
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const rect=cv.getBoundingClientRect();
+  const W=Math.max(260,Math.round(rect.width||320)),H=Math.max(300,Math.min(440,Math.round(W*1.08)));
+  cv.style.height=H+'px';cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  const ch=G.adv?CHAPTERS[G.adv.ci]:{bg:['#d9f7c4','#8fdca6'],ground:'#6fcf86'};
+  const ct=G.ct={tp,tn,W,H,x:W/2,tx:W/2,bw:Math.min(120,W*.34),items:[],fx:[],t:0,spawn:.6,left:0,right:0,my:G,fall:0,
+                 gwords,bwords,shake:0,keys:{},lastGood:0,spawned:0};
+  const heroImg=new Image();
+  try{heroImg.src='data:image/svg+xml;utf8,'+encodeURIComponent(art('mochi','cheer',true).replace('<svg ','<svg width="160" height="156" '));}catch(e){}
+  const moveTo=ev=>{const r=cv.getBoundingClientRect();ct.tx=Math.max(ct.bw/2,Math.min(W-ct.bw/2,(ev.clientX-r.left)/r.width*W));};
+  cv.addEventListener('pointerdown',ev=>{cv.setPointerCapture&&cv.setPointerCapture(ev.pointerId);moveTo(ev);ev.preventDefault();});
+  cv.addEventListener('pointermove',ev=>{if(ev.buttons||ev.pointerType==='touch'||ev.pointerType==='pen'||ev.pointerType==='mouse')moveTo(ev);});
+  cv.addEventListener('keydown',ev=>{if(ev.key==='ArrowLeft'||ev.key==='ArrowRight'){ct.keys[ev.key]=1;ev.preventDefault();}});
+  cv.addEventListener('keyup',ev=>{delete ct.keys[ev.key];});
+  const onKey=ev=>{if(!G||G.ct!==ct)return;if(ev.key==='ArrowLeft'||ev.key==='ArrowRight'){ct.keys[ev.key]=ev.type==='keydown'?1:0;ev.preventDefault();}};
+  window.addEventListener('keydown',onKey);window.addEventListener('keyup',onKey);
+  const pickWord=(isGood)=>{
+    const pl=isGood?ct.gwords:ct.bwords;
+    // hindari kata yang sama berurutan
+    for(let i=0;i<8;i++){const w=pl[Math.floor(Math.random()*pl.length)];if(!ct.last||ct.last!==w.en||pl.length<2){ct.last=w.en;return w;}}
+    return pl[0];
+  };
+  const spawn=()=>{
+    const needGood=G.total-G.progress;
+    const onGood=ct.items.filter(i=>i.good&&!i.dead).length;
+    let isGood=Math.random()<.62;
+    if(onGood<1&&ct.spawned%3===2)isGood=true;       // pastikan selalu ada yang bisa ditangkap
+    if(onGood>=needGood)isGood=false;
+    const w=pickWord(isGood),sz=Math.min(78,W*.22);
+    ct.items.push({w,good:isGood,x:sz/2+Math.random()*(W-sz),y:-sz,sz,vy:0,rot:(Math.random()-.5)*.4,ph:Math.random()*6});
+    ct.spawned++;
+  };
+  const burst=(x,y,col,n)=>{for(let i=0;i<n;i++){const a=Math.random()*6.28,s=60+Math.random()*120;ct.fx.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-50,l:.7,c:col});}};
+  const rr=(x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();};
+  let last=performance.now();
+  const frame=now=>{
+    if(!G||G.ct!==ct||G.done||!document.body.contains(cv)){window.removeEventListener('keydown',onKey);window.removeEventListener('keyup',onKey);return;}
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    if(!G.locked){
+      ct.t+=dt;
+      const kx=(ct.keys.ArrowRight?1:0)-(ct.keys.ArrowLeft?1:0);
+      if(kx)ct.tx=Math.max(ct.bw/2,Math.min(W-ct.bw/2,ct.tx+kx*W*1.1*dt));
+      ct.x+=(ct.tx-ct.x)*Math.min(1,dt*14);
+      ct.spawn-=dt;
+      const prog=G.progress/G.total,rate=Math.max(.5,1.05-prog*.45-(S.diff*.1));
+      if(ct.spawn<=0){spawn();ct.spawn=rate*(.75+Math.random()*.5);}
+      const g=H*(.42+prog*.22+S.diff*.07);
+      const by=H-62;
+      ct.items.forEach(it=>{
+        if(it.dead)return;
+        it.vy=Math.min(g,it.vy+g*1.3*dt);it.y+=it.vy*dt;
+        const catchY=by-4,hit=it.y+it.sz*.5>=catchY&&it.y<=by+30&&Math.abs(it.x-ct.x)<ct.bw/2+it.sz*.25;
+        if(hit){
+          it.dead=true;
+          if(it.good){
+            burst(it.x,by,'#ffd24d',14);
+            ct.fx.push({txt:'+',x:it.x,y:by-10,vy:-60,l:.8,c:'#2e9e5b',big:1});
+            good();G.progress++;updateHud();speak(it.w.en);
+            if(G.progress>=G.total){setTimeout(()=>{if(G&&G.ct===ct&&!G.done)endGame(true);},650);}
+          }else{
+            burst(it.x,by,'#ff6b6b',12);ct.shake=.3;
+            const dead=bad('Oops! "'+it.w.en+'" bukan tema '+tn+'.');
+            if(dead){setTimeout(()=>{if(G&&G.ct===ct&&!G.done)endGame(false);},650);}
+          }
+        }else if(it.y>H+it.sz){it.dead=true;}
+      });
+      ct.items=ct.items.filter(i=>!i.dead||i.y<=H+i.sz);
+    }
+    // gambar
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const sx=ct.shake>0?(Math.random()-.5)*8:0;ct.shake=Math.max(0,ct.shake-dt);
+    ctx.save();ctx.translate(sx,0);
+    const gr=ctx.createLinearGradient(0,0,0,H);gr.addColorStop(0,ch.bg[0]);gr.addColorStop(1,ch.bg[1]);
+    ctx.fillStyle=gr;ctx.fillRect(-10,0,W+20,H);
+    ctx.fillStyle='rgba(255,255,255,.55)';
+    for(let i=0;i<4;i++){const cx=((i*97+ct.t*14)%(W+120))-60,cy=24+i*36;ctx.beginPath();ctx.ellipse(cx,cy,34,13,0,0,7);ctx.ellipse(cx+22,cy+4,24,10,0,0,7);ctx.fill();}
+    ctx.fillStyle=ch.ground;ctx.fillRect(-10,H-34,W+20,40);
+    ctx.fillStyle='rgba(58,42,92,.18)';ctx.fillRect(-10,H-34,W+20,4);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ct.items.forEach(it=>{
+      if(it.dead&&it.y>H)return;
+      ctx.save();ctx.translate(it.x,it.y);ctx.rotate(it.rot+Math.sin(ct.t*3+it.ph)*.06);
+      const s=it.sz;
+      ctx.fillStyle='#fff';ctx.strokeStyle='#3a2a5c';ctx.lineWidth=3;
+      rr(-s*.6,-s*.5,s*1.2,s*1.0,14);ctx.fill();ctx.stroke();
+      ctx.font=Math.round(s*.46)+'px serif';ctx.fillStyle='#000';ctx.fillText(it.w.pic,0,-s*.12);
+      ctx.font='800 '+Math.max(11,Math.round(s*.2))+'px system-ui,sans-serif';ctx.fillStyle='#3a2a5c';
+      ctx.fillText(it.w.en.length>11?it.w.en.slice(0,10)+'.':it.w.en,0,s*.32);
+      ctx.restore();
+    });
+    // keranjang + pahlawan
+    const bx=ct.x,by2=H-62;
+    if(heroImg.complete&&heroImg.naturalWidth){ctx.drawImage(heroImg,bx-26,by2-48,52,50);}
+    ctx.fillStyle='#d9a066';ctx.strokeStyle='#3a2a5c';ctx.lineWidth=3.5;
+    ctx.beginPath();ctx.moveTo(bx-ct.bw/2,by2);ctx.lineTo(bx+ct.bw/2,by2);ctx.lineTo(bx+ct.bw/2-12,by2+34);ctx.lineTo(bx-ct.bw/2+12,by2+34);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(58,42,92,.35)';ctx.lineWidth=2;
+    for(let i=1;i<5;i++){const xx=bx-ct.bw/2+ct.bw*i/5;ctx.beginPath();ctx.moveTo(xx,by2+2);ctx.lineTo(xx+(xx<bx?2:-2),by2+32);ctx.stroke();}
+    ctx.beginPath();ctx.moveTo(bx-ct.bw/2+8,by2+17);ctx.lineTo(bx+ct.bw/2-8,by2+17);ctx.stroke();
+    ct.fx.forEach(p=>{p.l-=dt;p.x+=(p.vx||0)*dt;p.y+=(p.vy||0)*dt;if(p.vx!==undefined)p.vy+=300*dt;
+      ctx.globalAlpha=Math.max(0,p.l*1.4);
+      if(p.txt){ctx.font='800 26px system-ui,sans-serif';ctx.fillStyle=p.c;ctx.fillText(p.txt,p.x,p.y);}
+      else{ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3.2,0,7);ctx.fill();}});
+    ctx.globalAlpha=1;ct.fx=ct.fx.filter(p=>p.l>0);
+    ctx.restore();
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  mochi('think','Tangkap kata tema '+tn+'!');
+}
 /*__OW_BEGIN__*/
 /* ============================================================
    OPEN WORLD 2.5D — jelajah bebas dunia isometrik
