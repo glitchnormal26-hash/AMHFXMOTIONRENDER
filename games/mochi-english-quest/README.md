@@ -19,6 +19,13 @@ Game belajar bahasa Inggris (kelas 4) dalam satu berkas: `index.html`. Buka lang
 - Visual: cerobong + asap, kilau air, paralaks di adegan; **kualitas grafis adaptif** (turun otomatis jika lambat) dan menghormati `prefers-reduced-motion`.
 - Aksesibilitas: dialog ber-`role`, fokus keyboard, pengumuman layar pembaca, tombol ≥44px.
 
+## Pembaruan Petualangan & Koleksi (tahap 3)
+- **Petualangan 2.0**: tiap chapter kini 8 stage (sebelumnya 4); boss di stage terakhir. Peta berbentuk ular dengan penanda posisi pemain dan bar bintang per chapter. Simpanan lama dimigrasi otomatis.
+- **Mode baru**: 💬 *Percakapan* (8 skenario obrolan, balasan bahasa Inggris) dan 🧺 *Tangkap Kata* (arkade kata jatuh sesuai tema). Keduanya juga ada di tab Latihan.
+- **Lebih interaktif**: pratinjau stage (tujuan bintang), Gelombang 2 + pilih *Boon* di tengah stage, boss 3 fase (mengamuk di fase 3), Serangan Kombo tiap 3 jawaban benar, pahlawan di arena dengan animasi serang/terluka.
+- **Kelas kelangkaan 5 tingkat**: Umum ★, Langka ★★, Epik ★★★, Legendaris ★★★★, Mitos ★★★★★. Kelas 4 butuh Level 4, kelas 5 butuh Level 7 untuk dibeli. Filter kelas & urutan di lemari.
+- **Koleksi jauh lebih banyak**: rambut (29), kostum (30), sayap (19), fashion (19), aksesori (26), pet (21), furnitur (59), plus kategori baru **Aura** (10), **Dinding** (12) dan **Lantai** (9) untuk kamar.
+
 ## Pengembangan
-Sunting `src/index.template.html` dan `src/openworld.js`, lalu jalankan `python3 build.py` untuk menghasilkan `index.html`.
+Sunting `src/index.template.html`, `src/openworld.js`, `src/adv_data.js`, `src/adventure.js` dan `src/catalog.js`, lalu jalankan `python3 build.py` untuk menghasilkan `index.html`.
 `tools/` berisi skrip uji headless (puppeteer-core + Chromium) yang dipakai untuk verifikasi.

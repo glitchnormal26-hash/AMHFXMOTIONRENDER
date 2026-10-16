@@ -75,6 +75,27 @@
 .catchhint small{font-weight:700;opacity:.7}
 .catchcv{width:100%;display:block;border:3px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);touch-action:none;cursor:ew-resize;background:#cfe}
 @media (prefers-reduced-motion:reduce){.afloat,.abanner,.you,.hero.lunge,.hero.hurt,.foe.rage{animation-duration:.01s!important;animation-iteration-count:1!important}}
+
+/* ===== Katalog 2.0 ===== */
+.wrar.r4{background:linear-gradient(135deg,#ffb84d,#ff7a3c);color:#fff}
+.wrar.r5{background:linear-gradient(135deg,#ff7bd8,#8b6cf0,#5cc8ff);background-size:200% 200%;animation:rar5 3s linear infinite;color:#fff}
+@keyframes rar5{50%{background-position:100% 100%}}
+.wit.rr4{border-color:#e0891f;box-shadow:3px 3px 0 #e0891f,0 0 10px rgba(255,170,60,.55)}
+.wit.rr5{border-color:#8b3fd0;box-shadow:3px 3px 0 #8b3fd0,0 0 14px rgba(190,110,255,.7);background:linear-gradient(160deg,#fff,#f6e8ff)}
+.wit.rr5.on{background:var(--mint)}
+.wit.gate{opacity:.85}
+.wrf{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}
+.wchip.sm{font-size:.74rem;padding:2px 9px;min-height:36px;border-width:2.5px}
+.wchip.r4[aria-pressed="true"]{background:#e0891f}.wchip.r5[aria-pressed="true"]{background:#8b3fd0}
+.wpv{width:100%;height:100%;border:3px solid var(--ink);border-radius:12px}
+.wpv.fl{height:70%}
+.aura{transform-origin:100px 124px;animation:aupulse 2.6s ease-in-out infinite}
+.aud{animation:auflt 2.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes aupulse{50%{opacity:.78}}
+@keyframes auflt{50%{opacity:.35}}
+.spk{animation:spkl 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spkl{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.aura,.aud,.spk,.wrar.r5{animation:none}}
 </style></head><body>
 <title>Adelian Althania English Adventure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -976,6 +997,7 @@ body{
       <div class="card">
         <div class="h2r"><h2>Lemari furnitur</h2><button class="btn soft sellbtn" data-room="clear" data-act="roomclear">Bereskan</button></div>
         <div class="petcards" id="roomBag"></div>
+        <button class="btn soft" data-wgo="wall" style="margin-top:8px">🖼️ Ganti dinding, lantai &amp; aura</button>
         <p class="sub" id="roomHint">Belum ada furnitur. Selesaikan misi atau beli di lemari Gaya.</p>
       </div>
     </div>
@@ -1770,7 +1792,7 @@ function charSVG(p,expr,crop,layer){
   const shd=t=>t.replace(/fill="[^"]*"/g,`fill="url(#${uid}h)"`).replace(/stroke="[^"]*"/g,'stroke="none"').replace(/opacity="[^"]*"/g,'');
   const defs=`<defs><radialGradient id="${uid}h" cx=".32" cy=".24" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#2a1858" stop-opacity=".34"/></radialGradient><linearGradient id="${uid}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#2a1858" stop-opacity=".36"/></linearGradient></defs>`;
   const pv=(cls,px,py,inner)=>layer?inner:`<g transform="translate(${px} ${py})"><g class="par ${cls}"><g class="idle ${cls}"><g transform="translate(${-px} ${-py})">${inner}</g></g></g></g>`;
-  const lBack=`${wingsPart}${packPart}${beforeBody}${back}${hoodPart}${shd(back)}`;
+  const lBack=`${auraSVG(c,uid)}${wingsPart}${packPart}${beforeBody}${back}${hoodPart}${shd(back)}`;
   const lBody=`${arms}${bootsPart}
   <path d="M70 156 Q100 148 130 156 L140 206 Q100 216 60 206Z" fill="${c.outfit}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M70 156 Q100 148 130 156 L140 206 Q100 216 60 206Z" fill="url(#${uid}b)"/>${coatPart}${patternPart}${skirtPart}${apronPart}
   ${collarPart}${scarfPart}
@@ -3218,8 +3240,8 @@ $('wModal').addEventListener('click',e=>{
 });
 
 /* ---------- Tingkat kelangkaan hadiah ---------- */
-const RARN={1:'Umum',2:'Langka',3:'Epik'};
-const RARSTAR={1:'★',2:'★★',3:'★★★'};
+const RARN={1:'Umum',2:'Langka',3:'Epik',4:'Legendaris',5:'Mitos'};
+const RARSTAR={1:'★',2:'★★',3:'★★★',4:'★★★★',5:'★★★★★'};
 
 
 /* ============================================================
@@ -3307,7 +3329,7 @@ function petSVG(id,expr){
 }
 
 /* ---------- Seni FURNITUR lucu ---------- */
-function furSVG(it){
+function furSVG0(it){
   const a=it.art,c1=it.c1||'#ffd9a8',c2=it.c2||'#ff9ec7',c3=it.c3||'#5cc8ff',ink=INK;
   const sh='<ellipse cx="100" cy="132" rx="84" ry="10" fill="rgba(58,42,92,.16)"/>';
   switch(a){
@@ -3441,8 +3463,8 @@ function furSVG(it){
 }
 
 /* ---------- Katalog hadiah ---------- */
-const CATNAME={hair:'Gaya Rambut',costume:'Kostum',fashion:'Fashion',acc:'Aksesori',pet:'Pet',furn:'Furnitur'};
-const CATICO={hair:'💇',costume:'👗',fashion:'🧣',acc:'🎀',pet:'🐾',furn:'🛋️'};
+const CATNAME={hair:'Gaya Rambut',costume:'Kostum',fashion:'Fashion',acc:'Aksesori',pet:'Pet',furn:'Furnitur',wing:'Sayap',aura:'Aura',wall:'Dinding',floor:'Lantai'};
+const CATICO={hair:'💇',costume:'👗',fashion:'🧣',acc:'🎀',pet:'🐾',furn:'🛋️',wing:'🦋',aura:'✨',wall:'🖼️',floor:'🟫'};
 const HAIRS=[
  {id:'hr0',c:'hair',style:'twin', n:'Sakura',          hair:'#ff8fb8',d:'#d94b82',rib:'#5cc8ff',lv:1,r:1},
  {id:'hr1',c:'hair',style:'twin', n:'Langit',          hair:'#72ccff',d:'#2f8fd8',rib:'#ffd24d',lv:2,r:1},
@@ -3621,7 +3643,7 @@ const PET_MAP={};PETS.forEach(p=>PET_MAP[p.id]=1);
 function syncLevelHair(){HAIRS.forEach(h=>{if(h.lv&&h.lv<=level())S.own[h.id]=1;});}
 syncLevelHair();
 const itemById=id=>CATALOG.find(x=>x.id===id);
-const owned=id=>id==='hr_own'||!!S.own[id];
+const owned=id=>id==='hr_own'||id==='rw_own'||id==='rf_own'||!!S.own[id];
 const hairById=id=>HAIRS.find(h=>h.id===id)||HAIRS[0];
 const petDef=()=>PETS.find(p=>p.id===S.pet)||null;
 const petFx=k=>{const p=petDef();return !!(p&&p.fx===k);};
@@ -3640,6 +3662,7 @@ function buildLook(opt){
   if(opt.costume!==false)add(S.look.costume);
   if(opt.fashion!==false)add(S.look.fashion);
   if(opt.wing!==false&&S.look.wing)add(S.look.wing);
+  if(opt.aura!==false&&S.look.aura)add(S.look.aura);
   if(opt.acc!==false)add(S.look.acc);
   if(opt.extra)Object.assign(p,opt.extra);
   return p;
@@ -3768,11 +3791,11 @@ function claimMis(i){
 function ownItem(id){S.own[id]=1;save();}
 function rollReward(tier,force){
   const luck=petFx('luck')?1:0;
-  const w=tier>=3?[1,2,4+2*luck]:tier===2?[3,3,2+2*luck]:[6,3,1+luck];
-  const pool=CATALOG.filter(it=>!owned(it.id)&&!it.lv);
+  const w=tier>=3?[1,2,4+2*luck,1+luck,1]:tier===2?[3,3,2+2*luck,1,0]:[6,3,1+luck,0,0];
+  const pool=CATALOG.filter(it=>!owned(it.id)&&!it.lv&&!(it.r>=4&&it.gate>level()));
   if(!pool.length)return null;
   const bag=[];
-  pool.forEach(it=>{const n=w[(it.r||1)-1]||1;for(let i=0;i<n;i++)bag.push(it.id);});
+  pool.forEach(it=>{const n=w[(it.r||1)-1];if(!n)return;for(let i=0;i<n;i++)bag.push(it.id);});
   return itemById(bag[Math.floor(Math.random()*bag.length)]);
 }
 function grantStage(finished,stars){
@@ -3793,6 +3816,8 @@ function previewSVG(it){
   if(!it)return '';
   if(it.c==='pet')return petSVG(it.id,'happy');
   if(it.c==='furn')return furSVG(it);
+  if(it.c==='wall'||it.c==='floor')return `<div class="wpv${it.c==='floor'?' fl':''}" style="background:${it.bg||(it.c==='wall'?'linear-gradient(180deg,#ffe0ee,#ffcbe2)':'linear-gradient(180deg,#ffdcbe,#eeb894)')}"></div>`;
+  if(it.c==='aura')return charSVG(buildLook({costume:false,fashion:false,acc:false,wing:false,aura:false,extra:it.p}),'happy');
   if(it.c==='hair')return it.id==='hr_own'?charSVG(hairBase(),'happy',true):charSVG(Object.assign({},buildLook(),{style:it.style,hair:it.hair,hairD:it.d,eye:it.d}),'happy',true);
   if(it.c==='acc'||it.c==='fashion')return charSVG(buildLook({acc:false,extra:it.p}),'happy');
   if(it.c==='wing')return charSVG(buildLook({costume:false,fashion:false,acc:false,wing:false,extra:it.p}),'happy');
@@ -3835,17 +3860,20 @@ function showRewardPopup(it){
 }
 
 /* ---------- Lemari gaya (Gaya Rambut, Kostum, Fashion, Aksesori, Pet, Furnitur) ---------- */
-const WCATS=[['hair','💇','Gaya Rambut'],['costume','👗','Kostum'],['wing','🦋','Sayap'],['fashion','🧣','Fashion'],['acc','🎀','Aksesori'],['pet','🐾','Pet'],['furn','🛋️','Furnitur']];
-let WCAT='costume';
-const eqOf=c=>c==='hair'?(S.look.hair||'hr_own'):c==='costume'?S.look.costume:c==='fashion'?S.look.fashion:c==='acc'?S.look.acc:c==='wing'?(S.look.wing||''):c==='pet'?S.pet:'';
+const WCATS=[['hair','💇','Gaya Rambut'],['costume','👗','Kostum'],['wing','🦋','Sayap'],['fashion','🧣','Fashion'],['acc','🎀','Aksesori'],['pet','🐾','Pet'],['furn','🛋️','Furnitur'],['aura','✨','Aura'],['wall','🖼️','Dinding'],['floor','🟫','Lantai']];
+let WCAT='costume',WRF=0,WSORT='a';
+const eqOf=c=>c==='hair'?(S.look.hair||'hr_own'):c==='costume'?S.look.costume:c==='fashion'?S.look.fashion:c==='acc'?S.look.acc:c==='wing'?(S.look.wing||''):c==='aura'?(S.look.aura||''):c==='wall'?(S.look.wall||'rw_own'):c==='floor'?(S.look.floor||'rf_own'):c==='pet'?S.pet:'';
 const HAIR_OWN={id:'hr_own',c:'hair',n:'Rambut Asli',r:1,price:0};
-function itemsOf(c){return c==='hair'?[HAIR_OWN].concat(HAIRS):c==='costume'?COSTUMES:c==='fashion'?FASHIONS:c==='acc'?ACCS:c==='wing'?WINGS:c==='pet'?PETS:FURN;}
+function itemsOf(c){return c==='hair'?[HAIR_OWN].concat(HAIRS):c==='costume'?COSTUMES:c==='fashion'?FASHIONS:c==='acc'?ACCS:c==='wing'?WINGS:c==='pet'?PETS:c==='aura'?AURAS:c==='wall'?[WALL_OWN].concat(WALLS):c==='floor'?[FLOOR_OWN].concat(FLOORS):FURN;}
 function wearItem(it,quiet){
   if(!it)return;
   if(it.c==='hair')S.look.hair=(it.id==='hr_own'||S.look.hair===it.id)?'':it.id;
   else if(it.c==='costume'){if(!it.p)return;S.look.costume=(S.look.costume===it.id?'':it.id);}
   else if(it.c==='fashion')S.look.fashion=(S.look.fashion===it.id?'':it.id);
   else if(it.c==='wing')S.look.wing=(S.look.wing===it.id?'':it.id);
+  else if(it.c==='aura')S.look.aura=(S.look.aura===it.id?'':it.id);
+  else if(it.c==='wall')S.look.wall=(it.id==='rw_own'||S.look.wall===it.id)?'':it.id;
+  else if(it.c==='floor')S.look.floor=(it.id==='rf_own'||S.look.floor===it.id)?'':it.id;
   else if(it.c==='acc')S.look.acc=(S.look.acc===it.id?'':it.id);
   else if(it.c==='pet')S.pet=(S.pet===it.id?'':it.id);
   else if(it.c==='furn'){
@@ -3854,18 +3882,20 @@ function wearItem(it,quiet){
   }
   save();
   IMGS_RESET();
-  if(typeof repaintMochi==='function'&&['hair','costume','fashion','acc','wing'].indexOf(it.c)>=0)repaintMochi();
+  if(typeof repaintMochi==='function'&&['hair','costume','fashion','acc','wing','aura'].indexOf(it.c)>=0)repaintMochi();
   if(!quiet)sfx('tap');
   paintCoins();renderWardrobe();renderRoom();renderMissions();
   if($('styleHint'))$('styleHint').textContent=styleLine();
   if(!quiet){
     const on=(it.c==='furn')?(S.room[it.slot]===it.id):(eqOf(it.c)===it.id);
+    if(it.c==='wall'||it.c==='floor')mochi('cheer','Kamar kita jadi makin cantik!');
     toast(on?'Dipakai: '+it.n:'Dilepas: '+it.n,on?'✨':'↩️');
   }
 }
 function buyItem(it){
   if(!it||owned(it.id))return;
   if(it.lv&&it.lv>level()){sfx('no');toast('Masih terkunci. Capai Level '+it.lv+' dulu','🔒');return;}
+  if(it.gate&&it.gate>level()){sfx('no');toast('Kelas '+RARN[it.r]+' terbuka di Level '+it.gate+'. Terus belajar!','🔒');return;}
   const cost=priceOf(it);
   if(S.coins<cost){sfx('no');toast('Koin belum cukup. Ayo selesaikan misi & panen!','🪙');return;}
   S.coins-=cost;ownItem(it.id);statAdd('buy',1);
@@ -3880,6 +3910,7 @@ function styleLine(){
   p.push('Rambut '+h.n);
   if(cs)p.push('Kostum '+cs.n);
   if(wg)p.push(wg.n);
+  const au=itemById(S.look.aura||'');if(au)p.push('Aura '+au.n);
   if(fa)p.push(fa.n);
   if(ac)p.push(ac.n);
   p.push(pe?'Pet '+pe.n:'Tanpa pet');
@@ -3889,19 +3920,21 @@ function renderWardrobe(){
   const box=$('wardrobe');
   if(!box)return;
   syncLevelHair();
-  const list=itemsOf(WCAT);
+  const all=itemsOf(WCAT);
+  const list=all.filter(it=>!WRF||(it.r||1)===WRF).slice().sort((a,b)=>WSORT==='r'?((b.r||1)-(a.r||1)||(a.price||0)-(b.price||0)):((a.r||1)-(b.r||1)||(a.price||0)-(b.price||0)));
   const cards=list.map(it=>{
     const lvLock=!!(it.lv&&it.lv>level());
+    const gateLock=!owned(it.id)&&!!(it.gate&&it.gate>level());
     const have=owned(it.id)&&!lvLock;
     const on=WCAT==='furn'?S.room[it.slot]===it.id:eqOf(WCAT)===it.id;
     const cost=priceOf(it);
-    const tag=lvLock?'Level '+it.lv:(have?(on?'Dipakai ✓':(WCAT==='furn'?'Taruh di kamar':'Pakai')):'Beli 🪙 '+cost);
-    return `<button class="wit${on?' on':''}${have?'':' lock'}" data-fit="${it.id}" data-cat="${it.c}">
+    const tag=lvLock?'Level '+it.lv:gateLock?'Level '+it.gate+' ke atas':(have?(on?'Dipakai ✓':(WCAT==='furn'?'Taruh di kamar':'Pakai')):'Beli 🪙 '+cost);
+    return `<button class="wit rr${it.r||1}${on?' on':''}${have?'':' lock'}${gateLock?' gate':''}" data-fit="${it.id}" data-cat="${it.c}">
       <span class="wrar r${it.r||1}">${RARSTAR[it.r||1]}</span>
       <span class="wprev">${previewSVG(it)}</span>
       <b>${esc(it.n)}</b>
       <span class="wtag">${esc(tag)}</span>
-      ${haveless(have,lvLock,cost)}
+      ${gateLock?'<span class="wear">🔒 Level '+it.gate+'</span>':haveless(have,lvLock,cost)}
     </button>`;
   }).join('');
   const cnt=c=>itemsOf(c).filter(it=>owned(it.id)&&!(it.lv&&it.lv>level())).length;
@@ -3916,7 +3949,12 @@ function renderWardrobe(){
       </div>
     </div>
     <div class="wcat">${WCATS.map(([k,ic,n])=>`<button class="wchip" data-wcat="${k}" aria-pressed="${WCAT===k}">${ic} ${n} ${cnt(k)}/${itemsOf(k).length}</button>`).join('')}</div>
-    <div class="wgrid">${cards}</div>
+    <div class="wrf" role="group" aria-label="Filter kelas">
+      <button class="wchip sm" data-wr="0" aria-pressed="${WRF===0}">Semua</button>
+      ${[1,2,3,4,5].map(r=>`<button class="wchip sm r${r}" data-wr="${r}" aria-pressed="${WRF===r}">${RARSTAR[r]} ${RARN[r]} ${all.filter(it=>(it.r||1)===r&&owned(it.id)).length}/${all.filter(it=>(it.r||1)===r).length}</button>`).join('')}
+      <button class="wchip sm" data-wsort="1" aria-label="Urutkan">${WSORT==='r'?'⬇ Langka dulu':'⬆ Umum dulu'}</button>
+    </div>
+    <div class="wgrid">${cards||'<p class="sub">Belum ada barang di kelas ini.</p>'}</div>
     <p class="note">Barang baru didapat dari misi, stage boss, pesanan warga, dan kejutan di kebun. Koin didapat dari latihan, panen, dan menjual hasil kebun.</p>`;
 }
 function haveless(have,lvLock,cost){
@@ -3938,6 +3976,7 @@ function renderRoom(){
     </div>`;
   }).join('');
   if(fig)fig.innerHTML=art('mochi','happy');
+  applyRoomTheme();
   if(pw)pw.innerHTML=petDef()?`<div class="rpet" id="roomPet" title="Ketuk pet">${petSVG(S.pet,'happy')}</div>`:'';
   const rt=$('roomTitle');if(rt)rt.textContent='Rumah '+pname();
   if(fig)fig.title='Ketuk '+pname();
@@ -4437,7 +4476,7 @@ $('farmModal').addEventListener('click',e=>{
 /* ============================================================
    BAGIAN 4 — sambungan ke menu lama (tab, klik, misi, tik kebun)
    ============================================================ */
-function lookSig(){return [S.look.hair,S.look.costume,S.look.fashion,S.look.acc,S.look.wing||'',S.pet].join('-');}
+function lookSig(){return [S.look.hair,S.look.costume,S.look.fashion,S.look.acc,S.look.wing||'',S.look.aura||'',S.pet].join('-');}
 const MAXH=()=>3+(petFx('heart')?1:0);
 
 $('home').addEventListener('click',e=>{
@@ -4453,7 +4492,10 @@ $('home').addEventListener('click',e=>{
     return;
   }
   if(d.buy){buyItem(itemById(d.buy));return;}
-  if(d.wcat){WCAT=d.wcat;sfx('tap');renderWardrobe();return;}
+  if(d.wcat){WCAT=d.wcat;WRF=0;sfx('tap');renderWardrobe();return;}
+  if(d.wr!==undefined){WRF=+d.wr;sfx('tap');renderWardrobe();return;}
+  if(d.wsort){WSORT=WSORT==='r'?'a':'r';sfx('tap');renderWardrobe();return;}
+  if(d.wgo){WCAT=d.wgo;WRF=0;TAB='cast';sfx('tap');setTab();renderWardrobe();return;}
   if(d.mis!==undefined){claimMis(+d.mis);return;}
   if(d.room==='clear'){
     S.room={};save();sfx('tap');toast('Kamar dibereskan. Barang ada lagi di lemari bawah','🧹');

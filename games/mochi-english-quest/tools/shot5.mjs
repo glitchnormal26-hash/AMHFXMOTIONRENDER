@@ -6,6 +6,6 @@ await p.evaluate(()=>{const M=__MQ,S=M.S();S.adv.party=['mochi','kai','sari','lu
  [...document.querySelectorAll('[data-tab="adv"]')].pop().click();});
 await sleep(500);
 const el=await p.$('.chap');await el.screenshot({path:'/home/user/tools/a1.png'});
-await p.evaluate(()=>{document.querySelector('[data-st="0-5"]').click();});await sleep(400);
+await p.evaluate(()=>{document.querySelector('[data-st="0-5"]').click();});await sleep(400);await p.evaluate(()=>scrollTo(0,0));
 await p.screenshot({path:'/home/user/tools/a2.png'});
 await b.close();
