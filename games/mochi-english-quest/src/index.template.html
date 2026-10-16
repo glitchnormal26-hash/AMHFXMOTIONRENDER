@@ -250,10 +250,10 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:3px}
 
 /* adegan cerita */
 .scene{position:relative;height:310px;border:3px solid var(--ink);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,var(--g1),var(--g2));box-shadow:var(--shadow)}
-.scene-bg{position:absolute;inset:0;pointer-events:none}
+.scene-bg{position:absolute;inset:0;pointer-events:none;translate:calc(var(--px,0)*-10px) calc(var(--py,0)*-5px);transition:translate .25s ease-out}
 .scene-bg span{position:absolute;line-height:1;opacity:.92}
 .ground{position:absolute;left:-10%;right:-10%;bottom:-20px;height:90px;border-top:3px solid var(--ink);border-radius:50% 50% 0 0/26px 26px 0 0;background:var(--gr)}
-.scene-cast{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;align-items:flex-end;gap:2px;padding-inline:8px}
+.scene-cast{translate:calc(var(--px,0)*8px) calc(var(--py,0)*3px);transition:translate .25s ease-out;position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;align-items:flex-end;gap:2px;padding-inline:8px}
 .sc{flex:1 1 0;min-width:0;max-width:150px;transition:transform .25s,filter .25s;transform-origin:50% 100%}
 .sc svg{display:block;width:100%;height:auto;max-height:250px}
 .sc.dim{filter:brightness(.8) saturate(.8);transform:scale(.88)}
@@ -668,7 +668,7 @@ svg.crop .par,svg.crop .idle,svg.crop .gshadow{animation:none!important;transfor
 .owact:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
 @keyframes owpulse{50%{transform:scale(1.08)}}
 .owzoom{position:absolute;right:max(10px,env(safe-area-inset-right));top:120px;display:flex;flex-direction:column;gap:6px}
-.owzoom .owbtn{width:38px;height:38px;font-size:1.1rem;border-radius:12px}
+.owzoom .owbtn{width:44px;height:44px;font-size:1.15rem;border-radius:12px}
 #owModal{z-index:60}
 .owmenu{display:grid;gap:8px}
 .owmenu .btn{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:1rem;gap:8px;text-align:left}
@@ -701,6 +701,28 @@ svg.crop .par,svg.crop .idle,svg.crop .gshadow{animation:none!important;transfor
 .owq-opt i{position:absolute;left:6px;top:6px;font-style:normal;font-size:.7rem;opacity:.5}
 .owq-opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .owq-opt.good{background:#b8f5cf}.owq-opt.bad{background:#ffc4cf;animation:owhurt .4s}
+.owq-sk{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.owq-skb{font-family:var(--font-display);font-weight:800;font-size:.8rem;color:var(--ink);background:linear-gradient(#fff6c8,#ffe27a);border:3px solid var(--ink);border-radius:12px;padding:4px 9px;cursor:pointer;box-shadow:0 3px 0 var(--ink);min-height:36px}
+.owq-skb{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:62px;line-height:1.1}
+.owq-skb span{display:block;width:34px;height:34px;overflow:hidden}
+.owq-skb span svg{width:100%;height:100%;display:block}
+.owq-skb.used{opacity:.4;filter:grayscale(.8);box-shadow:none;cursor:default}
+.owq-time{display:block;height:8px;border:2px solid var(--ink);border-radius:6px;background:#fff;overflow:hidden}
+.owq-time i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#7be0a5,#ffd24d,#ff6b6b);transform-origin:left}
+.owq-scr{font-size:1.15rem;letter-spacing:.5px;font-weight:800;color:var(--ink)}
+.owq-word.sm{font-size:1.15rem}
+.owq-opt.sel{background:#fff3b0;outline:3px solid var(--sakura);transform:translateY(-2px)}
+.owq.big .owq-opt{font-size:1.3rem;padding-top:16px;padding-bottom:16px}
+.owqspk{border:3px solid var(--ink);background:var(--sun);border-radius:14px;font-size:1.3rem;min-width:44px;min-height:44px;cursor:pointer;margin-left:8px;box-shadow:0 3px 0 var(--ink)}
+.owqspk[hidden]{display:none}
+.owacc{display:grid;gap:5px;margin:6px 0}
+.owacc div{display:grid;grid-template-columns:110px 1fr 42px;gap:6px;align-items:center;font-size:.85rem;font-weight:700}
+.owacc i{display:block;height:12px;border:2px solid var(--ink);border-radius:7px;background:#fff;overflow:hidden}
+.owacc u{display:block;height:100%;background:linear-gradient(#8be8b0,#44c47c);text-decoration:none}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button:focus-visible,[tabindex]:focus-visible,.owq-opt:focus-visible{outline:4px solid #ffb300;outline-offset:2px}
+#owc:focus{outline:none}
+@media (prefers-reduced-motion:reduce){.owq-av,.owq-side.hurt .owq-av,.owq-side.jump .owq-av{animation:none}}
 .owq-flee{font-size:.9rem;padding:6px 10px}
 .owdict{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:50vh;overflow:auto;padding:2px}
 .owdw{border:3px solid var(--ink);background:#fff;border-radius:14px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;cursor:pointer;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
@@ -945,7 +967,7 @@ body{
   </section>
 
   <section id="open" class="owscreen" aria-label="Open World" hidden>
-    <canvas id="owc" aria-label="Dunia terbuka 2.5D yang bisa dijelajahi"></canvas>
+    <canvas id="owc" tabindex="0" role="application" aria-label="Dunia terbuka 2.5D yang bisa dijelajahi"></canvas>
     <div class="owhud">
       <div class="owtop">
         <button class="owbtn" id="owMenuBtn" aria-label="Menu">☰</button>
@@ -955,8 +977,8 @@ body{
       </div>
       <canvas class="owmini" id="owMini" width="100" height="100" aria-hidden="true"></canvas>
       <div class="owzoom"><button class="owbtn" id="owZi" aria-label="Perbesar">＋</button><button class="owbtn" id="owZo" aria-label="Perkecil">－</button></div>
-      <div class="owquest" id="owQuest" hidden><span class="arr" id="owQArr">➤</span><div><span id="owQTxt"></span><small id="owQD"></small></div></div>
-      <div class="owbanner" id="owBanner" aria-live="polite"></div>
+      <div class="owquest" id="owQuest" hidden><span class="arr" id="owQArr">➤</span><div><span id="owQTxt"></span><small id="owQD"></small></div><button class="owqspk" id="owQSpk" aria-label="Dengarkan kata" hidden>🔊</button></div>
+      <div class="owbanner" id="owBanner"></div><div class="srOnly" id="owSR" aria-live="polite" role="status"></div>
       <div class="owbottom">
         <div class="owstick" id="owStick" aria-label="Joystick"><i id="owKnob"></i></div>
         <div class="owbtns">
@@ -5015,4 +5037,12 @@ musicHint();
 })();
 </script>
 
+<script>
+(function(){const sc=document.getElementById('scene');if(!sc||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+function mv(x,y){const r=sc.getBoundingClientRect();sc.style.setProperty('--px',(((x-r.left)/r.width)*2-1).toFixed(2));sc.style.setProperty('--py',(((y-r.top)/r.height)*2-1).toFixed(2));}
+sc.addEventListener('pointermove',e=>mv(e.clientX,e.clientY));
+sc.addEventListener('pointerleave',()=>{sc.style.setProperty('--px',0);sc.style.setProperty('--py',0);});
+if(window.DeviceOrientationEvent&&/Mobi|Android/i.test(navigator.userAgent))addEventListener('deviceorientation',e=>{if(e.gamma==null)return;sc.style.setProperty('--px',Math.max(-1,Math.min(1,e.gamma/25)).toFixed(2));sc.style.setProperty('--py',Math.max(-1,Math.min(1,((e.beta||0)-45)/30)).toFixed(2));},{passive:true});
+})();
+</script>
 </body></html>

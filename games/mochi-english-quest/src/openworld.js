@@ -510,6 +510,18 @@ function owRender(){
     const s=owS(cx,cy);
     ctx.beginPath();ctx.ellipse(s.sx,s.sy,(110+i%3*40)*Z,(46+i%2*18)*Z,0,0,7);ctx.fill();
   }
+  // kilau air
+  if(OW.q>=1&&!OW.reduce){
+    ctx.fillStyle='#fff';
+    for(let i=0;i<26;i++){
+      const ph=t*.8+i*1.7,k=Math.floor(ph),f=ph-k,hx=h2(i,k,31),hy=h2(i,k,32);
+      const wx=OW.cam.x+(hx-.5)*26,wy=OW.cam.y+(hy-.5)*26;
+      if(wx<0||wy<0||wx>=N||wy>=N||owT(wx|0,wy|0)>=T_SAND)continue;
+      const s2=owS(wx,wy),a2=Math.sin(f*Math.PI),r=(2+3*a2)*Z;
+      ctx.globalAlpha=a2*.85;ctx.beginPath();ctx.moveTo(s2.sx-r,s2.sy);ctx.lineTo(s2.sx,s2.sy-r*.55);ctx.lineTo(s2.sx+r,s2.sy);ctx.lineTo(s2.sx,s2.sy+r*.55);ctx.closePath();ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
   // ---- objek berurutan
   const p=OW.p,psx=owS(p.x,p.y);
   const push=(d,k,o)=>dl.push({d,k,o});
@@ -554,6 +566,14 @@ function owRender(){
       const al=tall(s.sx,s.sy,150,130,e.d);
       if(al<1)ctx.globalAlpha=al;
       ctx.drawImage(im.c,s.sx-im.ax*Z,s.sy-im.ay*Z,im.w*Z,im.h*Z);ctx.globalAlpha=1;
+      if(al>=1){ // cerobong + asap
+        const cx=s.sx+20*Z,cy=s.sy-66*Z;
+        ctx.fillStyle='#b5654a';ctx.fillRect(cx-5*Z,cy-16*Z,10*Z,18*Z);ctx.fillStyle='#8c4a38';ctx.fillRect(cx-6*Z,cy-18*Z,12*Z,4*Z);
+        if(OW.q>=1&&!OW.reduce&&OW.rain<.5){
+          for(let i=0;i<4;i++){const f=((t*.35+i*.25+o.x*.13)%1),a3=(1-f)*.55;
+            ctx.fillStyle='rgba(255,255,255,'+a3.toFixed(2)+')';ctx.beginPath();ctx.arc(cx+(Math.sin(f*5+o.y)*5+f*14)*Z,cy-20*Z-f*40*Z,(3+f*7)*Z,0,7);ctx.fill();}
+        }
+      }
     }else if(k==='f'){
       const s=owS(o.x,o.y),im=objImg('fountain',0);
       ctx.drawImage(im.c,s.sx-im.ax*Z,s.sy-im.ay*Z,im.w*Z,im.h*Z);
@@ -660,6 +680,7 @@ function owTag(sx,sy,n){
   }
   const q=OW.quest;let mark='';
   if(q&&q.from===n.k)mark=q.done?'?':'…';else if(!q)mark='!';
+  if(q&&q.type==='deliver'&&!q.done&&q.to===n.k)mark='✉';
   if(mark&&mark!=='…'){const by=sy-(d<4.2?22:6)*Z+Math.sin(OW.t*4+n.seed)*3;ctx.fillStyle=mark==='!'?'#ffd24d':'#6dd6ff';ctx.strokeStyle='#3a2a5c';ctx.lineWidth=3.5;ctx.font='900 '+(24*Z)+'px Nunito,sans-serif';ctx.textAlign='center';ctx.strokeText(mark,sx,by);ctx.fillText(mark,sx,by);}
 }
 
@@ -673,11 +694,12 @@ function owMaxHp(){return 5+Math.min(2,Math.max(0,S.adv.party.length-1))+(petFx(
 function owState(){
   if(!S.ow||typeof S.ow!=='object')S.ow={};
   const o=S.ow;
-  ['dict','col','chest','kills','vis','boss','stat'].forEach(k=>{if(!o[k]||typeof o[k]!=='object'||Array.isArray(o[k]))o[k]={};});
+  ['dict','col','chest','kills','vis','boss','stat','miss','topic'].forEach(k=>{if(!o[k]||typeof o[k]!=='object'||Array.isArray(o[k]))o[k]={};});
   ['words','mons','chests','quests'].forEach(k=>{o.stat[k]=Number(o.stat[k])||0;});
   if(!(o.seed>0))o.seed=1+rn(99998);
   if(typeof o.tod!=='number'||!isFinite(o.tod))o.tod=9;
   o.play=Number(o.play)||0;
+  o.assist=!!o.assist;
   if(o.quest&&typeof o.quest!=='object')o.quest=null;
   return o;
 }
@@ -749,7 +771,8 @@ function owBurst(x,y,z,n,cols){
   for(let i=0;i<n;i++){const a=Math.random()*6.28,s=.8+Math.random()*1.6;owPart('spark',x,y,z,Math.cos(a)*s*.5,Math.sin(a)*s*.5,40+Math.random()*80,.5+Math.random()*.5,{c:cols[rn(cols.length)],s:4+Math.random()*5,g:-220});}
 }
 function owFloat(x,y,txt,c){owPart('txt',x,y,60,0,0,38,1.3,{t:txt,c:c||'#fff'});}
-function owBanner(t,s){OW.banner={t:3.2,txt:t,sub:s||''};const b=$('owBanner');b.innerHTML='<b>'+esc(t)+'</b>'+(s?'<small>'+esc(s)+'</small>':'');b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
+function owSay(t){const e=$('owSR');if(e)e.textContent=t;}
+function owBanner(t,s){owSay(t+(s?'. '+s:''));OW.banner={t:3.2,txt:t,sub:s||''};const b=$('owBanner');b.innerHTML='<b>'+esc(t)+'</b>'+(s?'<small>'+esc(s)+'</small>':'');b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 function owInVillage(x,y,r){const W=OW.W;let b=null,bd=r||9;W.villages.forEach(v=>{const d=Math.hypot(v.x-x,v.y-y);if(d<bd){bd=d;b=v;}});return b;}
 
 function owUpdate(dt){
@@ -868,6 +891,10 @@ function owUpdate(dt){
   OW.inV=!!v;
   p.regen=(p.regen||0)+dt*(v?.5:.14);
   if(p.regen>=1){p.regen=0;if(p.hp<owMaxHp()){p.hp++;owFloat(p.x,p.y,'+❤','#ff7b9c');}}
+  // ---- hujan menyiram kebun
+  if(OW.rain>.6&&!OW.modal){OW.rainAcc=(OW.rainAcc||0)+dt;if(OW.rainAcc>25&&!OW.rainWet){OW.rainWet=true;let n=0;if(Array.isArray(S.plots))S.plots.forEach(pl=>{if(pl&&!pl.wt&&plotState(pl).st==="growing"){pl.wt=true;n++;}});if(n){save();toast('Hujan turun! '+n+' tanaman di kebunmu tersiram','🌧️','win');}else toast('Hujan turun, kebunmu aman','🌧️');}}
+  else if(OW.rain<.1){OW.rainAcc=0;OW.rainWet=false;}
+  if(OW.reduce)OW.shake=0;
   // ---- misi
   owQuestTick();
   // ---- interaksi
@@ -915,7 +942,7 @@ function owFindAct(){
   W.signs.forEach(s=>cand('sign',s,s.x,s.y,1.9,'Baca','📖'));
   W.villages.forEach(v=>cand('fountain',v,v.x,v.y,2.5,'Istirahat','⛲'));
   const key=best?best.type+(best.ref.id||best.ref.k||''):'';
-  if(key!==OW.actKey){OW.actKey=key;const b=$('owAct');if(best){b.innerHTML='<span>'+best.ico+'</span><small>'+best.label+'</small>';b.classList.add('on');}else{b.innerHTML='<span>✋</span><small>—</small>';b.classList.remove('on');}}
+  if(key!==OW.actKey){OW.actKey=key;if(best)owSay(best.label+' tersedia. Tekan E.');const b=$('owAct');if(best){b.innerHTML='<span>'+best.ico+'</span><small>'+best.label+'</small>';b.classList.add('on');}else{b.innerHTML='<span>✋</span><small>—</small>';b.classList.remove('on');}}
   OW.act=best;
 }
 function owAct(a){
@@ -944,7 +971,7 @@ function owPickCrystal(c){
   const q=o.quest;
   if(q&&!q.done){
     if(q.type==='collect'){q.prog=Math.min(q.need,q.prog+1);if(q.prog>=q.need)owQuestDone();}
-    else if(q.type==='find'&&q.cid===c.id)owQuestDone();
+    else if((q.type==='find'||q.type==='listen')&&q.cid===c.id)owQuestDone();
   }
   save();
 }
@@ -953,15 +980,25 @@ function owQText(q){
   if(q.type==='collect')return 'Kumpulkan '+q.need+' kristal kata ('+q.prog+'/'+q.need+')';
   if(q.type==='slay')return 'Kalahkan '+q.need+' monster ('+q.prog+'/'+q.need+')';
   if(q.type==='find')return 'Temukan kristal “'+q.w+'” '+(q.pic||'')+' ('+q.wid+')';
+  if(q.type==='deliver')return 'Antar surat ke '+CAST[q.to].n+' di '+(OW.W.villages[q.vi]?OW.W.villages[q.vi].name:'desa lain');
+  if(q.type==='listen')return 'Dengarkan kata (🔊), lalu cari kristal bergambar yang cocok';
   if(q.type==='visit')return 'Kunjungi '+(OW.W.villages[q.vid]?OW.W.villages[q.vid].name:'desa');
   return '';
 }
 function owNewQuest(n){
-  const W=OW.W,p=OW.p,r=Math.random();let q=null;
+  const n_=n,W=OW.W,p=OW.p,r=Math.random();let q=null;
   if(r<.45&&false){}
   if(r<.28)q={type:'collect',need:3+rn(3),prog:0};
   else if(r<.55)q={type:'slay',need:2+rn(2),prog:0};
-  else if(r<.82){
+  else if(r<.66){
+    const me=OW.npcs.find(x=>x.k===n_.k),ns=OW.npcs.filter(n=>n.k!==n_.k&&me&&n.vi!==me.vi);
+    if(ns.length){const t=ns[rn(ns.length)];q={type:'deliver',to:t.k,vi:t.vi};}
+  }
+  else if(r<.78){
+    const cs=W.crystals.filter(c=>!c.got&&Math.hypot(c.x-p.x,c.y-p.y)>8&&Math.hypot(c.x-p.x,c.y-p.y)<30&&ALLW.find(x=>x.en===c.w.en&&x.pic));
+    if(cs.length){const c=cs[rn(cs.length)];q={type:'listen',cid:c.id,w:c.w.en,wid:c.w.id,x:c.x,y:c.y};}
+  }
+  else if(r<.9){
     const cs=W.crystals.filter(c=>!c.got&&Math.hypot(c.x-p.x,c.y-p.y)>8&&Math.hypot(c.x-p.x,c.y-p.y)<34);
     if(cs.length){const c=cs[rn(cs.length)],wd=ALLW.find(x=>x.en===c.w.en)||{};q={type:'find',cid:c.id,w:c.w.en,wid:c.w.id,pic:wd.pic||'',x:c.x,y:c.y};}
   }
@@ -986,6 +1023,8 @@ function owQuestTick(){
 function owQuestTarget(){
   const q=S.ow.quest,W=OW.W;if(!q)return null;
   if(q.done){const n=OW.npcs.find(n=>n.k===q.from);return n?{x:n.x,y:n.y,ico:'❓'}:null;}
+  if(q.type==='deliver'){const n=OW.npcs.find(n=>n.k===q.to);return n?{x:n.x,y:n.y,ico:'✉️'}:null;}
+  if(q.type==='listen'){const c=W.crystals.find(c=>c.id===q.cid);return c&&!c.got?{x:c.x,y:c.y,ico:'🔊',hide:true}:null;}
   if(q.type==='find'){const c=W.crystals.find(c=>c.id===q.cid);return c&&!c.got?{x:c.x,y:c.y,ico:'⭐'}:null;}
   if(q.type==='visit'){const v=W.villages[q.vid];return v?{x:v.x,y:v.y,ico:'🏘️'}:null;}
   if(q.type==='slay'){let b=null,bd=99;W.mons.forEach(m=>{if(m.boss||m.dead)return;const d=Math.hypot(m.x-OW.p.x,m.y-OW.p.y);if(d<bd){bd=d;b=m;}});return b?{x:b.x,y:b.y,ico:'⚔️',near:true}:null;}
@@ -994,70 +1033,134 @@ function owQuestTarget(){
 }
 
 /* ---------- UI Open World: kuis, dialog, menu ---------- */
-function owModalShow(html){OW.modal=true;const m=$('owModal');m.innerHTML=html;m.hidden=false;}
-function owModalHide(){OW.modal=false;OW.talking=null;const m=$('owModal');m.hidden=true;m.innerHTML='';OW.quiz=null;try{speechSynthesis.cancel();}catch(e){}}
-function owMakeQ(){
-  const pl=poolAll(),dk=Object.keys(S.ow.dict);let w=null;
-  if(dk.length>=4&&Math.random()<.4)w=ALLW.find(x=>x.en===dk[rn(dk.length)]);
-  if(!w)w=pl[rn(pl.length)];
+function owModalShow(html){OW.modal=true;const m=$('owModal');m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.innerHTML=html;m.hidden=false;const f=m.querySelector('button:not(:disabled)');if(f&&!(OW.quiz&&OW.quiz.busy===false&&OW.quiz.n>0))try{f.focus({preventScroll:true});}catch(e){}}
+function owModalHide(){OW.modal=false;OW.talking=null;const m=$('owModal');m.hidden=true;m.innerHTML='';if(OW.quiz)clearInterval(OW.quiz.tm);OW.quiz=null;try{$('owc').focus({preventScroll:true});}catch(e){}try{speechSynthesis.cancel();}catch(e){}}
+const OW_PIC={};
+function owPicOf(t){if(!(t in OW_PIC)){const w=ALLW.find(x=>x.en===t||x.id===t);OW_PIC[t]=(w&&w.pic)||'';}return OW_PIC[t];}
+function owWordQ(w,pl){
   const kinds=w.pic?['pic','id2en','en2id','listen']:['id2en','en2id','listen'];
   const kind=kinds[rn(kinds.length)],forEn=kind!=='en2id';
   const same=shuffle(pl.filter(x=>x.en!==w.en&&x.id!==w.id&&x.t===w.t)),rest=shuffle(pl.filter(x=>x.en!==w.en&&x.id!==w.id&&x.t!==w.t));
   const ds=[];same.concat(rest).forEach(x=>{if(ds.length<3&&!ds.some(d=>d.en===x.en||d.id===x.id))ds.push(x);});
-  const opts=shuffle([w].concat(ds)).map(x=>({t:forEn?x.en:x.id,ok:x===w}));
-  return{kind,w,opts};
+  const opts=shuffle([w].concat(ds)).map(x=>({t:forEn?x.en:x.id,ok:x===w,en:forEn}));
+  return{kind,w,opts,key:w.en,topic:w.t,say:w.en,ans:forEn?w.en:w.id,word:true};
+}
+/* opt: {onlyMiss, boss} — campuran kosakata, grammar, dan susun kalimat */
+function owMakeQ(opt){
+  opt=opt||{};
+  const o=S.ow,miss=Object.keys(o.miss||{}),pl=poolAll();
+  if(opt.onlyMiss&&miss.length){const w=ALLW.find(x=>x.en===miss[rn(miss.length)]);if(w)return owWordQ(w,pl);}
+  const r=Math.random();
+  const gl=(typeof GRAMMAR!=='undefined'&&(GRAMMAR[S.diff]||GRAMMAR[0]))||[],ol=(typeof ORDER!=='undefined'&&(ORDER[S.diff]||ORDER[0]))||[];
+  if(!opt.onlyMiss&&r<(opt.boss?.3:.18)&&gl.length){
+    const g=gl[rn(gl.length)];
+    return{kind:'gram',g,opts:shuffle(g.o.map((t,i)=>({t,ok:i===g.a}))),key:'g',topic:'grammar',say:g.q.replace('___',g.o[g.a]),ans:g.o[g.a],why:g.w};
+  }
+  if(!opt.onlyMiss&&r<(opt.boss?.5:.32)&&ol.length){
+    const it=ol[rn(ol.length)],words=it.s.split(' ');
+    if(words.length>=3){
+      const good=[it.s].concat((it.alt||[])),bad=[];
+      for(let t=0;t<40&&bad.length<3;t++){const j=shuffle(words).join(' ');if(!good.includes(j)&&!bad.includes(j))bad.push(j);}
+      if(bad.length>=2){
+        let scr=shuffle(words);for(let t=0;t<6&&scr.join(' ')===it.s;t++)scr=shuffle(words);
+        return{kind:'order',it,scr,opts:shuffle([{t:it.s,ok:true}].concat(bad.map(t=>({t,ok:false})))),key:'o',topic:'sentence',say:it.s,ans:it.s,why:it.s+' = '+it.id};
+      }
+    }
+  }
+  let w=null;
+  if(miss.length&&Math.random()<.35)w=ALLW.find(x=>x.en===miss[rn(miss.length)]);
+  const dk=Object.keys(o.dict);
+  if(!w&&dk.length>=4&&Math.random()<.3)w=ALLW.find(x=>x.en===dk[rn(dk.length)]);
+  if(!w)w=pl[rn(pl.length)];
+  return owWordQ(w,pl);
 }
 function owQPrompt(q){
   const w=q.w;
+  if(q.kind==='gram')return `<p>Lengkapi kalimat</p><div class="owq-word sm">${esc(q.g.q)}</div>`;
+  if(q.kind==='order')return `<p>Pilih kalimat yang benar</p><div class="owq-word sm">${esc(q.it.id)}</div><div class="owq-scr">${q.scr.map(x=>`<i>${esc(x)}</i>`).join('')}</div>`;
   if(q.kind==='pic')return `<div class="owq-pic">${w.pic}</div><p>Apa bahasa Inggrisnya?</p>`;
   if(q.kind==='id2en')return `<p>Apa bahasa Inggris dari</p><div class="owq-word">${esc(w.id)}</div>`;
   if(q.kind==='en2id')return `<p>Apa arti kata ini?</p><div class="owq-word">${esc(w.en)} <button class="owq-spk" data-a="spk" aria-label="Dengarkan">🔊</button></div>`;
   return `<p>Dengarkan, lalu pilih kata yang benar</p><button class="owq-spk big" data-a="spk" aria-label="Dengarkan">🔊</button>`;
 }
-/* cfg:{mode:'battle'|'chat', foe:key, foeHp, rounds, title, onEnd(res)} */
+function owTrack(q,ok){
+  const o=S.ow;
+  const t=o.topic[q.topic]||(o.topic[q.topic]={ok:0,bad:0});
+  if(ok)t.ok++;else t.bad++;
+  if(q.word){
+    if(ok){if(o.miss[q.key]){o.miss[q.key]--;if(o.miss[q.key]<=0)delete o.miss[q.key];}}
+    else o.miss[q.key]=Math.min(5,(o.miss[q.key]||0)+1);
+  }
+}
+/* cfg:{mode:'battle'|'chat', foe:key, foeHp, rounds, title, boss, onlyMiss, onEnd(res)} */
 function owQuiz(cfg){
-  const st={cfg,fhp:cfg.foeHp||0,fmax:cfg.foeHp||0,ok:0,bad:0,n:0,busy:false,q:null,hit:'',words:[]};
+  const st={cfg,fhp:cfg.foeHp||0,fmax:cfg.foeHp||0,ok:0,bad:0,n:0,busy:false,q:null,hit:'',words:[],used:{},shield:false,lucky:false,sel:-1};
   OW.quiz=st;
   const p=OW.p;
-  const fin=r=>{OW.quiz=null;cfg.onEnd(r);};
+  const fin=r=>{clearInterval(st.tm);OW.quiz=null;cfg.onEnd(r);};
+  const fb=t=>{const e=$('owqF');if(e)e.textContent=t;};
+  const hearts=()=>'❤️'.repeat(Math.max(0,p.hp))+'🖤'.repeat(Math.max(0,owMaxHp()-p.hp));
   const draw=()=>{
-    const q=st.q,hearts='❤️'.repeat(Math.max(0,p.hp))+'🖤'.repeat(Math.max(0,owMaxHp()-p.hp));
-    const pct=st.fmax?Math.round(st.fhp/st.fmax*100):Math.round(st.n/cfg.rounds*100);
-    owModalShow(`<div class="wcard owq">
+    const q=st.q,pct=st.fmax?Math.round(st.fhp/st.fmax*100):Math.round(st.n/cfg.rounds*100);
+    const sks=cfg.mode==='battle'?S.adv.party.filter(k=>k!=='mochi'&&ABILITY[k]):[];
+    const timed=cfg.mode==='battle'&&S.diff===2;
+    owModalShow(`<div class="wcard owq${S.ow.assist?' big':''}">
       <div class="owq-top">
-        <div class="owq-side ${st.hit==='hero'?'hurt':''} ${st.hit==='heroWin'?'jump':''}"><span class="owq-av">${avatar('mochi',st.hit==='hero'?'sad':'happy')}</span>${cfg.mode==='battle'?`<small class="owq-hearts">${hearts}</small>`:''}</div>
+        <div class="owq-side ${st.hit==='hero'?'hurt':''} ${st.hit==='heroWin'?'jump':''}"><span class="owq-av">${avatar('mochi',st.hit==='hero'?'sad':'happy')}</span>${cfg.mode==='battle'?`<small class="owq-hearts">${hearts()}</small>`:''}</div>
         <div class="owq-vs">${cfg.mode==='battle'?'⚔️':'💬'}</div>
         <div class="owq-side ${st.hit==='foe'?'hurt':''}"><span class="owq-av">${avatar(cfg.foe,st.hit==='foe'?'sad':(cfg.mode==='battle'?'angry':'happy'))}</span><span class="owq-hp"><i style="width:${pct}%"></i></span><small>${esc(cfg.title)}</small></div>
       </div>
+      ${sks.length?`<div class="owq-sk" aria-label="Kemampuan teman">${sks.map(k=>`<button class="owq-skb${st.used[k]?' used':''}" data-a="sk" data-k="${k}" ${st.used[k]?'disabled':''} aria-label="${esc(CAST[k].n)}: ${esc(CAST[k].skill)}"><span>${avatar(k)}</span>${esc(ABILITY[k])}</button>`).join('')}</div>`:''}
+      ${timed?'<div class="owq-time" aria-hidden="true"><i></i></div>':''}
       <div class="owq-card" id="owqCard">${owQPrompt(q)}</div>
-      <div class="owq-opts">${q.opts.map((o,i)=>`<button class="owq-opt" data-i="${i}"><i>${i+1}</i>${esc(o.t)}</button>`).join('')}</div>
-      <div class="wfb" id="owqF" aria-live="polite"></div>
+      <div class="owq-opts">${q.opts.map((o,i)=>`<button class="owq-opt${st.sel===i?' sel':''}" data-i="${i}"><i>${i+1}</i>${esc(o.t)}</button>`).join('')}</div>
+      <div class="wfb" id="owqF" aria-live="polite">${st.sel>=0?'Ketuk lagi untuk memilih jawaban ini.':''}</div>
       ${cfg.mode==='battle'?'<button class="btn soft owq-flee" data-a="flee">🏃 Kabur</button>':''}
     </div>`);
-    if(q.kind==='listen'||(q.kind==='pic'&&false))setTimeout(()=>speak(q.w.en),250);
+    if(q.kind==='listen'||(S.ow.assist&&q.kind==='en2id'))setTimeout(()=>speak(q.w.en),250);
+    clearInterval(st.tm);
+    if(timed){
+      st.t0=performance.now();
+      st.tm=setInterval(()=>{
+        const f=1-(performance.now()-st.t0)/12000,bar=document.querySelector('.owq-time i');
+        if(bar)bar.style.width=Math.max(0,f*100)+'%';
+        if(f<=0){clearInterval(st.tm);st.pick(-1);}
+      },100);
+    }
   };
-  const next=()=>{st.q=owMakeQ();st.busy=false;st.hit='';draw();};
-  st.pick=i=>{
+  const next=()=>{st.q=owMakeQ({onlyMiss:cfg.onlyMiss,boss:cfg.boss});st.busy=false;st.hit='';st.sel=-1;draw();};
+  st.pick=(i,confirm)=>{
     if(st.busy||!OW.quiz||OW.quiz!==st)return;
-    const q=st.q,o=q.opts[i];if(!o)return;
+    const q=st.q,o=q.opts[i];
+    if(i>=0&&!o)return;
+    // mode bantuan: ketukan pertama membacakan pilihan, ketukan kedua memilih
+    if(i>=0&&S.ow.assist&&o.en!==false&&q.kind!=='pic'&&q.kind!=='gram'&&q.kind!=='order'&&st.sel!==i&&!confirm){
+      st.sel=i;speak(o.t);
+      document.querySelectorAll('.owq-opt').forEach((b,j)=>b.classList.toggle('sel',j===i));fb('Ketuk lagi untuk memilih jawaban ini.');return;
+    }
+    clearInterval(st.tm);
     st.busy=true;st.n++;
     const btns=document.querySelectorAll('.owq-opt');
     btns.forEach((b,j)=>{b.disabled=true;if(q.opts[j].ok)b.classList.add('good');});
-    const fb=$('owqF');
-    if(o.ok){
-      st.ok++;btns[i].classList.add('good');sfx('ok');speak(q.w.en);
-      S.ow.dict[q.w.en]=(S.ow.dict[q.w.en]||0)+1;
+    const good=i>=0&&o.ok;
+    owTrack(q,good);
+    if(good){
+      st.ok++;btns[i].classList.add('good');sfx('ok');speak(q.say);
+      if(q.word)S.ow.dict[q.w.en]=(S.ow.dict[q.w.en]||0)+1;
       statAdd('correct',1);S.points+=1;
-      if(cfg.mode==='battle'){st.fhp--;st.hit='foe';OW.shake=.25;}
-      fb.textContent='✅ '+pickOne(PRAISE)+' '+q.w.en+' = '+q.w.id;
+      if(cfg.mode==='battle'){st.fhp-=st.lucky?2:1;st.lucky=false;st.hit='foe';OW.shake=OW.reduce?0:.25;}
+      fb('✅ '+pickOne(PRAISE)+' '+(q.word?q.w.en+' = '+q.w.id:(q.why||q.ans)));
     }else{
-      st.bad++;btns[i].classList.add('bad');sfx('no');
-      if(cfg.mode==='battle'){p.hp--;st.hit='hero';OW.shake=.4;}
-      fb.textContent='❌ Jawaban benar: '+(q.kind==='en2id'?q.w.id:q.w.en)+' ('+(q.kind==='en2id'?q.w.en:q.w.id)+')';
+      st.bad++;if(i>=0)btns[i].classList.add('bad');sfx('no');
+      let extra='';
+      if(cfg.mode==='battle'){
+        if(st.shield){st.shield=false;extra=' 🛡️ Perisai Bima melindungimu!';}
+        else{p.hp--;st.hit='hero';OW.shake=OW.reduce?0:.4;}
+      }
+      fb((i<0?'⏰ Waktu habis! ':'❌ ')+'Jawaban benar: '+q.ans+(q.word?' ('+(q.opts.find(x=>x.ok).en?q.w.id:q.w.en)+')':q.why?' — '+q.why:'')+extra);
     }
-    const card=$('owqCard');
     const hp=document.querySelector('.owq-hp i');if(hp&&st.fmax)hp.style.width=Math.max(0,Math.round(st.fhp/st.fmax*100))+'%';
-    const hs=document.querySelector('.owq-hearts');if(hs)hs.textContent='❤️'.repeat(Math.max(0,p.hp))+'🖤'.repeat(Math.max(0,owMaxHp()-p.hp));
+    const hs=document.querySelector('.owq-hearts');if(hs)hs.textContent=hearts();
     const sides=document.querySelectorAll('.owq-side');
     if(st.hit==='foe'&&sides[1])sides[1].classList.add('hurt');
     if(st.hit==='hero'&&sides[0])sides[0].classList.add('hurt');
@@ -1068,7 +1171,25 @@ function owQuiz(cfg){
         if(p.hp<=0)return fin({win:false,st});
       }else if(st.n>=cfg.rounds)return fin({win:true,st});
       next();
-    },o.ok?1050:1700);
+    },good?1050:1900);
+  };
+  st.skill=k=>{
+    if(st.busy||st.used[k]||!st.q)return;
+    const q=st.q;let msg='';
+    if(k==='kai'){
+      const bs=[...document.querySelectorAll('.owq-opt')].filter((b,j)=>!q.opts[j].ok&&!b.disabled);
+      shuffle(bs).slice(0,Math.min(2,bs.length)).forEach(b=>{b.disabled=true;b.style.opacity='.25';});
+      msg='Kai mencoret dua jawaban yang salah!';
+    }else if(k==='sari'){
+      msg=(q.kind==='pic'||q.kind==='listen')?'Sari: artinya “'+q.w.id+'”.':q.kind==='gram'?'Sari: '+q.why:'Sari: jawabannya diawali “'+q.ans.slice(0,2)+'…”.';
+    }else if(k==='luna'){
+      if(p.hp>=owMaxHp()){fb('Nyawamu masih penuh.');return;}
+      p.hp++;const hs=document.querySelector('.owq-hearts');if(hs)hs.textContent=hearts();msg='Luna menyembuhkanmu! +1 nyawa.';
+    }else if(k==='bima'){st.shield=true;msg='Bima menyiapkan perisai untuk kesalahan berikutnya.';}
+    else if(k==='foxy'){st.lucky=true;msg='Foxy: jawaban benar berikutnya memberi 2 serangan!';}
+    else if(k==='pip'){st.used[k]=true;st.busy=true;sfx('ok');fb('Pip melewati soal ini!');setTimeout(()=>{if(OW.quiz===st)next();},800);return;}
+    st.used[k]=true;sfx('ok');fb(msg);
+    const b=document.querySelector('.owq-skb[data-k="'+k+'"]');if(b){b.disabled=true;b.classList.add('used');}
   };
   st.flee=()=>{if(OW.quiz===st)fin({flee:true,st});};
   next();
@@ -1080,6 +1201,7 @@ function owDelegate(e){
   const a=t.dataset.a;
   if(a==='spk'&&st&&st.q){speak(st.q.w.en);return;}
   if(a==='flee'&&st){st.flee();return;}
+  if(a==='sk'&&st){st.skill(t.dataset.k);return;}
   const f=OW.acts&&OW.acts[a];if(f){sfx('tap');f(t);}
 }
 function owCard(who,title,body,btns){
@@ -1092,7 +1214,9 @@ function owTalk(n){
   const c=CAST[n.k],q=S.ow.quest;
   const hello=pickOne(['Hello!','Hi there!','Good day!','Nice to see you!']);
   let msg,btns;
-  if(q&&q.from===n.k&&q.done){
+  if(q&&q.type==='deliver'&&!q.done&&q.to===n.k){
+    msg=`<b>Oh, a letter!</b> Surat dari ${esc(CAST[q.from].n)}? Terima kasih sudah mengantarnya!`;btns=owBtn('deliver','✉️ Serahkan surat');
+  }else if(q&&q.from===n.k&&q.done){
     msg=`<b>${hello}</b> Kamu berhasil! Terima kasih banyak, ini hadiah untukmu.`;btns=owBtn('turnin','🎁 Ambil hadiah');
   }else if(q&&q.from===n.k){
     msg=`Bagaimana misinya?<br><small>🎯 ${esc(owQText(q))}</small>`;btns=owBtn('quiz','💬 Ngobrol (kuis)','alt')+owBtn('close','Lanjut','soft');
@@ -1103,6 +1227,7 @@ function owTalk(n){
   }
   OW.acts={
     close:()=>owModalHide(),
+    deliver:()=>{const q2=S.ow.quest;if(!q2||q2.type!=='deliver')return owModalHide();speak('Here is a letter for you.');q2.done=true;q2.from=n.k;owBurst(OW.p.x,OW.p.y,30,16,['#fff','#ffd24d']);OW.acts.turnin();},
     accept:()=>{S.ow.quest=owNewQuest(n);save();owModalHide();toast('Misi baru: '+owQText(S.ow.quest),'🎯');owBanner('Misi baru!',owQText(S.ow.quest));},
     turnin:()=>{
       const q2=S.ow.quest;if(!q2||!q2.done)return owModalHide();
@@ -1125,7 +1250,7 @@ function owBattle(m){
   m.chase=false;OW.battleMon=m;sfx('hit');OW.flash=.5;
   try{bgmPlay(m.boss?'boss':'battle',0);}catch(e){}
   const f=FOES[m.k];
-  owQuiz({mode:'battle',foe:m.k,foeHp:m.boss?5:3,title:(m.boss?'👑 ':'')+f.n,onEnd:r=>{
+  owQuiz({mode:'battle',boss:!!m.boss,foe:m.k,foeHp:m.boss?(S.diff===0?4:5):3,title:(m.boss?'👑 ':'')+f.n,onEnd:r=>{
     try{bgmScreen('open');}catch(e){}
     const dx=p.x-m.x,dy=p.y-m.y,d=Math.hypot(dx,dy)||1;
     if(r.flee){
@@ -1179,7 +1304,8 @@ function owMenu(){
   const o=S.ow;
   OW.acts={
     close:()=>owModalHide(),
-    dict:()=>owDict(),quest:()=>owQuestView(),map:()=>owMap(),
+    dict:()=>owDict(),quest:()=>owQuestView(),map:()=>owMap(),report:()=>owReport(),review:()=>owReview(),
+    assist:()=>{S.ow.assist=!S.ow.assist;save();owModalHide();owMenu();toast(S.ow.assist?'Bantuan suara aktif: ketuk pilihan sekali untuk mendengarnya':'Bantuan suara mati',S.ow.assist?'🔊':'🔇');},
     exit:()=>{owModalHide();owExit();},
     newworld:()=>{owModalShow(`<div class="wcard"><b>Buat dunia baru?</b><p>Dunia baru punya peta lain. Kamus kata, statistik, dan koinmu tetap aman.</p><div class="owbtns2">${owBtn('newok','🌱 Ya, buat baru')}${owBtn('menu','Batal','soft')}</div></div>`);},
     newok:()=>{owNewWorld();},
@@ -1189,6 +1315,9 @@ function owMenu(){
     <div class="owmenu">
       ${owBtn('dict','📖 Kamus Kata <small>'+Object.keys(o.dict).length+' kata</small>','alt')}
       ${owBtn('quest','🎯 Misi','alt')}${owBtn('map','🗺️ Peta &amp; Perjalanan Cepat','alt')}
+      ${owBtn('review','🔁 Latih Kata Sulit <small>'+Object.keys(o.miss).length+' kata</small>','alt')}
+      ${owBtn('report','📊 Laporan Belajar','alt')}
+      ${owBtn('assist','🔊 Bantuan Suara <small>'+(o.assist?'aktif':'mati')+'</small>','soft')}
       ${owBtn('close','▶️ Lanjut Menjelajah')}${owBtn('newworld','🌱 Dunia Baru','soft')}${owBtn('exit','🏠 Keluar ke Beranda','soft')}
     </div></div>`);
 }
@@ -1218,7 +1347,7 @@ function owMap(){
   const pins=[];
   W.villages.forEach(v=>{const vis=!!o.vis[v.id];pins.push({x:v.x*sc,y:v.y*sc,v});c.fillStyle=vis?'#ffd24d':'#fff';c.strokeStyle='#3a2a5c';c.lineWidth=3;c.beginPath();c.rect(v.x*sc-7,v.y*sc-7,14,14);c.fill();c.stroke();c.fillStyle='#3a2a5c';c.font='900 11px Nunito,sans-serif';c.textAlign='center';c.fillText(vis?'⌂':'?',v.x*sc,v.y*sc+4);});
   W.mons.forEach(m=>{if(m.boss&&!o.boss[m.id]){c.font='16px sans-serif';c.textAlign='center';c.fillText('👑',m.hx*sc,m.hy*sc+5);}});
-  const tg=owQuestTarget();if(tg){c.font='16px sans-serif';c.fillText(tg.ico,tg.x*sc,tg.y*sc+5);}
+  const tg=owQuestTarget();if(tg&&!tg.hide){c.font='16px sans-serif';c.fillText(tg.ico,tg.x*sc,tg.y*sc+5);}
   c.fillStyle='#ff4a7a';c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.arc(OW.p.x*sc,OW.p.y*sc,6,0,7);c.fill();c.stroke();
   cv.onclick=e=>{
     const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*320,y=(e.clientY-r.top)/r.height*320;
@@ -1228,6 +1357,44 @@ function owMap(){
     owTravel(hit.v);
   };
 }
+function owReview(){
+  const miss=Object.keys(S.ow.miss);
+  if(!miss.length){toast('Belum ada kata sulit. Bagus sekali!','🌟');return;}
+  OW.acts={close:()=>owModalHide(),menu:()=>{owModalHide();owMenu();}};
+  owQuiz({mode:'chat',onlyMiss:true,foe:'mochi',rounds:Math.min(5,Math.max(3,miss.length)),title:'Latihan kata sulit',onEnd:r=>{
+    const ok=r.st.ok;addCoins(ok*3,true);S.points+=ok*2;save();sfx(ok>=3?'win':'ok');
+    const left=Object.keys(S.ow.miss).length;
+    owModalShow(owCard(avatar('mochi',ok>=3?'cheer':'happy'),'Latihan selesai',`Benar ${ok}/${r.st.n} · 🪙 +${ok*3} koin<br>${left?`Masih ada ${left} kata untuk diulang.`:'Semua kata sulit sudah dikuasai! 🎉'}`,owBtn('close','Oke')));
+  }});
+}
+const OW_TOPIC_NAME={grammar:'Grammar',sentence:'Susun kalimat'};
+function owReportData(){
+  const o=S.ow,top=Object.keys(o.topic).map(k=>{const t=o.topic[k],n=t.ok+t.bad,tp=(typeof TOPICS!=='undefined'&&TOPICS.find(x=>x.k===k));return{k,name:OW_TOPIC_NAME[k]||(tp&&tp.n)||k,ok:t.ok,n,acc:n?Math.round(t.ok/n*100):0};}).filter(x=>x.n>0).sort((a,b)=>a.acc-b.acc);
+  const words=Object.keys(o.dict),mastered=words.filter(w=>o.dict[w]>=3).length;
+  const weak=Object.keys(o.miss).sort((a,b)=>o.miss[b]-o.miss[a]).slice(0,8).map(en=>{const w=ALLW.find(x=>x.en===en);return en+(w?' ('+w.id+')':'');});
+  return{top,words:words.length,mastered,weak,mins:Math.round(o.play/60),quests:o.stat.quests,mons:o.stat.mons,chests:o.stat.chests,boss:Object.keys(o.boss).length,correct:S.stat.correct||0};
+}
+function owReportText(){
+  const d=owReportData();
+  return ['Laporan Belajar — '+pname()+' (Level '+level()+')','Soal benar (semua mode): '+d.correct,
+    'Kata ditemukan di Open World: '+d.words+' (dikuasai, benar ≥3x: '+d.mastered+')',
+    'Akurasi per topik: '+(d.top.length?d.top.map(t=>t.name+' '+t.acc+'% ('+t.ok+'/'+t.n+')').join('; '):'belum ada data'),
+    'Kata perlu diulang: '+(d.weak.length?d.weak.join(', '):'tidak ada'),
+    'Open World: '+d.mins+' menit, '+d.quests+' misi, '+d.mons+' monster, '+d.chests+' peti, penjaga '+d.boss+'/4'].join('\n');
+}
+function owReport(){
+  const d=owReportData();
+  OW.acts={back:()=>{owModalHide();owMenu();},close:()=>owModalHide(),review:()=>owReview(),
+    copy:()=>{const t=owReportText();const done=()=>toast('Laporan disalin','📋');try{navigator.clipboard.writeText(t).then(done,()=>{owCopyFallback(t);done();});}catch(e){owCopyFallback(t);done();}}};
+  owModalShow(`<div class="wcard"><b style="font-size:1.2rem">📊 Laporan Belajar</b>
+    <div class="owstats" style="grid-template-columns:repeat(4,1fr)"><span><b>${d.correct}</b>soal benar</span><span><b>${d.words}</b>kata</span><span><b>${d.mastered}</b>dikuasai</span><span><b>${d.mins}</b>menit</span></div>
+    <b>Akurasi per topik</b>
+    <div class="owacc">${d.top.length?d.top.map(t=>`<div><span>${esc(t.name)}</span><i><u style="width:${t.acc}%"></u></i><b>${t.acc}%</b></div>`).join(''):'<small>Belum ada data. Jawab beberapa soal di Open World dulu.</small>'}</div>
+    <b>Kata perlu diulang</b><p>${d.weak.length?esc(d.weak.join(', ')):'Tidak ada 🎉'}</p>
+    <small>Dikuasai = kata yang sudah dijawab benar minimal 3 kali.</small>
+    <div class="owbtns2">${owBtn('copy','📋 Salin laporan','alt')}${Object.keys(S.ow.miss).length?owBtn('review','🔁 Latih kata sulit'):''}${owBtn('back','‹ Kembali','soft')}</div></div>`);
+}
+function owCopyFallback(t){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}a.remove();}
 function owTravel(v){
   const p=OW.p;p.x=v.x;p.y=v.y+2.8;p.trail=[];OW.cam.x=p.x;OW.cam.y=p.y;OW.path=null;OW.flash=.9;sfx('win');
   owMkFollowers();owModalHide();owSave();
@@ -1274,6 +1441,11 @@ function owExit(quiet){
 }
 function owFrame(ts){
   if(!OW.on)return;
+  const raw=Math.min(.25,(ts-(OW.lastTs||ts))/1000);OW.lastTs=ts;
+  if(raw>0){OW.fts=OW.fts?OW.fts*.92+raw*.08:raw;OW.fn=(OW.fn||0)+1;
+    if(OW.fn>50&&OW.fn%45===0){
+      if(OW.fts>.034&&OW.q>0){OW.q--;OW.fts=.02;owResize();owSay('Kualitas grafis diturunkan agar lancar');}
+    }}
   const dt=Math.min(.05,Math.max(0.001,(ts-OW.last)/1000||.016));OW.last=ts;
   try{owUpdate(dt);owRender();OW.err=0;}catch(e){OW.err=(OW.err||0)+1;if(OW.err<4)console.error('OW',e);if(OW.err>30){OW.on=false;toast('Terjadi kesalahan di Open World','⚠️');owExit(true);return;}}
   OW.hudT=(OW.hudT||0)+dt;if(OW.hudT>.2){OW.hudT=0;try{owHud();}catch(e){console.error('HUD',e);}}
@@ -1282,7 +1454,9 @@ function owFrame(ts){
 function owResize(){
   const cv=OW.cv;if(!cv)return;
   const r=cv.getBoundingClientRect();if(!r.width)return;
-  OW.dpr=Math.min(2,window.devicePixelRatio||1);
+  if(OW.q==null)OW.q=2;
+  OW.reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  OW.dpr=Math.min(2,window.devicePixelRatio||1)*[.6,.85,1][OW.q];
   cv.width=Math.round(r.width*OW.dpr);cv.height=Math.round(r.height*OW.dpr);
   OW.w=r.width;OW.h=r.height;
   OW.Z=clamp(Math.min(OW.w/700,OW.h/520),.75,1.4)*OW.zoom;
@@ -1301,9 +1475,12 @@ function owHud(){
     qb.hidden=false;
     $('owQTxt').textContent=(q.done?'✅ Kembali ke '+CAST[q.from].n:'🎯 '+owQText(q));
     const ar=$('owQArr');
-    if(tg){const dx=tg.x-p.x,dy=tg.y-p.y,sdx=(dx-dy),sdy=(dx+dy)*.5,ang=Math.atan2(sdy,sdx)*180/Math.PI;ar.style.display='';ar.style.transform='rotate('+ang+'deg)';$('owQD').textContent=Math.round(Math.hypot(dx,dy))+' langkah';}
+    const sp=$('owQSpk');sp.hidden=!(q.type==='listen'&&!q.done);
+    if(tg&&tg.hide){const d=Math.hypot(tg.x-p.x,tg.y-p.y);ar.style.display='none';$('owQD').textContent=d<6?'🔥 Panas!':d<14?'🌤️ Hangat':'❄️ Dingin';}
+    else if(tg){const dx=tg.x-p.x,dy=tg.y-p.y,sdx=(dx-dy),sdy=(dx+dy)*.5,ang=Math.atan2(sdy,sdx)*180/Math.PI;ar.style.display='';ar.style.transform='rotate('+ang+'deg)';$('owQD').textContent=Math.round(Math.hypot(dx,dy))+' langkah';}
     else{ar.style.display='none';$('owQD').textContent='';}
   }else{qb.hidden=true;}
+  if(q&&q.type==='listen'&&!q.done&&OW.qSaid!==q.cid){OW.qSaid=q.cid;speak(q.w);}
   // peta mini
   const mc=$('owMini'),c=mc.getContext('2d'),W=OW.W,s=2.5;
   c.clearRect(0,0,100,100);
@@ -1313,7 +1490,7 @@ function owHud(){
   c.imageSmoothingEnabled=false;c.drawImage(W.mm,0,0,W.N*s,W.N*s);
   W.villages.forEach(v=>{c.fillStyle='#ffd24d';c.strokeStyle='#3a2a5c';c.lineWidth=1.5;c.fillRect(v.x*s-3,v.y*s-3,6,6);c.strokeRect(v.x*s-3,v.y*s-3,6,6);});
   W.mons.forEach(m=>{if(m.boss&&!m.dead){c.fillStyle='#ff4a5a';c.beginPath();c.arc(m.x*s,m.y*s,3,0,7);c.fill();}});
-  if(tg){c.fillStyle='#fff';c.strokeStyle='#ff4a7a';c.lineWidth=2;c.beginPath();c.arc(tg.x*s,tg.y*s,4,0,7);c.fill();c.stroke();}
+  if(tg&&!tg.hide){c.fillStyle='#fff';c.strokeStyle='#ff4a7a';c.lineWidth=2;c.beginPath();c.arc(tg.x*s,tg.y*s,4,0,7);c.fill();c.stroke();}
   c.restore();
   c.fillStyle='#ff4a7a';c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();c.moveTo(50,43);c.lineTo(55,55);c.lineTo(50,52);c.lineTo(45,55);c.closePath();c.fill();c.stroke();
   c.strokeStyle='#3a2a5c';c.lineWidth=3;c.beginPath();c.arc(50,50,48,0,7);c.stroke();
@@ -1327,8 +1504,11 @@ function renderOpen(){
     <div><h2>🧭 Open World</h2><p>Jelajahi pulau luas bergaya 2.5D: desa, hutan, gurun, salju, dan gunung. Kumpulkan kristal kata, bantu penduduk, buka peta harta, lalu kalahkan 4 penjaga pulau dengan kuis bahasa Inggris!</p></div></div>
     <div class="owstats"><span><b>${Object.keys(o.dict).length}</b>kata</span><span><b>${o.stat.mons}</b>monster</span><span><b>${vs}</b>desa</span><span><b>${bs}/4</b>penjaga</span><span><b>${Math.round(o.play/60)}</b>menit</span></div>
     <button class="btn" id="owPlay">${has?'▶️ Lanjutkan Menjelajah':'🌍 Mulai Menjelajah'}</button>
+    <div class="owbtns2" style="margin-top:8px"><button class="btn alt" id="owRev">🔁 Latih Kata Sulit (${Object.keys(o.miss).length})</button><button class="btn alt" id="owRep">📊 Laporan Belajar</button></div>
     <p class="note">Kontrol: tombol panah/WASD atau joystick di layar. Ketuk peta untuk berjalan otomatis. E = bicara/buka, Spasi = lompat, Shift = lari, Esc = menu.</p>`;
   $('owPlay').onclick=()=>{sfx('tap');owEnter();};
+  $('owRev').onclick=()=>{if(!Object.keys(o.miss).length){toast('Belum ada kata sulit. Bagus!','🌟');return;}sfx('tap');owEnter();setTimeout(owReview,300);};
+  $('owRep').onclick=()=>{sfx('tap');owEnter();setTimeout(owReport,300);};
 }
 /* ---------- input ---------- */
 (function owInput(){
@@ -1372,6 +1552,7 @@ function owBindUI(){
   $('owHop').addEventListener('click',owHop);
   $('owRun').addEventListener('click',()=>{OW.runBtn=!OW.runBtn;$('owRun').classList.toggle('on',OW.runBtn);});
   $('owMenuBtn').addEventListener('click',owMenu);
+  $('owQSpk').addEventListener('click',e=>{e.stopPropagation();const q=S.ow.quest;if(q&&q.w)speak(q.w);});
   $('owZi').addEventListener('click',()=>owZoom(1.2));$('owZo').addEventListener('click',()=>owZoom(1/1.2));
   $('owModal').addEventListener('click',owDelegate);
   $('owQuest').addEventListener('click',()=>owMenu());
@@ -1410,5 +1591,5 @@ function owTapWorld(x,y){
 }
 
 owBindUI();
-window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld};
+window.__MQ={G:()=>G,OW:()=>OW,S:()=>S,owEnter,owExit,owMenu,owGen,owUpdate,owRender,owQuiz,owBattle,owTalk,owPickCrystal,owChest,owDict,owMap,owQuestView,owAct,owTapWorld,owPath,owNewQuest,owTravel,owNewWorld,owReview,owReport,owReportText,owMakeQ,owQText,owPickCrystal,owHud,owModalHide,loadSlot,readIdx,startCreate,ALLW:()=>ALLW};
 

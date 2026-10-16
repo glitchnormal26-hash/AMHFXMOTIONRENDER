@@ -1,0 +1,10 @@
+import {open,sleep,createChar} from './lib.mjs';
+const {b,p,errs}=await open(480,820);
+await createChar(p,'p4','Rina');
+await p.evaluate(()=>{document.querySelector('[data-tab="open"]').click();document.getElementById('owPlay').click()});
+await sleep(1200);
+await p.evaluate(()=>{const M=__MQ,O=M.OW(),S=M.S();O.on=false;S.diff=2;S.adv.party=['mochi','kai','sari','luna','bima'];S.ow.assist=false;M.owBattle(O.W.mons.find(m=>!m.boss));});
+await sleep(400);await p.screenshot({path:'/home/user/tools/q1.png'});
+await p.evaluate(()=>{const M=__MQ;M.owModalHide();const S=M.S();S.ow.topic={animals:{ok:8,bad:2},grammar:{ok:3,bad:4},food:{ok:5,bad:0}};S.ow.miss={cat:2,run:1};M.owReport();});
+await sleep(300);await p.screenshot({path:'/home/user/tools/q2.png'});
+console.log(errs);await b.close();
