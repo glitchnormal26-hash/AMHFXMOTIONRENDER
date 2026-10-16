@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Mochi English Quest</title>
+<title>Adelian Althania English Adventure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
@@ -46,6 +46,7 @@ h2{font-family:var(--font-display);font-weight:800;font-size:1.25rem;line-height
 .logo{font-family:var(--font-display);font-weight:800;font-size:1.7rem;line-height:1;color:#fff;
   text-shadow:-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink),0 4px 0 var(--ink)}
 .logo span{color:var(--sun);font-size:1.15rem;margin-left:4px}
+@media (max-width:520px){.logo{white-space:nowrap}.logo span{display:block;margin:3px 0 0;font-size:.95rem}}
 .icon-btn{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);background:#fff;color:var(--ink);
   font-size:1.3rem;font-weight:800;box-shadow:3px 3px 0 var(--ink);cursor:pointer;display:grid;place-items:center}
 .icon-btn[aria-pressed="false"]{background:var(--soft);text-decoration:line-through}
@@ -314,7 +315,8 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:3px}
 @media (max-width:380px){
   #mochi{width:120px}
   .is-play #mochi{width:84px}
-  .logo{font-size:1.4rem}
+  .logo{font-size:1.3rem}
+  .top{gap:6px}.top .hbtns{gap:5px;flex:none}.top .hbtns .icon-btn{width:40px!important;height:40px!important;font-size:1.05rem}
   .slot,.tile{width:36px;height:46px;font-size:1.4rem}
   .bigpic{font-size:4.4rem}
 }
@@ -792,7 +794,7 @@ body{
 </style>
 <main class="wrap" id="app">
   <header class="top">
-    <div class="logo">Mochi<span>English Quest</span></div>
+    <div class="logo">Adelian Althania<span>English Adventure</span></div>
     <div class="hbtns"><button class="icon-btn" id="saveBtn" aria-label="Simpanan dan karakter" title="Simpanan & karakter">💾</button><button class="icon-btn" id="musicBtn" aria-pressed="true" aria-label="Musik menyala">🎵</button><button class="icon-btn" id="muteBtn" aria-pressed="true" aria-label="Suara menyala">♪</button></div>
   </header>
 
@@ -3123,7 +3125,7 @@ const RARSTAR={1:'★',2:'★★',3:'★★★'};
 
 
 /* ============================================================
-   MOCHI ENGLISH QUEST — DELUXE
+   ADELIAN ALTHANIA ENGLISH ADVENTURE — DELUXE
    Hadiah (kostum, pet, gaya rambut, aksesori, fashion, furnitur),
    Rumah/kamar yang bisa ditata, dan Kebun ala FarmVille.
    ============================================================ */

@@ -1,4 +1,4 @@
-# Mochi English Quest
+# Adelian Althania English Adventure
 
 Game belajar bahasa Inggris (kelas 4) dalam satu berkas: `index.html`. Buka langsung di browser.
 
