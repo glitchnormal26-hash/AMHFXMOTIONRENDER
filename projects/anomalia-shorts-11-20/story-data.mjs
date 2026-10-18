@@ -55,6 +55,8 @@ export const stories = [
   },
   {
     id: 17, slug: 'paket-kembali', title: 'PAKET YANG KEMBALI', accent: '#65f08e', audioDuration: 52.776,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-returning.jpg','scene-03-same-address.jpg','scene-04-watch-inside.jpg','scene-05-cctv-double.jpg','scene-05-cctv-double.jpg','scene-06-courier-alert.jpg'],
     hook: ['PENGIRIM DAN PENERIMA', 'ADALAH ORANG YANG SAMA.'],
     captions: ['Pada sif malam, Rendi menemukan satu paket','yang terus kembali ke meja sortir.','Alamat penerima dan pengirimnya sama, yaitu rumahnya sendiri.','Ia mengira teman-temannya sedang bercanda,','sampai melihat tanggal pengiriman.','Paket itu dikirim besok pagi.','Dari dalam kardus terdengar bunyi jam tangannya,','padahal jam itu masih terpasang di pergelangan.','Rendi membuka kamera keamanan.','Rekamannya menunjukkan dirinya mengantar paket ke rumah sendiri.','Di depan pintu, seseorang yang mirip Rendi menerimanya dari dalam.','Kardus di meja tiba-tiba berhenti berdetak.','Ponselnya menerima notifikasi baru.','Kurir sedang menuju alamat Anda. Nama kurirnya, Rendi.'],
     focus: [[.50,.48,1.00],[.45,.58,1.18],[.43,.60,1.52],[.61,.49,1.35],[.67,.37,1.60],[.48,.51,1.72],[.50,.52,1.16]],
@@ -62,6 +64,8 @@ export const stories = [
   },
   {
     id: 18, slug: 'penonton-terakhir', title: 'PENONTON TERAKHIR', accent: '#ff4e70', audioDuration: 45.936,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-one-viewer.jpg','scene-03-row-seven.jpg','scene-04-projector-behind.jpg','scene-05-run-screen-still.jpg','scene-06-stream-transferred.jpg','scene-06-stream-transferred.jpg'],
     hook: ['PENONTONNYA CUMA SATU.', 'NAMANYA SAMA.'],
     captions: ['Fajar membuat siaran langsung dari bioskop tua yang sudah lama ditutup.','Penontonnya hanya satu akun,','dengan nama yang sama seperti akunnya sendiri.','Akun itu menulis agar ia menjauhi baris tujuh.','Beberapa detik kemudian, kursi di baris tujuh terlipat sendiri.','Pesan berikutnya meminta Fajar tidak melihat layar.','Ia terlambat.','Proyektor menyala dan menampilkan dirinya dari belakang,','padahal tidak ada kamera di sana.','Fajar berlari ke pintu keluar,','tetapi sosoknya di layar tetap berdiri diam.','Jumlah penonton berubah menjadi dua.','Komentar terakhir muncul. Siaran sudah dipindahkan.','Sosok di layar berbalik dan berjalan keluar dari bioskop.'],
     focus: [[.50,.49,1.00],[.47,.65,1.18],[.52,.59,1.50],[.46,.57,1.34],[.57,.38,1.62],[.52,.51,1.72],[.50,.50,1.14]],
