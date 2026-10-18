@@ -17,6 +17,8 @@
     "verify:anomali": "node projects/anomali-shorts/verify-delivery.mjs",
     "render:anomalia": "node projects/anomali-shorts-v2/render-all.mjs",
     "verify:anomalia": "node projects/anomali-shorts-v2/verify-delivery.mjs",
+    "render:anomalia-next": "node projects/anomalia-shorts-11-20/render-all.mjs",
+    "verify:anomalia-next": "node projects/anomalia-shorts-11-20/verify-delivery.mjs",
     "check:skill": "node scripts/check-skill.mjs",
     "check:creative": "node scripts/check-creative-gates.mjs",
     "verify:final": "node scripts/finalize-verification.mjs",

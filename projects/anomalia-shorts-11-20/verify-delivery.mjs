@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+import { stories } from './story-data.mjs';
+const require=createRequire(import.meta.url),ffprobe=require('@ffprobe-installer/ffprobe').path,ffmpeg=require('@ffmpeg-installer/ffmpeg').path,root=path.resolve(import.meta.dirname,'../..'),dir=path.join(root,'output/anomalia-shorts-11-20/videos'),decode=process.env.DECODE==='1';let failed=0;
+for(const s of stories){const file=path.join(dir,`${String(s.id).padStart(2,'0')}-${s.slug}.mp4`);if(!fs.existsSync(file)){console.error(`MISSING ${path.basename(file)}`);failed++;continue;}const probe=spawnSync(ffprobe,['-v','error','-show_entries','format=duration:stream=codec_type,codec_name,width,height,r_frame_rate','-of','json',file],{encoding:'utf8'});if(probe.status!==0){console.error(`PROBE_FAIL ${path.basename(file)}`);failed++;continue;}const m=JSON.parse(probe.stdout),v=m.streams.find(x=>x.codec_type==='video'),a=m.streams.find(x=>x.codec_type==='audio'),duration=Number(m.format.duration),ok=v?.codec_name==='h264'&&a?.codec_name==='aac'&&v.width===1080&&v.height===1920&&duration>=30&&duration<=60.5;if(!ok){console.error(`INVALID ${path.basename(file)} ${JSON.stringify({duration,v,a})}`);failed++;continue;}if(decode){const d=spawnSync(ffmpeg,['-v','error','-i',file,'-f','null','-'],{encoding:'utf8',maxBuffer:8*1024*1024});if(d.status!==0){console.error(`DECODE_FAIL ${path.basename(file)} ${d.stderr}`);failed++;continue;}}console.log(`PASS ${path.basename(file)} ${duration.toFixed(2)}s`);}if(failed)process.exitCode=1;
