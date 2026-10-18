@@ -49,7 +49,7 @@ export const stories = [
     scenes: ['SIF MALAM','PAKET KEMBALI LAGI','ALAMATNYA SAMA','DIKIRIM BESOK','CCTV PENGANTARAN','PENERIMA: RENDI','KURIR SEDANG MENUJU']
   },
   {
-    id: 18, slug: 'penonton-terakhir', title: 'PENONTON TERAKHIR', accent: '#ff4e70', audioDuration: 51.5,
+    id: 18, slug: 'penonton-terakhir', title: 'PENONTON TERAKHIR', accent: '#ff4e70', audioDuration: 48.144,
     hook: ['PENONTONNYA CUMA SATU.', 'NAMANYA SAMA.'],
     captions: ['Fajar membuat siaran langsung dari bioskop tua yang sudah lama ditutup.','Penontonnya hanya satu akun,','dengan nama yang sama seperti akunnya sendiri.','Akun itu menulis agar ia menjauhi baris tujuh.','Beberapa detik kemudian, kursi di baris tujuh terlipat sendiri.','Pesan berikutnya meminta Fajar tidak melihat layar.','Ia terlambat.','Proyektor menyala dan menampilkan dirinya dari belakang,','padahal tidak ada kamera di sana.','Fajar berlari ke pintu keluar,','tetapi sosoknya di layar tetap berdiri diam.','Jumlah penonton berubah menjadi dua.','Komentar terakhir muncul. Siaran sudah dipindahkan.','Sosok di layar berbalik dan berjalan keluar dari bioskop.'],
     focus: [[.50,.49,1.00],[.47,.65,1.18],[.52,.59,1.50],[.46,.57,1.34],[.57,.38,1.62],[.52,.51,1.72],[.50,.50,1.14]],
