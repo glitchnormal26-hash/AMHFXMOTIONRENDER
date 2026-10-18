@@ -15,6 +15,8 @@
     "render:production": "node scripts/render-production.mjs",
     "render:anomali": "node projects/anomali-shorts/render-all.mjs",
     "verify:anomali": "node projects/anomali-shorts/verify-delivery.mjs",
+    "render:anomalia": "node projects/anomali-shorts-v2/render-all.mjs",
+    "verify:anomalia": "node projects/anomali-shorts-v2/verify-delivery.mjs",
     "check:skill": "node scripts/check-skill.mjs",
     "check:creative": "node scripts/check-creative-gates.mjs",
     "verify:final": "node scripts/finalize-verification.mjs",
