@@ -73,6 +73,8 @@ export const stories = [
   },
   {
     id: 19, slug: 'halte-hujan', title: 'HALTE SAAT HUJAN', accent: '#62c7ff', audioDuration: 56.664,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-bus-arrives.jpg','scene-03-passengers.jpg','scene-04-accident-poster.jpg','scene-04-accident-poster.jpg','scene-05-bus-leaves.jpg','scene-06-cctv-empty-road.jpg'],
     hook: ['HALTE INI HANYA ADA', 'SAAT HUJAN.'],
     captions: ['Hujan deras membuat Rio berteduh','di halte yang belum pernah ia lihat sebelumnya.','Sebuah bus tua datang tanpa suara mesin.','Kondekturnya membuka pintu dan berkata','bahwa ini keberangkatan terakhir.','Penumpang di dalam memakai seragam kantor model lama.','Tidak satu pun bergerak atau menoleh.','Rio hampir naik, tetapi melihat poster pudar di dinding halte.','Foto itu menunjukkan kecelakaan bus dua puluh tahun lalu.','Wajah para korbannya sama dengan penumpang yang sedang menunggu.','Rio mundur dan bus itu pergi tanpa dirinya.','Keesokan pagi, tidak ada halte di sana.','Polisi hanya menunjukkan rekaman CCTV.','Rio terlihat naik ke jalan kosong, lalu menghilang di tengah hujan.'],
     focus: [[.50,.51,1.00],[.32,.57,1.16],[.68,.53,1.48],[.65,.46,1.33],[.39,.50,1.60],[.52,.58,1.73],[.50,.50,1.14]],
@@ -80,6 +82,8 @@ export const stories = [
   },
   {
     id: 20, slug: 'jendela-seberang', title: 'JENDELA SEBERANG', accent: '#a875ff', audioDuration: 56.448,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-synchronized.jpg','scene-03-points-behind.jpg','scene-04-empty-behind.jpg','scene-05-impossible-room.jpg','scene-05-impossible-room.jpg','scene-06-morning-mira.jpg'],
     hook: ['PANTULANNYA TINGGAL', 'DI GEDUNG SEBERANG.'],
     captions: ['Setiap malam, Mira melihat seorang perempuan di apartemen seberang.','Kamar mereka sama, pakaiannya sama,','bahkan gerakannya selalu mengikuti Mira seperti pantulan cermin.','Suatu malam, perempuan itu bergerak lebih dulu.','Ia mengangkat tangan, lalu menunjuk ke belakang Mira.','Mira menoleh, tetapi kamarnya kosong.','Ketika melihat ke seberang lagi,','jendela itu tidak lagi menunjukkan apartemen lain.','Yang terlihat adalah kamar Mira sendiri, dari sudut yang mustahil.','Perempuan itu berdiri di dalam kamar tersebut','sambil menutup tirai.','Lampu Mira langsung padam.','Dari belakangnya terdengar kain bergeser.','Pagi harinya, Mira terlihat di jendela seberang,','meniru setiap gerakan para tetangganya.'],
     focus: [[.50,.49,1.00],[.68,.50,1.17],[.71,.46,1.50],[.35,.53,1.33],[.62,.44,1.62],[.49,.51,1.74],[.50,.50,1.14]],
