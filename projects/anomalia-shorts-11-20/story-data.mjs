@@ -19,6 +19,8 @@ export const stories = [
   },
   {
     id: 13, slug: 'baby-monitor', title: 'BABY MONITOR', accent: '#77d8ff', audioDuration: 48.624,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-audio.jpg','scene-03-shadow.jpg','scene-04-empty-room.jpg','scene-05-camera-turn.jpg','scene-06-bedroom-feed.jpg','scene-06-bedroom-feed.jpg'],
     hook: ['ADA YANG MENJAGA', 'BAYI MEREKA.'],
     captions: ['Sejak pindah rumah, bayi mereka selalu terbangun tepat pukul dua pagi.','Rina mengira penyebabnya suara kendaraan,','sampai baby monitor menangkap seseorang menyanyikan lagu nina bobo.','Di layar, ada bayangan berdiri di samping ranjang bayi','dan mengayunkannya perlahan.','Suaminya langsung berlari ke kamar itu.','Lampunya mati, ranjangnya diam, dan tidak ada siapa-siapa.','Namun lagu dari monitor tetap terdengar.','Lalu kameranya bergerak sendiri,','seolah sedang diputar oleh sebuah tangan.','Gambar berganti ke kamar Rina.','Monitor memperlihatkan Rina sedang memegang monitor.','Sebelum layar padam, suara itu berbisik,','sekarang giliran kalian tidur.'],
     focus: [[.50,.48,1.00],[.47,.58,1.16],[.67,.42,1.52],[.51,.48,1.35],[.36,.60,1.62],[.72,.47,1.75],[.50,.50,1.16]],
@@ -26,6 +28,8 @@ export const stories = [
   },
   {
     id: 14, slug: 'struk-besok', title: 'STRUK DARI BESOK', accent: '#ffbc4b', audioDuration: 50.976,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','establish.jpg','scene-02-receipt.jpg','scene-03-future-time.jpg','scene-04-duplicate-car.jpg','scene-05-road-closed.jpg','scene-06-roadside-self.jpg'],
     hook: ['STRUK TOLNYA', 'BERTANGGAL BESOK.'],
     captions: ['Damar melewati gerbang tol menjelang pukul dua pagi.','Petugas memberikan struk, lalu bertanya','kenapa ia kembali begitu cepat.','Damar bingung. Ini pertama kalinya ia lewat malam itu.','Di struk tertulis nomor mobilnya,','tetapi waktunya menunjukkan pukul dua lewat empat belas menit.','Petugas itu menunjuk jalan di depan.','Mobil dengan nomor yang sama baru saja lewat enam menit lalu.','Damar tetap melaju karena jalurnya sudah tertutup di belakang.','Tepat pukul dua lewat empat belas,','ia melihat sebuah mobil berhenti di bahu jalan.','Bentuknya sama. Nomornya sama.','Orang yang melambaikan tangan di samping mobil itu','adalah dirinya sendiri.'],
     focus: [[.50,.49,1.00],[.42,.66,1.15],[.55,.60,1.48],[.63,.38,1.32],[.46,.50,1.56],[.55,.44,1.72],[.50,.50,1.18]],
