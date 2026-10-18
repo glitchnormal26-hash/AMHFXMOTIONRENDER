@@ -37,6 +37,8 @@ export const stories = [
   },
   {
     id: 15, slug: 'bus-tenggelam', title: 'BUS DI BAWAH AIR', accent: '#ff7b49', audioDuration: 51.288,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-radio.jpg','scene-03-bus-found.jpg','scene-04-knocks.jpg','scene-05-handprint.jpg','scene-05-handprint.jpg','scene-06-door-open.jpg'],
     hook: ['SUARA ANAK-ANAK', 'DATANG DARI BAWAH AIR.'],
     captions: ['Setelah hujan tiga hari, terowongan kota terendam hampir sampai atap.','Tim penyelamat datang karena radio darurat','menangkap suara anak-anak meminta tolong.','Bima menyusuri air dengan perahu karet.','Di bawah sorot lampunya, terlihat atap sebuah bus sekolah.','Anehnya, bus itu hilang dua puluh tahun lalu di kota lain.','Dari dalam air terdengar ketukan, tiga kali, lalu berhenti.','Bima menyelam dan melihat telapak tangan','menempel di jendela bus dari sisi dalam.','Ia segera naik dan memanggil bantuan.','Radio menjawab dengan suara Bima sendiri.','Jangan buka pintunya. Kami sudah mencoba.','Saat ia menoleh, pintu bus di bawah air','perlahan mulai terbuka.'],
     focus: [[.50,.49,1.00],[.43,.55,1.15],[.59,.66,1.52],[.50,.55,1.32],[.55,.61,1.60],[.67,.65,1.75],[.50,.50,1.14]],
@@ -44,6 +46,8 @@ export const stories = [
   },
   {
     id: 16, slug: 'mesin-cuci', title: 'SATU MENIT TERSISA', accent: '#da6cff', audioDuration: 48.408,
+    revision: 'MULTIPLATE',
+    plates: ['establish.jpg','scene-02-one-minute.jpg','scene-03-stairwell.jpg','scene-04-unplug.jpg','scene-04-unplug.jpg','scene-05-footprints.jpg','scene-06-home-camera.jpg'],
     hook: ['MESIN CUCI INI', 'MENUNJUKKAN RUMAHNYA.'],
     captions: ['Naya datang ke binatu dua puluh empat jam untuk mencuci jaket merahnya.','Ketika waktu mesin tersisa satu menit, hitungannya berhenti.','Di balik kaca, tidak ada pakaian berputar.','Yang terlihat justru tangga apartemennya.','Seorang laki-laki berdiri dua lantai di bawah,','lalu naik satu anak tangga setiap tabung berputar.','Naya mencabut kabel mesin, tetapi gambar itu tetap bergerak.','Laki-laki tersebut kini sudah berada di depan pintu apartemennya.','Semua lampu binatu mendadak padam.','Saat menyala lagi, mesin sudah terbuka','dan jaket merahnya terlipat rapi.','Ada jejak kaki basah keluar menuju jalan.','Ponselnya berbunyi.','Kamera rumah mendeteksi seseorang memakai jaket merahnya.'],
     focus: [[.50,.51,1.00],[.42,.55,1.17],[.57,.53,1.50],[.58,.44,1.34],[.46,.64,1.62],[.63,.67,1.72],[.50,.50,1.16]],
