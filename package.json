@@ -13,6 +13,8 @@
     "render:ffmpeg:final": "QUALITY=final node scripts/export-mp4.mjs",
     "render:ffmpeg:files": "FRAME_TRANSPORT=files node scripts/export-mp4.mjs",
     "render:production": "node scripts/render-production.mjs",
+    "render:anomali": "node projects/anomali-shorts/render-all.mjs",
+    "verify:anomali": "node projects/anomali-shorts/verify-delivery.mjs",
     "check:skill": "node scripts/check-skill.mjs",
     "check:creative": "node scripts/check-creative-gates.mjs",
     "verify:final": "node scripts/finalize-verification.mjs",
@@ -27,5 +29,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/glitchnormal26-hash/AMHFXMOTIONRENDER.git"
+  },
+  "devDependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@napi-rs/canvas": "^1.0.11",
+    "@sparticuz/chromium": "^153.0.0"
   }
 }

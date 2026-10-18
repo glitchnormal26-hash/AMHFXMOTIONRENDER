@@ -12,6 +12,7 @@
  *   QUALITY=fast|final
  *   FPS=30 WIDTH=1920 HEIGHT=1080 CRF=18 PRESET=veryfast
  *   FRAME_TRANSPORT=stream|files
+ *   FRAME_FORMAT=png|jpeg CAPTURE_QUALITY=92
  *   KEEP_FRAMES=1 FRAMES_DIR=output/frames
  *   AUDIO=audio/final-mix.wav
  *   VOICEOVER=audio/voiceover.wav
@@ -41,11 +42,21 @@ const height = Number(process.env.HEIGHT || 1080);
 const crf = String(process.env.CRF || presetDefaults.crf);
 const encodePreset = process.env.PRESET || presetDefaults.preset;
 const frameTransport = (process.env.FRAME_TRANSPORT || "stream").toLowerCase();
+const frameFormat = (process.env.FRAME_FORMAT || "png").toLowerCase();
+const captureQuality = Number(process.env.CAPTURE_QUALITY || 92);
+const frameExtension = frameFormat === "jpeg" ? "jpg" : "png";
+const frameCodec = frameFormat === "jpeg" ? "mjpeg" : "png";
 const keepFrames = process.env.KEEP_FRAMES === "1";
 const explicitFramesDir = process.env.FRAMES_DIR ? path.resolve(process.env.FRAMES_DIR) : null;
 
 if (!["stream", "files"].includes(frameTransport)) {
   throw new Error(`Invalid FRAME_TRANSPORT=${frameTransport}; expected stream or files`);
+}
+if (!["png", "jpeg"].includes(frameFormat)) {
+  throw new Error(`Invalid FRAME_FORMAT=${frameFormat}; expected png or jpeg`);
+}
+if (!Number.isFinite(captureQuality) || captureQuality < 1 || captureQuality > 100) {
+  throw new Error("CAPTURE_QUALITY must be between 1 and 100");
 }
 if (!Number.isFinite(fps) || fps <= 0) throw new Error("Invalid FPS");
 if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
@@ -202,7 +213,7 @@ async function writeWithBackpressure(stream, chunk) {
 
 console.log("Motion Designer MP4 export");
 console.log(`quality=${quality} ${width}x${height} ${fps}fps CRF=${crf}`);
-console.log(`transport=${frameTransport}${keepFrames ? " + keep-frames" : ""}`);
+console.log(`transport=${frameTransport} format=${frameFormat}${frameFormat === "jpeg" ? ` quality=${captureQuality}` : ""}${keepFrames ? " + keep-frames" : ""}`);
 console.log(`source=${url}`);
 console.log(`output=${outVideo}`);
 if (finalAudio) console.log(`audio mix=${finalAudio}`);
@@ -260,7 +271,7 @@ try {
     const ffArgs = buildFfmpegArgs([
       "-f", "image2pipe",
       "-framerate", String(fps),
-      "-vcodec", "png",
+      "-vcodec", frameCodec,
       "-i", "pipe:0"
     ], duration);
     ffmpeg = spawn("ffmpeg", ffArgs, { stdio: ["pipe", "inherit", "inherit"] });
@@ -283,14 +294,16 @@ try {
       throw new Error(`Page runtime error during capture: ${diagnostics.page_errors.at(-1)}`);
     }
 
-    const frame = Buffer.from(await page.screenshot({
-      type: "png",
+    const screenshotOptions = {
+      type: frameFormat,
       clip: { x: 0, y: 0, width, height },
       optimizeForSpeed: true
-    }));
+    };
+    if (frameFormat === "jpeg") screenshotOptions.quality = captureQuality;
+    const frame = Buffer.from(await page.screenshot(screenshotOptions));
 
     if (keepFrames || frameTransport === "files") {
-      const name = `f${String(f).padStart(6, "0")}.png`;
+      const name = `f${String(f).padStart(6, "0")}.${frameExtension}`;
       await fsp.writeFile(path.join(framesDir, name), frame);
     }
     if (frameTransport === "stream") {
@@ -313,7 +326,7 @@ try {
   } else {
     const ffArgs = buildFfmpegArgs([
       "-framerate", String(fps),
-      "-i", path.join(framesDir, "f%06d.png")
+      "-i", path.join(framesDir, `f%06d.${frameExtension}`)
     ], duration);
     const enc = spawnSync("ffmpeg", ffArgs, { stdio: "inherit" });
     if (enc.status !== 0) throw new Error(`ffmpeg failed with status ${enc.status}`);
@@ -346,6 +359,8 @@ try {
     output: outVideo,
     quality,
     frame_transport: frameTransport,
+    frame_format: frameFormat,
+    capture_quality: frameFormat === "jpeg" ? captureQuality : null,
     retained_frames: Boolean(keepFrames || explicitFramesDir),
     requested: { width, height, fps },
     duration: Number(meta.format?.duration || 0),
