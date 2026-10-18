@@ -6,8 +6,11 @@ Paket ini berisi 10 video analog-horror fiksi yang siap diunggah.
 Perbaikan storytelling:
 - Bahasa narasi dibuat lebih natural dan seperti orang sedang bercerita.
 - Setiap episode memiliki alur pengenalan, pemicu, eskalasi, pengungkapan, dan payoff yang jelas.
-- Setiap video memakai 7 scene visual berbeda yang mengikuti kejadian dalam cerita.
-- Visual menggabungkan gambar sinematik generatif, gerakan kamera scripted, tampilan bukti, CCTV, peta, notifikasi, dan reveal khusus cerita.
+- Setiap video memakai 7 scene yang mengikuti kejadian dalam cerita.
+- Setiap episode memiliki 6 gambar AI sinematik khusus: establishing, aksi karakter, bukti, eskalasi, dan reveal tidak lagi memakai satu gambar yang di-zoom berulang kali.
+- Satu gambar hanya digunakan ulang jika dua beat memang terjadi di lokasi dan momen yang sama.
+- Gerakan kamera mencakup handheld drift, lateral pan, push-in, pull-back, micro-rotation, dan crossfade antar-footage.
+- Tampilan bukti, CCTV, peta, dan notifikasi diperkecil agar mendukung footage, bukan menutupinya.
 - Caption mengikuti kalimat narator dan tidak lagi terasa seperti daftar laporan.
 
 Spesifikasi:

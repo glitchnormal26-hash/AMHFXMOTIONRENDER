@@ -6,8 +6,9 @@ Ten vertical Indonesian analog-horror Shorts built around clearer, conversationa
 
 - Natural spoken Indonesian instead of report-like fragments.
 - Every episode follows a legible setup → trigger → escalation → reveal → payoff structure.
-- Seven distinct scene states per video, with relevant generated raster plates and story-specific evidence/reveal compositions.
-- Handheld camera motion, reframing, surveillance UI, analog texture, transitions, kinetic captions, and `ANOMALIA` branding.
+- Seven distinct story scenes per video, built from six dedicated AI-generated cinematic plates per episode instead of repeatedly cropping one image.
+- Only one plate is intentionally reused where two connected beats share the same location; every setup, incident, evidence shot, escalation, and reveal otherwise has its own visual.
+- Shot-specific handheld drift, lateral pan, push-in, pull-back, micro-rotation, crossfade handoff, restrained evidence UI, analog texture, kinetic captions, and `ANOMALIA` branding.
 - Every story is original fiction and visibly labeled `FIKSI • ANALOG HORROR`.
 
 ## Render
