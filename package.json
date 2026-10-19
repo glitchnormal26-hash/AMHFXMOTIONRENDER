@@ -23,7 +23,9 @@
     "check:creative": "node scripts/check-creative-gates.mjs",
     "verify:final": "node scripts/finalize-verification.mjs",
     "check": "npm run check:version && npm run check:skill && node --check scripts/check-skill.mjs && node --check scripts/check-creative-gates.mjs && node --check scripts/finalize-verification.mjs && node --check scripts/render-production.mjs && node --check scripts/export-mp4.mjs && node --check scripts/export-frames.mjs && node --check scripts/snap.mjs && node --check runtime/index.js && node --check runtime/motion-utils.js && node --check runtime/camera-rig.js && node --check runtime/explainer-helpers.js && node --check runtime/three-scene.js && node --check runtime/audio-runtime.js",
-    "check:version": "node scripts/check-version-sync.mjs"
+    "check:version": "node scripts/check-version-sync.mjs",
+    "render:anomalia-legends": "node projects/anomalia-shorts-21-30/render-all.mjs",
+    "verify:anomalia-legends": "node projects/anomalia-shorts-21-30/verify-delivery.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
