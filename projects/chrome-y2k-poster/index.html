@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Cara Membuat Poster Cybergoth Y2K Style — Amhfx</title>
+<style>
+@font-face{font-family:'Anton';src:url('assets/fonts/anton-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-500-normal.woff2') format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Cinzel';src:url('assets/fonts/cinzel-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:'Cinzel';src:url('assets/fonts/cinzel-latin-900-normal.woff2') format('woff2');font-weight:900;font-display:block}
+:root{--obs:#0B0B0F;--silver:#C9CED6;--lav:#B9A6E8;--gun:#4A4F5A;--pearl:#F2F3F7}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+#stage{position:absolute;inset:0;background:var(--obs);overflow:hidden;font-family:'Grotesk',sans-serif}
+#cam{position:absolute;inset:0;transform-origin:960px 540px}
+.ch{position:absolute;inset:0;opacity:0;will-change:transform,opacity,filter}
+.imgbg{position:absolute;inset:0;background-size:cover;background-position:center}
+.lb{position:absolute;left:0;right:0;height:40px;background:#000;z-index:60}
+.lb.t{top:0}.lb.b{bottom:0}
+#vig{position:absolute;inset:0;z-index:55;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 55%,rgba(0,0,0,.55) 100%)}
+.chrome{background:linear-gradient(180deg,#ffffff 0%,#e8ecf2 16%,#9aa1ad 34%,#f8fafc 50%,#5f6672 64%,#c9ced6 84%,#ffffff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lab{font-family:'Grotesk';font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--silver)}
+.pill{display:inline-block;padding:10px 26px;border:1px solid rgba(201,206,214,.5);border-radius:999px;background:rgba(11,11,15,.55)}
+/* caption karaoke */
+#tikcap{position:absolute;left:50%;top:880px;transform:translateX(-50%);width:1100px;text-align:center;z-index:70;
+ font-family:'Grotesk';font-weight:700;font-size:44px;line-height:1.22;color:var(--pearl);
+ background:rgba(8,10,14,.68);border:1px solid rgba(185,166,232,.28);border-radius:18px;padding:16px 30px;
+ box-shadow:0 6px 30px rgba(0,0,0,.5);opacity:0}
+#tikcap b{color:var(--lav);text-shadow:0 0 18px rgba(185,166,232,.55)}
+/* progress */
+#prog{position:absolute;left:0;bottom:40px;height:3px;background:linear-gradient(90deg,var(--gun),var(--silver));z-index:65;width:0}
+.ptick{position:absolute;bottom:38px;width:2px;height:8px;background:rgba(201,206,214,.5);z-index:65}
+#wm{position:absolute;top:56px;right:60px;z-index:66;font-family:'Cinzel';font-weight:700;font-size:22px;letter-spacing:.3em;color:rgba(201,206,214,.55)}
+/* slate maskot papan */
+#slate{position:absolute;left:40px;bottom:96px;width:360px;z-index:68;opacity:0}
+#slate img{width:100%;display:block}
+#slate .board{position:absolute;left:4%;top:55%;width:77%;height:22%;transform:rotate(-2deg);display:flex;align-items:center;justify-content:center;text-align:center;
+ font-family:'Grotesk';font-weight:700;font-size:25px;line-height:1.15;letter-spacing:.06em;color:#14161c;text-transform:uppercase;padding:0 10px}
+/* maskot kanan */
+#mascR{position:absolute;right:50px;bottom:70px;width:330px;z-index:68;opacity:0}
+#mascR img{width:100%;display:block}
+/* highlight boxes */
+.hb{position:absolute;border:2px solid rgba(201,206,214,.9);box-shadow:0 0 0 4px rgba(11,11,15,.35),0 0 26px rgba(185,166,232,.35);opacity:0}
+.hb .tag{position:absolute;left:-2px;top:-40px;background:rgba(11,11,15,.85);border:1px solid rgba(201,206,214,.5);color:var(--pearl);font-size:20px;font-weight:500;letter-spacing:.18em;padding:6px 14px;text-transform:uppercase;white-space:nowrap}
+.chip{position:absolute;background:rgba(11,11,15,.72);border:1px solid rgba(185,166,232,.45);color:var(--pearl);font-weight:500;font-size:24px;letter-spacing:.14em;padding:10px 22px;text-transform:uppercase;opacity:0;white-space:nowrap}
+.chip i{font-style:normal;color:var(--lav);margin-right:10px}
+.card{position:absolute;background:rgba(16,17,24,.82);border:1px solid rgba(201,206,214,.28);opacity:0;overflow:hidden}
+.stamp{position:absolute;font-family:'Anton';font-size:64px;letter-spacing:.06em;opacity:0;transform:rotate(-12deg)}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="cam">
+
+<!-- ============ CH1 HOOK ============ -->
+<section class="ch" id="ch0">
+  <div class="imgbg" id="h-bg" style="background-image:url('assets/poster-final.png');filter:blur(26px) brightness(.34) saturate(.8);transform:scale(1.25)"></div>
+  <div id="h-sweep" style="position:absolute;top:0;bottom:0;width:220px;left:-300px;background:linear-gradient(90deg,transparent,rgba(242,243,247,.5),transparent);opacity:0"></div>
+  <div class="card" id="h-c1" style="left:180px;top:150px;width:520px;height:640px"><div class="imgbg" style="background-image:url('assets/poster-final.png');background-position:50% 42%;background-size:190%;filter:brightness(1.3)"></div></div>
+  <div class="card" id="h-c2" style="left:760px;top:230px;width:420px;height:420px"><div class="imgbg" style="background-image:url('assets/poster-final.png');background-position:50% 78%;background-size:260%;filter:brightness(1.25)"></div></div>
+  <div class="card" id="h-c3" style="left:1240px;top:150px;width:500px;height:620px"><div class="imgbg" style="background-image:url('assets/ref1-gothic-dark.png');background-position:50% 20%;background-size:170%;filter:brightness(1.25)"></div></div>
+  <div class="card" id="h-r1" style="left:430px;top:170px;width:480px;height:640px;transform:rotate(-4deg)"><div class="imgbg" style="background-image:url('assets/ref1-gothic-dark.png')"></div></div>
+  <div class="card" id="h-r2" style="left:1010px;top:170px;width:480px;height:640px;transform:rotate(4deg)"><div class="imgbg" style="background-image:url('assets/ref2-silver-lavender.png')"></div></div>
+  <div id="h-title" style="position:absolute;left:0;right:0;top:300px;text-align:center;opacity:0">
+    <div class="lab" style="font-size:30px;color:var(--lav)">TUTORIAL LENGKAP · BAHASA INDONESIA</div>
+    <div style="font-family:'Anton';font-size:104px;letter-spacing:.02em;color:var(--pearl);margin-top:14px">CARA MEMBUAT POSTER</div>
+    <div class="chrome" style="font-family:'Cinzel';font-weight:900;font-size:132px;letter-spacing:.04em;margin-top:2px;filter:drop-shadow(0 6px 26px rgba(185,166,232,.35))">CYBERGOTH Y2K</div>
+    <div style="margin-top:26px"><span class="pill lab" style="font-size:24px">AMHFX TUTORIAL · LIQUID CHROME ROMANCE</span></div>
+  </div>
+</section>
+
+<!-- ============ CH2 REFERENSI ============ -->
+<section class="ch" id="ch1">
+  <div class="imgbg" id="r1-bg" style="background-image:url('assets/ref1-gothic-dark.png')"></div>
+  <div class="imgbg" id="r2-bg" style="background-image:url('assets/ref2-silver-lavender.png');opacity:0"></div>
+  <div id="r-wipe" style="position:absolute;top:0;bottom:0;width:6px;left:0;background:linear-gradient(180deg,transparent,var(--silver),transparent);opacity:0"></div>
+  <div class="hb" id="r1-h1" style="left:330px;top:70px;width:1260px;height:250px"><span class="tag">Tipografi serif ekstrem · logam cair</span></div>
+  <div class="hb" id="r1-h2" style="left:560px;top:330px;width:800px;height:520px"><span class="tag">Portrait dramatis · highlight dingin</span></div>
+  <div class="hb" id="r1-h3" style="left:60px;top:560px;width:420px;height:330px"><span class="tag">Editorial insets</span></div>
+  <div class="hb" id="r1-h4" style="left:420px;top:830px;width:1100px;height:210px"><span class="tag">Ornamen chrome foreground</span></div>
+  <div class="hb" id="r2-h1" style="left:240px;top:60px;width:1440px;height:260px"><span class="tag">Bevel chrome tebal & jelas</span></div>
+  <div class="hb" id="r2-h2" style="left:1180px;top:300px;width:560px;height:420px"><span class="tag">Hati metalik · rantai · simbol</span></div>
+  <div class="hb" id="r2-h3" style="left:90px;top:600px;width:430px;height:330px"><span class="tag">Panel antarmuka cyber-glam</span></div>
+  <div id="r-duo" style="position:absolute;inset:0;opacity:0">
+    <div style="position:absolute;left:150px;top:100px;width:700px;height:700px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div class="imgbg" style="background-image:url('assets/ref1-gothic-dark.png')"></div></div>
+    <div style="position:absolute;left:1070px;top:100px;width:700px;height:700px;box-shadow:0 20px 60px rgba(0,0,0,.6)"><div class="imgbg" style="background-image:url('assets/ref2-silver-lavender.png')"></div></div>
+  </div>
+  <div class="chip" id="r-f1" style="left:100px;top:812px"><i>01</i>Photographic Portrait</div>
+  <div class="chip" id="r-f2" style="left:430px;top:812px"><i>02</i>Liquid Chrome</div>
+  <div class="chip" id="r-f3" style="left:690px;top:812px"><i>03</i>Futuristic Typography</div>
+  <div class="chip" id="r-f4" style="left:1020px;top:812px"><i>04</i>Atmospheric Lighting</div>
+  <div class="chip" id="r-f5" style="left:1340px;top:812px"><i>05</i>Editorial Composition</div>
+</section>
+
+<!-- ============ CH3 SISTEM VISUAL ============ -->
+<section class="ch" id="ch2">
+  <div class="imgbg" style="background:radial-gradient(ellipse at 30% 20%,#15161f 0%,var(--obs) 60%)"></div>
+  <div class="lab" id="s-head" style="position:absolute;left:90px;top:80px;font-size:34px;color:var(--pearl);opacity:0">MOODBOARD → SISTEM VISUAL</div>
+  <div class="card" id="s-m1" style="left:90px;top:170px;width:330px;height:250px;background:#0B0B0F;border-color:#2a2c36"><div style="position:absolute;left:24px;bottom:20px" class="lab">Obsidian</div></div>
+  <div class="card" id="s-m2" style="left:440px;top:170px;width:330px;height:250px"><div class="imgbg" style="background-image:url('assets/mat-good.png')"></div></div>
+  <div class="card" id="s-m3" style="left:790px;top:170px;width:330px;height:250px;background:#101118"><div class="chrome" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel';font-weight:900;font-size:120px">Aa</div></div>
+  <div class="card" id="s-m4" style="left:90px;top:440px;width:330px;height:250px;background:linear-gradient(140deg,#241f33,#B9A6E8 140%)"></div>
+  <div class="card" id="s-m5" style="left:440px;top:440px;width:330px;height:250px;background:#101118"><div style="position:absolute;inset:26px;border:2px dashed rgba(201,206,214,.4)"></div><div style="position:absolute;left:56px;top:56px;width:218px;height:60px;border:2px dashed rgba(201,206,214,.4)"></div><div style="position:absolute;left:86px;top:140px;width:158px;height:80px;border:2px dashed rgba(185,166,232,.5)"></div></div>
+  <div class="card" id="s-m6" style="left:790px;top:440px;width:330px;height:250px"><div class="imgbg" style="background-image:url('assets/ref2-silver-lavender.png');background-position:50% 30%;background-size:150%"></div></div>
+  <div id="s-pal" style="position:absolute;left:1210px;top:170px;width:620px;opacity:0">
+    <div class="lab" style="font-size:26px;margin-bottom:18px;color:var(--pearl)">PALET TERBATAS · 5 WARNA</div>
+    <div class="sw" style="display:flex;align-items:center;gap:18px;margin-bottom:16px;opacity:0"><div style="width:74px;height:74px;background:#0B0B0F;border:1px solid #33353f"></div><div><div style="color:var(--pearl);font-weight:700;font-size:26px">OBSIDIAN BLACK</div><div class="lab" style="font-size:18px">#0B0B0F · kedalaman</div></div></div>
+    <div class="sw" style="display:flex;align-items:center;gap:18px;margin-bottom:16px;opacity:0"><div style="width:74px;height:74px;background:#C9CED6"></div><div><div style="color:var(--pearl);font-weight:700;font-size:26px">LIQUID SILVER</div><div class="lab" style="font-size:18px">#C9CED6 · highlight metalik</div></div></div>
+    <div class="sw" style="display:flex;align-items:center;gap:18px;margin-bottom:16px;opacity:0"><div style="width:74px;height:74px;background:#4A4F5A"></div><div><div style="color:var(--pearl);font-weight:700;font-size:26px">GUNMETAL</div><div class="lab" style="font-size:18px">#4A4F5A · transisi</div></div></div>
+    <div class="sw" style="display:flex;align-items:center;gap:18px;margin-bottom:16px;opacity:0"><div style="width:74px;height:74px;background:#B9A6E8"></div><div><div style="color:var(--pearl);font-weight:700;font-size:26px">DIGITAL LAVENDER</div><div class="lab" style="font-size:18px">#B9A6E8 · atmosfer dreamy</div></div></div>
+    <div class="sw" style="display:flex;align-items:center;gap:18px;opacity:0"><div style="width:74px;height:74px;background:#F2F3F7"></div><div><div style="color:var(--pearl);font-weight:700;font-size:26px">PEARL WHITE</div><div class="lab" style="font-size:18px">#F2F3F7 · highlight terterang</div></div></div>
+  </div>
+  <div id="s-wire" style="position:absolute;left:300px;top:620px;width:520px;height:240px;opacity:0">
+    <div style="position:absolute;inset:0;border:2px solid rgba(201,206,214,.55)"></div>
+    <div style="position:absolute;left:8%;top:6%;width:84%;height:18%;border:2px solid rgba(185,166,232,.7)"></div>
+    <div style="position:absolute;left:26%;top:30%;width:48%;height:52%;border:2px solid rgba(201,206,214,.7)"></div>
+    <div style="position:absolute;left:6%;top:36%;width:14%;height:22%;border:2px dashed rgba(201,206,214,.5)"></div>
+    <div style="position:absolute;left:12%;bottom:4%;width:76%;height:10%;border:2px dashed rgba(185,166,232,.5)"></div>
+    <div class="lab" style="position:absolute;left:0;top:-40px;font-size:20px">LAYOUT KASAR · SATU DUNIA VISUAL</div>
+  </div>
+</section>
+
+<!-- ============ CH4 KOMPOSISI ============ -->
+<section class="ch" id="ch3">
+  <div class="imgbg" id="c-bg" style="background-image:url('assets/poster-final.png');filter:brightness(.5) saturate(.75)"></div>
+  <div id="c-clutter" style="position:absolute;inset:0;opacity:0">
+    <div class="chrome" style="position:absolute;left:120px;top:120px;font-family:'Cinzel';font-weight:900;font-size:70px;transform:rotate(-8deg)">CHROME</div>
+    <div class="chrome" style="position:absolute;left:1200px;top:90px;font-family:'Cinzel';font-weight:900;font-size:56px;transform:rotate(6deg)">Y2K</div>
+    <div class="chrome" style="position:absolute;left:220px;top:760px;font-family:'Cinzel';font-weight:900;font-size:60px;transform:rotate(4deg)">GOTHIC</div>
+    <div class="chrome" style="position:absolute;left:1300px;top:700px;font-family:'Cinzel';font-weight:900;font-size:64px;transform:rotate(-5deg)">METAL</div>
+    <div class="chrome" style="position:absolute;left:700px;top:60px;font-family:'Cinzel';font-weight:900;font-size:52px;transform:rotate(3deg)">EDIT</div>
+    <div class="chrome" style="position:absolute;left:760px;top:880px;font-family:'Cinzel';font-weight:900;font-size:58px;transform:rotate(-3deg)">POSTER</div>
+    <div style="position:absolute;left:0;right:0;top:470px;text-align:center;font-family:'Anton';font-size:44px;color:rgba(242,243,247,.85);letter-spacing:.06em">TERLALU BANYAK ELEMEN = HILANG PRIORITAS</div>
+  </div>
+  <div class="hb" id="c-b1" style="left:300px;top:60px;width:1320px;height:230px"><span class="tag">1 · Masthead — judul utama</span></div>
+  <div class="hb" id="c-b2" style="left:520px;top:300px;width:880px;height:560px"><span class="tag">2 · Hero portrait — pusat perhatian</span></div>
+  <div class="hb" id="c-b3" style="left:70px;top:560px;width:400px;height:320px"><span class="tag">3 · Editorial insets</span></div>
+  <div class="hb" id="c-b4" style="left:380px;top:840px;width:1180px;height:200px"><span class="tag">4 · Foreground ornaments</span></div>
+  <div id="c-fn" style="position:absolute;right:90px;top:180px;width:470px;opacity:0">
+    <div class="fn" style="opacity:0;margin-bottom:14px;padding:12px 18px;background:rgba(11,11,15,.8);border-left:3px solid var(--lav);color:var(--pearl);font-size:26px">Typography → identitas</div>
+    <div class="fn" style="opacity:0;margin-bottom:14px;padding:12px 18px;background:rgba(11,11,15,.8);border-left:3px solid var(--lav);color:var(--pearl);font-size:26px">Portrait → emosi</div>
+    <div class="fn" style="opacity:0;margin-bottom:14px;padding:12px 18px;background:rgba(11,11,15,.8);border-left:3px solid var(--lav);color:var(--pearl);font-size:26px">Inset → detail</div>
+    <div class="fn" style="opacity:0;padding:12px 18px;background:rgba(11,11,15,.8);border-left:3px solid var(--lav);color:var(--pearl);font-size:26px">Chrome → kedalaman</div>
+  </div>
+  <div id="c-chain" style="position:absolute;left:0;right:0;bottom:215px;text-align:center;opacity:0">
+    <div class="lab" style="font-size:24px;color:var(--lav)">HIERARCHY BEFORE EFFECTS</div>
+    <div style="margin-top:10px;font-family:'Anton';font-size:46px;color:var(--pearl);letter-spacing:.04em">MASTHEAD → PORTRAIT → DETAILS → ORNAMENTS</div>
+  </div>
+</section>
+
+<!-- ============ CH5 PROMPT ============ -->
+<section class="ch" id="ch4">
+  <div class="imgbg" style="background:radial-gradient(ellipse at 70% 30%,#141520 0%,var(--obs) 62%)"></div>
+  <div class="lab" id="p-head" style="position:absolute;left:90px;top:76px;font-size:32px;color:var(--pearl);opacity:0">6 KOMPONEN PROMPT</div>
+  <div class="card" id="p-c1" style="left:90px;top:150px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">01</span><div style="color:var(--pearl);font-weight:700;font-size:32px">SUBJECT</div><div style="color:var(--silver);font-size:21px;margin-top:4px">siapa / apa fokus visualnya</div></div></div>
+  <div class="card" id="p-c2" style="left:640px;top:150px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">02</span><div style="color:var(--pearl);font-weight:700;font-size:32px">ART DIRECTION</div><div style="color:var(--silver);font-size:21px;margin-top:4px">dunia visual: dark romantic cyber-glam</div></div></div>
+  <div class="card" id="p-c3" style="left:1190px;top:150px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">03</span><div style="color:var(--pearl);font-weight:700;font-size:32px">MATERIAL</div><div style="color:var(--silver);font-size:21px;margin-top:4px">reflective silver · polished bevels · liquid-metal</div></div></div>
+  <div class="card" id="p-c4" style="left:90px;top:300px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">04</span><div style="color:var(--pearl);font-weight:700;font-size:32px">LIGHTING</div><div style="color:var(--silver);font-size:21px;margin-top:4px">soft beauty light · cool rim · highlight tegas</div></div></div>
+  <div class="card" id="p-c5" style="left:640px;top:300px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">05</span><div style="color:var(--pearl);font-weight:700;font-size:32px">COMPOSITION</div><div style="color:var(--pearl);font-size:21px;margin-top:4px;color:var(--silver)">posisi portrait · headline · inset · negative space</div></div></div>
+  <div class="card" id="p-c6" style="left:1190px;top:300px;width:520px;height:130px"><div style="padding:20px 26px"><span class="lab" style="color:var(--lav);font-size:20px">06</span><div style="color:var(--pearl);font-weight:700;font-size:32px">QUALITY CONTROL</div><div style="color:var(--silver);font-size:21px;margin-top:4px">wajah realistis · ornamen tidak mengambil alih</div></div></div>
+  <div class="card" id="p-panel" style="left:560px;top:470px;width:1240px;height:520px;background:rgba(10,11,16,.92);border-color:rgba(185,166,232,.4)">
+    <div class="lab" style="position:absolute;left:26px;top:18px;font-size:20px;color:var(--lav)">MASTER PROMPT</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:60px;color:var(--silver);font-size:23px;line-height:1.42;opacity:0">Create an original premium Y2K cyber-glam editorial poster featuring a photorealistic beauty portrait, dark romantic gothic atmosphere, sculptural liquid chrome, and silver-lavender color grading.</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:140px;color:var(--silver);font-size:23px;line-height:1.42;opacity:0">Use oversized futuristic editorial typography with polished silver bevels, realistic metallic reflections, elongated gothic-inspired letterforms, and carefully controlled 3D depth.</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:220px;color:var(--silver);font-size:23px;line-height:1.42;opacity:0">Build a layered composition with a dominant portrait, small editorial detail panels, abstract chrome ornaments, sculptural metallic hearts, reflective chains, and subtle futuristic interface graphics.</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:300px;color:var(--silver);font-size:23px;line-height:1.42;opacity:0">Use soft beauty lighting on the face, cool rim lighting along the hair, deep obsidian shadows, precise silver highlights, and restrained lavender atmospheric glow.</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:380px;color:var(--silver);font-size:23px;line-height:1.42;opacity:0">Maintain realistic skin texture, natural facial anatomy, elegant negative space, and a clear visual hierarchy.</div>
+    <div class="pp" style="position:absolute;left:26px;right:26px;top:450px;color:var(--lav);font-size:23px;line-height:1.42;opacity:0">Original fictional subject, original typography, original ornament design — vertical editorial poster 3:4.</div>
+    <div id="p-sweep" style="position:absolute;left:0;width:3px;top:56px;bottom:14px;background:var(--lav);box-shadow:0 0 16px var(--lav);opacity:0"></div>
+  </div>
+  <div id="p-note" style="position:absolute;left:110px;top:560px;width:380px;opacity:0">
+    <div style="font-family:'Anton';font-size:44px;color:var(--pearl);line-height:1.1">PROMPT = ART DIRECTION</div>
+    <div style="color:var(--lav);font-size:26px;margin-top:8px;font-weight:500">bukan jaminan setiap detail benar</div>
+  </div>
+</section>
+
+<!-- ============ CH6 MATERIAL ============ -->
+<section class="ch" id="ch5">
+  <div class="imgbg" style="background:radial-gradient(ellipse at 50% 10%,#15161e 0%,var(--obs) 60%)"></div>
+  <div class="lab" id="m-head" style="position:absolute;left:90px;top:76px;font-size:32px;color:var(--pearl);opacity:0">MATERIAL TEST · CHROME</div>
+  <div class="card" id="m-k1" style="left:110px;top:170px;width:540px;height:540px"><div class="imgbg" style="background-image:url('assets/mat-plastic.png')"></div><div class="lab" style="position:absolute;left:0;right:0;bottom:0;padding:12px;background:rgba(11,11,15,.85);text-align:center;font-size:22px">ABU-ABU + GLOW = PLASTIK</div></div>
+  <div class="card" id="m-k2" style="left:690px;top:170px;width:540px;height:540px"><div class="imgbg" style="background-image:url('assets/mat-toowhite.png')"></div><div class="lab" style="position:absolute;left:0;right:0;bottom:0;padding:12px;background:rgba(11,11,15,.85);text-align:center;font-size:22px">TERLALU PUTIH = DATAR</div></div>
+  <div class="card" id="m-k3" style="left:1270px;top:170px;width:540px;height:540px;border-color:rgba(185,166,232,.6)"><div class="imgbg" style="background-image:url('assets/mat-good.png')"></div><div class="lab" style="position:absolute;left:0;right:0;bottom:0;padding:12px;background:rgba(11,11,15,.85);text-align:center;font-size:22px;color:var(--lav)">REFLEKSI MEYAKINKAN</div></div>
+  <div class="stamp" id="m-x1" style="left:250px;top:380px;color:#e07a7a">✕</div>
+  <div class="stamp" id="m-x2" style="left:830px;top:380px;color:#e07a7a">✕</div>
+  <div class="stamp" id="m-ok" style="left:1410px;top:380px;color:#9fe0b0">✓</div>
+  <div class="chip" id="m-w1" style="left:150px;top:770px">Reflection</div>
+  <div class="chip" id="m-w2" style="left:420px;top:770px">Contrast</div>
+  <div class="chip" id="m-w3" style="left:660px;top:770px">Bevel</div>
+  <div class="chip" id="m-w4" style="left:880px;top:770px">Specular Highlight</div>
+  <div class="chip" id="m-w5" style="left:1300px;top:770px">Form Variation</div>
+  <div id="m-glint" style="position:absolute;left:1270px;top:170px;width:540px;height:540px;overflow:hidden;opacity:0"><div style="position:absolute;top:-10%;bottom:-10%;width:90px;left:-140px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:rotate(18deg)"></div></div>
+</section>
+
+<!-- ============ CH7 GRADING ============ -->
+<section class="ch" id="ch6">
+  <div class="imgbg" style="background-image:url('assets/grade-before.png')"></div>
+  <div id="g-after" style="position:absolute;inset:0;background:url('assets/grade-after.png') center/cover;clip-path:inset(0 100% 0 0)"></div>
+  <div id="g-line" style="position:absolute;top:0;bottom:0;left:0;width:5px;background:linear-gradient(180deg,transparent,var(--pearl),var(--lav),transparent);box-shadow:0 0 22px rgba(185,166,232,.7);opacity:0"><div style="position:absolute;left:-27px;top:50%;width:60px;height:60px;margin-top:-30px;border-radius:50%;border:2px solid var(--pearl);background:rgba(11,11,15,.7);display:flex;align-items:center;justify-content:center;color:var(--pearl);font-size:26px">⇔</div></div>
+  <div class="lab" id="g-lb" style="position:absolute;left:80px;top:90px;font-size:30px;color:rgba(242,243,247,.85);opacity:0">SEBELUM · TERPISAH</div>
+  <div class="lab" id="g-la" style="position:absolute;right:80px;top:90px;font-size:30px;color:var(--lav);opacity:0">SESUDAH · SATU LINGKUNGAN</div>
+  <div class="chip" id="g-c1" style="left:150px;top:800px">Natural Skin</div>
+  <div class="chip" id="g-c2" style="left:480px;top:800px">Cool Rim Light</div>
+  <div class="chip" id="g-c3" style="left:830px;top:800px">Controlled Bloom</div>
+  <div class="chip" id="g-c4" style="left:1200px;top:800px">Unified Color Grading</div>
+</section>
+
+<!-- ============ CH8 TIPOGRAFI ============ -->
+<section class="ch" id="ch7">
+  <div class="imgbg" style="background:radial-gradient(ellipse at 50% 0%,#141520 0%,var(--obs) 60%)"></div>
+  <div id="t-hero" class="chrome" style="position:absolute;left:0;right:0;top:150px;text-align:center;font-family:'Cinzel';font-weight:900;font-size:230px;letter-spacing:.02em;filter:drop-shadow(0 10px 34px rgba(185,166,232,.3));opacity:0">VELVET</div>
+  <div id="t-glint" style="position:absolute;left:0;right:0;top:140px;height:260px;overflow:hidden;opacity:0"><div style="position:absolute;top:-20%;bottom:-20%;width:120px;left:-200px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:rotate(14deg)"></div></div>
+  <div id="t-sup" style="position:absolute;right:120px;top:480px;width:420px;opacity:0">
+    <div class="lab" style="font-size:20px;color:var(--lav);margin-bottom:12px">SUPPORTING TYPE · CONDENSED SANS</div>
+    <div style="color:var(--silver);font-size:26px;letter-spacing:.12em;margin-bottom:8px">EDISI 001 — FAN MADE POSTER</div>
+    <div style="color:var(--silver);font-size:26px;letter-spacing:.12em;margin-bottom:8px">CYBERGOTH · Y2K STYLE</div>
+    <div style="color:var(--silver);font-size:26px;letter-spacing:.12em">CREATED BY AMHFX</div>
+  </div>
+  <div id="t-chaos" style="position:absolute;inset:0;opacity:0">
+    <div class="chrome tc" style="position:absolute;left:180px;top:470px;font-family:'Cinzel';font-weight:900;font-size:80px">CHROME</div>
+    <div class="chrome tc" style="position:absolute;left:760px;top:560px;font-family:'Cinzel';font-weight:900;font-size:70px;transform:rotate(4deg)">GOTHIC</div>
+    <div class="chrome tc" style="position:absolute;left:1250px;top:470px;font-family:'Cinzel';font-weight:900;font-size:76px;transform:rotate(-4deg)">Y2K</div>
+    <div class="chrome tc" style="position:absolute;left:420px;top:700px;font-family:'Cinzel';font-weight:900;font-size:66px;transform:rotate(-3deg)">METAL</div>
+    <div class="chrome tc" style="position:absolute;left:980px;top:720px;font-family:'Cinzel';font-weight:900;font-size:72px;transform:rotate(3deg)">EDIT</div>
+  </div>
+  <div id="t-track" style="position:absolute;left:0;right:0;top:640px;text-align:center;opacity:0"><span class="lab" style="font-size:64px;color:var(--pearl);letter-spacing:.1em">CYBERGOTH</span><div class="lab" style="font-size:22px;margin-top:14px;color:var(--lav)">TRACKING · BEVEL · BENTUK HURUF = KONTROL MANUAL</div></div>
+  <div class="chip" id="t-c1" style="left:170px;top:780px">One Hero Headline</div>
+  <div class="chip" id="t-c2" style="left:640px;top:780px">Clean Supporting Type</div>
+  <div class="chip" id="t-c3" style="left:1180px;top:780px">Manual Typography Control</div>
+</section>
+
+<!-- ============ CH9 BREAKDOWN ============ -->
+<section class="ch" id="ch8">
+  <div class="imgbg" style="background:#08090c"></div>
+  <div id="b-view" style="position:absolute;left:620px;top:60px;width:760px;height:960px;box-shadow:0 24px 80px rgba(0,0,0,.7);overflow:hidden"><div class="imgbg" id="b-img" style="background-image:url('assets/poster-final.png')"></div><div id="b-tint" style="position:absolute;inset:0;background:rgba(185,166,232,0);mix-blend-mode:screen"></div></div>
+  <div id="b-list" style="position:absolute;left:90px;top:170px;width:470px">
+    <div class="lab" style="font-size:26px;color:var(--pearl);margin-bottom:16px">BREAKDOWN · 7 LAYER</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">1 · Background</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">2 · Hero portrait</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">3 · Metallic headline</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">4 · Editorial insets</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">5 · Chrome ornaments</div>
+    <div class="bl" style="opacity:.35;margin-bottom:10px;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">6 · Color grading</div>
+    <div class="bl" style="opacity:.35;padding:10px 16px;border-left:3px solid var(--gun);color:var(--silver);font-size:27px">7 · Final typography</div>
+  </div>
+  <div id="b-note" style="position:absolute;right:90px;top:200px;width:400px;opacity:0">
+    <div style="font-family:'Anton';font-size:40px;color:var(--pearl);line-height:1.15">SATU SISTEM WARNA · SATU CAHAYA · SATU HIERARKI</div>
+    <div style="color:var(--lav);font-size:24px;margin-top:12px">mengenal mengapa sebuah desain bekerja</div>
+  </div>
+</section>
+
+<!-- ============ CH10 OUTRO ============ -->
+<section class="ch" id="ch9">
+  <div class="imgbg" id="o-bg" style="background-image:url('assets/poster-final.png');filter:brightness(.8)"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,12,.2) 0%,rgba(8,9,12,.86) 62%)"></div>
+  <div id="o-card" style="position:absolute;left:0;right:0;top:430px;text-align:center;opacity:0">
+    <div class="chrome" style="font-family:'Cinzel';font-weight:900;font-size:110px;letter-spacing:.06em;filter:drop-shadow(0 8px 30px rgba(185,166,232,.4))">CREATED BY AMHFX</div>
+    <div class="lab" style="font-size:26px;margin-top:16px;color:var(--silver)">ART DIRECTION · DIGITAL EXPERIMENTS · VISUAL SYSTEMS</div>
+    <div style="margin-top:30px"><span class="pill lab" id="o-sub" style="font-size:28px;color:var(--pearl);border-color:rgba(185,166,232,.7);opacity:0">SUBSCRIBE FOR MORE</span></div>
+  </div>
+</section>
+
+</div><!-- /cam -->
+
+<div id="slate"><img src="assets/mascot/tangan/maskot-08-pegang-papan-transparan.png" alt=""><div class="board" id="slate-txt"></div></div>
+<div id="mascR"><img id="mascR-img" src="assets/mascot/chibi/maskot-04-menyapa-transparan.png" alt=""></div>
+<div id="tikcap"></div>
+<div id="wm">AMHFX</div>
+<div id="vig"></div>
+<div class="lb t"></div><div class="lb b"></div>
+<div id="prog"></div>
+</div>
+<script src="audio/caps3.js"></script>
+<script>
+const W=1920,H=1080,DURATION=720.58;
+const ST=[1.5,50.38,142.94,212.14,296.7,402.66,472.58,540.82,617.34,686.86];
+const EN=ST.map((s,i)=>i<9?ST[i+1]:DURATION);
+const SLATE=["","BAB 1 · MEMBEDAH REFERENSI","BAB 2 · SISTEM VISUAL","BAB 3 · KOMPOSISI","BAB 4 · PROMPT ENGINEERING","BAB 5 · MATERIAL TEST","BAB 6 · LIGHTING & GRADING","BAB 7 · TIPOGRAFI","BAB 8 · BREAKDOWN LAYER",""];
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+const n01=(t,a,b)=>cl((t-a)/(b-a),0,1);
+const nd=(t,a,d)=>cl((t-a)/d,0,1);
+const eo=x=>1-Math.pow(1-x,3);
+const sm=x=>x*x*(3-2*x);
+const spr=x=>{x=cl(x,0,1);return 1-Math.exp(-6.5*x)*Math.cos(8.5*x)};
+const rv=(t,t0,d)=>eo(n01(t,t0,t0+d));
+const pp=(t,t0,d)=>spr(n01(t,t0,t0+d));
+const $=id=>document.getElementById(id);
+const CH=[...Array(10)].map((_,i)=>$("ch"+i));
+// kamera per bab: [progres, x, y, scale]
+const CAMS=[
+ [[0,0,0,1.18],[.5,0,0,1.06],[1,0,0,1.0]],
+ [[0,0,0,1.0],[1,-30,-16,1.12]],
+ [[0,0,0,1.05],[1,20,-10,1.0]],
+ [[0,0,0,1.08],[1,0,10,1.0]],
+ [[0,0,0,1.0],[1,-16,0,1.06]],
+ [[0,0,0,1.04],[1,10,0,1.0]],
+ [[0,0,0,1.0],[1,0,-12,1.08]],
+ [[0,0,0,1.06],[1,0,0,1.0]],
+ [[0,0,0,1.0],[1,0,0,1.05]],
+ [[0,0,0,1.05],[1,0,-14,1.16]]
+];
+function camAt(i,p){
+  const k=CAMS[i];let a=k[0],b=k[k.length-1];
+  for(let j=0;j<k.length-1;j++){if(p>=k[j][0]&&p<=k[j+1][0]){a=k[j];b=k[j+1];break}}
+  const q=sm(n01(p,a[0],b[0]===a[0]?a[0]+1e-6:b[0]));
+  return [a[1]+(b[1]-a[1])*q, a[2]+(b[2]-a[2])*q, a[3]+(b[3]-a[3])*q];
+}
+function setTr(el,x,y,s,r=0){el.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)`}
+function box(el,v){el.style.opacity=v}
+// caption
+const capEl=$("tikcap");
+function caps(t){
+  let act=null;
+  for(let i=0;i<CAPS.length;i++){const c=CAPS[i];if(t>=c[0]&&t<=c[1]){act=c;break}}
+  if(!act){capEl.style.opacity=0;return}
+  const w=act[2].split(" ");
+  capEl.innerHTML=w.map((x,i)=>i===act[3]?"<b>"+x+"</b>":x).join(" ");
+  const q=pp(t,act[0],0.28);
+  capEl.style.opacity=Math.min(1,q*1.2);
+  capEl.style.transform=`translateX(-50%) scale(${0.92+0.08*q})`;
+}
+// slate maskot papan
+const slate=$("slate"),slateTxt=$("slate-txt");
+function slateAt(t,i,L){
+  if(i<1||i>8){slate.style.opacity=0;return}
+  const a=0.25,b=4.6;
+  if(L<a||L>b+0.4){slate.style.opacity=0;return}
+  const inq=pp(L,a,0.4),outq=eo(n01(L,b,b+0.4));
+  slate.style.opacity=inq*(1-outq);
+  const bob=Math.sin(t*2.2)*5;
+  slate.style.transform=`translate(${(1-inq)*-140-outq*60}px,${bob}px) rotate(${(1-inq)*-4}deg)`;
+  slateTxt.textContent=SLATE[i];
+}
+// maskot kanan
+const mascR=$("mascR"),mascImg=$("mascR-img");
+const MASC={sapa:"assets/mascot/chibi/maskot-04-menyapa-transparan.png",tunjuk:"assets/mascot/chibi/maskot-02-explain-tunjuk-transparan.png",papan:"assets/mascot/tangan/maskot-08-pegang-papan-transparan.png",jempol:"assets/mascot/tangan/maskot-05-jempol-transparan.png",pikir:"assets/mascot/tangan/maskot-09-berpikir-transparan.png",kamera:"assets/mascot/tangan/maskot-07-tunjuk-kamera-transparan.png"};
+let mascCur="";
+function mascAt(t,i,L){
+  let src=null,op=0,x=0,sc=1,rot=0;
+  const bob=Math.sin(t*2.0)*6, wr=Math.sin(t*3.1)*2.2;
+  if(i===0&&L>22){src=MASC.sapa;op=pp(L,22,0.6);x=(1-pp(L,22,0.6))*220;rot=wr}
+  if(i===4&&L>52&&L<97){src=MASC.tunjuk;op=Math.min(pp(L,52,0.5),1-eo(nd(L,96,0.5)));rot=-wr}
+  if(i===5){ if(L<40){src=MASC.pikir;op=Math.min(pp(L,5,0.5),1-eo(nd(L,38.5,0.5)))} else {src=MASC.jempol;op=pp(L,40,0.5)*(1-eo(nd(L,64,0.5)))} rot=wr*0.6 }
+  if(i===6&&L>8&&L<44){src=MASC.kamera;op=Math.min(pp(L,8,0.5),1-eo(nd(L,43,0.5)));rot=-wr*0.5}
+  if(i===9&&L>9){src=MASC.jempol;op=pp(L,9,0.6);x=(1-pp(L,9,0.6))*200;rot=wr*0.5}
+  if(!src){mascR.style.opacity=0;return}
+  if(src!==mascCur){mascImg.src=src;mascCur=src}
+  mascR.style.opacity=op;
+  mascR.style.transform=`translate(${x}px,${bob}px) scale(${sc}) rotate(${rot}deg)`;
+}
+function chipPop(el,t,t0){const q=pp(t,t0,0.45);el.style.opacity=q>0?1:0;el.style.transform=`translateY(${(1-q)*26}px) scale(${0.9+0.1*q})`}
+function seq(el,t,t0,d){const q=rv(t,t0,d);el.style.opacity=q;el.style.transform=`translateY(${(1-q)*22}px)`}
+function sceneTick(t,i,L){
+  switch(i){
+   case 0:{
+     box($("h-sweep"),L>0.6&&L<2.4?0.9:0);$("h-sweep").style.left=(-300+eo(nd(L,0.6,1.8))*2500)+"px";
+     const c1=$("h-c1"),c2=$("h-c2"),c3=$("h-c3");
+     [[c1,2.6],[c2,5.2],[c3,7.8]].forEach(([el,t0])=>{const q=pp(L,t0,0.5),o=Math.min(q,1-eo(nd(L,t0+2.1,0.4)));el.style.opacity=o;el.style.transform=`scale(${0.86+0.14*q})`});
+     const r1=$("h-r1"),r2=$("h-r2");
+     const q1=pp(L,10.6,0.4),o1=Math.min(q1,1-eo(nd(L,12.1,0.35)));r1.style.opacity=o1;
+     const q2=pp(L,12.5,0.4),o2=Math.min(q2,1-eo(nd(L,14.0,0.35)));r2.style.opacity=o2;
+     const tq=rv(L,15.5,0.8),to=1-eo(nd(L,38,1.2));
+     const ti=$("h-title");ti.style.opacity=tq*to;ti.style.transform=`translateY(${(1-tq)*40}px) scale(${0.96+0.04*spr(n01(L,15.5,0.9))})`;
+     break}
+   case 1:{
+     const wq=eo(nd(L,44,1.4));
+     $("r1-bg").style.opacity=1-wq;$("r2-bg").style.opacity=wq;
+     const z1=1.0+0.12*sm(nd(L,4,40)),z2=1.12-0.1*sm(nd(L,45.5,32));
+     $("r1-bg").style.transform=`scale(${z1}) translate(${-14*sm(nd(L,4,40))}px,${-8*sm(nd(L,4,40))}px)`;
+     $("r2-bg").style.transform=`scale(${z2}) translate(${10*sm(nd(L,45.5,32))}px,0px)`;
+     $("r-wipe").style.opacity=(L>44&&L<45.6)?1:0;$("r-wipe").style.left=(eo(nd(L,44,1.4))*1920)+"px";
+     [["r1-h1",8,8],["r1-h2",16,8],["r1-h3",24,8],["r1-h4",32,8],["r2-h1",48,8],["r2-h2",56,8],["r2-h3",64,8]].forEach(([id,t0,d])=>{const el=$(id);const o=Math.min(rv(L,t0,0.5),1-eo(nd(L,t0+d,0.5)));el.style.opacity=o});
+     const duo=$("r-duo");const dq=rv(L,78,0.8);duo.style.opacity=dq;duo.style.transform=`scale(${0.94+0.06*dq})`;
+     [80.5,82.6,84.7,86.8,88.9].forEach((t0,k)=>{const el=$("r-f"+(k+1));const o=Math.min(pp(L,t0,0.4),1-eo(nd(L,92,0.4)));el.style.opacity=o;el.style.transform=`translateY(${(1-pp(L,t0,0.4))*24}px)`});
+     break}
+   case 2:{
+     seq($("s-head"),L,1.0,0.6);
+     [["s-m1",4],["s-m2",6],["s-m3",8],["s-m4",10],["s-m5",12],["s-m6",14]].forEach(([id,t0])=>{const el=$(id);const q=pp(L,t0,0.5);el.style.opacity=q*(1-eo(nd(L,30,0.8)));el.style.transform=`scale(${0.9+0.1*q})`});
+     const pal=$("s-pal");pal.style.opacity=rv(L,30,0.6);
+     [...pal.querySelectorAll(".sw")].forEach((el,k)=>{const q=pp(L,32+k*3.4,0.5);el.style.opacity=q;el.style.transform=`translateX(${(1-q)*40}px)`});
+     const wire=$("s-wire");const wq=rv(L,54,0.9);wire.style.opacity=wq;wire.style.transform=`scale(${0.94+0.06*wq})`;
+     break}
+   case 3:{
+     const clu=$("c-clutter");
+     clu.style.opacity=Math.min(rv(L,4,0.7),1-eo(nd(L,16,1.4)));
+     clu.style.transform=`scale(${1+0.03*Math.sin(L*2.0)})`;
+     [["c-b1",22,10],["c-b2",32,12],["c-b3",44,12],["c-b4",56,10]].forEach(([id,t0,d])=>{const el=$(id);el.style.opacity=Math.min(rv(L,t0,0.5),1-eo(nd(L,t0+d,0.6)))});
+     const fn=$("c-fn");fn.style.opacity=rv(L,66,0.6);
+     [...fn.querySelectorAll(".fn")].forEach((el,k)=>{const q=pp(L,66.5+k*2.2,0.45);el.style.opacity=q;el.style.transform=`translateX(${(1-q)*36}px)`});
+     seq($("c-chain"),L,72,0.8);
+     break}
+   case 4:{
+     seq($("p-head"),L,1.0,0.6);
+     [8,16,24,32,40,48].forEach((t0,k)=>{const el=$("p-c"+(k+1));const q=pp(L,t0,0.5);el.style.opacity=q;el.style.transform=`translateY(${(1-q)*26}px) scale(${0.92+0.08*q})`});
+     const pan=$("p-panel");pan.style.opacity=rv(L,52,0.7);pan.style.transform=`translateY(${(1-rv(L,52,0.7))*30}px)`;
+     const pps=[...pan.querySelectorAll(".pp")];
+     pps.forEach((el,k)=>{el.style.opacity=rv(L,54+k*7,0.6)});
+     const swp=$("p-sweep");const kk=cl(Math.floor((L-54)/7),0,5);
+     swp.style.opacity=(L>53&&L<96)?0.9:0;swp.style.top=(56+kk*76)+"px";
+     seq($("p-note"),L,96,0.7);
+     break}
+   case 5:{
+     seq($("m-head"),L,1.0,0.6);
+     [6,10,14].forEach((t0,k)=>{const el=$("m-k"+(k+1));const q=pp(L,t0,0.55);el.style.opacity=q;el.style.transform=`scale(${0.9+0.1*q})`});
+     [["m-x1",24],["m-x2",32],["m-ok",40]].forEach(([id,t0])=>{const el=$(id);const q=pp(L,t0,0.4);el.style.opacity=q>0?1:0;el.style.transform=`rotate(-12deg) scale(${1.7-0.7*q})`});
+     [44,47,50,53,56].forEach((t0,k)=>chipPop($("m-w"+(k+1)),L,t0));
+     const gl=$("m-glint");gl.style.opacity=(L>50&&L<64)?1:0;
+     gl.firstElementChild.style.transform=`rotate(18deg) translateX(${eo(nd(L,50,12))*900}px)`;
+     break}
+   case 6:{
+     const wq=sm(n01(L,12,28));
+     $("g-after").style.clipPath=`inset(0 ${(1-wq)*100}% 0 0)`;
+     const ln=$("g-line");ln.style.left=(wq*1920)+"px";ln.style.opacity=(L>11&&L<43)?1:0;
+     $("g-lb").style.opacity=rv(L,6,0.5)*(1-eo(nd(L,40,1)));
+     $("g-la").style.opacity=rv(L,40,0.6);
+     [44,48,52,56].forEach((t0,k)=>chipPop($("g-c"+(k+1)),L,t0));
+     break}
+   case 7:{
+     const hq=rv(L,4,0.8);$("t-hero").style.opacity=hq;$("t-hero").style.transform=`scale(${0.92+0.08*spr(n01(L,4,0.9))})`;
+     const tg=$("t-glint");tg.style.opacity=(L>8&&L<20)?1:0;
+     tg.firstElementChild.style.transform=`rotate(14deg) translateX(${eo(nd(L,8,10))*2200}px)`;
+     seq($("t-sup"),L,20,0.7);
+     const ch=$("t-chaos");ch.style.opacity=rv(L,30,0.6);
+     [...ch.querySelectorAll(".tc")].forEach((el,k)=>{el.style.opacity=1-eo(nd(L,40+k*0.7,0.5))});
+     const tr=$("t-track");tr.style.opacity=rv(L,50,0.7);
+     tr.firstElementChild.style.letterSpacing=(0.12+0.4*(1-sm(nd(L,52,6))))+"em";
+     [30,44,58].forEach((t0,k)=>chipPop($("t-c"+(k+1)),L,t0));
+     break}
+   case 8:{
+     const idx=cl(Math.floor((L-8)/8.2),0,6);
+     const mods=L>8?(L-8)%8.2:0;
+     const bls=[...$("b-list").querySelectorAll(".bl")];
+     bls.forEach((el,k)=>{const on=k===idx&&L>8;el.style.opacity=on?1:0.35;el.style.borderLeftColor=on?"var(--lav)":"var(--gun)";el.style.color=on?"var(--pearl)":"var(--silver)";el.style.transform=on?"translateX(10px)":"none"});
+     const bi=$("b-img"),bt=$("b-tint"),bv=$("b-view");
+     const popq=1-eo(n01(mods,0,0.45));
+     let pos="50% 50%",size="cover",filt="none",tint=0;
+     if(idx===0){filt="brightness(.4) blur(5px)";size="105%"}
+     if(idx===1){pos="50% 38%";size="210%"}
+     if(idx===2){pos="50% 8%";size="200%"}
+     if(idx===3){pos="12% 55%";size="230%"}
+     if(idx===4){pos="50% 88%";size="220%"}
+     if(idx===5){tint=0.22}
+     if(idx===6){pos="50% 12%";size="240%";filt="contrast(1.12)"}
+     bi.style.backgroundPosition=pos;bi.style.backgroundSize=size;bi.style.filter=filt;
+     bt.style.background=`rgba(185,166,232,${(tint*(0.6+0.4*Math.sin(L*3))).toFixed(3)})`;
+     bv.style.transform=`scale(${1+0.03*popq})`;
+     seq($("b-note"),L,56,0.8);
+     break}
+   case 9:{
+     seq($("o-card"),L,6,0.9);
+     const sq=pp(L,12,0.5);$("o-sub").style.opacity=sq;$("o-sub").style.transform=`scale(${0.9+0.1*sq})`;
+     const fd=eo(nd(L,30,3.2));CH[9].style.filter=`brightness(${1-fd})`;
+     break}
+  }
+}
+function screenTick(t){
+  let i=0;for(let k=0;k<10;k++)if(t>=ST[k])i=k;
+  const L=t-ST[i], len=EN[i]-ST[i], p=cl(L/len,0,1);
+  for(let k=0;k<10;k++){
+    const el=CH[k];
+    if(k!==i){el.style.opacity=0;continue}
+    const inq=eo(n01(t,k===0?0:ST[k],(k===0?0:ST[k])+0.45));
+    const outq=eo(n01(t,EN[k]-0.05,EN[k]+0.35));
+    el.style.opacity=inq*(1-outq);
+    const x=(1-inq)*130-outq*150;
+    el.style.transform=`translateX(${x}px)`;
+    el.style.filter=`blur(${(1-inq)*12+outq*10}px)`;
+  }
+  const [cx,cy,cs]=camAt(i,p);
+  $("cam").style.transform=`translate(${cx}px,${cy}px) scale(${cs})`;
+  sceneTick(t,i,L);
+  slateAt(t,i,L);
+  mascAt(t,i,L);
+  caps(t);
+  $("prog").style.width=(t/DURATION*100)+"%";
+}
+window.OPENER={W,H,DURATION,ready:false,seek(t){screenTick(t)}};
+for(let k=1;k<10;k++){const d=document.createElement("div");d.className="ptick";d.style.left=(ST[k]/DURATION*100)+"%";document.getElementById("stage").appendChild(d)}
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;screenTick(0)});
+</script>
+</body>
+</html>
