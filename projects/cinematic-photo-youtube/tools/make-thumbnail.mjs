@@ -1,0 +1,10 @@
+import puppeteer from "puppeteer";
+const b = await puppeteer.launch({ headless: "new", args: ["--allow-file-access-from-files","--no-sandbox","--disable-gpu"] });
+const p = await b.newPage();
+await p.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+await p.goto("file:///home/user/AMHFXMOTIONRENDER/projects/cinematic-photo-youtube/thumbnail.html", { waitUntil: "networkidle0" });
+await p.evaluate(() => document.fonts?.ready);
+await new Promise(r => setTimeout(r, 400));
+await p.screenshot({ path: "projects/cinematic-photo-youtube/thumbnail.png" });
+await b.close();
+console.log("THUMB OK");

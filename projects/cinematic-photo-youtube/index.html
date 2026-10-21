@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resep Foto Cinematic dari Text Prompt — YouTube Long Form</title>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Anton';src:url('assets/fonts/anton-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-500-normal.woff2') format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:'Grotesk';src:url('assets/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:block}
+:root{
+  --ink:#f4f1ea; --dim:#a7b0b6; --bg:#0b0e11; --amber:#f5a623; --orange:#ff6b35;
+  --teal:#39c2c9; --mag:#e0489a; --red:#e5484d; --panel:#141a20; --line:rgba(244,241,234,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:'Grotesk',sans-serif;color:var(--ink)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:var(--bg)}
+#camrot{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#camera{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;will-change:transform}
+#world{position:absolute;left:0;top:0;width:17600px;height:1350px;transform-origin:0 0}
+
+/* ---------- ZONE A : hero photo ---------- */
+.zoneA{position:absolute;left:0;top:0;width:2400px;height:1350px;overflow:hidden;background:#05070a}
+.zoneA .ph{position:absolute;inset:0;background:url('assets/hero-crosswalk.jpg') center/cover no-repeat;filter:saturate(.86) contrast(1.04)}
+.zoneA .expose{position:absolute;inset:0;background:#000;opacity:1}
+.zoneA .warm{position:absolute;inset:0;background:radial-gradient(120% 90% at 18% 6%,rgba(255,176,84,.30),rgba(255,176,84,0) 55%);mix-blend-mode:screen}
+.zoneA .cool{position:absolute;inset:0;background:linear-gradient(200deg,rgba(20,32,44,0) 40%,rgba(16,28,40,.42) 100%)}
+
+/* hook type (world-space, zone A) */
+.hook{position:absolute;left:150px;top:180px;width:1500px}
+.hook .w{display:block;font-family:'Anton';font-size:132px;line-height:.98;letter-spacing:.005em;text-transform:uppercase;color:var(--ink);text-shadow:0 8px 40px rgba(0,0,0,.65);opacity:0;will-change:transform,opacity}
+.hook .w.hot{color:var(--amber)}
+.hook .slash{width:0;height:14px;background:linear-gradient(90deg,var(--orange),var(--amber));margin:34px 0 30px;box-shadow:0 0 34px rgba(245,166,35,.55)}
+.lowerthird{position:absolute;left:150px;top:780px;width:1250px;opacity:0;will-change:transform,opacity}
+.lowerthird .bar{width:96px;height:8px;background:var(--orange);margin-bottom:22px}
+.lowerthird h2{font-family:'Anton';font-size:88px;line-height:1;text-transform:uppercase;letter-spacing:.01em;text-shadow:0 6px 34px rgba(0,0,0,.7)}
+.lowerthird p{margin-top:16px;font-size:30px;font-weight:500;color:var(--dim);letter-spacing:.06em}
+.chiprow{position:absolute;left:150px;top:1060px;display:flex;gap:18px}
+.chip{padding:14px 24px;border:1.5px solid var(--line);border-radius:999px;background:rgba(10,14,18,.62);backdrop-filter:blur(2px);font-size:26px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--ink);opacity:0;will-change:transform,opacity}
+.chip b{color:var(--amber);margin-right:10px}
+
+/* key cards + diagrams (zone A) */
+.keycard{position:absolute;left:1420px;top:150px;width:700px;padding:34px 38px;background:rgba(11,14,17,.82);border-left:10px solid var(--amber);box-shadow:0 40px 90px rgba(0,0,0,.55);opacity:0;will-change:transform,opacity}
+.keycard .no{font-family:'Anton';font-size:64px;color:var(--amber);line-height:1}
+.keycard h3{font-family:'Anton';font-size:56px;line-height:1.02;text-transform:uppercase;margin:10px 0 12px}
+.keycard p{font-size:29px;line-height:1.35;color:var(--dim);font-weight:500}
+.cap{position:absolute;left:1420px;top:700px;width:690px;font-family:'Anton';font-size:44px;line-height:1.05;text-transform:uppercase;color:var(--ink);text-shadow:0 4px 26px rgba(0,0,0,.8);opacity:0;will-change:transform,opacity}
+.cap em{font-style:normal;color:var(--amber)}
+#angleSvg{position:absolute;left:260px;top:330px;width:1100px;height:760px;opacity:0}
+#raySvg{position:absolute;left:120px;top:60px;width:1200px;height:820px;opacity:0}
+#negSvg{position:absolute;left:200px;top:170px;width:2000px;height:1010px;opacity:0}
+.recap{position:absolute;left:1420px;top:330px;width:700px;display:flex;flex-direction:column;gap:20px}
+.recap .r{padding:20px 26px;background:rgba(11,14,17,.78);border:1.5px solid var(--line);font-size:30px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:0;will-change:transform,opacity}
+.recap .r b{color:var(--amber);margin-right:14px;font-family:'Anton';font-size:34px}
+
+/* ---------- ZONE B : anatomy board ---------- */
+.zoneB{position:absolute;left:2600px;top:0;width:2400px;height:1350px;background:
+  radial-gradient(90% 70% at 30% 20%,#1a222b 0%,#12181e 45%,#0b0e11 100%);overflow:hidden}
+.zoneB .mesh{position:absolute;inset:-60px;opacity:.10;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:96px 96px}
+.bTitle{position:absolute;left:140px;top:96px;opacity:0;will-change:transform,opacity}
+.bTitle small{display:block;font-size:26px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.bTitle h2{font-family:'Anton';font-size:96px;line-height:.98;text-transform:uppercase}
+.lcard{position:absolute;left:140px;width:880px;padding:28px 32px;background:var(--panel);border:1.5px solid var(--line);border-top:6px solid var(--amber);box-shadow:0 34px 80px rgba(0,0,0,.5);opacity:0;will-change:transform,opacity}
+.lcard .tag{font-size:24px;font-weight:700;letter-spacing:.26em;color:var(--amber);text-transform:uppercase}
+.lcard h3{font-family:'Anton';font-size:52px;text-transform:uppercase;margin:8px 0 6px;line-height:1}
+.lcard p{font-size:26px;color:var(--dim);font-weight:500;line-height:1.3}
+.pline{position:absolute;left:1120px;width:1140px;min-height:120px;padding:26px 30px;background:rgba(5,8,11,.72);border:1.5px dashed rgba(244,241,234,.28);font-size:31px;line-height:1.42;font-weight:500;color:var(--ink);opacity:0;white-space:pre-wrap}
+.pline .caret{display:inline-block;width:14px;height:34px;background:var(--amber);vertical-align:-4px;margin-left:4px}
+.pline .lbl{display:block;font-size:22px;letter-spacing:.24em;font-weight:700;color:var(--teal);text-transform:uppercase;margin-bottom:10px}
+#tplCard{position:absolute;left:760px;top:430px;width:1080px;padding:44px 48px;background:linear-gradient(150deg,#1d2530,#12181e);border:2px solid var(--amber);box-shadow:0 0 90px rgba(245,166,35,.28),0 50px 110px rgba(0,0,0,.6);opacity:0;will-change:transform,opacity}
+#tplCard h3{font-family:'Anton';font-size:74px;text-transform:uppercase;line-height:1}
+#tplCard .row{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+#tplCard .row span{padding:12px 20px;border:1.5px solid var(--line);border-radius:999px;font-size:25px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#tplCard .row span i{font-style:normal;color:var(--amber);margin-right:10px}
+
+/* ---------- ZONE B2 : full prompt sheet ---------- */
+.zoneS{position:absolute;left:5200px;top:0;width:2200px;height:1350px;background:radial-gradient(80% 60% at 60% 30%,#161d24 0%,#0d1116 60%,#090c0f 100%);overflow:hidden}
+.sheet{position:absolute;left:150px;top:110px;width:1900px;padding:56px 60px;background:rgba(8,11,14,.86);border:1.5px solid var(--line);box-shadow:0 60px 140px rgba(0,0,0,.55)}
+.sheet h4{font-size:26px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:26px}
+.sheet .col{font-size:25.5px;line-height:1.5;font-weight:500;color:#cfd6da;columns:2;column-gap:56px;text-align:justify}
+.sheet .z{position:relative;display:inline}
+.sw{position:absolute;left:0;top:0;height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;pointer-events:none}
+.sw1{background:rgba(245,166,35,.30)}.sw2{background:rgba(57,194,201,.28)}.sw3{background:rgba(255,107,53,.30)}.sw4{background:rgba(224,72,154,.26)}
+.sheetNote{position:absolute;left:520px;top:960px;width:1900px;display:flex;align-items:center;gap:26px;opacity:0}
+.sheetNote .pill{padding:16px 28px;background:var(--orange);color:#140b06;font-family:'Anton';font-size:40px;text-transform:uppercase;box-shadow:0 18px 50px rgba(255,107,53,.4)}
+.sheetNote p{font-size:32px;font-weight:700;letter-spacing:.04em}
+
+/* ---------- ZONE C : gallery ---------- */
+.zoneC{position:absolute;left:7600px;top:0;width:5200px;height:1350px;background:radial-gradient(70% 80% at 50% 40%,#141a21 0%,#0c0f13 55%,#080a0d 100%);overflow:hidden}
+.gTitle{position:absolute;left:120px;top:110px;opacity:0;will-change:transform,opacity}
+.gTitle small{display:block;font-size:26px;font-weight:700;letter-spacing:.34em;color:var(--teal);text-transform:uppercase;margin-bottom:12px}
+.gTitle h2{font-family:'Anton';font-size:88px;text-transform:uppercase;line-height:.98}
+.gcard{position:absolute;top:320px;width:1440px;height:740px;background:#000;box-shadow:0 70px 150px rgba(0,0,0,.65);opacity:0;will-change:transform,opacity}
+.gcard .im{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(.9) contrast(1.05)}
+.gcard .frame{position:absolute;inset:0;border:2px solid rgba(244,241,234,.22)}
+.gcard .idx{position:absolute;left:-4px;top:-4px;background:var(--amber);color:#141008;font-family:'Anton';font-size:44px;padding:10px 22px}
+.gcap{position:absolute;width:1440px;top:210px;opacity:0;will-change:transform,opacity}
+.gcap h3{font-family:'Anton';font-size:64px;text-transform:uppercase;line-height:1;text-shadow:0 6px 30px rgba(0,0,0,.7)}
+.gcap h3 em{font-style:normal;color:var(--amber)}
+.gdiff{position:absolute;width:1440px;top:1080px;display:flex;gap:16px}
+.gdiff span{padding:13px 22px;background:rgba(10,14,18,.8);border:1.5px solid var(--line);border-radius:999px;font-size:25px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:0;will-change:transform,opacity}
+.gdiff span b{color:var(--teal);margin-right:10px}
+.gWide{position:absolute;left:7720px;top:150px;width:4900px;text-align:center;opacity:0}
+.gWide h3{font-family:'Anton';font-size:92px;text-transform:uppercase}
+.gWide h3 em{font-style:normal;color:var(--amber)}
+
+/* ---------- ZONE D : workflow ---------- */
+.zoneD{position:absolute;left:13000px;top:0;width:2500px;height:1350px;background:radial-gradient(85% 70% at 40% 25%,#18202a 0%,#10161c 50%,#0a0d10 100%);overflow:hidden}
+.wTitle{position:absolute;left:140px;top:96px;opacity:0;will-change:transform,opacity}
+.wTitle small{display:block;font-size:26px;font-weight:700;letter-spacing:.34em;color:var(--orange);text-transform:uppercase;margin-bottom:12px}
+.wTitle h2{font-family:'Anton';font-size:92px;text-transform:uppercase;line-height:.98}
+.scard{position:absolute;left:140px;width:1900px;padding:34px 40px;background:var(--panel);border:1.5px solid var(--line);border-left:12px solid var(--teal);box-shadow:0 40px 90px rgba(0,0,0,.5);display:flex;align-items:center;gap:34px;opacity:0;will-change:transform,opacity}
+.scard .n{font-family:'Anton';font-size:88px;color:var(--teal);line-height:1;min-width:96px}
+.scard h3{font-family:'Anton';font-size:52px;text-transform:uppercase;line-height:1.02}
+.scard p{font-size:27px;color:var(--dim);font-weight:500;margin-top:8px;line-height:1.3}
+.warn{position:absolute;left:140px;top:980px;width:1900px;padding:30px 36px;background:rgba(229,72,77,.10);border:2px solid rgba(229,72,77,.55);opacity:0;will-change:transform,opacity}
+.warn h4{font-family:'Anton';font-size:44px;color:var(--red);text-transform:uppercase;margin-bottom:14px}
+.warn .items{display:flex;gap:44px}
+.warn .it{position:relative;font-size:30px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.warn .it .strike{position:absolute;left:0;top:52%;height:6px;width:100%;background:var(--red);transform:scaleX(0);transform-origin:0 50%}
+
+/* ---------- ZONE E : endcard ---------- */
+.zoneE{position:absolute;left:15700px;top:0;width:1900px;height:1350px;background:radial-gradient(70% 60% at 50% 42%,#171e26 0%,#0d1116 55%,#07090c 100%);overflow:hidden}
+.pola{position:absolute;left:700px;top:250px;width:520px;height:330px;background:url('assets/hero-crosswalk.jpg') center/cover;padding:14px 14px 56px;background-clip:content-box;background-color:#f4f1ea;box-shadow:0 60px 130px rgba(0,0,0,.7);opacity:0;will-change:transform,opacity}
+.mini{position:absolute;width:300px;height:190px;background-size:cover;background-position:center;border:6px solid #f4f1ea;box-shadow:0 34px 80px rgba(0,0,0,.6);opacity:0;will-change:transform,opacity}
+.ctaRow{position:absolute;left:330px;top:700px;display:flex;gap:22px}
+.cta{padding:20px 32px;font-family:'Anton';font-size:44px;text-transform:uppercase;background:rgba(12,16,20,.85);border:2px solid var(--amber);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.5);opacity:0;will-change:transform,opacity}
+.cta.solid{background:var(--amber);color:#161006;border-color:var(--amber)}
+.subPill{position:absolute;left:330px;top:840px;display:flex;align-items:center;gap:20px;padding:18px 34px;border-radius:999px;background:var(--orange);color:#170a04;font-weight:700;font-size:32px;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 24px 70px rgba(255,107,53,.42);opacity:0;will-change:transform,opacity}
+.subPill .bell{width:38px;height:38px;border:4px solid #170a04;border-radius:50% 50% 6px 6px;position:relative}
+.endLine{position:absolute;left:330px;top:980px;font-size:30px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);opacity:0}
+
+/* ---------- screen-space HUD ---------- */
+#hud{position:absolute;inset:0;pointer-events:none}
+#chChip{position:absolute;left:64px;bottom:96px;display:flex;align-items:center;gap:16px;padding:14px 26px;background:rgba(8,11,14,.72);border:1.5px solid var(--line);border-radius:999px;font-size:26px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+#chChip .dot{width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 18px var(--amber)}
+#chChip .num{color:var(--amber);font-family:'Anton';font-size:30px;letter-spacing:.06em}
+#prog{position:absolute;left:0;bottom:0;height:8px;width:100%;background:rgba(255,255,255,.10)}
+#prog i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--orange),var(--amber));transform:scaleX(0);transform-origin:0 50%}
+#barTop,#barBot{position:absolute;left:0;width:100%;height:46px;background:#000}
+#barTop{top:0}#barBot{bottom:0}
+#vig{position:absolute;inset:0;background:radial-gradient(120% 95% at 50% 46%,rgba(0,0,0,0) 52%,rgba(0,0,0,.52) 100%)}
+#grain{position:absolute;left:-140px;top:-140px;width:2200px;height:1360px;opacity:.055;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='420' height='420' filter='url(%23n)'/></svg>");will-change:transform}
+#streak{position:absolute;inset:0;opacity:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 26px,rgba(255,255,255,.16) 26px 34px,rgba(255,255,255,0) 34px 74px);mix-blend-mode:screen;will-change:opacity,transform}
+#flash{position:absolute;inset:0;opacity:0;background:radial-gradient(60% 60% at 50% 50%,rgba(255,178,84,.9),rgba(255,107,53,.55) 60%,rgba(255,107,53,0) 100%);mix-blend-mode:screen;will-change:opacity}
+#fade{position:absolute;inset:0;background:#000;opacity:1}
+#debug{display:none;position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:9;padding:8px 12px;border-radius:8px;background:#000;color:#0f0;font:14px monospace}
+#debug.on{display:block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="camrot">
+    <div id="camera">
+      <div id="world">
+
+        <!-- ZONE A -->
+        <div class="zoneA">
+          <div class="ph"></div>
+          <div class="warm"></div>
+          <div class="cool"></div>
+          <div class="expose" id="expose"></div>
+          <svg id="angleSvg" viewBox="0 0 1100 760" fill="none">
+            <path id="arcPath" d="M 120 700 A 560 560 0 0 1 470 250" stroke="#f5a623" stroke-width="8" stroke-dasharray="900" stroke-dashoffset="900" stroke-linecap="round"/>
+            <line id="sight1" x1="120" y1="700" x2="980" y2="700" stroke="#f4f1ea" stroke-width="5" stroke-dasharray="18 14" opacity=".85"/>
+            <line id="sight2" x1="120" y1="700" x2="820" y2="180" stroke="#f5a623" stroke-width="6" stroke-dasharray="900" stroke-dashoffset="900"/>
+            <text x="560" y="470" fill="#f5a623" font-family="Anton" font-size="86">45–60°</text>
+            <text x="560" y="700" fill="#f4f1ea" font-family="Space Grotesk" font-weight="700" font-size="40" letter-spacing="4">HIGH ANGLE</text>
+          </svg>
+          <svg id="raySvg" viewBox="0 0 1200 820" fill="none">
+            <g id="rays" stroke="#ffb454" stroke-width="7" stroke-linecap="round" opacity=".9">
+              <line x1="90" y1="70" x2="520" y2="360"/><line x1="180" y1="40" x2="640" y2="330"/>
+              <line x1="40" y1="180" x2="470" y2="430"/><line x1="290" y1="30" x2="760" y2="310"/>
+            </g>
+            <circle id="sunDot" cx="120" cy="80" r="46" fill="#ffd28a" opacity=".95"/>
+            <text x="330" y="560" fill="#ffd28a" font-family="Anton" font-size="72">BACKLIGHT</text>
+            <text x="330" y="640" fill="#f4f1ea" font-family="Space Grotesk" font-weight="700" font-size="38" letter-spacing="3">BAYANGAN PANJANG • REFLEKSI BASAH</text>
+          </svg>
+          <svg id="negSvg" viewBox="0 0 2000 1010" fill="none">
+            <rect id="negBox" x="60" y="60" width="1880" height="890" stroke="#f4f1ea" stroke-width="5" stroke-dasharray="26 18" opacity=".8"/>
+            <rect id="negHole" x="820" y="330" width="360" height="300" stroke="#f5a623" stroke-width="8"/>
+            <text x="120" y="180" fill="#f4f1ea" font-family="Space Grotesk" font-weight="700" font-size="42" letter-spacing="6">RUANG NEGATIF ± 90% FRAME</text>
+            <text x="830" y="720" fill="#f5a623" font-family="Anton" font-size="56">SUBJEK KECIL</text>
+          </svg>
+          <div class="hook">
+            <span class="w" id="w1">Foto ini bukan</span>
+            <span class="w hot" id="w2">jepretan kamera film.</span>
+            <div class="slash" id="slash"></div>
+            <span class="w" id="w3" style="font-size:104px">Cuma 1 text prompt.</span>
+          </div>
+          <div class="lowerthird" id="lt">
+            <div class="bar"></div>
+            <h2>Resep Foto Cinematic AI</h2>
+            <p>BEDAH PROMPT • SUDUT KAMERA • CAHAYA • GRADE</p>
+          </div>
+          <div class="chiprow">
+            <div class="chip" id="c1"><b>01</b>Sudut Kamera</div>
+            <div class="chip" id="c2"><b>02</b>Cahaya</div>
+            <div class="chip" id="c3"><b>03</b>Template Prompt</div>
+          </div>
+          <div class="keycard" id="k1"><div class="no">01</div><h3>Sudut Kamera</h3><p>High angle 45–60° ke bawah. Zebra cross berubah jadi pola geometris.</p></div>
+          <div class="cap" id="kc1">GARIS JALAN = <em>KOMPOSISI</em></div>
+          <div class="keycard" id="k2"><div class="no">02</div><h3>Cahaya Backlight</h3><p>Matahari rendah setelah hujan: bayangan panjang, aspal basah, haze emas.</p></div>
+          <div class="cap" id="kc2">SATU ARAH CAHAYA = <em>DRAMA</em></div>
+          <div class="keycard" id="k3"><div class="no">03</div><h3>Ruang Negatif</h3><p>Subjek kecil di frame luas. Mata terkunci ke satu titik cerita.</p></div>
+          <div class="cap" id="kc3">SEPI = <em>MOOD</em></div>
+          <div class="recap">
+            <div class="r" id="r1"><b>01</b>SUDUT KAMERA TINGGI</div>
+            <div class="r" id="r2"><b>02</b>BACKLIGHT + ASPAL BASAH</div>
+            <div class="r" id="r3"><b>03</b>RUANG NEGATIF LUAS</div>
+          </div>
+        </div>
+
+        <!-- ZONE B -->
+        <div class="zoneB">
+          <div class="mesh"></div>
+          <div class="bTitle" id="bTitle"><small>Chapter 03</small><h2>AnatomI Prompt</h2></div>
+          <div class="lcard" id="L1" style="top:300px"><div class="tag">Lapis 1</div><h3>Subjek &amp; Aksi</h3><p>Siapa melakukan apa, dan seberapa kecil di frame.</p></div>
+          <div class="lcard" id="L2" style="top:300px"><div class="tag">Lapis 2</div><h3>Kamera</h3><p>Angle, lensa, dan pola geometris yang diinginkan.</p></div>
+          <div class="lcard" id="L3" style="top:300px"><div class="tag">Lapis 3</div><h3>Cahaya &amp; Atmosfer</h3><p>Sumber cahaya, cuaca, refleksi, flare, grain.</p></div>
+          <div class="lcard" id="L4" style="top:300px"><div class="tag">Lapis 4</div><h3>Mood &amp; Grade</h3><p>Warna, kontras, dan emosi akhir gambar.</p></div>
+          <div class="pline" id="P1" style="top:300px"><span class="lbl">prompt • lapis 1</span><span class="txt"></span><span class="caret"></span></div>
+          <div class="pline" id="P2" style="top:300px"><span class="lbl">prompt • lapis 2</span><span class="txt"></span><span class="caret"></span></div>
+          <div class="pline" id="P3" style="top:300px"><span class="lbl">prompt • lapis 3</span><span class="txt"></span><span class="caret"></span></div>
+          <div class="pline" id="P4" style="top:300px"><span class="lbl">prompt • lapis 4</span><span class="txt"></span><span class="caret"></span></div>
+          <div id="tplCard">
+            <h3>Template 4 Lapis</h3>
+            <div class="row">
+              <span><i>1</i>Subjek</span><span><i>2</i>Kamera</span><span><i>3</i>Cahaya</span><span><i>4</i>Mood</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ZONE S : full prompt -->
+        <div class="zoneS">
+          <div class="sheet" id="sheet">
+            <h4>Prompt utuh • foto pembuka</h4>
+            <div class="col">
+<span class="z" id="z1">Cinematic high-angle aerial view of a quiet urban intersection after light rain. A solitary person wearing a warm orange jacket walks across a broad white zebra crossing while holding a leash attached to a small dark-colored dog. Their bodies are small within the composition, emphasizing scale and urban isolation. </span><span class="z" id="z2">The camera is very high above street level, approximately 45–60 degree downward angle, creating a graphic geometric composition from the road markings and shadows. Wide cinematic composition, subtle anamorphic lens characteristics. </span><span class="z" id="z3">Low warm sunlight shines from the upper left, producing intense backlighting, soft golden haze, realistic lens flare, glowing highlights, and exceptionally long sharp shadows stretching diagonally across the crosswalk. Wet dark asphalt creates subtle glossy reflections; manhole cover, scattered small leaves, faded white stripes, double yellow markings. </span><span class="z" id="z4">Natural atmospheric depth, soft misty sunlight, subtle bloom, restrained contrast, slightly desaturated urban colors, warm highlights with cool neutral shadows, fine film grain, cinematic color grading, photorealistic texture, quiet contemplative mood. No visible facial emphasis, no logos, no readable advertisements, no clutter.</span>
+            </div>
+          </div>
+          <div class="sheetNote" id="sheetNote" style="left:420px">
+            <div class="pill">Jangan dihafal</div>
+            <p>Pahami polanya — lalu tulis ulang dengan kata-katamu sendiri.</p>
+          </div>
+        </div>
+
+        <!-- ZONE C : gallery -->
+        <div class="zoneC">
+          <div class="gTitle" id="gTitle" style="left:260px"><small>Chapter 05</small><h2>Template sama,<br>tiga dunia berbeda</h2></div>
+          <div class="gcap" id="gc1" style="left:160px"><h3>Contoh 01 — <em>Malam Neon</em></h3></div>
+          <div class="gcard" id="g1" style="left:160px"><div class="im" style="background-image:url('assets/example-neon-umbrella.jpg')"></div><div class="frame"></div><div class="idx">01</div></div>
+          <div class="gdiff" id="gd1" style="left:160px">
+            <span><b>SUBJEK</b>PAYUNG MERAH</span><span><b>CAHAYA</b>NEON TEAL-MAGENTA</span><span><b>ASPAL</b>TETAP BASAH</span>
+          </div>
+          <div class="gcap" id="gc2" style="left:1860px"><h3>Contoh 02 — <em>Jembatan Kabut</em></h3></div>
+          <div class="gcard" id="g2" style="left:1860px"><div class="im" style="background-image:url('assets/example-fog-cyclist.jpg')"></div><div class="frame"></div><div class="idx">02</div></div>
+          <div class="gdiff" id="gd2" style="left:1860px">
+            <span><b>LOKASI</b>JEMBATAN BAJA</span><span><b>CAHAYA</b>GOLDEN HOUR KABUT</span><span><b>SUBJEK</b>PESEPEDA TUNGGAL</span>
+          </div>
+          <div class="gcap" id="gc3" style="left:3560px"><h3>Contoh 03 — <em>Kaki Lima Malam</em></h3></div>
+          <div class="gcard" id="g3" style="left:3560px"><div class="im" style="background-image:url('assets/example-streetfood-steam.jpg')"></div><div class="frame"></div><div class="idx">03</div></div>
+          <div class="gdiff" id="gd3" style="left:3560px">
+            <span><b>SUBJEK</b>GEROBAK + STEAM</span><span><b>CAHAYA</b>1 BOHLAM BACKLIGHT</span><span><b>MOOD</b>KOTA JAM 11 MALAM</span>
+          </div>
+          <div class="gWide" id="gWide" style="left:120px;width:4960px"><h3>POLA SAMA • <em>DUNIA BEDA</em></h3></div>
+        </div>
+
+        <!-- ZONE D : workflow -->
+        <div class="zoneD">
+          <div class="wTitle" id="wTitle"><small>Chapter 06</small><h2>Workflow Eksekusi</h2></div>
+          <div class="scard" id="s1" style="top:300px"><div class="n">1</div><div><h3>Tulis Prompt 4 Lapis</h3><p>Urutan: subjek → kamera → cahaya → mood. Jangan acak.</p></div></div>
+          <div class="scard" id="s2" style="top:520px"><div class="n">2</div><div><h3>Generate Beberapa Variasi</h3><p>Pilih yang bayangan dan garisnya paling kuat, bukan yang paling ramai.</p></div></div>
+          <div class="scard" id="s3" style="top:740px"><div class="n">3</div><div><h3>Finishing</h3><p>Grain halus • saturasi turun sedikit • highlight hangat, shadow dingin.</p></div></div>
+          <div class="warn" id="warn">
+            <h4>Kesalahan paling umum</h4>
+            <div class="items">
+              <div class="it" id="e1">SUBJEK RAKSASA<div class="strike" id="e1s"></div></div>
+              <div class="it" id="e2">CAHAYA DATAR<div class="strike" id="e2s"></div></div>
+              <div class="it" id="e3">LOGO &amp; TEKS BOCOR<div class="strike" id="e3s"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ZONE E : endcard -->
+        <div class="zoneE">
+          <div class="pola" id="pola"></div>
+          <div class="mini" id="m1" style="left:330px;top:300px;background-image:url('assets/example-neon-umbrella.jpg')"></div>
+          <div class="mini" id="m2" style="left:1290px;top:260px;background-image:url('assets/example-fog-cyclist.jpg')"></div>
+          <div class="mini" id="m3" style="left:1330px;top:520px;background-image:url('assets/example-streetfood-steam.jpg')"></div>
+          <div class="ctaRow">
+            <div class="cta solid" id="cta1">Save video ini</div>
+            <div class="cta" id="cta2">Coba prompt-nya</div>
+            <div class="cta" id="cta3">Komen hasilmu</div>
+          </div>
+          <div class="subPill" id="subPill"><div class="bell"></div>Follow • bedah visual AI tiap minggu</div>
+          <div class="endLine" id="endLine">Sampai jumpa di video berikutnya</div>
+        </div>
+
+      </div><!-- /world -->
+    </div><!-- /camera -->
+  </div><!-- /camrot -->
+
+  <!-- screen space -->
+  <div id="hud">
+    <div id="chChip"><span class="dot"></span><span class="num" id="chNum">CH 01</span><span id="chName">HOOK</span></div>
+    <div id="barTop"></div><div id="barBot"></div>
+    <div id="vig"></div>
+    <div id="grain"></div>
+    <div id="streak"></div>
+    <div id="flash"></div>
+    <div id="prog"><i id="progFill"></i></div>
+    <div id="fade"></div>
+  </div>
+</div>
+<div id="debug">0.00</div>
+
+<script>
+const W=1920,H=1080,DURATION=225.0;
+const stage=document.querySelector('#stage');
+const q=new URLSearchParams(location.search);
+const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
+addEventListener('resize',fit);fit();
+
+/* ---------------- camera rig ---------------- */
+const cam={s:1.02,tx:960,ty:660,rot:0,shake:1.0};
+const camera=document.querySelector('#camera');
+const camrot=document.querySelector('#camrot');
+function applyCam(t){
+  const n=(Math.sin(t*6.1)*0.6+Math.sin(t*11.7+1.3)*0.4)*1.6*cam.shake;
+  const n2=(Math.cos(t*5.3+0.7)*0.6+Math.sin(t*9.1+2.1)*0.4)*1.2*cam.shake;
+  const s=cam.s, tx=cam.tx+n, ty=cam.ty+n2;
+  camera.style.transform=`translate(${960-s*tx}px,${540-s*ty}px) scale(${s})`;
+  camrot.style.transform=`rotate(${cam.rot}deg)`;
+}
+/* deterministic handheld + grain step + progress, driven off master time */
+const pulse={v:0};
+const grainEl=document.querySelector('#grain');
+const progFill=document.querySelector('#progFill');
+const streak=document.querySelector('#streak');
+function screenTick(t){
+  const gx=[0,-180,-60,-240,-120][Math.floor(t*6)%5];
+  const gy=[0,-90,-210,-30,-150][Math.floor(t*6+2)%5];
+  grainEl.style.transform=`translate(${gx}px,${gy}px)`;
+  progFill.style.transform=`scaleX(${Math.min(1,t/DURATION)})`;
+  streak.style.transform=`translateX(${(t*2600)%240-240}px) skewX(-14deg)`;
+}
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const tl=gsap.timeline({paused:true});
+const camTo=(t,d,o)=>tl.to(cam,Object.assign({duration:d,ease:'power2.inOut',onUpdate:()=>applyCam(tl.time())},o),t);
+const whip=(t,d,tx,ty,s,dir)=>{
+  tl.to(cam,{duration:d,tx,ty,s,ease:'power4.inOut',onUpdate:()=>applyCam(tl.time())},t);
+  tl.to(cam,{duration:d*0.5,rot:dir*1.6,ease:'power2.in',onUpdate:()=>applyCam(tl.time())},t);
+  tl.to(cam,{duration:d*0.5,rot:0,ease:'power2.out',onUpdate:()=>applyCam(tl.time())},t+d*0.5);
+  tl.fromTo(streak,{opacity:0},{opacity:0.85,duration:d*0.35,ease:'power2.in'},t);
+  tl.to(streak,{opacity:0,duration:d*0.65,ease:'power2.out'},t+d*0.35);
+  tl.to(cam,{duration:d,shake:0.2,ease:'none'},t);
+  tl.to(cam,{duration:0.5,shake:1,ease:'none'},t+d);
+};
+const slam=(el,t,d=0.7)=>tl.fromTo(el,{opacity:0,scale:1.16,rotation:-2.5,y:26},{opacity:1,scale:1,rotation:0,y:0,duration:d,ease:'back.out(2.1)'},t);
+const pop=(el,t,d=0.5)=>tl.fromTo(el,{opacity:0,scale:0.72,y:18},{opacity:1,scale:1,y:0,duration:d,ease:'back.out(2.6)'},t);
+const riseIn=(el,t,d=0.6)=>tl.fromTo(el,{opacity:0,y:60},{opacity:1,y:0,duration:d,ease:'power3.out'},t);
+const out=(el,t,d=0.45)=>tl.to(el,{opacity:0,y:-40,duration:d,ease:'power2.in'},t);
+const typeOn=(sel,text,t,d)=>{
+  const el=document.querySelector(sel+' .txt');const o={n:0};
+  tl.fromTo(document.querySelector(sel),{opacity:0},{opacity:1,duration:0.3},t-0.15);
+  tl.to(o,{n:text.length,duration:d,ease:'none',onUpdate:()=>{el.textContent=text.slice(0,Math.round(o.n));}},t);
+};
+const draw=(sel,t,d)=>tl.to(sel,{strokeDashoffset:0,duration:d,ease:'power2.inOut'},t);
+const sweep=(sel,t,d)=>tl.to(sel,{scaleX:1,duration:d,ease:'power2.inOut'},t);
+const chap=(num,name,t)=>tl.call(()=>{document.querySelector('#chNum').textContent=num;document.querySelector('#chName').textContent=name;},null,t);
+
+/* ================= CH1 • HOOK (0.0–16.6) ================= */
+chap('CH 01','HOOK',0.0);
+tl.to('#expose',{opacity:0,duration:1.6,ease:'power2.out'},0.15);
+tl.to('#fade',{opacity:0,duration:0.9,ease:'power2.out'},0.0);
+tl.fromTo('#w1',{opacity:0,y:70,scale:0.9},{opacity:1,y:0,scale:1,duration:0.6,ease:'back.out(1.8)'},1.1);
+tl.fromTo('#w2',{opacity:0,y:70,scale:0.9},{opacity:1,y:0,scale:1,duration:0.6,ease:'back.out(1.8)'},2.6);
+tl.fromTo('#slash',{width:0},{width:640,duration:0.55,ease:'power4.out'},4.4);
+tl.fromTo('#w3',{opacity:0,scale:1.25},{opacity:1,scale:1,duration:0.65,ease:'back.out(2.2)'},4.9);
+riseIn('#lt',7.6,0.7);
+pop('#c1',11.6);pop('#c2',12.1);pop('#c3',12.6);
+camTo(0.0,16.0,{s:1.12,tx:920,ty:640,ease:'power1.inOut'});
+out('#w1',14.6,0.4);out('#w2',14.6,0.4);out('#w3',14.6,0.4);out('#slash',14.6,0.4);
+out('#lt',15.4,0.4);out('#c1',15.4,0.35);out('#c2',15.4,0.35);out('#c3',15.4,0.35);
+
+/* ================= CH2 • 3 KUNCI (17.3–56.17) ================= */
+chap('CH 02','3 KUNCI FOTO MAHAL',16.6);
+whip(16.6,0.7,1210,600,1.05,+1);           /* reframe medium: diagram + kartu */
+slam('#k1',17.5);riseIn('#kc1',18.3,0.5);
+tl.fromTo('#angleSvg',{opacity:0},{opacity:1,duration:0.4},18.6);
+draw('#arcPath',18.8,1.1);draw('#sight2',19.2,1.0);
+tl.fromTo('#sight1',{opacity:0},{opacity:0.85,duration:0.5},18.6);
+camTo(20.8,2.6,{s:1.42,tx:780,ty:470,ease:'power2.inOut'});   /* push: diagram angle */
+camTo(23.6,1.4,{s:1.05,tx:1210,ty:600,ease:'power2.inOut'});
+out('#k1',25.2,0.4);out('#kc1',25.2,0.4);tl.to('#angleSvg',{opacity:0,duration:0.4},25.2);
+whip(25.6,0.7,1210,600,1.05,-1);           /* reframe medium key 2 */
+slam('#k2',26.5);riseIn('#kc2',27.3,0.5);
+tl.fromTo('#raySvg',{opacity:0},{opacity:1,duration:0.4},27.5);
+tl.fromTo('#rays line',{opacity:0,scaleX:0.2,transformOrigin:'0% 0%'},{opacity:0.9,scaleX:1,duration:0.9,stagger:0.12,ease:'power3.out'},27.7);
+tl.fromTo('#sunDot',{scale:0.3,transformOrigin:'50% 50%'},{scale:1,duration:0.7,ease:'back.out(2.4)'},27.6);
+tl.fromTo('#flash',{opacity:0},{opacity:0.5,duration:0.5,ease:'power2.out'},28.4);
+tl.to('#flash',{opacity:0,duration:1.4,ease:'power2.in'},28.9);
+camTo(29.8,2.6,{s:1.42,tx:700,ty:420,ease:'power2.inOut'});   /* push: matahari + bayangan */
+camTo(34.6,1.6,{s:1.05,tx:1210,ty:600,ease:'power2.inOut'});
+out('#k2',36.6,0.4);out('#kc2',36.6,0.4);tl.to('#raySvg',{opacity:0,duration:0.4},36.6);
+whip(37.0,0.8,1200,675,1.0,+1);            /* pull back wide: negative space */
+slam('#k3',38.2);riseIn('#kc3',39.0,0.5);
+tl.fromTo('#negSvg',{opacity:0},{opacity:1,duration:0.4},39.2);
+draw('#negBox',39.4,1.2);
+tl.fromTo('#negHole',{scale:1.5,transformOrigin:'50% 50%',opacity:0},{scale:1,opacity:1,duration:0.7,ease:'back.out(2)'},40.4);
+camTo(41.6,3.4,{s:1.14,tx:1180,ty:620,ease:'power2.inOut'});
+out('#k3',46.4,0.4);out('#kc3',46.4,0.4);tl.to('#negSvg',{opacity:0,duration:0.5},46.4);
+riseIn('#r1',47.6,0.5);riseIn('#r2',48.3,0.5);riseIn('#r3',49.0,0.5);
+camTo(50.0,6.0,{s:1.08,tx:1240,ty:650,ease:'power1.inOut'});
+out('#r1',55.3,0.35);out('#r2',55.3,0.35);out('#r3',55.3,0.35);
+
+/* ================= CH3 • ANATOMI PROMPT (56.87–114.71) ================= */
+chap('CH 03','ANATOMI PROMPT',56.2);
+whip(56.2,0.9,3760,675,0.85,+1);
+riseIn('#bTitle',57.3,0.6);
+/* layer 1 */
+slam('#L1',58.2);tl.set('#L1',{top:300},58.2);
+out('#bTitle',60.9,0.5);
+typeOn('#P1','orang berjaket oranye menyeberang zebra cross bersama anjing kecil; tubuh kecil dalam komposisi luas',59.6,6.2);
+camTo(61.6,3.6,{s:1.3,tx:4290,ty:420,ease:'power2.inOut'});
+camTo(68.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
+/* layer 2 */
+tl.to('#P1',{opacity:0.35,duration:0.5},70.6);
+slam('#L2',71.2);tl.set('#L2',{top:470},71.2);tl.set('#P2',{top:470},71.2);
+typeOn('#P2','high angle aerial 45–60° ke bawah; komposisi geometris dari garis jalan; karakteristik lensa anamorphic',72.6,6.2);
+camTo(74.6,3.6,{s:1.3,tx:4290,ty:560,ease:'power2.inOut'});
+camTo(81.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
+/* layer 3 */
+tl.to('#P2',{opacity:0.35,duration:0.5},83.6);
+slam('#L3',84.2);tl.set('#L3',{top:640},84.2);tl.set('#P3',{top:640},84.2);
+typeOn('#P3','sunlight rendah dari kiri atas; backlight kuat; wet asphalt reflections; lens flare; bloom halus; film grain',85.6,6.2);
+camTo(87.6,3.6,{s:1.3,tx:4290,ty:730,ease:'power2.inOut'});
+camTo(94.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
+/* layer 4 */
+tl.to('#P3',{opacity:0.35,duration:0.5},96.6);
+slam('#L4',97.2);tl.set('#L4',{top:810},97.2);tl.set('#P4',{top:810},97.2);
+typeOn('#P4','quiet contemplative; slightly desaturated; warm highlights cool shadows; cinematic color grading',98.6,5.4);
+camTo(100.6,3.6,{s:1.3,tx:4290,ty:900,ease:'power2.inOut'});
+camTo(106.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
+/* compression into template card */
+tl.to('#L1,#L2,#L3,#L4',{opacity:0,scale:0.7,x:240,duration:0.8,stagger:0.08,ease:'power3.in'},108.4);
+tl.to('#P1,#P2,#P3,#P4',{opacity:0,y:-60,duration:0.6,stagger:0.06,ease:'power2.in'},108.4);
+tl.to('#bTitle',{opacity:0,y:-40,duration:0.5},108.4);
+slam('#tplCard',109.6,0.8);
+camTo(109.6,3.4,{s:1.3,tx:3800,ty:640,ease:'power2.inOut'});
+/* push-through portal into sheet */
+tl.to(cam,{duration:1.6,s:5.2,tx:3800,ty:640,ease:'power3.in',onUpdate:()=>applyCam(tl.time())},113.2);
+tl.fromTo('#flash',{opacity:0},{opacity:0.85,duration:0.5,ease:'power2.in'},114.3);
+tl.to('#flash',{opacity:0,duration:0.9,ease:'power2.out'},114.9);
+
+/* ================= CH4 • PROMPT UTUH (115.41–137.8) ================= */
+chap('CH 04','PROMPT UTUH',115.0);
+tl.set(cam,{s:1.06,tx:6300,ty:560},115.2);tl.to(cam,{duration:0.01,onUpdate:()=>applyCam(tl.time())},115.2);
+tl.fromTo('#sheet',{opacity:0,scale:1.12},{opacity:1,scale:1,duration:0.9,ease:'power3.out'},115.4);
+tl.fromTo('#z1',{backgroundColor:'rgba(245,166,35,0)'},{backgroundColor:'rgba(245,166,35,0.30)',duration:1.2,ease:'power2.inOut'},118.0);
+tl.fromTo('#z2',{backgroundColor:'rgba(57,194,201,0)'},{backgroundColor:'rgba(57,194,201,0.28)',duration:1.2,ease:'power2.inOut'},121.2);
+tl.fromTo('#z3',{backgroundColor:'rgba(255,107,53,0)'},{backgroundColor:'rgba(255,107,53,0.30)',duration:1.2,ease:'power2.inOut'},124.4);
+tl.fromTo('#z4',{backgroundColor:'rgba(224,72,154,0)'},{backgroundColor:'rgba(224,72,154,0.26)',duration:1.2,ease:'power2.inOut'},128.0);
+camTo(116.0,14.0,{s:1.24,tx:6420,ty:760,ease:'sine.inOut'});
+riseIn('#sheetNote',131.6,0.6);
+camTo(131.6,4.6,{s:1.12,tx:6300,ty:900,ease:'power2.inOut'});
+tl.to('#sheet',{opacity:0.25,duration:0.6},136.8);
+tl.fromTo('#flash',{opacity:0},{opacity:0.7,duration:0.35,ease:'power2.in'},137.5);
+tl.to('#flash',{opacity:0,duration:0.7,ease:'power2.out'},137.9);
+
+/* ================= CH5 • CONTOH (138.5–177.27) ================= */
+chap('CH 05','3 CONTOH HASIL',138.0);
+tl.set(cam,{s:1.0,tx:8480,ty:675},138.2);tl.to(cam,{duration:0.01,onUpdate:()=>applyCam(tl.time())},138.2);
+riseIn('#gTitle',138.3,0.5);out('#gTitle',139.5,0.35);
+/* station 1 */
+tl.fromTo('#g1',{opacity:0,y:120,rotation:-3,scale:0.9},{opacity:1,y:0,rotation:0,scale:1,duration:0.9,ease:'power3.out'},138.9);
+slam('#gc1',139.6,0.6);
+pop('#gd1 span:nth-child(1)',141.0);pop('#gd1 span:nth-child(2)',141.5);pop('#gd1 span:nth-child(3)',142.0);
+camTo(140.0,6.0,{s:1.02,tx:8480,ty:690,ease:'power1.inOut'});
+/* speed-ramped track to station 2 */
+tl.to('#g1',{opacity:0.35,duration:0.5},149.6);tl.to('#gd1 span',{opacity:0,duration:0.4},149.6);tl.to('#gc1',{opacity:0,duration:0.4},149.6);
+tl.to(cam,{duration:2.4,tx:10180,ty:675,s:1.0,ease:'power4.inOut',onUpdate:()=>applyCam(tl.time())},150.2);
+tl.fromTo(streak,{opacity:0},{opacity:0.6,duration:0.8,ease:'power2.in'},150.2);
+tl.to(streak,{opacity:0,duration:1.4,ease:'power2.out'},151.0);
+tl.fromTo('#g2',{opacity:0,y:120,rotation:3,scale:0.9},{opacity:1,y:0,rotation:0,scale:1,duration:0.9,ease:'power3.out'},152.8);
+slam('#gc2',153.5,0.6);
+pop('#gd2 span:nth-child(1)',154.8);pop('#gd2 span:nth-child(2)',155.3);pop('#gd2 span:nth-child(3)',155.8);
+camTo(153.6,6.0,{s:1.02,tx:10180,ty:690,ease:'power1.inOut'});
+/* speed-ramped track to station 3 */
+tl.to('#g2',{opacity:0.35,duration:0.5},162.6);tl.to('#gd2 span',{opacity:0,duration:0.4},162.6);tl.to('#gc2',{opacity:0,duration:0.4},162.6);
+tl.to(cam,{duration:2.4,tx:11880,ty:675,s:1.0,ease:'power4.inOut',onUpdate:()=>applyCam(tl.time())},163.2);
+tl.fromTo(streak,{opacity:0},{opacity:0.6,duration:0.8,ease:'power2.in'},163.2);
+tl.to(streak,{opacity:0,duration:1.4,ease:'power2.out'},164.0);
+tl.fromTo('#g3',{opacity:0,y:120,rotation:-3,scale:0.9},{opacity:1,y:0,rotation:0,scale:1,duration:0.9,ease:'power3.out'},165.8);
+slam('#gc3',166.5,0.6);
+pop('#gd3 span:nth-child(1)',167.8);pop('#gd3 span:nth-child(2)',168.3);pop('#gd3 span:nth-child(3)',168.8);
+camTo(166.6,5.4,{s:1.02,tx:11880,ty:690,ease:'power1.inOut'});
+/* wide payoff of gallery */
+tl.to('#g1,#g2',{opacity:1,duration:0.6},173.4);
+tl.to('#gd3 span',{opacity:0,duration:0.4},173.4);tl.to('#gc3',{opacity:0,duration:0.4},173.4);
+camTo(173.4,3.4,{s:0.62,tx:10180,ty:700,ease:'power2.inOut'});
+pop('#gWide',174.4,0.7);
+whip(177.3,0.7,14250,600,0.85,-1);
+
+/* ================= CH6 • WORKFLOW (177.97–208.17) ================= */
+chap('CH 06','WORKFLOW',177.6);
+riseIn('#wTitle',178.2,0.6);
+slam('#s1',178.8);camTo(179.4,3.2,{s:1.0,tx:14090,ty:385,ease:'power2.inOut'});
+tl.to('#s1',{opacity:0.4,duration:0.5},187.4);
+slam('#s2',188.0);camTo(188.0,3.2,{s:1.0,tx:14090,ty:605,ease:'power2.inOut'});
+tl.to('#s2',{opacity:0.4,duration:0.5},195.4);
+slam('#s3',196.0);camTo(196.0,3.2,{s:1.0,tx:14090,ty:825,ease:'power2.inOut'});
+slam('#warn',201.2,0.7);
+camTo(201.0,2.6,{s:0.95,tx:14090,ty:1000,ease:'power2.inOut'});
+sweep('#e1s',202.6,0.5);sweep('#e2s',203.6,0.5);sweep('#e3s',204.6,0.5);
+camTo(205.6,2.4,{s:0.85,tx:14100,ty:675,ease:'power2.inOut'});
+
+/* ================= CH7 • OUTRO (208.87–222.3) ================= */
+chap('CH 07','OUTRO',208.4);
+whip(208.4,0.8,16650,675,1.0,+1);
+tl.fromTo('#pola',{opacity:0,y:-160,rotation:-9},{opacity:1,y:0,rotation:-4,duration:0.9,ease:'power3.out'},209.3);
+pop('#m1',210.6);pop('#m2',211.1);pop('#m3',211.6);
+pop('#cta1',213.4,0.55);pop('#cta2',215.4,0.55);pop('#cta3',217.4,0.55);
+pop('#subPill',219.3,0.6);
+tl.fromTo('#subPill',{scale:1},{scale:0.94,duration:0.14,ease:'power2.in',yoyo:true,repeat:1},220.2);
+riseIn('#endLine',221.0,0.5);
+camTo(210.0,12.0,{s:1.12,tx:16650,ty:640,ease:'sine.inOut'});
+tl.to('#world',{opacity:1,duration:0.01},222.2);
+tl.to('#fade',{opacity:1,duration:2.4,ease:'power2.inOut'},222.5);
+tl.to(cam,{duration:2.4,shake:0.25,ease:'none'},222.5);
+tl.to({},{duration:0.01},224.98);
+
+/* master screen-space tick */
+tl.eventCallback('onUpdate',()=>{screenTick(tl.time());applyCam(tl.time());});
+
+/* ---------------- OPENER contract ---------------- */
+window.OPENER={W,H,DURATION,tl,ready:false,
+  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);screenTick(tl.time());applyCam(tl.time());},
+  play(){tl.play();}};
+const dbg=document.querySelector('#debug');
+if(q.has('debug'))dbg.classList.add('on');
+gsap.ticker.add(()=>{dbg.textContent=tl.time().toFixed(2)+'s';});
+Promise.resolve(document.fonts?.ready).then(()=>{window.OPENER.ready=true;applyCam(0);screenTick(0);if(!q.has('clean'))tl.play(0);});
+tl.eventCallback('onComplete',()=>{if(!q.has('clean'))tl.play(0);});
+</script>
+</body>
+</html>
