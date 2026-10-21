@@ -34,11 +34,11 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
 .hook .w{display:block;font-family:'Anton';font-size:132px;line-height:.98;letter-spacing:.005em;text-transform:uppercase;color:var(--ink);text-shadow:0 8px 40px rgba(0,0,0,.65);opacity:0;will-change:transform,opacity}
 .hook .w.hot{color:var(--amber)}
 .hook .slash{width:0;height:14px;background:linear-gradient(90deg,var(--orange),var(--amber));margin:34px 0 30px;box-shadow:0 0 34px rgba(245,166,35,.55)}
-.lowerthird{position:absolute;left:150px;top:780px;width:1250px;opacity:0;will-change:transform,opacity}
+.lowerthird{position:absolute;left:150px;top:640px;width:1250px;opacity:0;will-change:transform,opacity}
 .lowerthird .bar{width:96px;height:8px;background:var(--orange);margin-bottom:22px}
 .lowerthird h2{font-family:'Anton';font-size:88px;line-height:1;text-transform:uppercase;letter-spacing:.01em;text-shadow:0 6px 34px rgba(0,0,0,.7)}
 .lowerthird p{margin-top:16px;font-size:30px;font-weight:500;color:var(--dim);letter-spacing:.06em}
-.chiprow{position:absolute;left:150px;top:1060px;display:flex;gap:18px}
+.chiprow{position:absolute;left:150px;top:780px;display:flex;gap:18px}
 .chip{padding:14px 24px;border:1.5px solid var(--line);border-radius:999px;background:rgba(10,14,18,.62);backdrop-filter:blur(2px);font-size:26px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--ink);opacity:0;will-change:transform,opacity}
 .chip b{color:var(--amber);margin-right:10px}
 
@@ -100,7 +100,7 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
 .gcap{position:absolute;width:1440px;top:210px;opacity:0;will-change:transform,opacity}
 .gcap h3{font-family:'Anton';font-size:64px;text-transform:uppercase;line-height:1;text-shadow:0 6px 30px rgba(0,0,0,.7)}
 .gcap h3 em{font-style:normal;color:var(--amber)}
-.gdiff{position:absolute;width:1440px;top:1080px;display:flex;gap:16px}
+.gdiff{position:absolute;width:1440px;top:930px;display:flex;gap:16px}
 .gdiff span{padding:13px 22px;background:rgba(10,14,18,.8);border:1.5px solid var(--line);border-radius:999px;font-size:25px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:0;will-change:transform,opacity}
 .gdiff span b{color:var(--teal);margin-right:10px}
 .gWide{position:absolute;left:7720px;top:150px;width:4900px;text-align:center;opacity:0}
@@ -116,7 +116,7 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
 .scard .n{font-family:'Anton';font-size:88px;color:var(--teal);line-height:1;min-width:96px}
 .scard h3{font-family:'Anton';font-size:52px;text-transform:uppercase;line-height:1.02}
 .scard p{font-size:27px;color:var(--dim);font-weight:500;margin-top:8px;line-height:1.3}
-.warn{position:absolute;left:140px;top:980px;width:1900px;padding:30px 36px;background:rgba(229,72,77,.10);border:2px solid rgba(229,72,77,.55);opacity:0;will-change:transform,opacity}
+.warn{position:absolute;left:140px;top:960px;width:1900px;padding:30px 36px;background:rgba(229,72,77,.10);border:2px solid rgba(229,72,77,.55);opacity:0;will-change:transform,opacity}
 .warn h4{font-family:'Anton';font-size:44px;color:var(--red);text-transform:uppercase;margin-bottom:14px}
 .warn .items{display:flex;gap:44px}
 .warn .it{position:relative;font-size:30px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
@@ -147,6 +147,9 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
 #streak{position:absolute;inset:0;opacity:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 26px,rgba(255,255,255,.16) 26px 34px,rgba(255,255,255,0) 34px 74px);mix-blend-mode:screen;will-change:opacity,transform}
 #flash{position:absolute;inset:0;opacity:0;background:radial-gradient(60% 60% at 50% 50%,rgba(255,178,84,.9),rgba(255,107,53,.55) 60%,rgba(255,107,53,0) 100%);mix-blend-mode:screen;will-change:opacity}
 #fade{position:absolute;inset:0;background:#000;opacity:1}
+#tikcap{position:absolute;left:50%;top:890px;width:1120px;text-align:center;pointer-events:none;opacity:0;transform:translateX(-50%)}
+#tikcapIn{display:inline-block;font-family:'Space Grotesk';font-weight:700;font-size:46px;line-height:1.24;letter-spacing:.01em;color:#fff;padding:12px 26px;background:rgba(8,10,14,.66);border-radius:16px;box-shadow:0 12px 44px rgba(0,0,0,.5);text-shadow:0 2px 10px rgba(0,0,0,.65)}
+#tikcapIn b{color:var(--amber)}
 #debug{display:none;position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:9;padding:8px 12px;border-radius:8px;background:#000;color:#0f0;font:14px monospace}
 #debug.on{display:block}
 </style>
@@ -309,6 +312,7 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
     <div id="chChip"><span class="dot"></span><span class="num" id="chNum">CH 01</span><span id="chName">HOOK</span></div>
     <div id="barTop"></div><div id="barBot"></div>
     <div id="vig"></div>
+    <div id="tikcap"><span id="tikcapIn"></span></div>
     <div id="grain"></div>
     <div id="streak"></div>
     <div id="flash"></div>
@@ -319,7 +323,7 @@ body{font-family:'Grotesk',sans-serif;color:var(--ink)}
 <div id="debug">0.00</div>
 
 <script>
-const W=1920,H=1080,DURATION=225.0;
+const W=1920,H=1080,DURATION=226.7;
 const stage=document.querySelector('#stage');
 const q=new URLSearchParams(location.search);
 const fit=()=>{const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;};
@@ -346,6 +350,7 @@ function screenTick(t){
   const gy=[0,-90,-210,-30,-150][Math.floor(t*6+2)%5];
   grainEl.style.transform=`translate(${gx}px,${gy}px)`;
   progFill.style.transform=`scaleX(${Math.min(1,t/DURATION)})`;
+  renderCaps(t);
   streak.style.transform=`translateX(${(t*2600)%240-240}px) skewX(-14deg)`;
 }
 
@@ -373,6 +378,23 @@ const typeOn=(sel,text,t,d)=>{
 };
 const draw=(sel,t,d)=>tl.to(sel,{strokeDashoffset:0,duration:d,ease:'power2.inOut'},t);
 const sweep=(sel,t,d)=>tl.to(sel,{scaleX:1,duration:d,ease:'power2.inOut'},t);
+const WO=[0,17.3,56.87,115.41,138.5,177.97,208.87,225.0];
+const WN=[0.0, 16.79, 56.78, 113.74, 135.34, 175.9, 208.02, 226.7];
+function m2c(m){for(let k=0;k<7;k++){if(m>=WN[k]&&m<=WN[k+1]){const r=(WN[k+1]-WN[k])/(WO[k+1]-WO[k]);return WO[k]+(m-WN[k])/r;}}return WO[7];}
+function c2m(c){for(let k=0;k<7;k++){if(c>=WO[k]&&c<=WO[k+1]){const r=(WN[k+1]-WN[k])/(WO[k+1]-WO[k]);return WN[k]+(c-WO[k])*r;}}return WN[7];}
+const CAPS=[[0.85,4.42,"Foto sinematik ini <b>bukan</b> jepretan kamera film."],[4.42,7.22,"Ini dibuat hanya dari <b>1 text prompt</b>."],[7.22,10.48,"Di video ini aku bongkar <b>resepnya lengkap</b>:"],[10.48,13.89,"sudut kamera, cahaya, sampai <b>template prompt</b>"],[13.89,15.99,"yang bisa kamu <b>pakai ulang</b>."],[16.84,22.14,"Kenapa foto ini terasa <b>mahal</b>? Tiga alasan."],[22.14,24.54,"Satu: <b>sudut kamera</b>."],[24.54,27.7,"High angle <b>45-60 derajat</b>:"],[27.7,31.74,"zebra cross jadi <b>pola geometris</b>."],[31.74,36.66,"Subjek kecil di frame luas = rasa <b>sepi</b>."],[36.66,38.18,"Dua: <b>cahaya</b>."],[38.18,43.23,"Backlight matahari rendah setelah hujan:"],[43.23,48.28,"<b>bayangan panjang</b> + refleksi aspal basah."],[48.28,50.8,"Tiga: <b>ruang negatif</b>."],[50.8,55.98,"Frame kosong mengunci mata ke <b>satu titik</b>."],[56.83,62.61,"Sekarang <b>struktur prompt</b>-nya. Empat lapis."],[62.61,65.77,"Lapis 1: <b>subjek & aksi</b>."],[65.77,70.86,"Orang berjaket oranye + anjing kecil,"],[70.86,74.3,"tubuh <b>kecil</b> di komposisi."],[74.3,76.5,"Lapis 2: <b>kamera</b>."],[76.5,82.41,"High angle aerial 45-60 derajat, geometris,"],[82.41,84.75,"lensa <b>anamorphic</b>."],[84.75,88.46,"Lapis 3: <b>cahaya & atmosfer</b>."],[88.46,93.69,"Backlight kuat, refleksi basah, flare,"],[93.69,96.16,"bloom, <b>film grain</b>."],[96.16,99.19,"Lapis 4: <b>mood & grade</b>."],[99.19,103.31,"Warm highlights, <b>cool shadows</b>."],[103.31,107.03,"Empat lapis ini = <b>template</b>."],[107.03,110.05,"Ganti subjek & lokasi,"],[110.05,112.94,"<b>vibe sinematik tetap</b>."],[113.79,116.4,"Dan ini <b>prompt utuhnya</b>."],[116.4,120.03,"Jangan dihafal - <b>pahami polanya</b>:"],[120.03,125.13,"subjek kecil, kamera tinggi, cahaya belakang,"],[125.13,129.21,"atmosfer basah, <b>grade hangat-dingin</b>."],[129.21,134.54,"Simpan, lalu <b>tulis ulang</b> dengan katamu sendiri."],[135.39,138.93,"Template sama, <b>tiga dunia berbeda</b>."],[138.93,142.16,"01: <b>payung merah</b> di malam neon."],[142.16,144.87,"Subjek: pejalan berpayung;"],[144.87,147.58,"cahaya: <b>neon teal-magenta</b>."],[147.58,151.96,"02: <b>pesepeda tunggal</b> di jembatan berkabut."],[151.96,156.55,"Lokasi: jembatan; cahaya: <b>golden hour kabut</b>."],[156.55,159.36,"03: <b>steam gerobak kaki lima</b>"],[159.36,161.55,"kena backlight malam."],[161.55,163.95,"Subjek: gerobak + asap;"],[163.95,166.76,"cahaya: <b>satu bohlam hangat</b>."],[166.76,171.24,"Polanya tetap: subjek kecil, kamera tinggi,"],[171.24,175.1,"<b>1 cahaya dominan</b>, ruang negatif luas."],[175.95,179.7,"Workflow eksekusi: <b>3 langkah</b>."],[179.7,183.83,"1 - tulis prompt urutan <b>4 lapis</b>."],[183.83,186.55,"2 - generate variasi,"],[186.55,189.65,"pilih <b>komposisi terkuat</b>."],[189.65,195.2,"3 - finishing: grain halus, saturasi turun,"],[195.2,199.34,"highlight <b>hangat</b>, shadow <b>dingin</b>."],[199.34,203.34,"Kesalahan umum: subjek <b>raksasa</b>,"],[203.34,207.22,"cahaya <b>datar</b>, teks/logo <b>bocor</b>."],[208.07,211.93,"Itu dia <b>resep foto cinematic</b> dari text prompt."],[211.93,215.96,"<b>Save</b> video ini supaya template-nya tidak hilang."],[215.96,219.48,"Coba prompt versimu, tulis hasil terbaikmu"],[219.48,220.49,"di <b>komentar</b>."]];
+let capIdx=-1;
+function renderCaps(t){
+  const wrap=document.querySelector('#tikcap'),el=document.querySelector('#tikcapIn');
+  let i=-1;for(let k=0;k<CAPS.length;k++){if(t>=CAPS[k][0]&&t<CAPS[k][1]){i=k;break;}}
+  if(i<0){wrap.style.opacity=0;capIdx=-1;return;}
+  if(i!==capIdx){capIdx=i;el.innerHTML=CAPS[i][2];}
+  const u=Math.min(1,(t-CAPS[i][0])/0.3),c=1.70158;
+  const b=1+(c+1)*Math.pow(u-1,3)+c*Math.pow(u-1,2);
+  const o=Math.max(0,Math.min(1,u*5,(CAPS[i][1]-t)/0.18));
+  wrap.style.opacity=o.toFixed(3);
+  wrap.style.transform=`translateX(-50%) scale(${(0.86+0.14*b).toFixed(4)}) translateY(${((1-b)*26).toFixed(2)}px)`;
+}
 const chap=(num,name,t)=>tl.call(()=>{document.querySelector('#chNum').textContent=num;document.querySelector('#chName').textContent=name;},null,t);
 
 /* ================= CH1 • HOOK (0.0–16.6) ================= */
@@ -444,7 +466,7 @@ camTo(87.6,3.6,{s:1.3,tx:4290,ty:730,ease:'power2.inOut'});
 camTo(94.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
 /* layer 4 */
 tl.to('#P3',{opacity:0.35,duration:0.5},96.6);
-slam('#L4',97.2);tl.set('#L4',{top:810},97.2);tl.set('#P4',{top:810},97.2);
+slam('#L4',97.2);tl.set('#L4',{top:740},97.2);tl.set('#P4',{top:740},97.2);
 typeOn('#P4','quiet contemplative; slightly desaturated; warm highlights cool shadows; cinematic color grading',98.6,5.4);
 camTo(100.6,3.6,{s:1.3,tx:4290,ty:900,ease:'power2.inOut'});
 camTo(106.4,1.6,{s:0.85,tx:3760,ty:675,ease:'power2.inOut'});
@@ -519,7 +541,7 @@ slam('#s3',196.0);camTo(196.0,3.2,{s:1.0,tx:14090,ty:825,ease:'power2.inOut'});
 slam('#warn',201.2,0.7);
 camTo(201.0,2.6,{s:0.95,tx:14090,ty:1000,ease:'power2.inOut'});
 sweep('#e1s',202.6,0.5);sweep('#e2s',203.6,0.5);sweep('#e3s',204.6,0.5);
-camTo(205.6,2.4,{s:0.85,tx:14100,ty:675,ease:'power2.inOut'});
+camTo(205.6,2.4,{s:0.85,tx:14100,ty:760,ease:'power2.inOut'});
 
 /* ================= CH7 • OUTRO (208.87–222.3) ================= */
 chap('CH 07','OUTRO',208.4);
@@ -537,11 +559,11 @@ tl.to(cam,{duration:2.4,shake:0.25,ease:'none'},222.5);
 tl.to({},{duration:0.01},224.98);
 
 /* master screen-space tick */
-tl.eventCallback('onUpdate',()=>{screenTick(tl.time());applyCam(tl.time());});
+tl.eventCallback('onUpdate',()=>{screenTick(c2m(tl.time()));applyCam(tl.time());});
 
 /* ---------------- OPENER contract ---------------- */
 window.OPENER={W,H,DURATION,tl,ready:false,
-  seek(t){tl.pause();tl.time(Math.max(0,Math.min(DURATION,t)),false);screenTick(tl.time());applyCam(tl.time());},
+  seek(t){const mt=Math.max(0,Math.min(DURATION,t));tl.pause();tl.time(m2c(mt),false);screenTick(mt);applyCam(tl.time());},
   play(){tl.play();}};
 const dbg=document.querySelector('#debug');
 if(q.has('debug'))dbg.classList.add('on');

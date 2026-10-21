@@ -14,7 +14,7 @@ import wave
 import numpy as np
 
 SR = 48000
-T = 225.0
+T = 226.7
 N = int(SR * T)
 rng = np.random.default_rng(7)
 t = np.arange(N) / SR
@@ -45,8 +45,8 @@ def midi_f(m):
 def env_seg(length, attack, release):
     n = int(length * SR)
     e = np.ones(n)
-    a = int(attack * SR)
-    r = int(release * SR)
+    a = min(int(attack * SR), n)
+    r = min(int(release * SR), max(0, n - a))
     if a > 0:
         e[:a] = np.linspace(0, 1, a) ** 2
     if r > 0:
@@ -115,7 +115,7 @@ for blk in range(0, N, 480000):
 air *= 0.010 * (1 + 0.3 * np.sin(2 * np.pi * 0.05 * t))
 
 # ---------- risers + booms at edit whips ----------
-WHIPS = [16.6, 25.6, 37.0, 56.2, 113.2, 137.5, 150.2, 163.2, 177.3, 208.4]
+WHIPS = [16.11, 25.18, 36.7, 56.1, 111.59, 134.4, 147.36, 160.72, 175.21, 207.53]
 fx = np.zeros(N)
 for wtime in WHIPS:
     s0 = int((wtime - 0.9) * SR)
