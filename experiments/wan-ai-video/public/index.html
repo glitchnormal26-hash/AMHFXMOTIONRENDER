@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wan AI Video — text to video</title>
+    <meta name="description" content="Studio text-to-video sederhana bertenaga Wan (Alibaba Model Studio)." />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%236d28d9'/%3E%3Cpath d='M38 30l32 20-32 20z' fill='white'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">▶</span>
+        <div>
+          <h1>Wan AI Video</h1>
+          <p>Text → video, powered by Wan · Alibaba Model Studio</p>
+        </div>
+      </div>
+      <div class="status" id="status-pill" title="Status server">
+        <span class="dot"></span><span id="status-text">menghubungkan…</span>
+      </div>
+    </header>
+
+    <div class="banner" id="demo-banner" hidden>
+      <strong>Mode demo.</strong> Belum ada <code>DASHSCOPE_API_KEY</code> — video yang muncul cuma placeholder.
+      Isi key di <code>.env</code> lalu restart server untuk render Wan asli.
+    </div>
+
+    <main class="layout">
+      <section class="panel composer">
+        <h2>Buat video</h2>
+        <form id="generate-form">
+          <label class="field">
+            <span>Prompt <em id="prompt-count">0/2000</em></span>
+            <textarea id="prompt" name="prompt" rows="5" maxlength="2000" required
+              placeholder="Contoh: Sinematik close-up, hujan sore di gang Jakarta, neon warung kopi memantul di genangan air, kamera perlahan mendorong masuk, grain halus, warna teal-orange."></textarea>
+          </label>
+
+          <div class="chips" id="chips">
+            <button type="button" class="chip" data-prompt="Slow cinematic dolly-in on a neon-lit Jakarta street at night, rain reflections, anamorphic flare, shallow depth of field, 35mm film grain.">Neon Jakarta</button>
+            <button type="button" class="chip" data-prompt="Produk skincare di atas batu marmer hitam, air memercik lambat, cahaya studio lembut dari kiri, kamera orbit lambat, ultra detail, iklan premium.">Produk premium</button>
+            <button type="button" class="chip" data-prompt="Drone shot melintasi sawah terasering Bali saat golden hour, kabut tipis, burung terbang, gerakan kamera halus ke depan.">Bali golden hour</button>
+            <button type="button" class="chip" data-prompt="Isometric 3D dashboard SaaS melayang di ruang gelap, grafik tumbuh, partikel biru halus, kamera pelan menyamping, gaya tech premium.">SaaS dashboard</button>
+          </div>
+
+          <div class="grid">
+            <label class="field">
+              <span>Model</span>
+              <select id="model" name="model"></select>
+            </label>
+            <label class="field">
+              <span>Resolusi</span>
+              <select id="size" name="size"></select>
+            </label>
+            <label class="field">
+              <span>Durasi</span>
+              <select id="duration" name="duration"></select>
+            </label>
+            <label class="field">
+              <span>Seed <em>opsional</em></span>
+              <input id="seed" name="seed" type="number" min="0" max="2147483647" placeholder="acak" />
+            </label>
+          </div>
+
+          <details class="advanced">
+            <summary>Pengaturan lanjutan</summary>
+            <label class="field">
+              <span>Negative prompt</span>
+              <textarea id="negativePrompt" name="negativePrompt" rows="2" placeholder="blur, watermark, teks, distorsi wajah, tangan cacat"></textarea>
+            </label>
+            <label class="switch">
+              <input type="checkbox" id="promptExtend" checked />
+              <span>Prompt extend (Wan memperkaya prompt otomatis)</span>
+            </label>
+            <label class="switch">
+              <input type="checkbox" id="watermark" />
+              <span>Watermark Wan</span>
+            </label>
+          </details>
+
+          <button class="primary" type="submit" id="submit-btn">
+            <span class="btn-label">Generate video</span>
+            <span class="spinner" hidden></span>
+          </button>
+          <p class="hint" id="form-hint">Render di cloud Wan biasanya 1–5 menit.</p>
+        </form>
+      </section>
+
+      <section class="panel jobs">
+        <div class="jobs-head">
+          <h2>Riwayat</h2>
+          <button type="button" class="ghost" id="refresh-btn">Refresh</button>
+        </div>
+        <div id="jobs" class="jobs-list">
+          <p class="empty" id="empty-state">Belum ada video. Tulis prompt lalu tekan Generate.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Wan / DashScope · Node + Express · tanpa database</span>
+      <a href="https://github.com/glitchnormal26-hash/wan-ai-video" target="_blank" rel="noreferrer">GitHub</a>
+    </footer>
+
+    <template id="job-template">
+      <article class="job">
+        <div class="job-main">
+          <div class="job-top">
+            <span class="badge"></span>
+            <span class="job-meta"></span>
+          </div>
+          <p class="job-prompt"></p>
+          <div class="progress"><div class="bar"></div></div>
+          <p class="job-error" hidden></p>
+          <div class="job-actions">
+            <a class="ghost download" download hidden>Unduh</a>
+            <a class="ghost remote" target="_blank" rel="noreferrer" hidden>URL asli</a>
+            <button type="button" class="ghost retry" hidden>Coba lagi</button>
+            <button type="button" class="ghost danger delete">Hapus</button>
+          </div>
+        </div>
+        <div class="job-media">
+          <video controls playsinline preload="metadata" hidden></video>
+          <img alt="" hidden />
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

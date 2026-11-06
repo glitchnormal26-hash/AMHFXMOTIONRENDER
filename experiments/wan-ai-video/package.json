@@ -1,0 +1,19 @@
+{
+  "name": "wan-ai-video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Text-to-video studio powered by Wan (Alibaba Model Studio / DashScope). Prompt in, MP4 out.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.mjs",
+    "dev": "node --env-file-if-exists=.env --watch server/index.mjs",
+    "check": "node --check server/index.mjs && node --check server/config.mjs && node --check server/wan.mjs && node --check server/store.mjs && node --check server/mock.mjs && node --check public/app.js && node --check scripts/smoke.mjs",
+    "test": "node --env-file-if-exists=.env scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

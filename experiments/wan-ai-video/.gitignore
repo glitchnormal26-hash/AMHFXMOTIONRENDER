@@ -1,0 +1,8 @@
+node_modules/
+.env
+data/
+*.log
+.DS_Store
+npm-debug.log*
+samples/*.mp4
+samples/src/*.mp4
